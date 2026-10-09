@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- PT22 · ícono de los avisos locales (Icon/bell del sistema de diseño), monocromo como pide la barra de estado. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <group
+        android:translateX="5.3333"
+        android:translateY="4.0835">
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M6.66667 16.25 C7.58333 16.25 8.33333 15.5 8.33333 14.5833 L5 14.5833 C5 15.5 5.74167 16.25 6.66667 16.25 Z M11.6667 11.25 L11.6667 7.08333 C11.6667 4.525 10.3 2.38333 7.91667 1.81667 L7.91667 1.25 C7.91667 0.558333 7.35833 0 6.66667 0 C5.975 0 5.41667 0.558333 5.41667 1.25 L5.41667 1.81667 C3.025 2.38333 1.66667 4.51667 1.66667 7.08333 L1.66667 11.25 L0 12.9167 L0 13.75 L13.3333 13.75 L13.3333 12.9167 L11.6667 11.25 Z" />
+    </group>
+</vector>

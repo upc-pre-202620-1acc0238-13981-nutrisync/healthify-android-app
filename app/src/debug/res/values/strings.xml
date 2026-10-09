@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Textos del catálogo interno del sistema de diseño (solo debug, herramienta de revisión en español). -->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="es">
+    <string name="catalog_launcher_label" translatable="false">Healthify · Catálogo DS</string>
+    <string name="catalog_title" translatable="false">CATÁLOGO DS</string>
+
+    <string name="catalog_section_colors" translatable="false">COLOR · ROLES</string>
+    <string name="catalog_section_typography" translatable="false">TIPOGRAFÍA</string>
+    <string name="catalog_section_dimens" translatable="false">ESPACIADO · RADIOS · ELEVACIÓN</string>
+    <string name="catalog_section_icons" translatable="false">ÍCONOS</string>
+    <string name="catalog_section_button" translatable="false">BUTTON</string>
+    <string name="catalog_section_icon_button" translatable="false">ICONBUTTON</string>
+    <string name="catalog_section_text_field" translatable="false">TEXTFIELD</string>
+    <string name="catalog_section_segmented" translatable="false">SEGMENTO</string>
+    <string name="catalog_section_yes_no" translatable="false">SELECTOR SÍ/NO</string>
+    <string name="catalog_section_card" translatable="false">CARD</string>
+    <string name="catalog_section_chip" translatable="false">CHIP / ESTADO</string>
+    <string name="catalog_section_navigation" translatable="false">NAVIGATIONBAR</string>
+    <string name="catalog_section_top_app_bar" translatable="false">TOPAPPBAR</string>
+    <string name="catalog_section_overlays" translatable="false">SNACKBAR · DIALOG · BOTTOMSHEET</string>
+    <string name="catalog_section_skeleton" translatable="false">SKELETON</string>
+    <string name="catalog_section_banner" translatable="false">BANNER SIN CONEXIÓN</string>
+    <string name="catalog_section_empty" translatable="false">ESTADO VACÍO</string>
+    <string name="catalog_section_error" translatable="false">ESTADO DE ERROR</string>
+
+    <string name="catalog_sample_button" translatable="false">Botón</string>
+    <string name="catalog_sample_saving" translatable="false">Guardando…</string>
+    <string name="catalog_sample_label" translatable="false">Etiqueta</string>
+    <string name="catalog_sample_placeholder" translatable="false">Texto de ejemplo</string>
+    <string name="catalog_sample_help" translatable="false">Texto de ayuda</string>
+    <string name="catalog_sample_error" translatable="false">Revisa este dato</string>
+    <string name="catalog_sample_email" translatable="false">Correo electrónico</string>
+    <string name="catalog_sample_password" translatable="false">Contraseña</string>
+    <string name="catalog_sample_weight" translatable="false">Peso (kg)</string>
+    <string name="catalog_sample_notes" translatable="false">Notas</string>
+    <string name="catalog_sample_option_a" translatable="false">Paciente</string>
+    <string name="catalog_sample_option_b" translatable="false">Nutricionista</string>
+    <string name="catalog_sample_question" translatable="false">¿Seguiste el protocolo de pesaje?</string>
+    <string name="catalog_validate" translatable="false">Validar respuesta</string>
+    <string name="catalog_sample_card_title" translatable="false">Título</string>
+    <string name="catalog_sample_card_support" translatable="false">Texto de apoyo</string>
+    <string name="catalog_sample_screen_title" translatable="false">TÍTULO DE PANTALLA</string>
+    <string name="catalog_sample_greeting" translatable="false">Hola, María</string>
+    <string name="catalog_sample_today" translatable="false">HOY</string>
+    <string name="catalog_sample_initial" translatable="false">M</string>
+    <string name="catalog_sample_snackbar" translatable="false">Comida registrada en tu diario</string>
+    <string name="catalog_sample_snackbar_action" translatable="false">Ver diario</string>
+    <string name="catalog_sample_dialog_title" translatable="false">¿Título del diálogo?</string>
+    <string name="catalog_sample_dialog_body" translatable="false">Texto de apoyo que explica la consecuencia de la acción.</string>
+    <string name="catalog_sample_confirm" translatable="false">Confirmar</string>
+    <string name="catalog_sample_sheet_title" translatable="false">TÍTULO</string>
+    <string name="catalog_sample_sheet_body" translatable="false">Texto de apoyo.</string>
+    <string name="catalog_sample_accept" translatable="false">Aceptar</string>
+    <string name="catalog_sample_later" translatable="false">Más tarde</string>
+    <string name="catalog_sample_empty_title" translatable="false">Necesitas conexión</string>
+    <string name="catalog_sample_empty_body" translatable="false">Tu cartera y los datos de tus pacientes no se guardan en el teléfono. Vuelve a intentarlo cuando tengas conexión.</string>
+    <string name="catalog_sample_close" translatable="false">Cerrar</string>
+    <string name="catalog_show_snackbar" translatable="false">Mostrar snackbar</string>
+    <string name="catalog_open_dialog" translatable="false">Abrir diálogo</string>
+    <string name="catalog_open_destructive_dialog" translatable="false">Abrir diálogo destructivo</string>
+    <string name="catalog_open_sheet" translatable="false">Abrir bottom sheet</string>
+    <string name="catalog_sample_typography" translatable="false">Healthify 123</string>
+</resources>

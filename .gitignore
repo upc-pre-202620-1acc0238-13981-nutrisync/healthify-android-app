@@ -8,6 +8,8 @@ local.properties
 
 # Log/OS Files
 *.log
+.DS_Store
+Thumbs.db
 
 # Android Studio generated files and folders
 captures/
@@ -23,13 +25,34 @@ output-metadata.json
 misc.xml
 deploymentTargetDropDown.xml
 render.experimental.xml
+.fleet/
 
 # Keystore files
 *.jks
 *.keystore
+keystore.properties
+signing.properties
 
 # Google Services (e.g. APIs or Firebase)
 google-services.json
+service-account*.json
+
+# Secrets and credentials
+.env
+.env.*
+*.pem
+*.p12
+*.pfx
+*.key
+secrets.properties
 
 # Android Profiling
 *.hprof
+
+# Internal project documentation and AI-assistant configuration (not versioned)
+docs/*
+!docs/licenses/
+CLAUDE.md
+CLAUDE.local.md
+.claude/
+.mcp.json
