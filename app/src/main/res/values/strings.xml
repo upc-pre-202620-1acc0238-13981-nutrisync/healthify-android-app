@@ -493,8 +493,11 @@
     <string name="ideas_no_targets_title">Aún no tienes metas</string>
     <string name="ideas_no_targets_body">Las ideas se preparan con tus metas. Aparecerán cuando tu nutricionista publique tu plan.</string>
     <string name="ideas_unavailable_title">Ideas no disponibles</string>
-    <string name="ideas_unavailable_body">Las ideas con IA no están disponibles ahora. Tu diario sigue funcionando.</string>
-    <string name="ideas_rate_limited_body">Ya pediste varias ideas hoy. Vuelve a intentarlo mañana; tu diario sigue funcionando.</string>
+    <string name="ideas_unavailable_body">Las ideas con IA no están disponibles en este momento. Prueba de nuevo más tarde; tu diario sigue funcionando.</string>
+    <string name="ideas_no_consent_title">Activa las ideas con IA</string>
+    <string name="ideas_no_consent_body">Para prepararte ideas necesitamos tu permiso para usar IA con tu diario. Puedes activarlas cuando quieras en Ajustes › Funciones con IA.</string>
+    <string name="ideas_rate_limited_title">Ya pediste varias ideas</string>
+    <string name="ideas_rate_limited_body">Llegaste al límite de ideas con IA por ahora. Podrás pedir más un poco más tarde; mientras, tu diario sigue funcionando.</string>
 
     <!-- PT19 · Pendientes por sincronizar -->
     <string name="pending_title">PENDIENTES</string>

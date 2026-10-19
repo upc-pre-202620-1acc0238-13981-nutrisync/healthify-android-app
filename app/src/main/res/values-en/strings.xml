@@ -476,8 +476,11 @@
     <string name="ideas_no_targets_title">No targets yet</string>
     <string name="ideas_no_targets_body">Ideas are prepared from your targets. They\'ll show up when your nutritionist publishes your plan.</string>
     <string name="ideas_unavailable_title">Ideas unavailable</string>
-    <string name="ideas_unavailable_body">AI ideas aren\'t available right now. Your diary still works.</string>
-    <string name="ideas_rate_limited_body">You\'ve asked for several ideas today. Try again tomorrow; your diary still works.</string>
+    <string name="ideas_unavailable_body">AI ideas aren\'t available at the moment. Try again later; your diary still works.</string>
+    <string name="ideas_no_consent_title">Turn on AI ideas</string>
+    <string name="ideas_no_consent_body">To prepare ideas for you, we need your permission to use AI with your diary. You can turn them on anytime in Settings › AI features.</string>
+    <string name="ideas_rate_limited_title">You\'ve asked for several ideas</string>
+    <string name="ideas_rate_limited_body">You\'ve reached the limit of AI ideas for now. You can ask for more a bit later; meanwhile, your diary still works.</string>
 
     <!-- PT19 · Pending sync -->
     <string name="pending_title">PENDING</string>
