@@ -171,7 +171,7 @@ fun BaselineContent(
                         BaselineProblem.HEIGHT_OUT_OF_RANGE in state.problems -> stringResource(R.string.baseline_height_range)
                         else -> null
                     },
-                    trailingIcon = { UnitSuffix(stringResource(R.string.unit_cm)) },
+                    suffix = stringResource(R.string.unit_cm),
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
@@ -272,12 +272,6 @@ internal fun FieldTitle(text: String) {
 @Composable
 internal fun ErrorLine(text: String) {
     Text(text = text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
-}
-
-/** Unidad a la derecha del campo («cm», «kg», «%»), Label/Large en `onSurfaceVariant`. */
-@Composable
-internal fun UnitSuffix(text: String) {
-    Text(text = text, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
 }
 
 /** Selector de fecha (Material 3): solo fechas pasadas. */
