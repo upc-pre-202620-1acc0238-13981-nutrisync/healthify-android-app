@@ -4,7 +4,7 @@ import pe.edu.upc.healthify.features.monitoring.domain.valueobject.ComplianceOut
 import java.time.Instant
 
 /**
- * PT3 · Inicio (+ PT3.L, PT3.V, PT3.O, aviso «Algo no cuadra», PT18 y PT3.M).
+ * PT3 · Inicio (+ PT3.L, PT3.V, PT3.O, aviso «Algo no cuadra», PT18, aviso de meta de energía superada y PT3.M).
  *
  * @param targets metas vigentes; `null` mientras carga o sin metas ([hasNoTargets], PT3.V).
  * @param cachedAt cuándo se guardó la copia mostrada (PT3.O); `null` si las metas son del backend.
@@ -35,6 +35,18 @@ data class PatientHomeUiState(
 
     val loggingGapCardVisible: Boolean get() = showLoggingGapCard && targets != null
 
+    /**
+     * Aviso «Mañana es otro día»: el día ya salió EXCEEDED o lo registrado supera la meta de energía.
+     * Sin conexión o sin metas no aparece (el avance del día solo se lee en línea, desde Monitoring).
+     */
+    val energyExceededCardVisible: Boolean
+        get() {
+            val target = targets?.energyKcal ?: return false
+            if (isOffline) return false
+            val consumed = consumedKcal
+            return todayOutcome == ComplianceOutcome.EXCEEDED || (consumed != null && consumed > target)
+        }
+
     /** PT3.O: sin conexión no se muestran «Cómo voy hoy» ni «Próxima consulta» (viven en Monitoring). */
     val howAmIDoingVisible: Boolean get() = !isOffline && todayOutcome != null
     val nextFollowUpVisible: Boolean get() = !isOffline && nextFollowUp != null
@@ -42,7 +54,8 @@ data class PatientHomeUiState(
     val targetsChangedSheetVisible: Boolean get() = targetsChangedVersion != null && !isOffline && targets != null
 
     /** Con un aviso arriba, «Registrar comida» pasa a la variante horizontal de 56 dp (Notas de PT3 aviso / PT18). */
-    val compactRegisterButton: Boolean get() = consistencyCardVisible || loggingGapCardVisible
+    val compactRegisterButton: Boolean
+        get() = consistencyCardVisible || loggingGapCardVisible || energyExceededCardVisible
 }
 
 /** Metas del día que muestra Inicio (el detalle completo está en PT4). */
