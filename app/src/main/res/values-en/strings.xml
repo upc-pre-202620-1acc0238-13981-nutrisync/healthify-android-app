@@ -692,9 +692,13 @@
     <string name="settings_ai_features_off">Off</string>
     <string name="settings_switch_practitioner_support">Scan a new code</string>
     <string name="settings_data_export">Download a copy of my data</string>
-    <string name="settings_data_export_support">Diary, weigh-ins and targets</string>
-    <string name="settings_data_export_dialog_title">Coming soon</string>
-    <string name="settings_data_export_dialog_body">Soon you\'ll be able to download a copy of your diary, weigh-ins and targets from here.</string>
+    <string name="settings_data_export_support">Diary, weigh-ins, targets and consultations, as CSV</string>
+    <string name="settings_data_export_offline">You need a connection to download your copy</string>
+    <string name="settings_data_export_in_progress">Preparing your copy…</string>
+    <string name="settings_data_export_saved_title">Done, we saved your copy</string>
+    <string name="settings_data_export_saved_body">It\'s a ZIP file with your data as CSV. You can open it with Excel or any spreadsheet app.</string>
+    <string name="settings_data_export_failed_title">We couldn\'t save your copy</string>
+    <string name="settings_data_export_failed_body">Something went wrong while downloading it. Please try again in a moment.</string>
     <string name="settings_language_sheet_title">LANGUAGE</string>
     <string name="language_spanish">Español</string>
     <string name="language_english">English</string>

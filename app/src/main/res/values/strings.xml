@@ -716,9 +716,13 @@
     <string name="settings_ai_features_off">Desactivadas</string>
     <string name="settings_switch_practitioner_support">Escanea un código nuevo</string>
     <string name="settings_data_export">Descargar una copia de mis datos</string>
-    <string name="settings_data_export_support">Diario, autopesajes y metas</string>
-    <string name="settings_data_export_dialog_title">Próximamente</string>
-    <string name="settings_data_export_dialog_body">Muy pronto podrás descargar una copia de tu diario, tus autopesajes y tus metas desde aquí.</string>
+    <string name="settings_data_export_support">Diario, autopesajes, metas y consultas, en CSV</string>
+    <string name="settings_data_export_offline">Necesitas conexión para descargar tu copia</string>
+    <string name="settings_data_export_in_progress">Preparando tu copia…</string>
+    <string name="settings_data_export_saved_title">Listo, guardamos tu copia</string>
+    <string name="settings_data_export_saved_body">Es un archivo ZIP con tus datos en CSV. Puedes abrirlo con Excel o cualquier hoja de cálculo.</string>
+    <string name="settings_data_export_failed_title">No pudimos guardar tu copia</string>
+    <string name="settings_data_export_failed_body">Algo salió mal al descargarla. Inténtalo de nuevo en un momento.</string>
     <string name="settings_language_sheet_title">IDIOMA</string>
     <string name="language_spanish">Español</string>
     <string name="language_english">English</string>
