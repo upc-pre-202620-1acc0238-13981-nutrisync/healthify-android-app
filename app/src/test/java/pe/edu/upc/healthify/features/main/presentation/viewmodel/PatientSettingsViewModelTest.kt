@@ -1,6 +1,7 @@
 package pe.edu.upc.healthify.features.main.presentation.viewmodel
 
 import app.cash.turbine.test
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -17,14 +18,25 @@ import pe.edu.upc.healthify.features.iam.domain.repository.AppLanguageRepository
 import pe.edu.upc.healthify.features.iam.domain.repository.UserRepository
 import pe.edu.upc.healthify.features.iam.domain.valueobject.PreferredLanguage
 import pe.edu.upc.healthify.features.iam.domain.valueobject.UserId
+import pe.edu.upc.healthify.features.main.application.usecase.DownloadDataExportUseCase
+import pe.edu.upc.healthify.features.main.application.usecase.GetDataExportFileNameUseCase
+import pe.edu.upc.healthify.features.main.domain.repository.DataExportRepository
+import pe.edu.upc.healthify.features.main.domain.valueobject.DataExportFileName
+import pe.edu.upc.healthify.features.main.presentation.state.DataExportStatus
 import pe.edu.upc.healthify.testing.FakeAiPreferencesRepository
 import pe.edu.upc.healthify.testing.FakeConnectivityObserver
 import pe.edu.upc.healthify.testing.FakeSessionRepository
 import pe.edu.upc.healthify.testing.MainDispatcherRule
 import pe.edu.upc.healthify.testing.aiPreferences
 import pe.edu.upc.healthify.testing.failureOf
+import java.time.Clock
+import java.time.Instant
+import java.time.ZoneId
 
-/** PT21 / PT21.I · cambio de idioma: se aplica en el teléfono al instante y se guarda en la cuenta (IAM-3). */
+/**
+ * PT21 / PT21.I · cambio de idioma: se aplica en el teléfono al instante y se guarda en la cuenta (IAM-3).
+ * PT21 · copia de los datos: se elige dónde guardarla, se descarga y se informa el resultado.
+ */
 class PatientSettingsViewModelTest {
 
     @get:Rule
@@ -53,6 +65,7 @@ class PatientSettingsViewModelTest {
     private val users = FakeUserRepository()
     private val connectivity = FakeConnectivityObserver()
     private val aiPreferences = FakeAiPreferencesRepository(aiPreferences(consent = true))
+    private val dataExport = FakeDataExportRepository()
 
     private val viewModel by lazy {
         PatientSettingsViewModel(
@@ -62,6 +75,10 @@ class PatientSettingsViewModelTest {
             applyAppLanguage = ApplyAppLanguageUseCase(appLanguage),
             changePreferredLanguage = ChangePreferredLanguageUseCase(session, users),
             connectivityObserver = connectivity,
+            getDataExportFileName = GetDataExportFileNameUseCase(
+                Clock.fixed(Instant.parse("2026-10-21T15:00:00Z"), ZoneId.of("America/Lima")),
+            ),
+            downloadDataExport = DownloadDataExportUseCase(dataExport),
         )
     }
 
@@ -116,11 +133,72 @@ class PatientSettingsViewModelTest {
     }
 
     @Test
-    fun `downloading a copy of the data shows Coming soon because RM-6 is not in the backend`() = runTest {
-        viewModel.onDataExport()
-        assertTrue(viewModel.state.value.showDataExportDialog)
+    fun `downloading a copy asks where to save it with today's suggested name`() = runTest {
+        viewModel.events.test {
+            viewModel.onDataExport()
+            assertEquals(
+                PatientSettingsEvent.PickDataExportDestination(DataExportFileName("healthify-mis-datos-2026-10-21.zip")),
+                awaitItem(),
+            )
+        }
+        assertTrue(dataExport.downloads.isEmpty())
+    }
+
+    @Test
+    fun `the copy is saved in the chosen document and says so`() = runTest {
+        dataExport.result = CompletableDeferred()
+        viewModel.onDataExportDestinationPicked(DESTINATION)
+
+        assertEquals(DataExportStatus.InProgress, viewModel.state.value.dataExport)
+        dataExport.result.complete(Result.success(Unit))
+
+        assertEquals(DataExportStatus.Saved, viewModel.state.value.dataExport)
+        assertEquals(listOf(12L to DESTINATION), dataExport.downloads)
 
         viewModel.onDismissDataExport()
-        assertFalse(viewModel.state.value.showDataExportDialog)
+        assertEquals(DataExportStatus.Idle, viewModel.state.value.dataExport)
+    }
+
+    @Test
+    fun `cancelling the file picker downloads nothing`() = runTest {
+        viewModel.onDataExportDestinationPicked(null)
+
+        assertTrue(dataExport.downloads.isEmpty())
+        assertEquals(DataExportStatus.Idle, viewModel.state.value.dataExport)
+    }
+
+    @Test
+    fun `a failed download explains whether the connection was the problem`() = runTest {
+        dataExport.result = CompletableDeferred(failureOf(DomainError.Network))
+        viewModel.onDataExportDestinationPicked(DESTINATION)
+        assertEquals(DataExportStatus.Failed(offline = true), viewModel.state.value.dataExport)
+
+        dataExport.result = CompletableDeferred(failureOf(DomainError.Unexpected(DataExportRepository.CODE_NOT_SAVED)))
+        viewModel.onDataExportDestinationPicked(DESTINATION)
+        assertEquals(DataExportStatus.Failed(offline = false), viewModel.state.value.dataExport)
+    }
+
+    @Test
+    fun `offline the download does not start`() = runTest {
+        connectivity.online.value = false
+
+        viewModel.events.test {
+            viewModel.onDataExport()
+            expectNoEvents()
+        }
+        assertTrue(viewModel.state.value.isOffline)
+    }
+
+    private class FakeDataExportRepository : DataExportRepository {
+        var result: CompletableDeferred<Result<Unit>> = CompletableDeferred(Result.success(Unit))
+        val downloads = mutableListOf<Pair<Long, String>>()
+        override suspend fun download(patientUserId: Long, destinationUri: String): Result<Unit> {
+            downloads += patientUserId to destinationUri
+            return result.await()
+        }
+    }
+
+    private companion object {
+        const val DESTINATION = "content://com.android.providers.downloads.documents/document/42"
     }
 }
