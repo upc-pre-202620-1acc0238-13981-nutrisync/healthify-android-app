@@ -249,6 +249,8 @@
     <!-- PT18 · Te extrañamos por acá -->
     <string name="home_gap_body">Hace unos días que no registras nada. ¿Quieres ponerte al día?</string>
     <string name="home_gap_action">Registrar ahora</string>
+    <string name="home_energy_exceeded_title">Mañana es otro día</string>
+    <string name="home_energy_exceeded_body">Hoy ya pasaste tu meta de energía. No pasa nada: si te provoca algo más, elige opciones ligeras para lo que queda del día.</string>
     <!-- PT3.M · Tus metas cambiaron -->
     <string name="home_targets_changed_title">TUS METAS CAMBIARON</string>
     <string name="home_targets_changed_body">Tu nutricionista ajustó tus metas (versión %1$d). Revísalas cuando quieras: nada cambia en tu diario.</string>
