@@ -258,6 +258,29 @@ class DiaryAndIdeasViewModelsTest {
     }
 
     @Test
+    fun `each backend error of the ideas has its own message`() {
+        val cases = listOf(
+            DomainError.Unexpected("AiFeatureDisabled") to MealIdeasFailure.UNAVAILABLE,
+            DomainError.Unexpected("AiProviderUnavailable") to MealIdeasFailure.UNAVAILABLE,
+            DomainError.Forbidden("AiConsentRequired") to MealIdeasFailure.NO_CONSENT,
+            DomainError.Unexpected("AiRateLimited") to MealIdeasFailure.RATE_LIMITED,
+            DomainError.Unexpected("TooManyRequests") to MealIdeasFailure.RATE_LIMITED,
+            DomainError.Unexpected("HTTP_429") to MealIdeasFailure.RATE_LIMITED,
+            DomainError.NotFound("ActiveTargetsCacheNotFound") to MealIdeasFailure.NO_TARGETS,
+            DomainError.Validation("NotEnoughRemaining") to MealIdeasFailure.NOT_ENOUGH_REMAINING,
+            DomainError.Validation("InvalidLocalDate") to MealIdeasFailure.GENERIC,
+            DomainError.Unexpected("AiOutputRejected") to MealIdeasFailure.GENERIC,
+            DomainError.Unexpected("InternalError") to MealIdeasFailure.GENERIC,
+            DomainError.Forbidden() to MealIdeasFailure.GENERIC,
+        )
+        cases.forEach { (error, expected) ->
+            ideasRepository.results = listOf(failureOf(error))
+            ideasViewModel.onRetry()
+            assertEquals("for $error", expected, ideasViewModel.state.value.failure)
+        }
+    }
+
+    @Test
     fun `not enough left today is a kind message`() {
         ideasRepository.results = listOf(failureOf(DomainError.Validation("NotEnoughRemaining")))
 

@@ -185,7 +185,7 @@ private fun AdjustForm(state: AdjustProposalUiState, actions: AdjustProposalActi
             errorText = energyError,
             enabled = enabled,
             type = HealthifyTextFieldType.Decimal,
-            trailingIcon = { UnitSuffix(stringResource(R.string.unit_kcal)) },
+            suffix = stringResource(R.string.unit_kcal),
         )
         Row(horizontalArrangement = Arrangement.spacedBy(dimens.space8)) {
             MacroField(
@@ -266,7 +266,7 @@ private fun MacroField(
         isError = isError,
         enabled = enabled,
         type = HealthifyTextFieldType.Decimal,
-        trailingIcon = { UnitSuffix(stringResource(R.string.unit_g)) },
+        suffix = stringResource(R.string.unit_g),
         modifier = modifier,
     )
 }

@@ -130,13 +130,14 @@ class MealIdeasViewModel @Inject constructor(
         }
     }
 
+    /** Cada error del backend (`extensions.code`, X-3) a su propio mensaje. */
     private fun DomainError?.toFailure(): MealIdeasFailure = when (this) {
         is DomainError.Validation -> if (code == CODE_NOT_ENOUGH) MealIdeasFailure.NOT_ENOUGH_REMAINING else MealIdeasFailure.GENERIC
         is DomainError.NotFound -> MealIdeasFailure.NO_TARGETS
-        is DomainError.Forbidden -> MealIdeasFailure.UNAVAILABLE
+        is DomainError.Forbidden -> if (code == CODE_CONSENT_REQUIRED) MealIdeasFailure.NO_CONSENT else MealIdeasFailure.GENERIC
         is DomainError.Unexpected -> when (code) {
-            CODE_FEATURE_DISABLED -> MealIdeasFailure.UNAVAILABLE
-            CODE_RATE_LIMITED, HTTP_429 -> MealIdeasFailure.RATE_LIMITED
+            CODE_FEATURE_DISABLED, CODE_PROVIDER_UNAVAILABLE -> MealIdeasFailure.UNAVAILABLE
+            CODE_RATE_LIMITED, CODE_TOO_MANY_REQUESTS, HTTP_429 -> MealIdeasFailure.RATE_LIMITED
             else -> MealIdeasFailure.GENERIC
         }
         else -> MealIdeasFailure.GENERIC
@@ -144,8 +145,11 @@ class MealIdeasViewModel @Inject constructor(
 
     private companion object {
         const val CODE_NOT_ENOUGH = "NotEnoughRemaining"
+        const val CODE_CONSENT_REQUIRED = "AiConsentRequired"
         const val CODE_FEATURE_DISABLED = "AiFeatureDisabled"
+        const val CODE_PROVIDER_UNAVAILABLE = "AiProviderUnavailable"
         const val CODE_RATE_LIMITED = "AiRateLimited"
+        const val CODE_TOO_MANY_REQUESTS = "TooManyRequests"
         const val HTTP_429 = "HTTP_429"
     }
 }

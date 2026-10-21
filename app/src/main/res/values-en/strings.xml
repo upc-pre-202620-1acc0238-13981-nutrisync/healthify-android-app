@@ -242,6 +242,8 @@
     <string name="home_consistency_body">Your trend and your logs don\'t quite match. Shall we look at it together?</string>
     <string name="home_gap_body">You haven\'t logged anything for a few days. Want to catch up?</string>
     <string name="home_gap_action">Log now</string>
+    <string name="home_energy_exceeded_title">Tomorrow is a new day</string>
+    <string name="home_energy_exceeded_body">You\'ve gone past your energy goal today. That\'s okay: if you feel like something else, pick lighter options for the rest of the day.</string>
     <string name="home_targets_changed_title">YOUR TARGETS CHANGED</string>
     <string name="home_targets_changed_body">Your nutritionist adjusted your targets (version %1$d). Review them whenever you like: nothing changes in your diary.</string>
     <string name="home_targets_changed_primary">See my new targets</string>
@@ -476,8 +478,11 @@
     <string name="ideas_no_targets_title">No targets yet</string>
     <string name="ideas_no_targets_body">Ideas are prepared from your targets. They\'ll show up when your nutritionist publishes your plan.</string>
     <string name="ideas_unavailable_title">Ideas unavailable</string>
-    <string name="ideas_unavailable_body">AI ideas aren\'t available right now. Your diary still works.</string>
-    <string name="ideas_rate_limited_body">You\'ve asked for several ideas today. Try again tomorrow; your diary still works.</string>
+    <string name="ideas_unavailable_body">AI ideas aren\'t available at the moment. Try again later; your diary still works.</string>
+    <string name="ideas_no_consent_title">Turn on AI ideas</string>
+    <string name="ideas_no_consent_body">To prepare ideas for you, we need your permission to use AI with your diary. You can turn them on anytime in Settings › AI features.</string>
+    <string name="ideas_rate_limited_title">You\'ve asked for several ideas</string>
+    <string name="ideas_rate_limited_body">You\'ve reached the limit of AI ideas for now. You can ask for more a bit later; meanwhile, your diary still works.</string>
 
     <!-- PT19 · Pending sync -->
     <string name="pending_title">PENDING</string>
@@ -687,9 +692,13 @@
     <string name="settings_ai_features_off">Off</string>
     <string name="settings_switch_practitioner_support">Scan a new code</string>
     <string name="settings_data_export">Download a copy of my data</string>
-    <string name="settings_data_export_support">Diary, weigh-ins and targets</string>
-    <string name="settings_data_export_dialog_title">Coming soon</string>
-    <string name="settings_data_export_dialog_body">Soon you\'ll be able to download a copy of your diary, weigh-ins and targets from here.</string>
+    <string name="settings_data_export_support">Diary, weigh-ins, targets and consultations, as CSV</string>
+    <string name="settings_data_export_offline">You need a connection to download your copy</string>
+    <string name="settings_data_export_in_progress">Preparing your copy…</string>
+    <string name="settings_data_export_saved_title">Done, we saved your copy</string>
+    <string name="settings_data_export_saved_body">It\'s a ZIP file with your data as CSV. You can open it with Excel or any spreadsheet app.</string>
+    <string name="settings_data_export_failed_title">We couldn\'t save your copy</string>
+    <string name="settings_data_export_failed_body">Something went wrong while downloading it. Please try again in a moment.</string>
     <string name="settings_language_sheet_title">LANGUAGE</string>
     <string name="language_spanish">Español</string>
     <string name="language_english">English</string>

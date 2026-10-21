@@ -249,6 +249,8 @@
     <!-- PT18 · Te extrañamos por acá -->
     <string name="home_gap_body">Hace unos días que no registras nada. ¿Quieres ponerte al día?</string>
     <string name="home_gap_action">Registrar ahora</string>
+    <string name="home_energy_exceeded_title">Mañana es otro día</string>
+    <string name="home_energy_exceeded_body">Hoy ya pasaste tu meta de energía. No pasa nada: si te provoca algo más, elige opciones ligeras para lo que queda del día.</string>
     <!-- PT3.M · Tus metas cambiaron -->
     <string name="home_targets_changed_title">TUS METAS CAMBIARON</string>
     <string name="home_targets_changed_body">Tu nutricionista ajustó tus metas (versión %1$d). Revísalas cuando quieras: nada cambia en tu diario.</string>
@@ -493,8 +495,11 @@
     <string name="ideas_no_targets_title">Aún no tienes metas</string>
     <string name="ideas_no_targets_body">Las ideas se preparan con tus metas. Aparecerán cuando tu nutricionista publique tu plan.</string>
     <string name="ideas_unavailable_title">Ideas no disponibles</string>
-    <string name="ideas_unavailable_body">Las ideas con IA no están disponibles ahora. Tu diario sigue funcionando.</string>
-    <string name="ideas_rate_limited_body">Ya pediste varias ideas hoy. Vuelve a intentarlo mañana; tu diario sigue funcionando.</string>
+    <string name="ideas_unavailable_body">Las ideas con IA no están disponibles en este momento. Prueba de nuevo más tarde; tu diario sigue funcionando.</string>
+    <string name="ideas_no_consent_title">Activa las ideas con IA</string>
+    <string name="ideas_no_consent_body">Para prepararte ideas necesitamos tu permiso para usar IA con tu diario. Puedes activarlas cuando quieras en Ajustes › Funciones con IA.</string>
+    <string name="ideas_rate_limited_title">Ya pediste varias ideas</string>
+    <string name="ideas_rate_limited_body">Llegaste al límite de ideas con IA por ahora. Podrás pedir más un poco más tarde; mientras, tu diario sigue funcionando.</string>
 
     <!-- PT19 · Pendientes por sincronizar -->
     <string name="pending_title">PENDIENTES</string>
@@ -711,9 +716,13 @@
     <string name="settings_ai_features_off">Desactivadas</string>
     <string name="settings_switch_practitioner_support">Escanea un código nuevo</string>
     <string name="settings_data_export">Descargar una copia de mis datos</string>
-    <string name="settings_data_export_support">Diario, autopesajes y metas</string>
-    <string name="settings_data_export_dialog_title">Próximamente</string>
-    <string name="settings_data_export_dialog_body">Muy pronto podrás descargar una copia de tu diario, tus autopesajes y tus metas desde aquí.</string>
+    <string name="settings_data_export_support">Diario, autopesajes, metas y consultas, en CSV</string>
+    <string name="settings_data_export_offline">Necesitas conexión para descargar tu copia</string>
+    <string name="settings_data_export_in_progress">Preparando tu copia…</string>
+    <string name="settings_data_export_saved_title">Listo, guardamos tu copia</string>
+    <string name="settings_data_export_saved_body">Es un archivo ZIP con tus datos en CSV. Puedes abrirlo con Excel o cualquier hoja de cálculo.</string>
+    <string name="settings_data_export_failed_title">No pudimos guardar tu copia</string>
+    <string name="settings_data_export_failed_body">Algo salió mal al descargarla. Inténtalo de nuevo en un momento.</string>
     <string name="settings_language_sheet_title">IDIOMA</string>
     <string name="language_spanish">Español</string>
     <string name="language_english">English</string>

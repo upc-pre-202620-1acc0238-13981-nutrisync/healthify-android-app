@@ -4,6 +4,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -77,7 +78,12 @@ fun HealthifySwitch(
     }
 }
 
-/** Fila «etiqueta + interruptor» del Figma (24 dp de separación); toda la fila es el área táctil. */
+/**
+ * Fila «etiqueta + interruptor» del Figma (24 dp de separación); toda la fila es el área táctil.
+ *
+ * @param supportingText texto secundario bajo la etiqueta (p. ej. la hora de un recordatorio), Body/Small en
+ *   `onSurfaceVariant`. Etiqueta y texto van juntos en una columna, centrada respecto al interruptor.
+ */
 @Composable
 fun HealthifySwitchRow(
     label: String,
@@ -85,6 +91,7 @@ fun HealthifySwitchRow(
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    supportingText: String? = null,
 ) {
     val dimens = HealthifyTheme.dimens
     Row(
@@ -95,12 +102,23 @@ fun HealthifySwitchRow(
         horizontalArrangement = Arrangement.spacedBy(dimens.space24),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.weight(1f),
-        )
+        Column(
+            modifier = Modifier.weight(1f).padding(vertical = if (supportingText != null) dimens.space4 else dimens.space0),
+            verticalArrangement = Arrangement.spacedBy(dimens.space4),
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            if (supportingText != null) {
+                Text(
+                    text = supportingText,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
         HealthifySwitch(checked = checked, enabled = enabled)
     }
 }
@@ -112,5 +130,14 @@ private fun SwitchPreview() {
         HealthifySwitchRow(label = "Usar funciones con IA", checked = true, onCheckedChange = {})
         HealthifySwitchRow(label = "Usar funciones con IA", checked = false, onCheckedChange = {})
         HealthifySwitchRow(label = "Usar funciones con IA", checked = false, onCheckedChange = {}, enabled = false)
+    }
+}
+
+@Preview(name = "Switch · con texto secundario", widthDp = 360)
+@Composable
+private fun SwitchSupportingPreview() {
+    ComponentPreview {
+        HealthifySwitchRow(label = "Recordatorio de pesaje", supportingText = "7:30", checked = true, onCheckedChange = {})
+        HealthifySwitchRow(label = "Recordatorio de comidas", supportingText = "13:00 y 20:00", checked = false, onCheckedChange = {})
     }
 }

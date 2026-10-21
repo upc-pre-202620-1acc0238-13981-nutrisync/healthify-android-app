@@ -2,6 +2,8 @@ package pe.edu.upc.healthify.features.main.presentation.screen
 
 import android.os.Build
 import androidx.activity.compose.LocalActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,7 +36,9 @@ import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 import pe.edu.upc.healthify.features.iam.domain.valueobject.PreferredLanguage
 import pe.edu.upc.healthify.features.main.presentation.components.LanguageSheetContent
+import pe.edu.upc.healthify.features.main.domain.valueobject.DataExportFileName
 import pe.edu.upc.healthify.features.main.presentation.components.labelRes
+import pe.edu.upc.healthify.features.main.presentation.state.DataExportStatus
 import pe.edu.upc.healthify.features.main.presentation.state.PatientSettingsUiState
 import pe.edu.upc.healthify.features.main.presentation.viewmodel.PatientSettingsEvent
 import pe.edu.upc.healthify.features.main.presentation.viewmodel.PatientSettingsViewModel
@@ -68,11 +72,16 @@ fun PatientSettingsScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val activity = LocalActivity.current
+    // Storage Access Framework: la persona elige dónde guardar el ZIP; no hace falta permiso de almacenamiento.
+    val exportDestination = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument(DataExportFileName.MIME_TYPE),
+    ) { uri -> viewModel.onDataExportDestinationPicked(uri?.toString()) }
     ObserveEvents(viewModel.events) { event ->
         when (event) {
             // Desde Android 13 el sistema (LocaleManager) recrea la pantalla solo; antes, se recrea aquí.
             PatientSettingsEvent.LanguageApplied ->
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) activity?.recreate()
+            is PatientSettingsEvent.PickDataExportDestination -> exportDestination.launch(event.fileName.value)
         }
     }
     LifecycleResumeEffect(Unit) {
@@ -162,11 +171,18 @@ fun PatientSettingsContent(
                 enabled = online,
                 onClick = callbacks.onSwitchPractitioner,
             )
+            val exporting = state.dataExport == DataExportStatus.InProgress
             SettingsItem(
                 title = stringResource(R.string.settings_data_export),
-                supportingText = stringResource(R.string.settings_data_export_support),
+                supportingText = stringResource(
+                    when {
+                        exporting -> R.string.settings_data_export_in_progress
+                        !online -> R.string.settings_data_export_offline
+                        else -> R.string.settings_data_export_support
+                    },
+                ),
                 leadingIcon = HealthifyIcons.Download,
-                enabled = online,
+                enabled = online && !exporting,
                 onClick = actions.onDataExport,
             )
             // PT21.1: cerrar sesión funciona igual sin conexión (los pendientes se conservan).
@@ -186,16 +202,28 @@ fun PatientSettingsContent(
             )
         }
     }
-    if (state.showDataExportDialog) {
-        HealthifyDialog(
-            title = stringResource(R.string.settings_data_export_dialog_title),
-            text = stringResource(R.string.settings_data_export_dialog_body),
-            confirmLabel = stringResource(R.string.common_understood),
-            onConfirm = actions.onDismissDataExport,
-            onDismiss = actions.onDismissDataExport,
-            dismissLabel = null,
-        )
+    DataExportResultDialog(status = state.dataExport, onDismiss = actions.onDismissDataExport)
+}
+
+/** Resultado de «Descargar una copia de mis datos»: guardada, o por qué no se pudo. */
+@Composable
+private fun DataExportResultDialog(status: DataExportStatus, onDismiss: () -> Unit) {
+    val (title, text) = when (status) {
+        DataExportStatus.Saved ->
+            R.string.settings_data_export_saved_title to R.string.settings_data_export_saved_body
+        is DataExportStatus.Failed ->
+            R.string.settings_data_export_failed_title to
+                if (status.offline) R.string.error_network else R.string.settings_data_export_failed_body
+        DataExportStatus.Idle, DataExportStatus.InProgress -> return
     }
+    HealthifyDialog(
+        title = stringResource(title),
+        text = stringResource(text),
+        confirmLabel = stringResource(R.string.common_understood),
+        onConfirm = onDismiss,
+        onDismiss = onDismiss,
+        dismissLabel = null,
+    )
 }
 
 /** Ítem que necesita conexión: sin red se ve deshabilitado y no responde. */
@@ -241,12 +269,23 @@ private fun PatientSettingsOfflinePreview() {
     }
 }
 
-@Preview(name = "PT21 · Copia de mis datos (Próximamente)", widthDp = 360, heightDp = 800)
+@Preview(name = "PT21 · Copia de mis datos (descargando)", widthDp = 360, heightDp = 800)
 @Composable
-private fun PatientSettingsDataExportPreview() {
+private fun PatientSettingsDataExportInProgressPreview() {
     HealthifyTheme {
         PatientSettingsContent(
-            state = PreviewState.copy(showDataExportDialog = true),
+            state = PreviewState.copy(dataExport = DataExportStatus.InProgress),
+            actions = PatientSettingsActions(PreviewCallbacks),
+        )
+    }
+}
+
+@Preview(name = "PT21 · Copia de mis datos (guardada)", widthDp = 360, heightDp = 800)
+@Composable
+private fun PatientSettingsDataExportSavedPreview() {
+    HealthifyTheme {
+        PatientSettingsContent(
+            state = PreviewState.copy(dataExport = DataExportStatus.Saved),
             actions = PatientSettingsActions(PreviewCallbacks),
         )
     }
