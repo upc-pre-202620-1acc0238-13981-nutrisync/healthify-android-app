@@ -209,6 +209,7 @@ private fun HomeBody(state: PatientHomeUiState, targets: HomeTargets, actions: P
         LaunchedEffect(Unit) { actions.onConsistencyCardShown() }
     }
     if (state.loggingGapCardVisible) LoggingGapCard(onRegisterNow = actions.onRegisterMeal)
+    if (state.energyExceededCardVisible) EnergyExceededCard()
     if (state.isOffline || state.cachedAt != null) CachedTargetsNotice(cachedAt = state.cachedAt)
     TargetsCard(targets = targets, consumedKcal = state.consumedKcal, onSeeDetail = actions.onOpenMyPlan)
     MacroTargets(targets = targets)
@@ -538,6 +539,31 @@ private fun LoggingGapCard(onRegisterNow: () -> Unit) {
     }
 }
 
+/** Meta de energía del día superada: invitación amable, nunca reproche (mañana es otro día). */
+@Composable
+private fun EnergyExceededCard() {
+    val dimens = HealthifyTheme.dimens
+    val scheme = MaterialTheme.colorScheme
+    val shape = RoundedCornerShape(dimens.radiusXl)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .elevation(dimens.elevation1, shape)
+            .clip(shape)
+            .background(scheme.primaryContainer)
+            .padding(dimens.space16)
+            .semantics(mergeDescendants = true) {},
+        horizontalArrangement = Arrangement.spacedBy(dimens.space12),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        NoticeBadge(icon = HealthifyIcons.Heart, color = scheme.primary)
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(dimens.space4)) {
+            Text(text = stringResource(R.string.home_energy_exceeded_title), style = MaterialTheme.typography.titleSmall, color = scheme.onSurface)
+            Text(text = stringResource(R.string.home_energy_exceeded_body), style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant)
+        }
+    }
+}
+
 @Composable
 private fun NoticeBadge(icon: ImageVector, color: Color) {
     Box(
@@ -593,6 +619,17 @@ private fun PatientHomeGapPreview() {
     HealthifyTheme {
         PatientHomeContent(
             state = previewState.copy(showLoggingGapCard = true, todayOutcome = ComplianceOutcome.UNLOGGED, consumedKcal = 0.0),
+            actions = PatientHomeActions(),
+        )
+    }
+}
+
+@Preview(name = "PT3 · Inicio — meta de energía superada", widthDp = 360, heightDp = 800)
+@Composable
+private fun PatientHomeEnergyExceededPreview() {
+    HealthifyTheme {
+        PatientHomeContent(
+            state = previewState.copy(consumedKcal = 2140.0, todayOutcome = ComplianceOutcome.EXCEEDED),
             actions = PatientHomeActions(),
         )
     }

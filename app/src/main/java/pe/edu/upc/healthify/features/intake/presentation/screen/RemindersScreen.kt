@@ -36,6 +36,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import pe.edu.upc.healthify.R
+import pe.edu.upc.healthify.core.designsystem.component.CardDivider
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyButton
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyButtonStyle
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyCard
@@ -143,20 +144,19 @@ fun RemindersContent(
                 return@Column
             }
             HealthifyCard(modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.extraLarge) {
-                Column(modifier = Modifier.padding(dimens.space16), verticalArrangement = Arrangement.spacedBy(dimens.space16)) {
-                    ReminderKind.entries.forEach { kind ->
-                        Column(verticalArrangement = Arrangement.spacedBy(dimens.space4)) {
-                            HealthifySwitchRow(
-                                label = stringResource(kind.labelRes),
-                                checked = state.settings.isEnabled(kind),
-                                onCheckedChange = { actions.onToggle(kind, it) },
-                            )
-                            Text(
-                                text = kind.timesText(),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = scheme.onSurfaceVariant,
-                            )
-                        }
+                Column(
+                    modifier = Modifier.padding(horizontal = dimens.space16, vertical = dimens.space8),
+                    verticalArrangement = Arrangement.spacedBy(dimens.space8),
+                ) {
+                    ReminderKind.entries.forEachIndexed { index, kind ->
+                        if (index > 0) CardDivider()
+                        // La hora va dentro de la fila, bajo el título y alineada con él.
+                        HealthifySwitchRow(
+                            label = stringResource(kind.labelRes),
+                            supportingText = kind.timesText(),
+                            checked = state.settings.isEnabled(kind),
+                            onCheckedChange = { actions.onToggle(kind, it) },
+                        )
                     }
                 }
             }
@@ -233,7 +233,7 @@ private fun Context.openNotificationSettings() {
 private fun RemindersPreview() {
     HealthifyTheme {
         RemindersContent(
-            state = RemindersUiState(isLoading = false, settings = ReminderSettings(selfWeighInEnabled = true, mealsEnabled = true)),
+            state = RemindersUiState(isLoading = false, settings = ReminderSettings(selfWeighInEnabled = true, mealsEnabled = false)),
             notificationsAllowed = true,
             actions = RemindersActions(onBack = {}),
         )

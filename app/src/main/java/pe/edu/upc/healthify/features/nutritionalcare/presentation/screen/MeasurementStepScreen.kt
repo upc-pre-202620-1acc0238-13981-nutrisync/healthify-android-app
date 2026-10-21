@@ -485,7 +485,7 @@ internal fun NumberField(
             FieldProblem.OUT_OF_RANGE -> rangeError
             null -> null
         },
-        trailingIcon = unit?.let { { UnitSuffix(it) } },
+        suffix = unit,
         modifier = modifier.fillMaxWidth(),
     )
 }

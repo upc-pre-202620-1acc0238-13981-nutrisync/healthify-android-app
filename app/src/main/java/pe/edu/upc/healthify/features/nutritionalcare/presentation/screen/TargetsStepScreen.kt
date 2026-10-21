@@ -308,9 +308,7 @@ private fun ParametersSheet(form: ParametersForm, invalid: Boolean, actions: Tar
             onValueChange = { actions.onParametersChange(form.copy(deficit = it)) },
             label = stringResource(R.string.targets_deficit_value),
             type = HealthifyTextFieldType.Decimal,
-            trailingIcon = {
-                UnitSuffix(stringResource(if (form.deficitKind == DeficitKind.FIXED_KCAL) R.string.unit_kcal else R.string.unit_percent))
-            },
+            suffix = stringResource(if (form.deficitKind == DeficitKind.FIXED_KCAL) R.string.unit_kcal else R.string.unit_percent),
             modifier = Modifier.fillMaxWidth(),
         )
         HealthifyTextField(
@@ -318,7 +316,7 @@ private fun ParametersSheet(form: ParametersForm, invalid: Boolean, actions: Tar
             onValueChange = { actions.onParametersChange(form.copy(proteinPerKg = it)) },
             label = stringResource(R.string.targets_protein_per_kg),
             type = HealthifyTextFieldType.Decimal,
-            trailingIcon = { UnitSuffix(stringResource(R.string.unit_g_per_kg)) },
+            suffix = stringResource(R.string.unit_g_per_kg),
             modifier = Modifier.fillMaxWidth(),
         )
         HealthifyTextField(
@@ -326,7 +324,7 @@ private fun ParametersSheet(form: ParametersForm, invalid: Boolean, actions: Tar
             onValueChange = { actions.onParametersChange(form.copy(fatPercent = it)) },
             label = stringResource(R.string.targets_fat_percent),
             type = HealthifyTextFieldType.Decimal,
-            trailingIcon = { UnitSuffix(stringResource(R.string.unit_percent)) },
+            suffix = stringResource(R.string.unit_percent),
             modifier = Modifier.fillMaxWidth(),
         )
         if (invalid) ErrorLine(stringResource(R.string.targets_parameters_invalid))
@@ -364,7 +362,7 @@ private fun OverrideSheet(form: OverrideForm, problems: Set<OverrideField>, isSa
             label = stringResource(R.string.targets_energy),
             type = HealthifyTextFieldType.Decimal,
             errorText = if (OverrideField.ENERGY in problems) stringResource(R.string.targets_energy_invalid) else null,
-            trailingIcon = { UnitSuffix(stringResource(R.string.unit_kcal)) },
+            suffix = stringResource(R.string.unit_kcal),
             modifier = Modifier.fillMaxWidth(),
         )
         Row(horizontalArrangement = Arrangement.spacedBy(dimens.space8), verticalAlignment = Alignment.Top) {
@@ -411,7 +409,7 @@ private fun GramsField(value: String, label: String, isError: Boolean, modifier:
         label = label,
         type = HealthifyTextFieldType.Decimal,
         isError = isError,
-        trailingIcon = { UnitSuffix(stringResource(R.string.unit_g)) },
+        suffix = stringResource(R.string.unit_g),
         modifier = modifier,
     )
 }

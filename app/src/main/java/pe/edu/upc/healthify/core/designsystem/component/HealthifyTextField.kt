@@ -64,6 +64,8 @@ private const val MULTI_LINE_MIN_LINES = 3
  * @param labelColor color de la etiqueta sobre fondos oscuros (PR18); `null` = `onSurface`.
  * @param trailingIcon ícono final opcional (48 dp táctil). En [HealthifyTextFieldType.Password] se ignora
  *   y se muestra el botón de mostrar/ocultar.
+ * @param suffix unidad al final del campo («kg», «cm», «%»), Label/Large en `onSurfaceVariant`. Va como texto con
+ *   16 dp de margen final, sin la caja táctil de [trailingIcon], para que no se corte en campos angostos.
  */
 @Composable
 fun HealthifyTextField(
@@ -83,6 +85,7 @@ fun HealthifyTextField(
     trailingIcon: (@Composable () -> Unit)? = null,
     interactionSource: MutableInteractionSource? = null,
     labelColor: Color? = null,
+    suffix: String? = null,
 ) {
     HealthifyTextFieldImpl(
         value = value,
@@ -102,6 +105,7 @@ fun HealthifyTextField(
         interactionSource = interactionSource,
         forceFocused = false,
         labelColor = labelColor,
+        suffix = suffix,
     )
 }
 
@@ -124,6 +128,7 @@ internal fun HealthifyTextFieldImpl(
     interactionSource: MutableInteractionSource? = null,
     forceFocused: Boolean = false,
     labelColor: Color? = null,
+    suffix: String? = null,
 ) {
     val dimens = HealthifyTheme.dimens
     val scheme = MaterialTheme.colorScheme
@@ -195,7 +200,14 @@ internal fun HealthifyTextFieldImpl(
                         .heightIn(min = if (singleLine) dimens.textField else MultiLineFieldMinHeight)
                         .background(scheme.surfaceContainer, shape)
                         .border(borderWidth, borderColor, shape)
-                        .padding(start = dimens.space16, end = if (trailing != null) dimens.space0 else dimens.space12),
+                        .padding(
+                            start = dimens.space16,
+                            end = when {
+                                trailing != null -> dimens.space0
+                                suffix != null -> dimens.space16
+                                else -> dimens.space12
+                            },
+                        ),
                     verticalAlignment = if (singleLine) Alignment.CenterVertically else Alignment.Top,
                     horizontalArrangement = Arrangement.spacedBy(dimens.space8),
                 ) {
@@ -212,6 +224,17 @@ internal fun HealthifyTextFieldImpl(
                             )
                         }
                         innerTextField()
+                    }
+                    if (suffix != null) {
+                        // El texto con peso se mide al final: la unidad siempre conserva su ancho y no se corta.
+                        Text(
+                            text = suffix,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = if (enabled) scheme.onSurfaceVariant else ext.onDisabled,
+                            maxLines = 1,
+                            softWrap = false,
+                            modifier = if (singleLine) Modifier else Modifier.padding(top = dimens.space16),
+                        )
                     }
                     if (trailing != null) {
                         Box(modifier = if (singleLine) Modifier else Modifier.padding(top = dimens.space4)) {
@@ -342,6 +365,40 @@ private fun TextFieldSinglePreview() {
 @Composable
 private fun TextFieldMultiPreview() {
     ComponentPreview { TextFieldStates(singleLine = false) }
+}
+
+@Preview(name = "TextField · con unidad (media columna)", widthDp = 360)
+@Composable
+private fun TextFieldSuffixPreview() {
+    ComponentPreview {
+        HealthifyTextField(
+            value = "74.2",
+            onValueChange = {},
+            label = "Peso",
+            type = HealthifyTextFieldType.Decimal,
+            suffix = "kg",
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(HealthifyTheme.dimens.space8)) {
+            HealthifyTextField(
+                value = "92",
+                onValueChange = {},
+                label = "Cintura",
+                type = HealthifyTextFieldType.Decimal,
+                suffix = "cm",
+                modifier = Modifier.weight(1f),
+            )
+            HealthifyTextField(
+                value = "",
+                onValueChange = {},
+                label = "Grasa corporal",
+                placeholder = "Ej. 24",
+                type = HealthifyTextFieldType.Decimal,
+                suffix = "%",
+                modifier = Modifier.weight(1f),
+            )
+        }
+    }
 }
 
 @Preview(name = "TextField · contraseña", widthDp = 360)

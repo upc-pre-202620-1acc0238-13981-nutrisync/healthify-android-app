@@ -106,7 +106,7 @@ fun MealIdeasContent(state: MealIdeasUiState, actions: MealIdeasActions, modifie
     val ideas = state.ideas
     when {
         idea != null && ideas != null -> IdeaDetail(idea, state, actions, modifier)
-        state.failure == MealIdeasFailure.GENERIC || state.failure == MealIdeasFailure.RATE_LIMITED -> {
+        state.failure == MealIdeasFailure.GENERIC -> {
             // PT14.4.E · sin barra superior, como el frame.
             SystemBarsAppearance(darkBackground = false)
             Box(
@@ -121,9 +121,7 @@ fun MealIdeasContent(state: MealIdeasUiState, actions: MealIdeasActions, modifie
             ) {
                 FailureState(
                     title = stringResource(R.string.ideas_error_title),
-                    text = stringResource(
-                        if (state.failure == MealIdeasFailure.RATE_LIMITED) R.string.ideas_rate_limited_body else R.string.ideas_error_body,
-                    ),
+                    text = stringResource(R.string.ideas_error_body),
                     actionLabel = stringResource(R.string.meal_photo_retry),
                     onAction = actions.onRetry,
                     actionLoading = state.isLoading,
@@ -184,6 +182,16 @@ private fun ColumnScope.IdeasListBody(state: MealIdeasUiState, actions: MealIdea
         state.failure == MealIdeasFailure.NO_TARGETS -> EmptyState(
             title = stringResource(R.string.ideas_no_targets_title),
             text = stringResource(R.string.ideas_no_targets_body),
+            modifier = emptyModifier,
+        )
+        state.failure == MealIdeasFailure.NO_CONSENT -> EmptyState(
+            title = stringResource(R.string.ideas_no_consent_title),
+            text = stringResource(R.string.ideas_no_consent_body),
+            modifier = emptyModifier,
+        )
+        state.failure == MealIdeasFailure.RATE_LIMITED -> EmptyState(
+            title = stringResource(R.string.ideas_rate_limited_title),
+            text = stringResource(R.string.ideas_rate_limited_body),
             modifier = emptyModifier,
         )
         else -> EmptyState(

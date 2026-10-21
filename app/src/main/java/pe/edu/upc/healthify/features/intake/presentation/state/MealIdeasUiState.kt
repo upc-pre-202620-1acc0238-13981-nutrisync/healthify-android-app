@@ -6,7 +6,7 @@ import pe.edu.upc.healthify.features.intake.domain.entity.MealLogOutcome
 
 /** Por qué no hay ideas que mostrar (cada uno con su texto; nunca acusatorio). */
 enum class MealIdeasFailure {
-    /** PT14.4.E · 5xx, 502 `AiOutputRejected`, 503 `AiProviderUnavailable`. */
+    /** PT14.4.E · 5xx, 502 `AiOutputRejected`, 400 y cualquier otro error. */
     GENERIC,
 
     /** `422 NotEnoughRemaining`: «Ya cubriste tu energía de hoy». */
@@ -15,10 +15,13 @@ enum class MealIdeasFailure {
     /** `404 ActiveTargetsCacheNotFound`. */
     NO_TARGETS,
 
-    /** `403 AiConsentRequired` o `503 AiFeatureDisabled`. */
+    /** `503 AiFeatureDisabled` o `503 AiProviderUnavailable`: la IA no está disponible ahora. */
     UNAVAILABLE,
 
-    /** `429 AiRateLimited`. */
+    /** `403 AiConsentRequired`: falta el permiso de IA o la función «Ideas» está apagada. */
+    NO_CONSENT,
+
+    /** `429 AiRateLimited` (cuota diaria) o `429 TooManyRequests` (muchas solicitudes de IA seguidas). */
     RATE_LIMITED,
 }
 
