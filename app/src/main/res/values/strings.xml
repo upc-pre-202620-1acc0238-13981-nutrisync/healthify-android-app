@@ -12,6 +12,7 @@
     <string name="error_unexpected">Algo salió mal. Inténtalo de nuevo en unos minutos.</string>
     <!-- Sistema de diseño (core/designsystem/component) -->
     <string name="ds_cd_back">Volver</string>
+    <string name="ds_cd_close">Cerrar</string>
     <string name="ds_cd_loading">Cargando</string>
     <string name="ds_show_password">Mostrar contraseña</string>
     <string name="ds_hide_password">Ocultar contraseña</string>
@@ -40,6 +41,14 @@
     <string name="nav_progress">Progreso</string>
     <string name="nav_record">Expediente</string>
     <string name="nav_settings">Ajustes</string>
+    <!-- Menú principal del paciente -->
+    <string name="menu_cd_open">Abrir menú</string>
+    <string name="menu_role_patient">Paciente</string>
+    <string name="menu_my_plan">Mi plan</string>
+    <string name="menu_my_consultations">Mis consultas</string>
+    <string name="menu_pending">Pendientes</string>
+    <string name="menu_settings">Ajustes</string>
+    <string name="menu_sign_out">Cerrar sesión</string>
     <string name="nav_patients">Pacientes</string>
     <string name="nav_inbox">Bandeja</string>
     <string name="nav_agenda">Agenda</string>
@@ -936,6 +945,11 @@
     <string name="consultation_exit_body">Lo que ya guardaste queda guardado. Podrás continuar desde «Consulta en curso» en el resumen de %1$s.</string>
     <string name="consultation_exit_confirm">Salir y continuar después</string>
     <string name="consultation_exit_stay">Seguir aquí</string>
+    <string name="consultation_discard_cd">Borrar la consulta</string>
+    <string name="consultation_discard_title">¿BORRAR ESTA CONSULTA?</string>
+    <string name="consultation_discard_body">Se descarta la consulta de hoy de %1$s. Su plan y sus metas vigentes no cambian.</string>
+    <string name="consultation_discard_confirm">Borrar consulta</string>
+    <string name="consultation_discard_keep">Conservar</string>
     <string name="sex_female">Femenino</string>
     <string name="sex_male">Masculino</string>
     <string name="sex_summary_female">Mujer</string>

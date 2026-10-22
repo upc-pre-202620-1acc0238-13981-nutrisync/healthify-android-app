@@ -9,6 +9,7 @@
     <string name="error_unexpected">Something went wrong. Please try again in a few minutes.</string>
     <!-- Design system (core/designsystem/component) -->
     <string name="ds_cd_back">Back</string>
+    <string name="ds_cd_close">Close</string>
     <string name="ds_cd_loading">Loading</string>
     <string name="ds_show_password">Show password</string>
     <string name="ds_hide_password">Hide password</string>
@@ -36,6 +37,14 @@
     <string name="nav_progress">Progress</string>
     <string name="nav_record">Record</string>
     <string name="nav_settings">Settings</string>
+    <!-- Patient main menu -->
+    <string name="menu_cd_open">Open menu</string>
+    <string name="menu_role_patient">Patient</string>
+    <string name="menu_my_plan">My plan</string>
+    <string name="menu_my_consultations">My consultations</string>
+    <string name="menu_pending">Pending</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_sign_out">Sign out</string>
     <string name="nav_patients">Patients</string>
     <string name="nav_inbox">Inbox</string>
     <string name="nav_agenda">Schedule</string>
@@ -905,6 +914,11 @@
     <string name="consultation_exit_body">What you already saved stays saved. You can continue from “Consultation in progress” in %1$s\'s summary.</string>
     <string name="consultation_exit_confirm">Leave and continue later</string>
     <string name="consultation_exit_stay">Stay here</string>
+    <string name="consultation_discard_cd">Delete the consultation</string>
+    <string name="consultation_discard_title">DELETE THIS CONSULTATION?</string>
+    <string name="consultation_discard_body">The consultation with %1$s from today is discarded. Their current plan and targets stay the same.</string>
+    <string name="consultation_discard_confirm">Delete consultation</string>
+    <string name="consultation_discard_keep">Keep it</string>
     <string name="sex_female">Female</string>
     <string name="sex_male">Male</string>
     <string name="sex_summary_female">Woman</string>
