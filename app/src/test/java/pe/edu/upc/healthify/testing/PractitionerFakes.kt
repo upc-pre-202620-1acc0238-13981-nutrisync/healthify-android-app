@@ -253,6 +253,8 @@ class FakeConsultationRepository : ConsultationRepository {
     val drafts = mutableListOf<Publication>()
     val publications = mutableListOf<Pair<Publication, IdempotencyKey>>()
     var inProgressCalls = 0
+    var discardResult: Result<Unit> = Result.success(Unit)
+    val discarded = mutableListOf<ConsultationId>()
 
     override suspend fun start(patientId: PatientId, scheduledFollowUpId: Long?): Result<Consultation> {
         starts += scheduledFollowUpId
@@ -305,6 +307,11 @@ class FakeConsultationRepository : ConsultationRepository {
         val result = publishResults[minOf(publications.size, publishResults.lastIndex)]
         publications += publication to idempotencyKey
         return result
+    }
+
+    override suspend fun discard(id: ConsultationId): Result<Unit> {
+        discarded += id
+        return discardResult
     }
 }
 

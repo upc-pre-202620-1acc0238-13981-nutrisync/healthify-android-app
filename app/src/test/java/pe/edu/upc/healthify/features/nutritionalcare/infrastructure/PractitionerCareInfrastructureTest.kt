@@ -273,6 +273,21 @@ class PractitionerCareInfrastructureTest {
     }
 
     @Test
+    fun `discard deletes the consultation and a closed one keeps its backend code`() = runTest {
+        val service = FakeConsultationService(json.decodeFromString(consultationJson))
+        val repository = ConsultationRepositoryImpl(service)
+
+        assertTrue(repository.discard(ConsultationId(9)).isSuccess)
+        assertEquals(listOf(9L), service.discarded)
+
+        service.discard = { throw httpError(409, "ConsultationNotInProgress") }
+        assertEquals(
+            DomainError.Conflict("ConsultationNotInProgress"),
+            repository.discard(ConsultationId(9)).domainErrorOrNull(),
+        )
+    }
+
+    @Test
     fun `a resource that breaks a domain rule is read as malformed instead of crashing`() = runTest {
         val broken = json.decodeFromString<ConsultationDto>(
             consultationJson.replace("\"energyKcal\": 1796", "\"energyKcal\": 0"),
@@ -297,7 +312,9 @@ class PractitionerCareInfrastructureTest {
 
     private class FakeConsultationService(private val dto: ConsultationDto) : ConsultationService {
         var inProgress: () -> ConsultationDto = { dto }
+        var discard: () -> Unit = {}
         val publishKeys = mutableListOf<String>()
+        val discarded = mutableListOf<Long>()
 
         override suspend fun start(patientId: Long, body: StartConsultationRequestDto) = dto
         override suspend fun getInProgress(patientId: Long) = inProgress()
@@ -313,6 +330,10 @@ class PractitionerCareInfrastructureTest {
         override suspend fun publish(consultationId: Long, idempotencyKey: String, body: PublicationRequestDto): ConsultationDto {
             publishKeys += idempotencyKey
             return dto
+        }
+        override suspend fun discard(consultationId: Long) {
+            discarded += consultationId
+            discard.invoke()
         }
     }
 }

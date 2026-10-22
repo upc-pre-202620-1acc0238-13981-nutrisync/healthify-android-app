@@ -146,4 +146,6 @@ class ConsultationRepositoryImpl @Inject constructor(
         idempotencyKey: IdempotencyKey,
     ): Result<Consultation> =
         apiCall { service.publish(id.value, idempotencyKey.value, publication.toDto()) }.mapResource { it.toDomain() }
+
+    override suspend fun discard(id: ConsultationId): Result<Unit> = apiCall { service.discard(id.value) }
 }
