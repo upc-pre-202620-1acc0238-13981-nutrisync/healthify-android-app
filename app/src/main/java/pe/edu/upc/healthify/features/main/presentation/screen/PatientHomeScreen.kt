@@ -483,84 +483,106 @@ private fun NavigationRow(icon: ImageVector, title: String, supporting: String, 
 /** Aviso «Algo no cuadra» → PT16. Pregunta abierta, tono de invitación. */
 @Composable
 private fun ConsistencyNoticeCard(onClick: () -> Unit) {
-    val dimens = HealthifyTheme.dimens
     val scheme = MaterialTheme.colorScheme
-    val shape = RoundedCornerShape(dimens.radiusXl)
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .elevation(dimens.elevation1, shape)
-            .clip(shape)
-            .background(scheme.secondaryContainer)
-            .border(dimens.borderThin, scheme.secondary, shape)
-            .clickable(role = Role.Button, onClick = onClick)
-            .padding(dimens.space16),
-        horizontalArrangement = Arrangement.spacedBy(dimens.space12),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        NoticeBadge(icon = HealthifyIcons.Help, color = scheme.secondary)
-        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(dimens.space4)) {
-            Text(text = stringResource(R.string.home_consistency_title), style = MaterialTheme.typography.titleSmall, color = scheme.onSurface)
-            Text(text = stringResource(R.string.home_consistency_body), style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant)
-        }
-        Icon(HealthifyIcons.ChevronRight, contentDescription = null, tint = scheme.onSurfaceVariant)
-    }
+    HomeNoticeCard(
+        icon = HealthifyIcons.Help,
+        badgeColor = scheme.secondary,
+        containerColor = scheme.secondaryContainer,
+        borderColor = scheme.secondary,
+        title = stringResource(R.string.home_consistency_title),
+        body = stringResource(R.string.home_consistency_body),
+        onClick = onClick,
+    )
 }
 
 /** PT18 · Te extrañamos por acá: recordatorio local, nunca acusatorio (*Gap Is Not A Deviation*). */
 @Composable
 private fun LoggingGapCard(onRegisterNow: () -> Unit) {
-    val dimens = HealthifyTheme.dimens
     val scheme = MaterialTheme.colorScheme
-    val shape = RoundedCornerShape(dimens.radiusXl)
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .elevation(dimens.elevation1, shape)
-            .clip(shape)
-            .background(scheme.primaryContainer)
-            .padding(dimens.space16),
-        verticalArrangement = Arrangement.spacedBy(dimens.space16),
-    ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(dimens.space12), verticalAlignment = Alignment.CenterVertically) {
-            NoticeBadge(icon = HealthifyIcons.Heart, color = scheme.primary)
-            Text(
-                text = stringResource(R.string.home_gap_body),
-                style = MaterialTheme.typography.labelMedium,
-                color = scheme.onSurface,
-                modifier = Modifier.weight(1f),
-            )
-        }
-        HealthifyButton(
-            text = stringResource(R.string.home_gap_action),
-            onClick = onRegisterNow,
-            style = HealthifyButtonStyle.Text,
-        )
-    }
+    HomeNoticeCard(
+        icon = HealthifyIcons.Heart,
+        badgeColor = scheme.primary,
+        containerColor = scheme.primaryContainer,
+        body = stringResource(R.string.home_gap_body),
+        actionLabel = stringResource(R.string.home_gap_action),
+        onAction = onRegisterNow,
+    )
 }
 
 /** Meta de energía del día superada: invitación amable, nunca reproche (mañana es otro día). */
 @Composable
 private fun EnergyExceededCard() {
+    val scheme = MaterialTheme.colorScheme
+    HomeNoticeCard(
+        icon = HealthifyIcons.Heart,
+        badgeColor = scheme.primary,
+        containerColor = scheme.primaryContainer,
+        title = stringResource(R.string.home_energy_exceeded_title),
+        body = stringResource(R.string.home_energy_exceeded_body),
+    )
+}
+
+/**
+ * Aviso de Inicio: insignia, título opcional y texto. Con [onClick] toda la tarjeta navega (chevron); con
+ * [onAction] lleva un enlace alineado con el texto, sin el padding de un botón.
+ */
+@Composable
+private fun HomeNoticeCard(
+    icon: ImageVector,
+    badgeColor: Color,
+    containerColor: Color,
+    body: String,
+    title: String? = null,
+    borderColor: Color? = null,
+    onClick: (() -> Unit)? = null,
+    actionLabel: String? = null,
+    onAction: (() -> Unit)? = null,
+) {
     val dimens = HealthifyTheme.dimens
     val scheme = MaterialTheme.colorScheme
     val shape = RoundedCornerShape(dimens.radiusXl)
+    val hasAction = actionLabel != null && onAction != null
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .elevation(dimens.elevation1, shape)
             .clip(shape)
-            .background(scheme.primaryContainer)
-            .padding(dimens.space16)
-            .semantics(mergeDescendants = true) {},
+            .background(containerColor)
+            .then(if (borderColor != null) Modifier.border(dimens.borderThin, borderColor, shape) else Modifier)
+            .then(
+                when {
+                    onClick != null -> Modifier.clickable(role = Role.Button, onClick = onClick)
+                    hasAction -> Modifier
+                    else -> Modifier.semantics(mergeDescendants = true) {}
+                },
+            )
+            .padding(dimens.space16),
         horizontalArrangement = Arrangement.spacedBy(dimens.space12),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = if (hasAction) Alignment.Top else Alignment.CenterVertically,
     ) {
-        NoticeBadge(icon = HealthifyIcons.Heart, color = scheme.primary)
+        NoticeBadge(icon = icon, color = badgeColor)
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(dimens.space4)) {
-            Text(text = stringResource(R.string.home_energy_exceeded_title), style = MaterialTheme.typography.titleSmall, color = scheme.onSurface)
-            Text(text = stringResource(R.string.home_energy_exceeded_body), style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant)
+            if (title != null) {
+                Text(text = title, style = MaterialTheme.typography.titleSmall, color = scheme.onSurface)
+            }
+            Text(
+                text = body,
+                style = if (title != null) MaterialTheme.typography.bodySmall else MaterialTheme.typography.labelMedium,
+                color = if (title != null) scheme.onSurfaceVariant else scheme.onSurface,
+            )
+            if (hasAction) {
+                // Enlace con área táctil de 48 dp, sin padding lateral: queda alineado con el texto.
+                Box(
+                    modifier = Modifier
+                        .heightIn(min = dimens.touchMin)
+                        .clickable(role = Role.Button, onClick = onAction!!),
+                    contentAlignment = Alignment.CenterStart,
+                ) {
+                    Text(text = actionLabel!!, style = MaterialTheme.typography.labelLarge, color = scheme.primary)
+                }
+            }
         }
+        if (onClick != null) Icon(HealthifyIcons.ChevronRight, contentDescription = null, tint = scheme.onSurfaceVariant)
     }
 }
 
