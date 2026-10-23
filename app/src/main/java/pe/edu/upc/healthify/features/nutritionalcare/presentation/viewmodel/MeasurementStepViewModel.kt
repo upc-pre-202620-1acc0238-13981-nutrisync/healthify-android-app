@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import pe.edu.upc.healthify.core.common.connectivity.ConnectivityObserver
 import pe.edu.upc.healthify.core.common.error.DomainError
 import pe.edu.upc.healthify.core.common.error.domainErrorOrNull
+import pe.edu.upc.healthify.features.nutritionalcare.application.usecase.DiscardConsultationUseCase
 import pe.edu.upc.healthify.features.nutritionalcare.application.usecase.GetConsultationInProgressUseCase
 import pe.edu.upc.healthify.features.nutritionalcare.application.usecase.GetPatientBaselineUseCase
 import pe.edu.upc.healthify.features.nutritionalcare.application.usecase.RecordConsultationMeasurementUseCase
@@ -78,6 +79,7 @@ class MeasurementStepViewModel @Inject constructor(
     private val getConsultationInProgress: GetConsultationInProgressUseCase,
     private val getPatientBaseline: GetPatientBaselineUseCase,
     private val recordMeasurement: RecordConsultationMeasurementUseCase,
+    private val discardConsultation: DiscardConsultationUseCase,
     private val connectivityObserver: ConnectivityObserver,
 ) : ViewModel() {
 
@@ -145,6 +147,34 @@ class MeasurementStepViewModel @Inject constructor(
     }
 
     fun onSaveFailureDismissed() = _state.update { it.copy(saveFailure = null) }
+
+    /** Tacho «Borrar consulta» (se abrió por error): primero se confirma. */
+    fun onDiscard() {
+        if (consultation == null || _state.value.isDiscarding) return
+        _state.update { it.copy(showDiscardDialog = true) }
+    }
+
+    fun onDiscardDismissed() = _state.update { it.copy(showDiscardDialog = false) }
+
+    fun onDiscardFailureDismissed() = _state.update { it.copy(discardFailure = null) }
+
+    /** Confirmado: la consulta se descarta y se vuelve a la ficha del paciente. */
+    fun onDiscardConfirmed() {
+        val current = consultation ?: return
+        if (_state.value.isDiscarding) return
+        viewModelScope.launch {
+            _state.update { it.copy(showDiscardDialog = false, discardFailure = null, isDiscarding = true) }
+            val result = discardConsultation(current.id)
+            _state.update { it.copy(isDiscarding = false) }
+            val error = result.domainErrorOrNull()
+            when {
+                result.isSuccess -> _events.send(ConsultationStepEvent.Exit)
+                // Ya no estaba en curso (otro dispositivo la cerró): no hay nada que borrar.
+                error.closesConsultation() -> _events.send(ConsultationStepEvent.ConsultationClosed)
+                else -> _state.update { it.copy(discardFailure = SaveFailure(isNetwork = error == DomainError.Network)) }
+            }
+        }
+    }
 
     fun onContinue() {
         val current = consultation ?: return
