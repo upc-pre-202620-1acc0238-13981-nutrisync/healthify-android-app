@@ -26,12 +26,14 @@ import androidx.compose.ui.unit.dp
 import pe.edu.upc.healthify.R
 import pe.edu.upc.healthify.core.designsystem.component.EmptyState
 import pe.edu.upc.healthify.core.designsystem.component.ErrorState
+import pe.edu.upc.healthify.core.designsystem.component.HealthifyIconButton
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyTopAppBar
 import pe.edu.upc.healthify.core.designsystem.component.OfflineBanner
 import pe.edu.upc.healthify.core.designsystem.component.OfflineBannerType
 import pe.edu.upc.healthify.core.designsystem.component.SectionOverline
 import pe.edu.upc.healthify.core.designsystem.component.SkeletonCard
 import pe.edu.upc.healthify.core.designsystem.component.SystemBarsAppearance
+import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.ConsultationStep
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.StepLoadState
@@ -52,6 +54,7 @@ fun ConsultationStepScaffold(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
+    onDiscard: (() -> Unit)? = null,
     actions: @Composable ColumnScope.() -> Unit = {},
     content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -63,7 +66,19 @@ fun ConsultationStepScaffold(
             .background(MaterialTheme.colorScheme.surface)
             .imePadding(),
     ) {
-        HealthifyTopAppBar(title = stringResource(R.string.consultation_title), onBack = onBack)
+        HealthifyTopAppBar(
+            title = stringResource(R.string.consultation_title),
+            onBack = onBack,
+            actions = {
+                if (onDiscard != null) {
+                    HealthifyIconButton(
+                        icon = HealthifyIcons.Delete,
+                        contentDescription = stringResource(R.string.consultation_discard_cd),
+                        onClick = onDiscard,
+                    )
+                }
+            },
+        )
         Column(
             modifier = Modifier
                 .fillMaxWidth()
