@@ -88,10 +88,13 @@ data class DiaryCallbacks(
     val onAnalyzePendingPhoto: (photoId: String) -> Unit,
     /** «Registrar a mano» → PT9. */
     val onRegisterManually: () -> Unit,
+    /** ☰ · menú principal del shell. */
+    val onOpenMenu: () -> Unit,
 )
 
 /** Acciones de la pantalla (stateless). */
 data class DiaryActions(
+    val onOpenMenu: () -> Unit = {},
     val onPreviousDay: () -> Unit = {},
     val onNextDay: () -> Unit = {},
     val onRetry: () -> Unit = {},
@@ -130,6 +133,7 @@ fun DiaryScreen(
         state = state,
         snackbarHostState = snackbarHostState,
         actions = DiaryActions(
+            onOpenMenu = callbacks.onOpenMenu,
             onPreviousDay = viewModel::onPreviousDay,
             onNextDay = viewModel::onNextDay,
             onRetry = viewModel::onRetry,
@@ -171,7 +175,16 @@ fun DiaryContent(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface),
     ) {
-        HealthifyTopAppBar(title = stringResource(R.string.diary_title))
+        HealthifyTopAppBar(
+            title = stringResource(R.string.diary_title),
+            actions = {
+                HealthifyIconButton(
+                    icon = HealthifyIcons.Menu,
+                    contentDescription = stringResource(R.string.menu_cd_open),
+                    onClick = actions.onOpenMenu,
+                )
+            },
+        )
         Box(
             modifier = Modifier
                 .fillMaxWidth()
