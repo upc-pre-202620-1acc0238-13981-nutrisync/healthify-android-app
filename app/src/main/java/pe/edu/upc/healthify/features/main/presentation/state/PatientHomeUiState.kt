@@ -52,10 +52,6 @@ data class PatientHomeUiState(
     val nextFollowUpVisible: Boolean get() = !isOffline && nextFollowUp != null
 
     val targetsChangedSheetVisible: Boolean get() = targetsChangedVersion != null && !isOffline && targets != null
-
-    /** Con un aviso arriba, «Registrar comida» pasa a la variante horizontal de 56 dp (Notas de PT3 aviso / PT18). */
-    val compactRegisterButton: Boolean
-        get() = consistencyCardVisible || loggingGapCardVisible || energyExceededCardVisible
 }
 
 /** Metas del día que muestra Inicio (el detalle completo está en PT4). */

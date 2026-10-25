@@ -4,7 +4,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,7 +24,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,6 +50,7 @@ import pe.edu.upc.healthify.core.designsystem.component.HealthifyBottomSheet
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyButton
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyButtonStyle
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyCard
+import pe.edu.upc.healthify.core.designsystem.component.HealthifyIconButton
 import pe.edu.upc.healthify.core.designsystem.component.OfflineBanner
 import pe.edu.upc.healthify.core.designsystem.component.OfflineBannerType
 import pe.edu.upc.healthify.core.designsystem.component.SkeletonBlock
@@ -60,7 +59,6 @@ import pe.edu.upc.healthify.core.designsystem.component.SkeletonListItem
 import pe.edu.upc.healthify.core.designsystem.component.SystemBarsAppearance
 import pe.edu.upc.healthify.core.designsystem.component.UiText
 import pe.edu.upc.healthify.core.designsystem.component.currentLocale
-import pe.edu.upc.healthify.core.designsystem.component.isPressed
 import pe.edu.upc.healthify.core.designsystem.component.shortTimeText
 import pe.edu.upc.healthify.core.designsystem.component.weekdayDayMonthText
 import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
@@ -80,13 +78,13 @@ import kotlin.math.roundToInt
 private val RingSize = 104.dp
 private val RingThickness = 11.dp
 private val MacroDotSize = 10.dp
-private val RegisterCardHeight = 100.dp
-private val RegisterIconSize = 40.dp
 private val NoticeBadgeSize = 36.dp
 private val NoticeBadgeIconSize = 20.dp
 
 /** Acciones de PT3 (navegación + eventos del ViewModel). */
 data class PatientHomeActions(
+    val onOpenMenu: () -> Unit = {},
+    val onOpenReminders: () -> Unit = {},
     val onOpenMyPlan: () -> Unit = {},
     val onRegisterMeal: () -> Unit = {},
     val onOpenHowAmIToday: () -> Unit = {},
@@ -100,10 +98,15 @@ data class PatientHomeActions(
 /**
  * PT3 · Inicio del paciente (pestaña «Inicio» del shell).
  *
- * @param onRegisterMeal «Registrar comida» y «Registrar ahora» (PT18).
+ * @param onOpenMenu ☰ · menú principal del shell.
+ * @param onOpenReminders campana → PT22 Recordatorios.
+ * @param onRegisterMeal «Registrar comida» (PT3.V) y «Registrar ahora» (PT18); en el resto de estados lo cubre el
+ *   botón cámara de la barra inferior.
  */
 @Composable
 fun PatientHomeScreen(
+    onOpenMenu: () -> Unit,
+    onOpenReminders: () -> Unit,
     onOpenMyPlan: () -> Unit,
     onRegisterMeal: () -> Unit,
     onOpenHowAmIToday: () -> Unit,
@@ -120,6 +123,8 @@ fun PatientHomeScreen(
     PatientHomeContent(
         state = state,
         actions = PatientHomeActions(
+            onOpenMenu = onOpenMenu,
+            onOpenReminders = onOpenReminders,
             onOpenMyPlan = onOpenMyPlan,
             onRegisterMeal = onRegisterMeal,
             onOpenHowAmIToday = onOpenHowAmIToday,
@@ -149,11 +154,23 @@ fun PatientHomeContent(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface),
     ) {
-        // DECISIÓN PT3: la campana del frame no tiene destino en las Notas; se agrega con PT22 (Recordatorios).
+        // DECISIÓN PT3: la campana del frame abre PT22 (Recordatorios); el ☰ abre el menú principal del shell.
         GreetingTopAppBar(
             greeting = stringResource(R.string.home_greeting, state.greetingName),
             title = stringResource(R.string.home_title),
             avatarInitial = state.avatarInitial,
+            actions = {
+                HealthifyIconButton(
+                    icon = HealthifyIcons.Bell,
+                    contentDescription = stringResource(R.string.settings_reminders),
+                    onClick = actions.onOpenReminders,
+                )
+                HealthifyIconButton(
+                    icon = HealthifyIcons.Menu,
+                    contentDescription = stringResource(R.string.menu_cd_open),
+                    onClick = actions.onOpenMenu,
+                )
+            },
         )
         val targets = state.targets
         Column(
@@ -213,7 +230,6 @@ private fun HomeBody(state: PatientHomeUiState, targets: HomeTargets, actions: P
     if (state.isOffline || state.cachedAt != null) CachedTargetsNotice(cachedAt = state.cachedAt)
     TargetsCard(targets = targets, consumedKcal = state.consumedKcal, onSeeDetail = actions.onOpenMyPlan)
     MacroTargets(targets = targets)
-    RegisterMealCard(compact = state.compactRegisterButton, onClick = actions.onRegisterMeal)
     TodayAndNextCard(
         outcome = state.todayOutcome.takeIf { state.howAmIDoingVisible },
         nextFollowUp = state.nextFollowUp.takeIf { state.nextFollowUpVisible },
@@ -375,46 +391,6 @@ private fun MacroColumn(grams: Double, labelRes: Int, dotColor: Color, locale: j
 /**
  * «Registrar comida»: tarjeta `secondary` de 100 dp (ícono arriba) o, con un aviso arriba, fila horizontal de 56 dp.
  */
-@Composable
-private fun RegisterMealCard(compact: Boolean, onClick: () -> Unit) {
-    val dimens = HealthifyTheme.dimens
-    val scheme = MaterialTheme.colorScheme
-    val shape = RoundedCornerShape(dimens.radiusXl)
-    val source = remember { MutableInteractionSource() }
-    val container = if (source.isPressed(false)) HealthifyTheme.extendedColors.secondaryPressed else scheme.secondary
-    val modifier = Modifier
-        .fillMaxWidth()
-        .elevation(dimens.elevation1, shape)
-        .clip(shape)
-        .background(container)
-        .clickable(interactionSource = source, indication = null, role = Role.Button, onClick = onClick)
-    val label = stringResource(R.string.home_register_meal)
-    if (compact) {
-        Row(
-            modifier = modifier
-                // Alto mínimo (no fijo): con la fuente al 200 % el texto puede ocupar dos líneas.
-                .heightIn(min = dimens.button)
-                .padding(horizontal = dimens.space16),
-            horizontalArrangement = Arrangement.spacedBy(dimens.space12, Alignment.CenterHorizontally),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(HealthifyIcons.Camera, contentDescription = null, tint = scheme.onSurface, modifier = Modifier.size(dimens.space32))
-            Text(text = label, style = MaterialTheme.typography.titleSmall, color = scheme.onSurface)
-        }
-    } else {
-        Column(
-            modifier = modifier
-                .heightIn(min = RegisterCardHeight)
-                .padding(dimens.space16),
-            verticalArrangement = Arrangement.spacedBy(dimens.space8, Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Icon(HealthifyIcons.Camera, contentDescription = null, tint = scheme.onSurface, modifier = Modifier.size(RegisterIconSize))
-            Text(text = label, style = MaterialTheme.typography.titleSmall, color = scheme.onSurface)
-        }
-    }
-}
-
 /** Fase 15: «Cómo voy hoy» y «Próxima consulta» comparten una card; cada fila se oculta si no hay dato. */
 @Composable
 private fun TodayAndNextCard(

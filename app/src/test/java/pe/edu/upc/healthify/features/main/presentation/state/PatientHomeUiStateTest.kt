@@ -11,11 +11,10 @@ class PatientHomeUiStateTest {
     private val base = PatientHomeUiState(isLoading = false, targets = targets)
 
     @Test
-    fun `an EXCEEDED day shows the energy card and compacts the register button`() {
+    fun `an EXCEEDED day shows the energy card`() {
         val state = base.copy(consumedKcal = 2100.0, todayOutcome = ComplianceOutcome.EXCEEDED)
 
         assertTrue(state.energyExceededCardVisible)
-        assertTrue(state.compactRegisterButton)
     }
 
     @Test
@@ -30,7 +29,6 @@ class PatientHomeUiStateTest {
         val state = base.copy(consumedKcal = 1850.0, todayOutcome = ComplianceOutcome.MET)
 
         assertFalse(state.energyExceededCardVisible)
-        assertFalse(state.compactRegisterButton)
     }
 
     @Test
