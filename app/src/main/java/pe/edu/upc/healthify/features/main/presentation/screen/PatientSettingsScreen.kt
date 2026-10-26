@@ -43,8 +43,10 @@ import pe.edu.upc.healthify.features.main.presentation.state.PatientSettingsUiSt
 import pe.edu.upc.healthify.features.main.presentation.viewmodel.PatientSettingsEvent
 import pe.edu.upc.healthify.features.main.presentation.viewmodel.PatientSettingsViewModel
 
-/** Destinos de PT21 (pantallas del grafo raíz sobre el shell). */
+/** Destinos de PT21 (pantallas del grafo raíz). */
 data class PatientSettingsCallbacks(
+    /** «Atrás»: vuelve a donde estaba el paciente (Ajustes se abre desde el menú principal). */
+    val onBack: () -> Unit,
     val onOpenReminders: () -> Unit,
     val onOpenAiFeatures: () -> Unit,
     val onOpenPendingSync: () -> Unit,
@@ -63,7 +65,7 @@ data class PatientSettingsActions(
     val onDismissDataExport: () -> Unit = {},
 )
 
-/** PT21 · Ajustes del paciente (+ PT21.I idioma), pestaña «Ajustes» del shell. */
+/** PT21 · Ajustes del paciente (+ PT21.I idioma), pantalla interna que se abre desde el menú principal. */
 @Composable
 fun PatientSettingsScreen(
     callbacks: PatientSettingsCallbacks,
@@ -118,7 +120,7 @@ fun PatientSettingsContent(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface),
     ) {
-        HealthifyTopAppBar(title = stringResource(R.string.settings_title))
+        HealthifyTopAppBar(title = stringResource(R.string.settings_title), onBack = callbacks.onBack)
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -247,7 +249,7 @@ private fun SettingsItem(
 
 private const val DISABLED_ALPHA = 0.38f
 
-private val PreviewCallbacks = PatientSettingsCallbacks({}, {}, {}, {}, {}, {})
+private val PreviewCallbacks = PatientSettingsCallbacks({}, {}, {}, {}, {}, {}, {})
 
 private val PreviewState = PatientSettingsUiState(
     fullName = "María Flores",

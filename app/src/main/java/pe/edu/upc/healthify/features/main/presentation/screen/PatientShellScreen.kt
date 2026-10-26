@@ -11,6 +11,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -19,19 +21,23 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import pe.edu.upc.healthify.core.designsystem.component.HealthifyEndDrawer
 import pe.edu.upc.healthify.core.designsystem.component.PatientNavigationBar
 import pe.edu.upc.healthify.core.designsystem.component.PatientTab
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 import pe.edu.upc.healthify.features.intake.presentation.screen.DiaryCallbacks
 import pe.edu.upc.healthify.features.intake.presentation.screen.DiaryScreen
 import pe.edu.upc.healthify.features.intake.presentation.screen.WeightTrendScreen
+import pe.edu.upc.healthify.features.main.presentation.components.PatientMenuContent
+import pe.edu.upc.healthify.features.main.presentation.components.PatientMenuItem
 import pe.edu.upc.healthify.features.main.presentation.components.PlaceholderScreen
 import pe.edu.upc.healthify.features.main.presentation.navigation.PatientDiaryRoute
 import pe.edu.upc.healthify.features.main.presentation.navigation.PatientHomeRoute
 import pe.edu.upc.healthify.features.main.presentation.navigation.PatientProgressRoute
 import pe.edu.upc.healthify.features.main.presentation.navigation.PatientRecordRoute
-import pe.edu.upc.healthify.features.main.presentation.navigation.PatientSettingsRoute
 import pe.edu.upc.healthify.features.main.presentation.navigation.route
+import pe.edu.upc.healthify.features.main.presentation.state.PatientShellUiState
+import pe.edu.upc.healthify.features.main.presentation.viewmodel.PatientShellViewModel
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.screen.PatientRecordScreen
 import java.time.LocalDate
 
@@ -42,15 +48,13 @@ import java.time.LocalDate
 data class PatientShellCallbacks(
     /** PT21.1 (pantalla completa del grafo raíz); al cerrar sesión limpia todo el back stack. */
     val onSignOut: () -> Unit,
-    /** PT21.V (diálogo del grafo raíz sobre el shell). */
-    val onSwitchPractitioner: () -> Unit,
-    /** PT23 (pantalla completa del grafo raíz sobre el shell). */
-    val onWithdrawConsent: () -> Unit,
+    /** Menú «Ajustes» → PT21 (pantalla completa del grafo raíz, con «Atrás»). */
+    val onOpenSettings: () -> Unit,
     val onOpenMyPlan: () -> Unit,
     val onOpenHowAmIToday: () -> Unit,
     val onOpenConsistencyNotice: () -> Unit,
     val onOpenFollowUp: (followUpId: Long) -> Unit,
-    /** «Registrar comida» (Inicio y Diario) → PT5 (o PT9 si la foto con IA no está disponible). */
+    /** Botón cámara de la barra y «Registrar comida» (Diario) → PT5 (o PT9 si la foto con IA no está disponible). */
     val onRegisterMeal: () -> Unit,
     /** PT14 «Confirmar porción» → PT8 de esa entrada. */
     val onConfirmPortion: (diaryEntryId: Long, date: LocalDate) -> Unit,
@@ -62,17 +66,16 @@ data class PatientShellCallbacks(
     val onRegisterSelfWeighIn: () -> Unit,
     /** PT13 card «Tu semana» → PT13.2. */
     val onOpenWeeklySummary: () -> Unit,
-    /** PT20 «Mis consultas» → PT25. */
+    /** PT20 y menú «Mis consultas» → PT25. */
     val onOpenMyConsultations: () -> Unit,
-    /** PT21 «Recordatorios» → PT22. */
+    /** Campana de Inicio → PT22 Recordatorios. */
     val onOpenReminders: () -> Unit,
-    /** PT21 «Funciones con IA» → PT21.IA. */
-    val onOpenAiFeatures: () -> Unit,
 )
 
 /**
- * Shell del paciente con vínculo activo: NavigationBar Inicio · Diario · Progreso · Expediente · Ajustes y un
- * NavHost propio por pestaña (conserva el estado de cada una al cambiar).
+ * Shell del paciente con vínculo activo: NavigationBar Inicio · Diario · [cámara] · Progreso · Expediente, un NavHost
+ * propio por pestaña (conserva el estado de cada una al cambiar) y el menú principal (☰ de las pestañas) que abre
+ * desde la derecha.
  *
  * @param requestedTab pestaña que pidió abrir una pantalla del grafo raíz al volver (PT16 «Revisar mi diario»);
  *   se abre una vez y se avisa con [onRequestedTabHandled].
@@ -84,7 +87,9 @@ fun PatientShellScreen(
     requestedTab: PatientTab? = null,
     onRequestedTabHandled: () -> Unit = {},
     navController: NavHostController = rememberNavController(),
+    viewModel: PatientShellViewModel = hiltViewModel(),
 ) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(requestedTab) {
         if (requestedTab != null) {
             navController.navigateToTab(requestedTab.route())
@@ -96,14 +101,38 @@ fun PatientShellScreen(
         backStackEntry?.destination?.hierarchy?.any { it.hasRoute(tab.route()::class) } == true
     } ?: PatientTab.Home
 
+    // Cada destino del menú es una pantalla del grafo raíz: el menú se cierra antes de abrirla.
+    val fromMenu = { action: () -> Unit ->
+        viewModel.onCloseMenu()
+        action()
+    }
+    val onOpenMenu = viewModel::onOpenMenu
     PatientShellContent(
+        state = state,
         selected = selected,
-        onSelect = { tab -> navController.navigateToTab(tab.route()) },
+        actions = PatientShellActions(
+            onSelect = { tab -> navController.navigateToTab(tab.route()) },
+            onRegisterMeal = callbacks.onRegisterMeal,
+            onCloseMenu = viewModel::onCloseMenu,
+            onMenuItem = { item ->
+                fromMenu(
+                    when (item) {
+                        PatientMenuItem.MyPlan -> callbacks.onOpenMyPlan
+                        PatientMenuItem.MyConsultations -> callbacks.onOpenMyConsultations
+                        PatientMenuItem.Pending -> callbacks.onOpenPendingSync
+                        PatientMenuItem.Settings -> callbacks.onOpenSettings
+                    },
+                )
+            },
+            onSignOut = { fromMenu(callbacks.onSignOut) },
+        ),
         modifier = modifier,
     ) {
         NavHost(navController = navController, startDestination = PatientHomeRoute) {
             composable<PatientHomeRoute> {
                 PatientHomeScreen(
+                    onOpenMenu = onOpenMenu,
+                    onOpenReminders = callbacks.onOpenReminders,
                     onOpenMyPlan = callbacks.onOpenMyPlan,
                     onRegisterMeal = callbacks.onRegisterMeal,
                     onOpenHowAmIToday = callbacks.onOpenHowAmIToday,
@@ -120,52 +149,69 @@ fun PatientShellScreen(
                         onOpenPendingSync = callbacks.onOpenPendingSync,
                         onAnalyzePendingPhoto = callbacks.onAnalyzePendingPhoto,
                         onRegisterManually = callbacks.onRegisterManually,
+                        onOpenMenu = onOpenMenu,
                     ),
                 )
             }
             composable<PatientProgressRoute> {
                 WeightTrendScreen(
+                    onOpenMenu = onOpenMenu,
                     onRegisterWeighIn = callbacks.onRegisterSelfWeighIn,
                     onOpenWeeklySummary = callbacks.onOpenWeeklySummary,
                 )
             }
-            composable<PatientRecordRoute> { PatientRecordScreen(onOpenMyConsultations = callbacks.onOpenMyConsultations) }
-            composable<PatientSettingsRoute> {
-                PatientSettingsScreen(
-                    callbacks = PatientSettingsCallbacks(
-                        onOpenReminders = callbacks.onOpenReminders,
-                        onOpenAiFeatures = callbacks.onOpenAiFeatures,
-                        onOpenPendingSync = callbacks.onOpenPendingSync,
-                        onWithdrawConsent = callbacks.onWithdrawConsent,
-                        onSwitchPractitioner = callbacks.onSwitchPractitioner,
-                        onSignOut = callbacks.onSignOut,
-                    ),
-                )
+            composable<PatientRecordRoute> {
+                PatientRecordScreen(onOpenMenu = onOpenMenu, onOpenMyConsultations = callbacks.onOpenMyConsultations)
             }
         }
     }
 }
 
+data class PatientShellActions(
+    val onSelect: (PatientTab) -> Unit = {},
+    val onRegisterMeal: () -> Unit = {},
+    val onCloseMenu: () -> Unit = {},
+    val onMenuItem: (PatientMenuItem) -> Unit = {},
+    val onSignOut: () -> Unit = {},
+)
+
 @Composable
 fun PatientShellContent(
+    state: PatientShellUiState,
     selected: PatientTab,
-    onSelect: (PatientTab) -> Unit,
+    actions: PatientShellActions,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface),
+    HealthifyEndDrawer(
+        open = state.isMenuOpen,
+        onDismissRequest = actions.onCloseMenu,
+        drawerContent = {
+            PatientMenuContent(
+                fullName = state.fullName,
+                avatarInitial = state.avatarInitial,
+                // El menú solo se abre desde las pestañas, que no son ítems del menú.
+                selected = null,
+                onSelect = actions.onMenuItem,
+                onSignOut = actions.onSignOut,
+            )
+        },
+        modifier = modifier,
     ) {
-        Box(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surface),
         ) {
-            content()
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+            ) {
+                content()
+            }
+            PatientNavigationBar(selected = selected, onSelect = actions.onSelect, onRegisterMeal = actions.onRegisterMeal)
         }
-        PatientNavigationBar(selected = selected, onSelect = onSelect)
     }
 }
 
@@ -182,7 +228,21 @@ internal fun NavHostController.navigateToTab(route: Any) {
 @Composable
 private fun PatientShellContentPreview() {
     HealthifyTheme {
-        PatientShellContent(selected = PatientTab.Home, onSelect = {}) {
+        PatientShellContent(state = PatientShellUiState(), selected = PatientTab.Home, actions = PatientShellActions()) {
+            PlaceholderScreen(title = "Inicio")
+        }
+    }
+}
+
+@Preview(name = "Shell paciente · menú abierto", widthDp = 360, heightDp = 800)
+@Composable
+private fun PatientShellMenuPreview() {
+    HealthifyTheme {
+        PatientShellContent(
+            state = PatientShellUiState(fullName = "María Flores", avatarInitial = "M", isMenuOpen = true),
+            selected = PatientTab.Home,
+            actions = PatientShellActions(),
+        ) {
             PlaceholderScreen(title = "Inicio")
         }
     }
