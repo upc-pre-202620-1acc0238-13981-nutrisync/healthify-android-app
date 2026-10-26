@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -35,6 +34,7 @@ import pe.edu.upc.healthify.core.designsystem.component.HealthifyButtonStyle
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyCard
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyDialog
 import pe.edu.upc.healthify.core.designsystem.component.HealthifySnackbarHost
+import pe.edu.upc.healthify.core.designsystem.component.CardDivider
 import pe.edu.upc.healthify.core.designsystem.component.HealthifySwitchRow
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyTopAppBar
 import pe.edu.upc.healthify.core.designsystem.component.ObserveEvents
@@ -193,22 +193,20 @@ private fun ConsentCard(state: AiFeaturesUiState, onActivate: () -> Unit) {
 private fun FeaturesCard(state: AiFeaturesUiState, onToggle: (AiFeature, Boolean) -> Unit) {
     val dimens = HealthifyTheme.dimens
     HealthifyCard(modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.extraLarge) {
-        Column(modifier = Modifier.padding(dimens.space16), verticalArrangement = Arrangement.spacedBy(dimens.space12)) {
+        Column(
+            modifier = Modifier.padding(horizontal = dimens.space16, vertical = dimens.space8),
+            verticalArrangement = Arrangement.spacedBy(dimens.space8),
+        ) {
             AiFeature.entries.forEachIndexed { index, feature ->
-                if (index > 0) HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = dimens.borderThin)
-                Column(verticalArrangement = Arrangement.spacedBy(dimens.space4)) {
-                    HealthifySwitchRow(
-                        label = stringResource(feature.titleRes),
-                        checked = state.isOn(feature),
-                        onCheckedChange = { onToggle(feature, it) },
-                        enabled = state.canChange,
-                    )
-                    Text(
-                        text = stringResource(feature.descriptionRes),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
+                if (index > 0) CardDivider()
+                // La descripción va dentro de la fila, bajo el título y alineada con él (como en Recordatorios).
+                HealthifySwitchRow(
+                    label = stringResource(feature.titleRes),
+                    supportingText = stringResource(feature.descriptionRes),
+                    checked = state.isOn(feature),
+                    onCheckedChange = { onToggle(feature, it) },
+                    enabled = state.canChange,
+                )
             }
         }
     }
