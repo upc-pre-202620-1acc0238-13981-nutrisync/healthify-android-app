@@ -2,8 +2,12 @@ package pe.edu.upc.healthify.features.iam.infrastructure.mapper
 
 import pe.edu.upc.healthify.features.iam.domain.entity.Credentials
 import pe.edu.upc.healthify.features.iam.domain.entity.NewAccount
+import pe.edu.upc.healthify.features.iam.domain.entity.PasswordReset
 import pe.edu.upc.healthify.features.iam.domain.valueobject.NavigationShell
+import pe.edu.upc.healthify.features.iam.domain.valueobject.PasswordResetToken
 import pe.edu.upc.healthify.features.iam.infrastructure.remote.dto.NavigationShellDto
+import pe.edu.upc.healthify.features.iam.infrastructure.remote.dto.PasswordResetDto
+import pe.edu.upc.healthify.features.iam.infrastructure.remote.dto.PasswordResetVerificationResponseDto
 import pe.edu.upc.healthify.features.iam.infrastructure.remote.dto.SignInRequestDto
 import pe.edu.upc.healthify.features.iam.infrastructure.remote.dto.SignUpRequestDto
 
@@ -19,6 +23,12 @@ fun NewAccount.toDto(): SignUpRequestDto = SignUpRequestDto(
 )
 
 fun Credentials.toDto(): SignInRequestDto = SignInRequestDto(email = email.value, password = password)
+
+fun PasswordReset.toDto(): PasswordResetDto =
+    PasswordResetDto(resetToken = token.value, newPassword = newPassword.value)
+
+/** @throws IllegalArgumentException si el backend devolvió un token vacío (contrato roto). */
+fun PasswordResetVerificationResponseDto.toDomain(): PasswordResetToken = PasswordResetToken(resetToken)
 
 /** `null` si la sesión ya terminó o no tiene shell; un valor desconocido también se lee como «sin shell». */
 fun NavigationShellDto.toDomain(): NavigationShell? = when {
