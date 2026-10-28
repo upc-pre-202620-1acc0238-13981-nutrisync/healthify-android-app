@@ -26,7 +26,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import pe.edu.upc.healthify.R
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyButton
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyButtonStyle
-import pe.edu.upc.healthify.core.designsystem.component.HealthifyDialog
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyLogo
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyLogoVariant
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyTextField
@@ -52,7 +51,6 @@ data class SignInActions(
     val onPasswordChange: (String) -> Unit = {},
     val onSubmit: () -> Unit = {},
     val onForgotPassword: () -> Unit = {},
-    val onForgotPasswordDismiss: () -> Unit = {},
     val onCreateAccount: () -> Unit = {},
     val onErrorDialogRetry: () -> Unit = {},
     val onErrorDialogDismiss: () -> Unit = {},
@@ -63,6 +61,7 @@ data class SignInActions(
 fun SignInScreen(
     onSignedIn: () -> Unit,
     onCreateAccount: () -> Unit,
+    onForgotPassword: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SignInViewModel = hiltViewModel(),
 ) {
@@ -71,6 +70,7 @@ fun SignInScreen(
         when (event) {
             SignInEvent.NavigateToShellLoading -> onSignedIn()
             SignInEvent.NavigateToSignUp -> onCreateAccount()
+            SignInEvent.NavigateToForgotPassword -> onForgotPassword()
         }
     }
     SignInContent(
@@ -80,7 +80,6 @@ fun SignInScreen(
             onPasswordChange = viewModel::onPasswordChange,
             onSubmit = viewModel::onSubmit,
             onForgotPassword = viewModel::onForgotPasswordClick,
-            onForgotPasswordDismiss = viewModel::onForgotPasswordDismiss,
             onCreateAccount = viewModel::onCreateAccountClick,
             onErrorDialogRetry = viewModel::onErrorDialogRetry,
             onErrorDialogDismiss = viewModel::onErrorDialogDismiss,
@@ -177,17 +176,6 @@ fun SignInContent(
         }
     }
 
-    if (state.showForgotPasswordDialog) {
-        // DECISIÓN S4/IAM-2: «¿Olvidaste tu contraseña?» no tiene endpoint en el backend (IAM-2 pendiente).
-        HealthifyDialog(
-            title = stringResource(R.string.sign_in_forgot_dialog_title),
-            text = stringResource(R.string.sign_in_forgot_dialog_body),
-            confirmLabel = stringResource(R.string.common_understood),
-            onConfirm = actions.onForgotPasswordDismiss,
-            onDismiss = actions.onForgotPasswordDismiss,
-            dismissLabel = null,
-        )
-    }
     if (state.showErrorDialog) {
         ServerErrorDialog(onRetry = actions.onErrorDialogRetry, onDismiss = actions.onErrorDialogDismiss)
     }
@@ -262,12 +250,4 @@ private fun SignInLoadingPreview() {
 @Composable
 private fun SignInOfflinePreview() {
     HealthifyTheme { SignInContent(state = SignInUiState(isOffline = true), actions = SignInActions()) }
-}
-
-@Preview(name = "S4 · ¿Olvidaste tu contraseña? — Próximamente", widthDp = 360, heightDp = 800)
-@Composable
-private fun SignInForgotPasswordPreview() {
-    HealthifyTheme {
-        SignInContent(state = SignInUiState(showForgotPasswordDialog = true), actions = SignInActions())
-    }
 }

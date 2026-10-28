@@ -117,12 +117,12 @@ class SignInViewModelTest {
     }
 
     @Test
-    fun `forgot password opens the coming soon dialog`() {
-        viewModel.onForgotPasswordClick()
-        assertTrue(viewModel.state.value.showForgotPasswordDialog)
-
-        viewModel.onForgotPasswordDismiss()
-        assertFalse(viewModel.state.value.showForgotPasswordDialog)
+    fun `forgot password opens IAM-2`() = runTest {
+        viewModel.events.test {
+            viewModel.onForgotPasswordClick()
+            assertEquals(SignInEvent.NavigateToForgotPassword, awaitItem())
+        }
+        assertTrue(auth.signIns.isEmpty())
     }
 
     @Test
