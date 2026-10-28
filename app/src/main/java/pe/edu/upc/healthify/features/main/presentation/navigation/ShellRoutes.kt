@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 import pe.edu.upc.healthify.core.designsystem.component.PatientTab
 import pe.edu.upc.healthify.core.designsystem.component.PractitionerTab
 
-/** Shell del paciente (NavigationBar de 5 destinos). */
+/** Shell del paciente (NavigationBar de 4 destinos y el botón cámara). */
 @Serializable
 data object PatientShellRoute
 
@@ -27,6 +27,7 @@ data object PatientProgressRoute
 @Serializable
 data object PatientRecordRoute
 
+/** PT21 · Ajustes del paciente: se abre desde el menú principal (pantalla completa del grafo raíz sobre el shell). */
 @Serializable
 data object PatientSettingsRoute
 
@@ -64,7 +65,6 @@ internal fun PatientTab.route(): Any = when (this) {
     PatientTab.Diary -> PatientDiaryRoute
     PatientTab.Progress -> PatientProgressRoute
     PatientTab.Record -> PatientRecordRoute
-    PatientTab.Settings -> PatientSettingsRoute
 }
 
 internal fun PractitionerTab.route(): Any = when (this) {

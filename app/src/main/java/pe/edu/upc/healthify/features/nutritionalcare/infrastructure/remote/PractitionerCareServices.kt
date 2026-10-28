@@ -16,6 +16,7 @@ import pe.edu.upc.healthify.features.nutritionalcare.infrastructure.remote.dto.S
 import pe.edu.upc.healthify.features.nutritionalcare.infrastructure.remote.dto.TargetProposalDto
 import pe.edu.upc.healthify.features.nutritionalcare.infrastructure.remote.dto.TargetProposalRequestDto
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -93,6 +94,10 @@ interface ConsultationService {
         @Header("Idempotency-Key") idempotencyKey: String,
         @Body body: PublicationRequestDto,
     ): ConsultationDto
+
+    /** `204` · `403` si no es quien la lleva · `404` · `409` si ya no está en curso. */
+    @DELETE("consultations/{consultationId}")
+    suspend fun discard(@Path("consultationId") consultationId: Long)
 }
 
 /** Vistas del paciente para el profesional (RM-2, RM-4, PAC-4). `403` sin vínculo activo. */

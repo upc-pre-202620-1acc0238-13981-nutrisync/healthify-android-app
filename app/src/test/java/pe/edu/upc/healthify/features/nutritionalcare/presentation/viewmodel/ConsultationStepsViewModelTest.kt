@@ -10,6 +10,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import pe.edu.upc.healthify.core.common.error.DomainError
+import pe.edu.upc.healthify.features.nutritionalcare.application.usecase.DiscardConsultationUseCase
 import pe.edu.upc.healthify.features.nutritionalcare.application.usecase.GetConsultationInProgressUseCase
 import pe.edu.upc.healthify.features.nutritionalcare.application.usecase.GetPatientBaselineUseCase
 import pe.edu.upc.healthify.features.nutritionalcare.application.usecase.IssueConsultationDiagnosisUseCase
@@ -36,6 +37,7 @@ import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.PlanGuid
 import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.PlanRestrictionCode
 import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.ProtocolCheck
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.OverrideForm
+import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.SaveFailure
 import pe.edu.upc.healthify.testing.CONSULTATIONS_NOW
 import pe.edu.upc.healthify.testing.FakeConnectivityObserver
 import pe.edu.upc.healthify.testing.FakeConsultationRepository
@@ -65,6 +67,7 @@ class ConsultationStepsViewModelTest {
         getConsultationInProgress = getInProgress,
         getPatientBaseline = GetPatientBaselineUseCase(baselines),
         recordMeasurement = RecordConsultationMeasurementUseCase(consultations),
+        discardConsultation = DiscardConsultationUseCase(consultations),
         connectivityObserver = connectivity,
     )
 
@@ -157,6 +160,44 @@ class ConsultationStepsViewModelTest {
             assertEquals(ConsultationStepEvent.Exit, awaitItem())
         }
         assertTrue(consultations.measurements.isEmpty())
+    }
+
+    @Test
+    fun `EV-2 delete asks first and keeping it does not discard anything`() {
+        val viewModel = measurementViewModel()
+
+        viewModel.onDiscard()
+        assertTrue(viewModel.state.value.showDiscardDialog)
+        viewModel.onDiscardDismissed()
+
+        assertFalse(viewModel.state.value.showDiscardDialog)
+        assertTrue(consultations.discarded.isEmpty())
+    }
+
+    @Test
+    fun `EV-2 confirming the delete discards the consultation and goes back to the patient`() = runTest {
+        val viewModel = measurementViewModel()
+
+        viewModel.events.test {
+            viewModel.onDiscard()
+            viewModel.onDiscardConfirmed()
+            assertEquals(ConsultationStepEvent.Exit, awaitItem())
+        }
+        assertEquals(1, consultations.discarded.size)
+        assertFalse(viewModel.state.value.showDiscardDialog)
+    }
+
+    @Test
+    fun `EV-2 a failed delete stays on the step and offers to retry`() {
+        consultations.discardResult = failureOf(DomainError.Network)
+        val viewModel = measurementViewModel()
+
+        viewModel.onDiscardConfirmed()
+
+        assertEquals(SaveFailure(isNetwork = true), viewModel.state.value.discardFailure)
+        assertFalse(viewModel.state.value.isDiscarding)
+        viewModel.onDiscardFailureDismissed()
+        assertNull(viewModel.state.value.discardFailure)
     }
 
     @Test

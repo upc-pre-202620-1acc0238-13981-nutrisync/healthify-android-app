@@ -68,9 +68,12 @@ import pe.edu.upc.healthify.features.intake.presentation.navigation.PickedFoodRe
 import pe.edu.upc.healthify.features.intake.presentation.navigation.RemindersRoute
 import pe.edu.upc.healthify.features.intake.presentation.navigation.SelfWeighInRoute
 import pe.edu.upc.healthify.features.intake.presentation.navigation.intakeDestinations
+import pe.edu.upc.healthify.features.main.presentation.navigation.PatientSettingsRoute
 import pe.edu.upc.healthify.features.main.presentation.navigation.PatientShellRoute
 import pe.edu.upc.healthify.features.main.presentation.navigation.PractitionerShellRoute
 import pe.edu.upc.healthify.features.main.presentation.navigation.SignOutConfirmationRoute
+import pe.edu.upc.healthify.features.main.presentation.screen.PatientSettingsCallbacks
+import pe.edu.upc.healthify.features.main.presentation.screen.PatientSettingsScreen
 import pe.edu.upc.healthify.features.main.presentation.screen.PatientShellCallbacks
 import pe.edu.upc.healthify.features.main.presentation.screen.PatientShellScreen
 import pe.edu.upc.healthify.features.main.presentation.screen.PractitionerShellScreen
@@ -208,8 +211,7 @@ fun AppNavHost(
             PatientShellScreen(
                 callbacks = PatientShellCallbacks(
                     onSignOut = { navController.navigateSingleTop(SignOutConfirmationRoute) },
-                    onSwitchPractitioner = { navController.navigateSingleTop(SwitchPractitionerRoute) },
-                    onWithdrawConsent = { navController.navigateSingleTop(WithdrawConsentRoute) },
+                    onOpenSettings = { navController.navigateSingleTop(PatientSettingsRoute) },
                     onOpenMyPlan = { navController.navigateSingleTop(MyPlanRoute) },
                     onOpenHowAmIToday = { navController.navigateSingleTop(HowAmITodayRoute) },
                     onOpenConsistencyNotice = { navController.navigateSingleTop(ConsistencyNoticeRoute) },
@@ -224,10 +226,23 @@ fun AppNavHost(
                     onOpenWeeklySummary = { navController.navigateSingleTop(WeeklySummaryRoute) },
                     onOpenMyConsultations = { navController.navigateSingleTop(MyConsultationsRoute) },
                     onOpenReminders = { navController.navigateSingleTop(RemindersRoute) },
-                    onOpenAiFeatures = { navController.navigateSingleTop(AiFeaturesRoute) },
                 ),
                 requestedTab = PatientTab.entries.firstOrNull { it.name == requestedTabName },
                 onRequestedTabHandled = { entry.savedStateHandle[KEY_REQUESTED_PATIENT_TAB] = null },
+            )
+        }
+        // PT21 · Ajustes: pantalla interna desde el menú; «Atrás» vuelve a la pestaña donde estaba el paciente.
+        composable<PatientSettingsRoute> {
+            PatientSettingsScreen(
+                callbacks = PatientSettingsCallbacks(
+                    onBack = { navController.popBackStack() },
+                    onOpenReminders = { navController.navigateSingleTop(RemindersRoute) },
+                    onOpenAiFeatures = { navController.navigateSingleTop(AiFeaturesRoute) },
+                    onOpenPendingSync = { navController.navigateSingleTop(PendingSyncRoute) },
+                    onWithdrawConsent = { navController.navigateSingleTop(WithdrawConsentRoute) },
+                    onSwitchPractitioner = { navController.navigateSingleTop(SwitchPractitionerRoute) },
+                    onSignOut = { navController.navigateSingleTop(SignOutConfirmationRoute) },
+                ),
             )
         }
         nutritionalCareDestinations(

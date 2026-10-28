@@ -2,20 +2,24 @@ package pe.edu.upc.healthify.core.designsystem.component
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,6 +31,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,7 +48,6 @@ enum class PatientTab(@param:StringRes val labelRes: Int) {
     Diary(R.string.nav_diary),
     Progress(R.string.nav_progress),
     Record(R.string.nav_record),
-    Settings(R.string.nav_settings),
 }
 
 /** Destinos de la NavigationBar del nutricionista (Figma «NavigationBar/Nutricionista»). */
@@ -61,9 +66,20 @@ data class NavigationBarEntry(val label: String, val icon: ImageVector)
 private val NavigationBarHeight = 80.dp
 private val IndicatorSize = DpSize(64.dp, 32.dp)
 
+// Botón central «Registrar comida» del paciente: un rectángulo ámbar con dos rectángulos verdes que asoman detrás.
+private val CameraFrontSize = DpSize(48.dp, 36.dp)
+private val CameraFrontRadius = 11.dp
+private val CameraBackSize = DpSize(52.dp, 36.dp)
+private val CameraBackRadius = 12.dp
+// Cada rectángulo de atrás asoma 6 dp por su lado: (52 − 48) / 2 + 4 = 6.
+private val CameraBackOffset = 4.dp
+private val CameraIconSize = 22.dp
+
 /**
  * NavigationBar del Figma (80 dp + inset de navegación por gestos, que dibuja el sistema). El destino
  * activo lleva el indicador `primaryContainer` y la etiqueta en negrita.
+ *
+ * @param centerAction acción que no es un destino (el botón cámara del paciente); ocupa el centro de la barra.
  */
 @Composable
 fun HealthifyNavigationBar(
@@ -72,6 +88,7 @@ fun HealthifyNavigationBar(
     onSelect: (Int) -> Unit,
     modifier: Modifier = Modifier,
     windowInsets: WindowInsets = WindowInsets.navigationBars,
+    centerAction: (@Composable RowScope.() -> Unit)? = null,
 ) {
     val dimens = HealthifyTheme.dimens
     Column(
@@ -88,6 +105,7 @@ fun HealthifyNavigationBar(
                 .selectableGroup(),
         ) {
             items.forEachIndexed { index, item ->
+                if (centerAction != null && index == items.size / 2) centerAction()
                 NavigationBarDestination(
                     item = item,
                     selected = index == selectedIndex,
@@ -140,11 +158,15 @@ private fun NavigationBarDestination(
     }
 }
 
-/** NavigationBar del paciente: Inicio · Diario · Progreso · Expediente · Ajustes. */
+/**
+ * NavigationBar del paciente: Inicio · Diario · [cámara] · Progreso · Expediente. La cámara no es una pestaña:
+ * abre el registro de comida ([onRegisterMeal]).
+ */
 @Composable
 fun PatientNavigationBar(
     selected: PatientTab,
     onSelect: (PatientTab) -> Unit,
+    onRegisterMeal: () -> Unit,
     modifier: Modifier = Modifier,
     windowInsets: WindowInsets = WindowInsets.navigationBars,
 ) {
@@ -155,7 +177,46 @@ fun PatientNavigationBar(
         onSelect = { onSelect(tabs[it]) },
         modifier = modifier,
         windowInsets = windowInsets,
+        centerAction = { RegisterMealNavButton(onClick = onRegisterMeal, modifier = Modifier.weight(1f)) },
     )
+}
+
+/** Botón central «Registrar comida»: sin etiqueta, centrado en su espacio y con toda la celda como área táctil. */
+@Composable
+private fun RegisterMealNavButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    val scheme = MaterialTheme.colorScheme
+    val label = stringResource(R.string.home_register_meal)
+    Box(
+        modifier = modifier
+            .heightIn(min = NavigationBarHeight)
+            .clickable(role = Role.Button, onClickLabel = label, onClick = onClick)
+            .semantics { contentDescription = label },
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(
+            modifier = Modifier
+                .offset(x = -CameraBackOffset)
+                .size(CameraBackSize)
+                .clip(RoundedCornerShape(CameraBackRadius))
+                .background(scheme.primary),
+        )
+        Box(
+            modifier = Modifier
+                .offset(x = CameraBackOffset)
+                .size(CameraBackSize)
+                .clip(RoundedCornerShape(CameraBackRadius))
+                .background(scheme.tertiary),
+        )
+        Box(
+            modifier = Modifier
+                .size(CameraFrontSize)
+                .clip(RoundedCornerShape(CameraFrontRadius))
+                .background(scheme.secondary),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(HealthifyIcons.Camera, contentDescription = null, tint = scheme.onSecondary, modifier = Modifier.size(CameraIconSize))
+        }
+    }
 }
 
 /** NavigationBar del nutricionista: Pacientes · Bandeja · Agenda · Ajustes. */
@@ -182,7 +243,6 @@ private val PatientTab.icon: ImageVector
         PatientTab.Diary -> HealthifyIcons.Diary
         PatientTab.Progress -> HealthifyIcons.Progress
         PatientTab.Record -> HealthifyIcons.Record
-        PatientTab.Settings -> HealthifyIcons.Settings
     }
 
 private val PractitionerTab.icon: ImageVector
@@ -193,11 +253,13 @@ private val PractitionerTab.icon: ImageVector
         PractitionerTab.Settings -> HealthifyIcons.Settings
     }
 
-@Preview(name = "NavigationBar/Paciente · Activo", widthDp = 360, heightDp = 560)
+@Preview(name = "NavigationBar/Paciente · Activo", widthDp = 360, heightDp = 460)
 @Composable
 private fun PatientNavigationBarPreview() {
     ComponentPreview {
-        PatientTab.entries.forEach { PatientNavigationBar(selected = it, onSelect = {}, windowInsets = WindowInsets(0)) }
+        PatientTab.entries.forEach {
+            PatientNavigationBar(selected = it, onSelect = {}, onRegisterMeal = {}, windowInsets = WindowInsets(0))
+        }
     }
 }
 

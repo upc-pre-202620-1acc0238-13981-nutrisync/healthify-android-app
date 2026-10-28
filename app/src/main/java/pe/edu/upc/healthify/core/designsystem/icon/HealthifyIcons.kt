@@ -616,6 +616,24 @@ object HealthifyIcons {
     /** Icon/cal */
     val Calendar by lazy { icon("Calendar", IconPath(4.5f, 3.6665f, CALENDAR_PATH)) }
 
+    /** Icon/menu (menú principal del paciente; Material «menu»). */
+    val Menu by lazy {
+        icon("Menu", IconPath(3f, 6f, "M0 12 L18 12 L18 10 L0 10 L0 12 Z M0 7 L18 7 L18 5 L0 5 L0 7 Z M0 0 L0 2 L18 2 L18 0 L0 0 Z"))
+    }
+
+    /** Icon/delete (Material «delete»). */
+    val Delete by lazy {
+        icon(
+            "Delete",
+            IconPath(
+                5f,
+                3f,
+                "M1 16 C1 17.1 1.9 18 3 18 L11 18 C12.1 18 13 17.1 13 16 L13 4 L1 4 L1 16 Z M14 1 L10.5 1 L9.5 0 " +
+                    "L4.5 0 L3.5 1 L0 1 L0 3 L14 3 L14 1 Z",
+            ),
+        )
+    }
+
     /** Icon/fwd */
     val Forward by lazy {
         icon(
@@ -675,7 +693,7 @@ object HealthifyIcons {
             "heart" to Heart, "sync" to Sync, "unlock" to Unlock, "logout" to Logout, "warning" to Warning,
             "pacientes" to Patients, "bandeja" to Inbox, "agenda" to Agenda, "lock" to Lock, "eval" to Evaluation,
             "hist" to History, "trend" to Trend, "folder" to Folder, "cal" to Calendar, "fwd" to Forward,
-            "language" to Language, "ia" to Ai,
+            "language" to Language, "ia" to Ai, "menu" to Menu, "delete" to Delete,
         )
 }
 

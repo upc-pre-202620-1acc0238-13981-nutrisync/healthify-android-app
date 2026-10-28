@@ -37,6 +37,7 @@ import pe.edu.upc.healthify.core.designsystem.component.ErrorState
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyButton
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyCard
 import pe.edu.upc.healthify.core.designsystem.component.HealthifySnackbarHost
+import pe.edu.upc.healthify.core.designsystem.component.HealthifyIconButton
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyTopAppBar
 import pe.edu.upc.healthify.core.designsystem.component.ObserveEvents
 import pe.edu.upc.healthify.core.designsystem.component.OfflineBanner
@@ -63,6 +64,7 @@ import java.time.LocalDate
 import kotlin.math.abs
 
 data class WeightTrendActions(
+    val onOpenMenu: () -> Unit = {},
     val onRegisterWeighIn: () -> Unit = {},
     val onOpenWeeklySummary: () -> Unit = {},
     val onRetry: () -> Unit = {},
@@ -71,6 +73,7 @@ data class WeightTrendActions(
 /** PT13 · Tendencia de peso (+ PT13.1, PT13.V, PT13.L). Vive en la pestaña «Progreso» del shell. */
 @Composable
 fun WeightTrendScreen(
+    onOpenMenu: () -> Unit,
     onRegisterWeighIn: () -> Unit,
     onOpenWeeklySummary: () -> Unit,
     modifier: Modifier = Modifier,
@@ -102,6 +105,7 @@ fun WeightTrendScreen(
         state = state,
         snackbarHostState = snackbarHostState,
         actions = WeightTrendActions(
+            onOpenMenu = onOpenMenu,
             onRegisterWeighIn = onRegisterWeighIn,
             onOpenWeeklySummary = onOpenWeeklySummary,
             onRetry = viewModel::onRetry,
@@ -124,7 +128,16 @@ fun WeightTrendContent(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface),
     ) {
-        HealthifyTopAppBar(title = stringResource(R.string.weight_trend_title))
+        HealthifyTopAppBar(
+            title = stringResource(R.string.weight_trend_title),
+            actions = {
+                HealthifyIconButton(
+                    icon = HealthifyIcons.Menu,
+                    contentDescription = stringResource(R.string.menu_cd_open),
+                    onClick = actions.onOpenMenu,
+                )
+            },
+        )
         Box(
             modifier = Modifier
                 .fillMaxWidth()

@@ -93,4 +93,10 @@ interface ConsultationRepository {
         publication: Publication,
         idempotencyKey: IdempotencyKey,
     ): Result<Consultation>
+
+    /**
+     * `DELETE /consultations/{id}`: descarta la consulta en curso. Lo ya guardado (la medición) queda como historial;
+     * el diagnóstico y el plan vigentes no cambian.
+     */
+    suspend fun discard(id: ConsultationId): Result<Unit>
 }

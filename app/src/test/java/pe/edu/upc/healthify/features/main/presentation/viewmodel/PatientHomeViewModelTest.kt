@@ -86,7 +86,6 @@ class PatientHomeViewModelTest {
         assertNull(state.cachedAt)
         assertFalse(state.consistencyCardVisible)
         assertFalse(state.loggingGapCardVisible)
-        assertFalse(state.compactRegisterButton)
     }
 
     @Test
@@ -157,7 +156,6 @@ class PatientHomeViewModelTest {
 
         val state = viewModel.state.value
         assertTrue(state.consistencyCardVisible)
-        assertTrue(state.compactRegisterButton)
 
         viewModel.onConsistencyCardShown()
         viewModel.onConsistencyCardShown()
@@ -224,7 +222,6 @@ class PatientHomeViewModelTest {
         val state = viewModel.state.value
 
         assertTrue(state.loggingGapCardVisible)
-        assertTrue(state.compactRegisterButton)
     }
 
     @Test
