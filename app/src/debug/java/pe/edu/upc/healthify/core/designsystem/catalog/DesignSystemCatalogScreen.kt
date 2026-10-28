@@ -470,7 +470,7 @@ private fun ChipRow() {
 private fun NavigationSamples() {
     var patientTab by rememberSaveable { mutableStateOf(PatientTab.Home) }
     var practitionerTab by rememberSaveable { mutableStateOf(PractitionerTab.Patients) }
-    PatientNavigationBar(selected = patientTab, onSelect = { patientTab = it }, windowInsets = WindowInsets(0))
+    PatientNavigationBar(selected = patientTab, onSelect = { patientTab = it }, onRegisterMeal = {}, windowInsets = WindowInsets(0))
     PractitionerNavigationBar(
         selected = practitionerTab,
         onSelect = { practitionerTab = it },

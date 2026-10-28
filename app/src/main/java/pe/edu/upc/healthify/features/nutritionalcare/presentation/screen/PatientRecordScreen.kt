@@ -38,6 +38,7 @@ import pe.edu.upc.healthify.core.designsystem.component.EmptyState
 import pe.edu.upc.healthify.core.designsystem.component.ErrorState
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyCard
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyTag
+import pe.edu.upc.healthify.core.designsystem.component.HealthifyIconButton
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyTopAppBar
 import pe.edu.upc.healthify.core.designsystem.component.ListCardStyle
 import pe.edu.upc.healthify.core.designsystem.component.OfflineBanner
@@ -84,6 +85,7 @@ private val AvatarSize = 48.dp
  */
 @Composable
 fun PatientRecordScreen(
+    onOpenMenu: () -> Unit,
     onOpenMyConsultations: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: PatientRecordViewModel = hiltViewModel(),
@@ -97,6 +99,7 @@ fun PatientRecordScreen(
         state = state,
         onRetry = viewModel::onRetry,
         onOpenMyConsultations = onOpenMyConsultations,
+        onOpenMenu = onOpenMenu,
         modifier = modifier,
     )
 }
@@ -107,6 +110,7 @@ fun PatientRecordContent(
     onRetry: () -> Unit,
     onOpenMyConsultations: () -> Unit,
     modifier: Modifier = Modifier,
+    onOpenMenu: () -> Unit = {},
 ) {
     val dimens = HealthifyTheme.dimens
     SystemBarsAppearance(darkBackground = false)
@@ -115,7 +119,16 @@ fun PatientRecordContent(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface),
     ) {
-        HealthifyTopAppBar(title = stringResource(R.string.record_title))
+        HealthifyTopAppBar(
+            title = stringResource(R.string.record_title),
+            actions = {
+                HealthifyIconButton(
+                    icon = HealthifyIcons.Menu,
+                    contentDescription = stringResource(R.string.menu_cd_open),
+                    onClick = onOpenMenu,
+                )
+            },
+        )
         Column(
             modifier = Modifier
                 .fillMaxSize()

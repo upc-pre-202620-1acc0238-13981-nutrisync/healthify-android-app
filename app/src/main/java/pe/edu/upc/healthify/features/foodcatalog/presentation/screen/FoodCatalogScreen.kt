@@ -113,6 +113,18 @@ fun FoodCatalogContent(
                 verticalArrangement = Arrangement.spacedBy(dimens.space12),
             ) {
                 if (state.isOffline) item(key = "offline") { OfflineBanner(type = OfflineBannerType.RequiresNetwork) }
+                // «Agregar alimento local» va arriba del buscador; sin resultados lo ofrece el estado vacío.
+                if (!state.isEmpty) {
+                    item(key = "add") {
+                        HealthifyButton(
+                            text = stringResource(R.string.food_catalog_add_local),
+                            onClick = onAddLocalFood,
+                            style = HealthifyButtonStyle.Tonal,
+                            enabled = !state.isOffline,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
+                }
                 item(key = "search") {
                     HealthifyTextField(
                         value = state.query,
@@ -151,18 +163,7 @@ fun FoodCatalogContent(
                             modifier = Modifier.fillMaxWidth(),
                         )
                     }
-                    results != null -> {
-                        items(results, key = { it.id }) { food -> FoodCard(food) }
-                        item(key = "add") {
-                            HealthifyButton(
-                                text = stringResource(R.string.food_catalog_add_local),
-                                onClick = onAddLocalFood,
-                                style = HealthifyButtonStyle.Tonal,
-                                enabled = !state.isOffline,
-                                modifier = Modifier.fillMaxWidth(),
-                            )
-                        }
-                    }
+                    results != null -> items(results, key = { it.id }) { food -> FoodCard(food) }
                 }
             }
         }

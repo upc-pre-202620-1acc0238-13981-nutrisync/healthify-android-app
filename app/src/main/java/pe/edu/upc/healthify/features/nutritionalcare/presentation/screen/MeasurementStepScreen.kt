@@ -82,6 +82,7 @@ data class MeasurementActions(
     val onCholesterolChange: (String) -> Unit = {},
     val onTriglyceridesChange: (String) -> Unit = {},
     val onContinue: () -> Unit = {},
+    val onDiscard: () -> Unit = {},
 )
 
 /**
@@ -131,6 +132,7 @@ fun MeasurementStepScreen(
             onCholesterolChange = viewModel::onCholesterolChange,
             onTriglyceridesChange = viewModel::onTriglyceridesChange,
             onContinue = viewModel::onContinue,
+            onDiscard = viewModel::onDiscard,
         ),
         modifier = modifier,
     )
@@ -148,6 +150,21 @@ fun MeasurementStepScreen(
     }
     if (state.saveFailure != null) {
         ServerErrorDialog(onRetry = viewModel::onContinue, onDismiss = viewModel::onSaveFailureDismissed)
+    }
+    if (state.showDiscardDialog) {
+        // ¿Borrar esta consulta? (se abrió «Consulta de hoy» por error).
+        HealthifyIconDialog(
+            icon = HealthifyIcons.Delete,
+            title = stringResource(R.string.consultation_discard_title),
+            text = stringResource(R.string.consultation_discard_body, viewModel.patientName),
+            confirmLabel = stringResource(R.string.consultation_discard_confirm),
+            onConfirm = viewModel::onDiscardConfirmed,
+            dismissLabel = stringResource(R.string.consultation_discard_keep),
+            onDismiss = viewModel::onDiscardDismissed,
+        )
+    }
+    if (state.discardFailure != null) {
+        ServerErrorDialog(onRetry = viewModel::onDiscardConfirmed, onDismiss = viewModel::onDiscardFailureDismissed)
     }
 }
 
@@ -167,6 +184,8 @@ fun MeasurementStepContent(
         onBack = actions.onBack,
         onRetry = actions.onRetry,
         subtitle = stringResource(R.string.measurement_subtitle),
+        // Solo con la consulta cargada y sin un borrado en curso.
+        onDiscard = actions.onDiscard.takeIf { !state.load.isLoading && !state.load.loadFailed && !state.isDiscarding },
         modifier = modifier,
         actions = {
             HealthifyButton(

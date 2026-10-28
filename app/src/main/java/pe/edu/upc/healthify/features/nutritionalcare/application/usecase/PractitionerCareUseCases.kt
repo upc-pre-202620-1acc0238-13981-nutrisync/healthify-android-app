@@ -149,3 +149,8 @@ class PublishConsultationUseCase @Inject constructor(private val repository: Con
         idempotencyKey: IdempotencyKey,
     ): Result<Consultation> = repository.publish(consultationId, publication, idempotencyKey)
 }
+
+/** EV-2 «Borrar consulta» (se abrió por error): descarta la consulta en curso. */
+class DiscardConsultationUseCase @Inject constructor(private val repository: ConsultationRepository) {
+    suspend operator fun invoke(consultationId: ConsultationId): Result<Unit> = repository.discard(consultationId)
+}

@@ -67,6 +67,10 @@ data class MeasurementUiState(
     val isSaving: Boolean = false,
     val saveFailure: SaveFailure? = null,
     val showExitDialog: Boolean = false,
+    /** «Borrar consulta» (tacho): diálogo de confirmación, borrado en curso y fallo con «Reintentar». */
+    val showDiscardDialog: Boolean = false,
+    val isDiscarding: Boolean = false,
+    val discardFailure: SaveFailure? = null,
 )
 
 /** EV-3 · Paso 2 Diagnóstico. */
