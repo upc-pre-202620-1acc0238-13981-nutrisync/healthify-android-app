@@ -55,11 +55,11 @@ import pe.edu.upc.healthify.features.nutritionalcare.presentation.screen.Practit
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.screen.SummaryManagementActions
 import java.time.Instant
 
-// Pestañas del Figma: 48 dp de alto, indicador de 4 dp del ancho del texto.
+// Figma tabs: 48 dp tall, 4 dp indicator as wide as the text.
 private val TabHeight = 48.dp
 private val TabIndicatorHeight = 4.dp
 
-/** Las cuatro pestañas fijas de la ficha del paciente (PAC · Notas). */
+/** The four fixed tabs of the patient record. */
 enum class PatientDetailTab(@param:StringRes val labelRes: Int) {
     Summary(R.string.patient_tab_summary),
     FollowUp(R.string.patient_tab_follow_up),
@@ -67,25 +67,26 @@ enum class PatientDetailTab(@param:StringRes val labelRes: Int) {
     Plan(R.string.patient_tab_plan),
 }
 
-/** Snackbars de la ficha que pide otra pantalla al volver (PAC-1-S1 y PAC-1-S3). */
+/** Patient record snackbars that another screen requests on return. */
 sealed interface PatientSnackbarRequest {
-    /** PAC-1-S1 · «Plan publicado. Ana Flores ya puede ver sus metas.» */
+    /** "Plan published; the patient can now see their targets." */
     data object PlanPublished : PatientSnackbarRequest
 
-    /** PAC-1-S3 · «Derivación a Endocrinología registrada.» con «Ver» (→ Expediente). Llega desde PR16. */
+    /** "Referral recorded", with "View" (→ Record). Comes from the referral screen. */
     data class ReferralRegistered(val specialty: String) : PatientSnackbarRequest
 
-    /** PR17 abierto desde PAC-1: «Consulta agendada: jue 18 sept., 10:00». */
+    /** Scheduling opened from the summary: "Appointment scheduled: Thu 18 Sep, 10:00". */
     data class FollowUpScheduled(val scheduledFor: Instant) : PatientSnackbarRequest
 }
 
 /**
- * Ficha de un paciente para su nutricionista: TopAppBar con el nombre y las pestañas Resumen (PAC-0/PAC-1/PAC-1.C),
- * Seguimiento (PAC-2), Expediente (PAC-3) y Plan (PAC-4). Compone NutritionalCare y Monitoring; cada pestaña tiene su
- * ViewModel, que lee el paciente de la ruta.
+ * A patient's record for their practitioner: TopAppBar with the name and the Summary, Follow-up, Record and
+ * Plan tabs. Combines NutritionalCare and Monitoring; each tab has its own ViewModel, which reads the patient
+ * from the route.
  *
- * @param onNavigate abre EV-1 o el paso de la consulta (ruta armada por NutritionalCare).
- * @param management «GESTIÓN» de PAC-1: PR17, PR16 y PR18 (el grafo raíz conoce el vínculo).
+ * @param onNavigate opens the appointment flow or one of its steps (route built by NutritionalCare).
+ * @param management the summary's "MANAGEMENT" actions: scheduling, referral and discharge (the root graph knows
+ *   the care link).
  */
 @Composable
 fun PractitionerPatientScreen(
@@ -167,7 +168,7 @@ fun PractitionerPatientContent(
     tabContent: @Composable (PatientDetailTab) -> Unit,
 ) {
     SystemBarsAppearance(darkBackground = false)
-    // Se desliza entre pestañas: tocar una pestaña mueve el pager y la página asentada actualiza la pestaña elegida.
+    // Swipes between tabs: tapping a tab moves the pager and the settled page updates the selected tab.
     val pagerState = rememberPagerState(initialPage = selectedTab.ordinal) { PatientDetailTab.entries.size }
     LaunchedEffect(selectedTab) {
         if (pagerState.currentPage != selectedTab.ordinal) pagerState.animateScrollToPage(selectedTab.ordinal)
@@ -198,13 +199,13 @@ fun PractitionerPatientContent(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .navigationBarsPadding()
-                // Sobre la acción fija de la pestaña (88 dp del Figma).
+                // Above the tab's pinned action (88 dp in the Figma).
                 .padding(bottom = HealthifyTheme.dimens.space64 + HealthifyTheme.dimens.space24),
         )
     }
 }
 
-/** «Pestañas del paciente»: cuatro del mismo ancho, Label/Large, indicador `primary` bajo la elegida. */
+/** "Patient tabs": four of equal width, Label/Large, `primary` indicator under the selected one. */
 @Composable
 private fun PatientTabRow(selected: PatientDetailTab, onSelect: (PatientDetailTab) -> Unit) {
     val scheme = MaterialTheme.colorScheme
@@ -249,7 +250,7 @@ private fun PatientTabRow(selected: PatientDetailTab, onSelect: (PatientDetailTa
     }
 }
 
-@Preview(name = "PAC · Ficha del paciente (pestañas)", widthDp = 360, heightDp = 800)
+@Preview(name = "Patient record (tabs)", widthDp = 360, heightDp = 800)
 @Composable
 private fun PractitionerPatientPreview() {
     HealthifyTheme {

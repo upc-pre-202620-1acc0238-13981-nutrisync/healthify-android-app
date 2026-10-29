@@ -21,8 +21,8 @@ import java.time.Duration
 import javax.inject.Inject
 
 /**
- * Búsqueda local-first: la copia de Room responde sin servidor; el servidor completa. La copia se renueva como
- * mucho una vez al día (o al pedirlo), siempre entera.
+ * Local-first search: the Room copy answers without the server; the server completes it. The copy is refreshed at
+ * most once a day (or on request), always in full.
  */
 class ReferenceFoodRepositoryImpl @Inject constructor(
     private val service: ReferenceFoodService,
@@ -64,14 +64,14 @@ class ReferenceFoodRepositoryImpl @Inject constructor(
         if (!force && savedAt != null && now - savedAt < MAX_AGE.toMillis()) return Result.success(Unit)
         return apiCall { service.getLocalFoodCatalog(patientId) }.map { dtos ->
             val foods = dtos.toDomainSkippingInvalid().distinctBy { it.id }
-            // Una respuesta vacía no borra la copia: sin catálogo no se podría registrar nada offline.
+            // An empty response does not wipe the copy: without a catalog nothing could be logged offline.
             if (foods.isNotEmpty()) {
                 dao.replaceAll(foods.mapIndexed { index, food -> food.toEntity(position = index, savedAtEpochMillis = now) })
             }
         }
     }
 
-    /** 0: empieza igual · 1: una palabra empieza igual · 2: lo contiene en otra parte. */
+    /** 0: same prefix · 1: a word has the same prefix · 2: contains it elsewhere. */
     private fun rank(name: String, query: String): Int = when {
         name.startsWith(query) -> 0
         name.split(' ').any { it.startsWith(query) } -> 1

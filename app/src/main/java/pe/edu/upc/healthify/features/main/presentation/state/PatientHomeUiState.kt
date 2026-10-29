@@ -5,19 +5,19 @@ import java.time.Instant
 import java.time.LocalDate
 
 /**
- * PT3 · Inicio (+ PT3.L, PT3.V, PT3.O, aviso «Algo no cuadra», PT18, aviso de meta de energía superada y PT3.M).
+ * Home (+ loading, first time, offline, consistency notice, logging gap, energy target exceeded and targets changed).
  *
- * @param targets metas vigentes; `null` mientras carga o sin metas ([hasNoTargets], PT3.V).
- * @param cachedAt cuándo se guardó la copia mostrada (PT3.O); `null` si las metas son del backend.
- * @param consumedKcal energía registrada hoy (confirmada); `null` si todavía no se pudo leer (sin conexión).
- * @param todayOutcome resultado de hoy para la fila «Cómo voy hoy»; `null` = fila oculta.
- * @param macrosLeft lo que queda hoy de cada macro (IN-9, lo calcula el backend); `null` sin lectura: el medidor
- *   muestra las metas en gramos con «Tu meta de hoy».
- * @param week «Tu semana»: qué días de los últimos 7 tienen registro; `null` sin lectura (la tarjeta se oculta).
- * @param nextFollowUp «Próxima consulta»; `null` = fila oculta (no hay ninguna agendada).
- * @param showConsistencyCard aviso «Algo no cuadra» (alerta de consistencia activa o aviso sin ver, MA-7).
- * @param showLoggingGapCard PT18 «Te extrañamos por acá».
- * @param targetsChangedVersion PT3.M: versión publicada que el paciente aún no revisó.
+ * @param targets current targets; `null` while loading or with no targets ([hasNoTargets]).
+ * @param cachedAt when the shown copy was stored; `null` if the targets come from the backend.
+ * @param consumedKcal energy logged today (confirmed); `null` if it could not be read yet (offline).
+ * @param todayOutcome today's result for the "How I'm doing today" row; `null` = row hidden.
+ * @param macrosLeft what is left of each macro today (computed by the backend); `null` without a reading: the
+ *   gauge shows the targets in grams with "Your target today".
+ * @param week "Your week": which of the last 7 days have a log; `null` without a reading (the card hides).
+ * @param nextFollowUp "Next appointment"; `null` = row hidden (none scheduled).
+ * @param showConsistencyCard "Something doesn't add up" notice (active consistency alert or unseen notice).
+ * @param showLoggingGapCard the "We miss you around here" reminder.
+ * @param targetsChangedVersion published version the patient has not reviewed yet.
  */
 data class PatientHomeUiState(
     val greetingName: String = "",
@@ -36,14 +36,14 @@ data class PatientHomeUiState(
     val showLoggingGapCard: Boolean = false,
     val targetsChangedVersion: Int? = null,
 ) {
-    /** PT16: sin conexión la tarjeta simplemente no aparece. */
+    /** Offline the card simply does not show. */
     val consistencyCardVisible: Boolean get() = showConsistencyCard && !isOffline && targets != null
 
     val loggingGapCardVisible: Boolean get() = showLoggingGapCard && targets != null
 
     /**
-     * Aviso «Mañana es otro día»: el día ya salió EXCEEDED o lo registrado supera la meta de energía.
-     * Sin conexión o sin metas no aparece (el avance del día solo se lee en línea, desde Monitoring).
+     * "Tomorrow is another day" notice: the day already came out EXCEEDED or the logged energy exceeds the target.
+     * Offline or without targets it does not show (the day's progress is only read online, from Monitoring).
      */
     val energyExceededCardVisible: Boolean
         get() {
@@ -53,21 +53,21 @@ data class PatientHomeUiState(
             return todayOutcome == ComplianceOutcome.EXCEEDED || (consumed != null && consumed > target)
         }
 
-    /** PT3.O: sin conexión no se muestran «Cómo voy hoy» ni «Próxima consulta» (viven en Monitoring). */
+    /** Offline, "How I'm doing today" and "Next appointment" are not shown (they live in Monitoring). */
     val howAmIDoingVisible: Boolean get() = !isOffline && todayOutcome != null
     val nextFollowUpVisible: Boolean get() = !isOffline && nextFollowUp != null
 
     val targetsChangedSheetVisible: Boolean get() = targetsChangedVersion != null && !isOffline && targets != null
 
-    /** PT3.O: sin conexión «Tu semana» no se muestra (vive en Monitoring). */
+    /** Offline, "Your week" is not shown (it lives in Monitoring). */
     val weekVisible: Boolean get() = !isOffline && week != null
 
     private val cachedNoticeVisible: Boolean get() = isOffline || cachedAt != null
 
     /**
-     * DECISIÓN PT3 (sin scroll): Inicio muestra un solo aviso a la vez, el de mayor prioridad. «Algo no cuadra» primero
-     * (pide revisar), luego la copia sin conexión (explica por qué faltan cifras), «Te extrañamos» y «Mañana es otro
-     * día». Los demás vuelven a aparecer cuando el de arriba se va.
+     * No scroll: Home shows one notice at a time, the highest priority one. "Something doesn't add up" first
+     * (asks for a review), then the offline copy (explains why numbers are missing), "We miss you" and "Tomorrow is
+     * another day". The others show again once the one above goes away.
      */
     val activeNotice: HomeNotice?
         get() = when {
@@ -78,14 +78,14 @@ data class PatientHomeUiState(
             else -> null
         }
 
-    /** Kcal que quedan hoy (nunca menos de 0); `null` sin lectura del día. */
+    /** Kcal left today (never below 0); `null` without today's reading. */
     val energyLeftKcal: Double?
         get() {
             val target = targets?.energyKcal ?: return null
             return consumedKcal?.let { (target - it).coerceAtLeast(0.0) }
         }
 
-    /** «Meta de hoy cumplida»: lo registrado ya alcanzó la meta de energía (arco lleno, sin rojo ni reproche). */
+    /** Target met: the logged energy already reached the energy target (full arc, no red, no reproach). */
     val energyTargetReached: Boolean
         get() {
             val target = targets?.energyKcal ?: return false
@@ -93,20 +93,20 @@ data class PatientHomeUiState(
         }
 }
 
-/** Los avisos de Inicio, de mayor a menor prioridad ([PatientHomeUiState.activeNotice]). */
+/** Home notices, from highest to lowest priority ([PatientHomeUiState.activeNotice]). */
 enum class HomeNotice { CONSISTENCY, CACHED_TARGETS, LOGGING_GAP, ENERGY_EXCEEDED }
 
-/** Gramos de cada macro (lo que queda hoy). */
+/** Grams of each macro (what is left today). */
 data class HomeMacros(val proteinG: Double, val carbG: Double, val fatG: Double)
 
-/** «Tu semana»: los 7 días hasta hoy, del más antiguo al de hoy. */
+/** "Your week": the 7 days up to today, oldest first. */
 data class HomeWeek(val days: List<HomeDay>) {
     val loggedDays: Int get() = days.count { it.isLogged }
 }
 
 data class HomeDay(val date: LocalDate, val isLogged: Boolean, val isToday: Boolean)
 
-/** Metas del día que muestra Inicio (el detalle completo está en PT4). */
+/** Daily targets shown on Home (the full detail is in My plan). */
 data class HomeTargets(
     val planVersion: Int,
     val energyKcal: Double,

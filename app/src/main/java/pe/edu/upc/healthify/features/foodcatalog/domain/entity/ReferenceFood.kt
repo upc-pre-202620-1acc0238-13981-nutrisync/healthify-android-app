@@ -3,10 +3,10 @@ package pe.edu.upc.healthify.features.foodcatalog.domain.entity
 import pe.edu.upc.healthify.features.foodcatalog.domain.valueobject.ReferenceFoodId
 
 /**
- * Alimento del catálogo de referencia (`ReferenceFoodResource`): nombre local y nutrientes por 100 g. Es un dato
- * público de referencia; no dice nada de ningún paciente.
+ * Reference catalog food (`ReferenceFoodResource`): local name and nutrients per 100 g. It is public
+ * reference data; it says nothing about any patient.
  *
- * @param isLocalOverride alimento local que cargó un nutricionista (va primero en las búsquedas).
+ * @param isLocalOverride local food loaded by a nutritionist (comes first in searches).
  */
 data class ReferenceFood(
     val id: ReferenceFoodId,

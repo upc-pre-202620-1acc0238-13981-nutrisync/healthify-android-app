@@ -37,11 +37,11 @@ import pe.edu.upc.healthify.features.main.presentation.state.PractitionerSetting
 import pe.edu.upc.healthify.features.main.presentation.viewmodel.PractitionerSettingsEvent
 import pe.edu.upc.healthify.features.main.presentation.viewmodel.PractitionerSettingsViewModel
 
-/** Destinos de PR20 (pantallas del grafo raíz). */
+/** Practitioner settings destinations (root graph screens). */
 data class PractitionerSettingsCallbacks(
-    /** «Atrás»: vuelve a la pestaña donde estaba el nutricionista (Ajustes se abre desde el menú principal). */
+    /** "Back": returns to the tab the practitioner was on (Settings opens from the main menu). */
     val onBack: () -> Unit,
-    /** PR20.1 · confirmación de cierre de sesión. */
+    /** Sign-out confirmation. */
     val onSignOut: () -> Unit,
 )
 
@@ -52,7 +52,7 @@ data class PractitionerSettingsActions(
     val onLanguageSelected: (PreferredLanguage) -> Unit = {},
 )
 
-/** PR20 · Ajustes del nutricionista (+ PR20.I idioma), pantalla interna que se abre desde el menú principal. */
+/** Practitioner settings (+ language), an inner screen opened from the main menu. */
 @Composable
 fun PractitionerSettingsScreen(
     callbacks: PractitionerSettingsCallbacks,
@@ -63,7 +63,7 @@ fun PractitionerSettingsScreen(
     val activity = LocalActivity.current
     ObserveEvents(viewModel.events) { event ->
         when (event) {
-            // Desde Android 13 el sistema (LocaleManager) recrea la pantalla solo; antes, se recrea aquí.
+            // Since Android 13 the system (LocaleManager) recreates the screen itself; before that, it is recreated here.
             PractitionerSettingsEvent.LanguageApplied ->
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) activity?.recreate()
         }
@@ -108,7 +108,7 @@ fun PractitionerSettingsContent(
             verticalArrangement = Arrangement.spacedBy(dimens.space12),
         ) {
             if (state.isOffline) OfflineBanner(type = OfflineBannerType.RequiresNetwork)
-            // DECISIÓN PR20: como PT21, «Mi cuenta» no tiene pantalla en el Figma; se muestra sin chevron ni destino.
+            // As in patient settings, "My account" has no screen in the Figma; it shows without a chevron or destination.
             ListCard(
                 title = stringResource(R.string.settings_account),
                 supportingText = listOf(state.fullName, state.email).filter(String::isNotEmpty).joinToString(" · "),
@@ -120,7 +120,7 @@ fun PractitionerSettingsContent(
                 leadingIcon = HealthifyIcons.Language,
                 onClick = actions.onOpenLanguage,
             )
-            // PR20.1: cerrar sesión funciona igual sin conexión (el cierre es local).
+            // Sign out works the same offline (it is local).
             ListCard(
                 title = stringResource(R.string.sign_out_dialog_confirm),
                 leadingIcon = HealthifyIcons.Logout,
@@ -142,7 +142,7 @@ private val PreviewState = PractitionerSettingsUiState(
     email = "lucia.paredes@correo.com",
 )
 
-@Preview(name = "PR20 · Ajustes", widthDp = 360, heightDp = 800)
+@Preview(name = "Practitioner settings", widthDp = 360, heightDp = 800)
 @Composable
 private fun PractitionerSettingsPreview() {
     HealthifyTheme {
@@ -150,7 +150,7 @@ private fun PractitionerSettingsPreview() {
     }
 }
 
-@Preview(name = "PR20 · Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Practitioner settings - offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun PractitionerSettingsOfflinePreview() {
     HealthifyTheme {
@@ -161,7 +161,7 @@ private fun PractitionerSettingsOfflinePreview() {
     }
 }
 
-@Preview(name = "PR20.I · Idioma", widthDp = 360, heightDp = 400)
+@Preview(name = "Practitioner settings - language", widthDp = 360, heightDp = 400)
 @Composable
 private fun PractitionerLanguageSheetPreview() {
     HealthifyTheme {

@@ -7,8 +7,8 @@ import pe.edu.upc.healthify.features.foodcatalog.domain.valueobject.FoodSearchTe
 import javax.inject.Inject
 
 /**
- * PR15 · busca en el catálogo del servidor (sin la copia offline del paciente). Un texto de menos de 2 caracteres
- * lista el catálogo sin filtro.
+ * Searches the server catalog (without the patient's offline copy). Text shorter than 2 characters
+ * lists the catalog unfiltered.
  */
 class BrowseFoodCatalogUseCase @Inject constructor(
     private val repository: ReferenceFoodRepository,
@@ -17,7 +17,7 @@ class BrowseFoodCatalogUseCase @Inject constructor(
         repository.browseCatalog(FoodSearchTerm.of(query))
 }
 
-/** PR15.1 «Guardar alimento». */
+/** "Save food". */
 class CreateLocalFoodUseCase @Inject constructor(
     private val repository: ReferenceFoodRepository,
 ) {

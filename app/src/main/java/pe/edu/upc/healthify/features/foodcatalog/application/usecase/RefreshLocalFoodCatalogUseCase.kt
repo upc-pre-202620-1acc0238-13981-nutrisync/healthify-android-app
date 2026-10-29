@@ -3,7 +3,7 @@ package pe.edu.upc.healthify.features.foodcatalog.application.usecase
 import pe.edu.upc.healthify.features.foodcatalog.domain.repository.ReferenceFoodRepository
 import javax.inject.Inject
 
-/** Mantiene la copia del catálogo del teléfono (≤ 500 alimentos) para registrar sin conexión (PT9 offline). */
+/** Keeps the phone's copy of the catalog (≤ 500 foods) so meals can be logged offline. */
 class RefreshLocalFoodCatalogUseCase @Inject constructor(
     private val repository: ReferenceFoodRepository,
 ) {

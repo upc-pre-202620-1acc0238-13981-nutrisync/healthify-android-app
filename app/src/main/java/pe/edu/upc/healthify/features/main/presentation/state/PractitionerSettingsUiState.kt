@@ -2,7 +2,7 @@ package pe.edu.upc.healthify.features.main.presentation.state
 
 import pe.edu.upc.healthify.features.iam.domain.valueobject.PreferredLanguage
 
-/** PR20 · Ajustes del nutricionista (+ PR20.I hoja de idioma). */
+/** Practitioner settings (+ the language sheet). */
 data class PractitionerSettingsUiState(
     val fullName: String = "",
     val email: String = "",

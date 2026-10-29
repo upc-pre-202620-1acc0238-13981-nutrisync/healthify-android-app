@@ -95,12 +95,12 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.format.TextStyle
 
-// Medidas del frame «PT3 · Inicio».
+// Measurements of the "Home" frame.
 private val NoticeBadgeSize = 32.dp
 private val NoticeBadgeIconSize = 18.dp
 private const val NOTICE_MAX_LINES = 2
 
-/** Acciones de PT3 (navegación + eventos del ViewModel). */
+/** Home actions (navigation + ViewModel events). */
 data class PatientHomeActions(
     val onOpenMenu: () -> Unit = {},
     val onOpenReminders: () -> Unit = {},
@@ -116,13 +116,13 @@ data class PatientHomeActions(
 )
 
 /**
- * PT3 · Inicio del paciente (pestaña «Inicio» del shell).
+ * Patient home (the shell's "Home" tab).
  *
- * @param onOpenMenu ☰ · menú principal del shell.
- * @param onOpenReminders campana → PT22 Recordatorios.
- * @param onOpenDiary «Tu semana» → pestaña Diario del shell.
- * @param onRegisterMeal «Registrar comida» (PT3.V) y «Registrar ahora» (PT18); en el resto de estados lo cubre el
- *   botón cámara de la barra inferior.
+ * @param onOpenMenu ☰ · the shell's main menu.
+ * @param onOpenReminders bell → Reminders.
+ * @param onOpenDiary "Your week" → the shell's Diary tab.
+ * @param onRegisterMeal "Log meal" (first time, no targets) and "Log now" (logging gap); in the other states the
+ *   bottom bar camera button covers it.
  */
 @Composable
 fun PatientHomeScreen(
@@ -177,7 +177,7 @@ fun PatientHomeContent(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface),
     ) {
-        // DECISIÓN PT3: la campana del frame abre PT22 (Recordatorios); el ☰ abre el menú principal del shell.
+        // The frame's bell opens Reminders; the ☰ opens the shell's main menu.
         GreetingTopAppBar(
             greeting = stringResource(R.string.home_greeting, state.greetingName),
             title = stringResource(R.string.home_title),
@@ -196,16 +196,16 @@ fun PatientHomeContent(
             },
         )
         val targets = state.targets
-        // DECISIÓN PT3 (sin scroll): con metas, Inicio cabe en una pantalla y el medidor ocupa el alto que sobra. Solo si
-        // no alcanza (pantalla baja o letra grande del sistema) la columna pasa a desplazarse, como respaldo.
+        // No scroll: with targets, Home fits on one screen and the gauge takes the leftover height. Only when it
+        // does not fit (short screen or large system font) does the column scroll, as a fallback.
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
         ) {
             val fontScale = LocalDensity.current.fontScale
-            // Si con lo que hay en pantalla el medidor queda más bajo que su mínimo, se pasa al respaldo con scroll. Se
-            // vuelve a probar cuando cambia lo que se muestra o el alto disponible.
+            // If, with what is on screen, the gauge ends up shorter than its minimum, switch to the scrolling fallback.
+            // It is tried again when what is shown or the available height changes.
             var overflows by remember(maxHeight, state.activeNotice, state.weekVisible, state.howAmIDoingVisible, state.nextFollowUpVisible) {
                 mutableStateOf(false)
             }
@@ -221,7 +221,7 @@ fun PatientHomeContent(
                     state.isLoading -> HomeSkeleton()
                     targets == null -> {
                         if (state.isOffline) OfflineBanner(type = OfflineBannerType.Queueable)
-                        // PT3.V · el frame trae «Registrar comida» (Tonal), aunque la nota diga «sin botón».
+                        // Empty state: the frame has "Log meal" (Tonal), even though the note says "no button".
                         EmptyState(
                             title = stringResource(R.string.home_empty_title),
                             text = stringResource(R.string.home_empty_body),
@@ -258,13 +258,13 @@ fun PatientHomeContent(
     }
 }
 
-// Alto del área del estado vacío de PT3.V (576 dp en el frame, menos el padding de la pantalla).
+// Height of the empty-state area (576 dp in the frame, minus the screen padding).
 private val EmptyStateMinHeight = 560.dp
 
-// Con letra del sistema más grande que esto, Inicio pasa a desplazarse en vez de apretar el medidor.
+// With a system font larger than this, Home scrolls instead of squeezing the gauge.
 private const val MAX_FIT_FONT_SCALE = 1.3f
 
-// Alto mínimo del medidor: compacto (con un aviso arriba) o completo. Por debajo, Inicio pasa a desplazarse.
+// Minimum gauge height: compact (with a notice above) or full. Below it, Home scrolls.
 private val GaugeMinHeightCompact = 150.dp
 private val GaugeMinHeight = 200.dp
 
@@ -279,7 +279,7 @@ private fun ColumnScope.HomeBody(
     when (state.activeNotice) {
         HomeNotice.CONSISTENCY -> {
             ConsistencyNoticeCard(onClick = actions.onOpenConsistencyNotice)
-            // MA-7: el acuse se registra cuando la tarjeta se pintó (una vez por aparición).
+            // The acknowledgement is recorded once the card has been drawn (once per appearance).
             LaunchedEffect(Unit) { actions.onConsistencyCardShown() }
         }
         HomeNotice.CACHED_TARGETS -> CachedTargetsNotice(cachedAt = state.cachedAt)
@@ -287,7 +287,7 @@ private fun ColumnScope.HomeBody(
         HomeNotice.ENERGY_EXCEEDED -> EnergyExceededCard()
         null -> Unit
     }
-    // Con un aviso arriba el medidor se compacta: sin la escala ni el pie.
+    // With a notice above, the gauge goes compact: no scale and no footer.
     val compact = state.activeNotice != null
     val minHeightPx = with(LocalDensity.current) { (if (compact) GaugeMinHeightCompact else GaugeMinHeight).roundToPx() }
     DailyGaugeCard(
@@ -313,7 +313,7 @@ private fun ColumnScope.HomeBody(
     )
 }
 
-/** PT3.L · skeleton sobre el medidor, la semana y las filas. */
+/** Loading skeleton over the gauge, the week and the rows. */
 @Composable
 private fun HomeSkeleton() {
     val dimens = HealthifyTheme.dimens
@@ -333,11 +333,11 @@ private fun HomeSkeleton() {
 }
 
 /**
- * «Medidor del día»: arco de 180° con lo que queda de energía, la escala «0 · 1 260 de 1 850 kcal · 1 850» y lo que
- * queda de cada macro. Al tocarla abre PT4 Mi plan. Si ya se alcanzó la meta, el arco va lleno y dice «Meta de hoy
- * cumplida» (sin rojo ni reproche). Sin la lectura del día muestra las metas (desde la copia, sin conexión).
+ * Daily gauge: a 180° arc with the energy left, the "0 · 1 260 of 1 850 kcal · 1 850" scale and what is left of
+ * each macro. Tapping it opens My plan. Once the target is reached the arc is full and says the target is met
+ * (no red, no reproach). Without today's reading it shows the targets (from the copy, offline).
  *
- * @param fillHeight el arco crece hasta ocupar el alto que le da Inicio; si no, usa su alto fijo.
+ * @param fillHeight the arc grows to fill the height Home gives it; otherwise it uses its fixed height.
  */
 @Composable
 private fun DailyGaugeCard(
@@ -390,7 +390,7 @@ private fun DailyGaugeCard(
             }
             if (!compact) {
                 Text(
-                    // Sin la lectura del día (IN-9) se muestran las metas, no lo que queda.
+                    // Without today's reading the targets are shown, not what is left.
                     text = stringResource(if (macrosLeft != null) R.string.home_gauge_footer_left else R.string.home_gauge_footer_targets),
                     style = MaterialTheme.typography.labelMedium,
                     color = scheme.onSurfaceVariant,
@@ -400,7 +400,7 @@ private fun DailyGaugeCard(
     }
 }
 
-/** «590 kcal · te quedan hoy», «Meta de hoy cumplida» o, sin la lectura del día, la meta. */
+/** "590 kcal left today", "target met" or, without today's reading, the target. */
 @Composable
 private fun GaugeCenter(state: PatientHomeUiState, targets: HomeTargets) {
     val scheme = MaterialTheme.colorScheme
@@ -434,7 +434,7 @@ private fun GaugeCenter(state: PatientHomeUiState, targets: HomeTargets) {
     }
 }
 
-/** «0 · 1 260 de 1 850 kcal · 1 850», con «0» y la meta centrados bajo los extremos del arco. */
+/** "0 · 1 260 of 1 850 kcal · 1 850", with "0" and the target centered under the ends of the arc. */
 @Composable
 private fun GaugeScale(consumedKcal: Double, targetKcal: Double) {
     val scheme = MaterialTheme.colorScheme
@@ -458,7 +458,7 @@ private fun GaugeScale(consumedKcal: Double, targetKcal: Double) {
     }
 }
 
-/** Extremo de la escala: tan ancho como el trazo del arco, con el número centrado bajo él aunque lo desborde. */
+/** End of the scale: as wide as the arc stroke, with the number centered under it even if it overflows. */
 @Composable
 private fun GaugeScaleEnd(text: String) {
     Box(modifier = Modifier.width(GaugeThickness), contentAlignment = Alignment.Center) {
@@ -474,9 +474,9 @@ private fun GaugeScaleEnd(text: String) {
 }
 
 /**
- * Arco de 180°: pista `surfaceContainer` y avance `secondary` de izquierda a derecha. Se ajusta al ancho y al alto
- * disponibles (el diámetro nunca pasa del ancho ni del doble del alto, descontando la [scale]); [center] va abajo,
- * dentro del arco, y la [scale], justo debajo y del mismo ancho que el arco. El conjunto va centrado en su espacio.
+ * 180° arc: `surfaceContainer` track and `secondary` progress from left to right. Fits the available width and
+ * height (the diameter never exceeds the width or twice the height, minus the [scale]); [center] sits at the
+ * bottom, inside the arc, and the [scale] just below it, as wide as the arc. The whole is centered in its space.
  */
 @Composable
 private fun GaugeArc(
@@ -488,7 +488,7 @@ private fun GaugeArc(
     val track = MaterialTheme.colorScheme.surfaceContainer
     val progress = MaterialTheme.colorScheme.secondary
     BoxWithConstraints(modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-        // Los extremos redondeados bajan medio trazo por debajo del centro del arco: se reserva ese alto.
+        // The rounded ends go half a stroke below the arc center: reserve that height.
         val reserved = GaugeThickness / 2 + if (scale != null) GaugeScaleHeight else 0.dp
         val diameter = minOf(maxWidth, (maxHeight - reserved) * 2, GaugeMaxDiameter).coerceAtLeast(GaugeThickness * 2)
         Column(modifier = Modifier.width(diameter), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -507,8 +507,8 @@ private fun GaugeArc(
                         drawArc(progress, HALF_START_ANGLE, sweep, useCenter = false, topLeft = Offset(inset, inset), size = arcSize, style = style)
                     }
                 }
-                // El texto central se apoya sobre la línea de los extremos, no sobre el borde inferior del trazo, y no pasa
-                // del hueco del arco: con el arco chico (p. ej. un aviso desplegado) parte en dos líneas en vez de pisarlo.
+                // The center text rests on the line of the ends, not on the bottom edge of the stroke, and stays inside the
+                // arc's hollow: with a small arc (e.g. an expanded notice) it wraps to two lines instead of overlapping it.
                 Box(
                     modifier = Modifier.padding(
                         start = GaugeThickness + GaugeCenterGap,
@@ -530,7 +530,7 @@ private val GaugeFixedHeight = GaugeMaxDiameter / 2 + GaugeThickness / 2 + Gauge
 private const val HALF_CIRCLE = 180f
 private const val HALF_START_ANGLE = 180f
 
-/** «38 g · de proteína». */
+/** "38 g · of protein". */
 @Composable
 private fun MacroLeft(grams: Double, labelRes: Int, locale: java.util.Locale, modifier: Modifier) {
     Column(
@@ -551,8 +551,8 @@ private fun MacroLeft(grams: Double, labelRes: Int, locale: java.util.Locale, mo
 }
 
 /**
- * «Tu semana · 5 de 7 días»: los últimos 7 días como círculos. Con registro, lima claro con check; sin registro,
- * neutro con borde (nunca color de alerta); hoy, con borde `primary`. Al tocarla abre el Diario.
+ * "Your week · 5 of 7 days": the last 7 days as circles. With a log, light lime with a check; without one,
+ * neutral with a border (never an alert color); today, with a `primary` border. Tapping it opens the Diary.
  */
 @Composable
 private fun WeekCard(week: HomeWeek, onClick: () -> Unit) {
@@ -604,7 +604,7 @@ private fun WeekDay(day: HomeDay, locale: java.util.Locale) {
             modifier = Modifier
                 .size(WeekDaySize)
                 .clip(CircleShape)
-                // Lima claro (Lime200) para los días con registro; sin registro, el fondo neutro de la tarjeta.
+                // Light lime (Lime200) for days with a log; without one, the card's neutral background.
                 .background(if (day.isLogged) scheme.inversePrimary else scheme.surfaceContainerLowest)
                 .border(
                     width = if (day.isToday) dimens.borderThick else dimens.borderThin,
@@ -629,7 +629,7 @@ private val WeekDaySize = 28.dp
 private val WeekCheckSize = 16.dp
 private val WeekLegendIconSize = 14.dp
 
-/** Fase 15: «Cómo voy hoy» y «Próxima consulta» comparten una card; cada fila se oculta si no hay dato. */
+/** "How I'm doing today" and "Next appointment" share a card; each row hides when there is no data. */
 @Composable
 private fun TodayAndNextCard(
     outcome: ComplianceOutcome?,
@@ -694,7 +694,7 @@ private fun NavigationRow(icon: ImageVector, title: String, supporting: String, 
     }
 }
 
-/** Aviso «Algo no cuadra» → PT16. Pregunta abierta, tono de invitación. */
+/** "Something doesn't add up" notice → diary review. Open question, inviting tone. */
 @Composable
 private fun ConsistencyNoticeCard(onClick: () -> Unit) {
     val scheme = MaterialTheme.colorScheme
@@ -709,11 +709,11 @@ private fun ConsistencyNoticeCard(onClick: () -> Unit) {
     )
 }
 
-/** PT18 · Te extrañamos por acá: recordatorio local, nunca acusatorio (*Gap Is Not A Deviation*). */
+/** "We miss you around here": local reminder, never accusatory (*Gap Is Not A Deviation*). */
 @Composable
 private fun LoggingGapCard(onRegisterNow: () -> Unit) {
     val scheme = MaterialTheme.colorScheme
-    // DECISIÓN PT3 (sin scroll): en el aviso compacto toda la tarjeta lleva a registrar (antes, enlace «Registrar ahora»).
+    // No scroll: in the compact notice the whole card leads to logging (it used to be a "Log now" link).
     HomeNoticeCard(
         icon = HealthifyIcons.Heart,
         badgeColor = scheme.primary,
@@ -724,7 +724,7 @@ private fun LoggingGapCard(onRegisterNow: () -> Unit) {
     )
 }
 
-/** Meta de energía del día superada: invitación amable, nunca reproche (mañana es otro día). */
+/** Daily energy target exceeded: a kind invitation, never a reproach (tomorrow is another day). */
 @Composable
 private fun EnergyExceededCard() {
     val scheme = MaterialTheme.colorScheme
@@ -738,9 +738,9 @@ private fun EnergyExceededCard() {
 }
 
 /**
- * Aviso de Inicio, en su variante compacta (Inicio cabe en una pantalla): insignia, título opcional y texto de hasta
- * dos líneas. Con [onClick] toda la tarjeta navega (chevron); [onClickLabel] es lo que anuncia el lector de pantalla.
- * Sin [onClick], si el texto no entra en dos líneas, tocar la tarjeta lo despliega entero (y lo vuelve a plegar).
+ * Home notice, in its compact variant (Home fits on one screen): badge, optional title and text of up to
+ * two lines. With [onClick] the whole card navigates (chevron); [onClickLabel] is what the screen reader announces.
+ * Without [onClick], if the text does not fit in two lines, tapping the card expands it (and collapses it again).
  */
 @Composable
 private fun HomeNoticeCard(
@@ -796,7 +796,7 @@ private fun HomeNoticeCard(
         }
         when {
             onClick != null -> Icon(HealthifyIcons.ChevronRight, contentDescription = null, tint = scheme.onSurfaceVariant)
-            // Chevron hacia abajo (plegado) o hacia arriba (desplegado).
+            // Chevron pointing down (collapsed) or up (expanded).
             expandable -> Icon(
                 HealthifyIcons.ChevronRight,
                 contentDescription = null,
@@ -844,14 +844,14 @@ private val previewState = PatientHomeUiState(
     nextFollowUp = HomeFollowUp(id = 7, scheduledFor = Instant.parse("2026-09-18T15:00:00Z")),
 )
 
-@Preview(name = "PT3 · Inicio", widthDp = 360, heightDp = 800)
+@Preview(name = "Home", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientHomePreview() {
     HealthifyTheme { PatientHomeContent(state = previewState, actions = PatientHomeActions()) }
 }
 
-/** Prueba de adaptabilidad del Figma («PT3 · prueba fuente 200 %»): con letra grande, Inicio pasa a desplazarse. */
-@Preview(name = "PT3 · Inicio — fuente 200 %", widthDp = 360, heightDp = 800, fontScale = 2f)
+/** Figma adaptability test (200 % font): with a large font, Home scrolls. */
+@Preview(name = "Home - 200 % font", widthDp = 360, heightDp = 800, fontScale = 2f)
 @Composable
 private fun PatientHomeLargeFontPreview() {
     HealthifyTheme {
@@ -859,7 +859,7 @@ private fun PatientHomeLargeFontPreview() {
     }
 }
 
-@Preview(name = "PT3 · Inicio — con aviso «Algo no cuadra»", widthDp = 360, heightDp = 800)
+@Preview(name = "Home - with the consistency notice", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientHomeConsistencyPreview() {
     HealthifyTheme {
@@ -867,7 +867,7 @@ private fun PatientHomeConsistencyPreview() {
     }
 }
 
-@Preview(name = "PT18 · Te extrañamos por acá", widthDp = 360, heightDp = 800)
+@Preview(name = "Logging gap reminder", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientHomeGapPreview() {
     HealthifyTheme {
@@ -878,13 +878,13 @@ private fun PatientHomeGapPreview() {
     }
 }
 
-@Preview(name = "PT3 · Inicio — sin lo que queda de cada macro (muestra las metas)", widthDp = 360, heightDp = 800)
+@Preview(name = "Home - without macros left (shows the targets)", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientHomeTargetsOnlyPreview() {
     HealthifyTheme { PatientHomeContent(state = previewState.copy(macrosLeft = null), actions = PatientHomeActions()) }
 }
 
-@Preview(name = "PT3 · Inicio — pantalla baja (respaldo con scroll)", widthDp = 360, heightDp = 560)
+@Preview(name = "Home - short screen (scrolling fallback)", widthDp = 360, heightDp = 560)
 @Composable
 private fun PatientHomeShortScreenPreview() {
     HealthifyTheme {
@@ -892,7 +892,7 @@ private fun PatientHomeShortScreenPreview() {
     }
 }
 
-@Preview(name = "PT3 · Inicio — meta de energía superada", widthDp = 360, heightDp = 800)
+@Preview(name = "Home - energy target exceeded", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientHomeEnergyExceededPreview() {
     HealthifyTheme {
@@ -907,7 +907,7 @@ private fun PatientHomeEnergyExceededPreview() {
     }
 }
 
-@Preview(name = "PT3.L · Inicio — cargando", widthDp = 360, heightDp = 800)
+@Preview(name = "Home - loading", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientHomeLoadingPreview() {
     HealthifyTheme {
@@ -915,7 +915,7 @@ private fun PatientHomeLoadingPreview() {
     }
 }
 
-@Preview(name = "PT3.V · Inicio — primera vez, sin metas", widthDp = 360, heightDp = 800)
+@Preview(name = "Home - first time, no targets", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientHomeEmptyPreview() {
     HealthifyTheme {
@@ -926,7 +926,7 @@ private fun PatientHomeEmptyPreview() {
     }
 }
 
-@Preview(name = "PT3.O · Inicio — sin conexión (metas desde caché)", widthDp = 360, heightDp = 800)
+@Preview(name = "Home - offline (targets from cache)", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientHomeOfflinePreview() {
     HealthifyTheme {
@@ -937,7 +937,7 @@ private fun PatientHomeOfflinePreview() {
     }
 }
 
-@Preview(name = "PT3.M · Inicio — «Tus metas cambiaron»", widthDp = 360, heightDp = 800)
+@Preview(name = "Home - targets changed", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientHomeTargetsChangedPreview() {
     HealthifyTheme {

@@ -10,12 +10,12 @@ import java.io.IOException
 import java.io.InputStream
 import javax.inject.Inject
 
-/** Escribe un documento que eligió la persona (Storage Access Framework). Separado del repositorio para probar este en la JVM. */
+/** Writes a document the person chose (Storage Access Framework). Separate so the repository can be tested on the JVM. */
 interface DocumentWriter {
 
     /**
-     * Copia [content] en el documento [uri] y lo cierra. No hace falta permiso de almacenamiento: el `Uri` de
-     * `CreateDocument` ya lo concede. @throws IOException si no se puede abrir o escribir.
+     * Copies [content] into the document [uri] and closes it. No storage permission is needed: the `CreateDocument`
+     * `Uri` already grants it. @throws IOException if it cannot be opened or written.
      */
     suspend fun write(uri: String, content: InputStream)
 }
@@ -26,7 +26,7 @@ class ContentResolverDocumentWriter @Inject constructor(
 ) : DocumentWriter {
 
     override suspend fun write(uri: String, content: InputStream) = withContext(ioDispatcher) {
-        // "wt": si el documento ya existía, se reemplaza en vez de escribir encima de su contenido.
+        // "wt": if the document already existed, it is replaced instead of written over its content.
         val output = context.contentResolver.openOutputStream(uri.toUri(), "wt")
             ?: throw IOException("Cannot open the chosen document")
         output.use { content.copyTo(it) }

@@ -1,11 +1,11 @@
 package pe.edu.upc.healthify.features.foodcatalog.domain.entity
 
 /**
- * Alimento local que agrega un nutricionista (`CreateLocalOverrideResource`, F14c): platos peruanos que el catálogo
- * externo no trae. Queda marcado como local **de por vida**: una importación nunca lo sobrescribe.
+ * Local food added by a nutritionist (`CreateLocalOverrideResource`): Peruvian dishes the external catalog
+ * lacks. It stays marked as local **for good**: an import never overwrites it.
  *
- * Mismas reglas que el backend (`LocalName`, `NutrientsPer100g`): nombre de 1–200 caracteres con al menos una letra,
- * energía 0–950 kcal y cada macro 0–100 g por 100 g.
+ * Same rules as the backend (`LocalName`, `NutrientsPer100g`): name of 1–200 characters with at least one letter,
+ * energy 0–950 kcal and each macro 0–100 g per 100 g.
  */
 data class NewLocalFood(
     val name: String,
@@ -30,10 +30,10 @@ data class NewLocalFood(
     }
 }
 
-/** Campo de PR15.1 vacío o fuera de rango. */
+/** Add local food field that is empty or out of range. */
 enum class LocalFoodField { NAME, ENERGY, PROTEIN, CARB, FAT }
 
-/** Validación de PR15.1 antes de enviar (`400 LocalNameAndNutrientsRequired` en el backend). */
+/** Add local food validation before sending (`400 LocalNameAndNutrientsRequired` on the backend). */
 sealed interface LocalFoodValidation {
     data class Valid(val food: NewLocalFood) : LocalFoodValidation
     data class Invalid(val fields: Set<LocalFoodField>) : LocalFoodValidation
@@ -60,7 +60,7 @@ sealed interface LocalFoodValidation {
             return Valid(NewLocalFood(trimmedName, energyValue, proteinValue, carbValue, fatValue))
         }
 
-        /** «180», «12,5» o «12.5»; `null` si está vacío o no es un número. */
+        /** "180", "12,5" or "12.5"; `null` if blank or not a number. */
         private fun parse(text: String): Double? =
             text.trim().replace(',', '.').takeIf(String::isNotEmpty)?.toDoubleOrNull()?.takeIf(Double::isFinite)
     }

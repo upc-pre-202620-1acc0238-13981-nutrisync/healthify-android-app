@@ -2,7 +2,7 @@ package pe.edu.upc.healthify.features.main.domain.valueobject
 
 import java.time.LocalDate
 
-/** Nombre sugerido de la copia de datos: `healthify-mis-datos-<yyyy-MM-dd>.zip`, el mismo que propone el backend. */
+/** Suggested name for the data copy: `healthify-mis-datos-<yyyy-MM-dd>.zip`, the same one the backend suggests. */
 @JvmInline
 value class DataExportFileName(val value: String) {
     companion object {

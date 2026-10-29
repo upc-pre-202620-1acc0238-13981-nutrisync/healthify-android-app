@@ -6,14 +6,14 @@ import java.time.Clock
 import java.time.LocalDate
 import javax.inject.Inject
 
-/** PT21 «Descargar una copia de mis datos»: el nombre que se le propone al selector de archivos (fecha de hoy). */
+/** "Download a copy of my data": the name suggested to the file picker (today's date). */
 class GetDataExportFileNameUseCase @Inject constructor(
     private val clock: Clock,
 ) {
     operator fun invoke(): DataExportFileName = DataExportFileName.forDate(LocalDate.now(clock))
 }
 
-/** PT21 «Descargar una copia de mis datos»: descarga el ZIP y lo guarda en el documento elegido. */
+/** "Download a copy of my data": downloads the ZIP and saves it to the chosen document. */
 class DownloadDataExportUseCase @Inject constructor(
     private val repository: DataExportRepository,
 ) {

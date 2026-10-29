@@ -8,25 +8,25 @@ import kotlinx.serialization.Serializable
 import pe.edu.upc.healthify.features.foodcatalog.presentation.screen.AddLocalFoodScreen
 import pe.edu.upc.healthify.features.foodcatalog.presentation.screen.FoodCatalogScreen
 
-/** PR15 · Catálogo de alimentos (desde PR20 Ajustes). */
+/** Food catalog (from Settings). */
 @Serializable
 data object FoodCatalogRoute
 
-/** PR15.1 · Agregar alimento local. */
+/** Add local food. */
 @Serializable
 data object AddLocalFoodRoute
 
-/** Clave del `SavedStateHandle` de PR15: nombre del alimento que PR15.1 acaba de crear (para el Snackbar). */
+/** Food catalog `SavedStateHandle` key: name of the food the add screen just created (for the Snackbar). */
 const val KEY_ADDED_LOCAL_FOOD = "added_local_food"
 
 data class FoodCatalogNavigationCallbacks(
     val onBack: () -> Unit,
     val onAddLocalFood: () -> Unit,
-    /** PR15.1 guardado: vuelve a PR15 dejando [name] en su `SavedStateHandle` ([KEY_ADDED_LOCAL_FOOD]). */
+    /** Add local food saved: returns to the catalog leaving [name] in its `SavedStateHandle` ([KEY_ADDED_LOCAL_FOOD]). */
     val onLocalFoodAdded: (name: String) -> Unit,
 )
 
-/** PR15 y PR15.1 en el grafo raíz (pantallas completas sobre el shell del nutricionista). */
+/** Food catalog and add local food in the root graph (full screens over the nutritionist shell). */
 fun NavGraphBuilder.foodCatalogDestinations(callbacks: FoodCatalogNavigationCallbacks) {
     composable<FoodCatalogRoute> { entry ->
         val addedName by entry.savedStateHandle.getStateFlow<String?>(KEY_ADDED_LOCAL_FOOD, null).collectAsStateWithLifecycle()

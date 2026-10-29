@@ -11,17 +11,17 @@ import pe.edu.upc.healthify.core.designsystem.component.DrawerHeader
 import pe.edu.upc.healthify.core.designsystem.component.DrawerItem
 import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 
-/** Ítems del menú principal del nutricionista (PR1.D), en su orden. «Cerrar sesión» va aparte, tras el divisor. */
+/** Items of the practitioner's main menu, in order. "Sign out" is separate, after the divider. */
 enum class PractitionerMenuItem(@param:StringRes val labelRes: Int, val icon: ImageVector) {
     FoodCatalog(R.string.menu_food_catalog, HealthifyIcons.Cutlery),
     Settings(R.string.menu_settings, HealthifyIcons.Settings),
 }
 
 /**
- * Contenido del menú principal del nutricionista: encabezado, Catálogo de alimentos · Ajustes y, tras el divisor,
- * Cerrar sesión.
+ * Content of the practitioner's main menu: header, Food catalog · Settings and, after the divider,
+ * Sign out.
  *
- * @param selected ítem de la pantalla actual (se resalta); `null` desde las pestañas, que no están en el menú.
+ * @param selected item of the current screen (highlighted); `null` from the tabs, which are not in the menu.
  */
 @Composable
 fun ColumnScope.PractitionerMenuContent(

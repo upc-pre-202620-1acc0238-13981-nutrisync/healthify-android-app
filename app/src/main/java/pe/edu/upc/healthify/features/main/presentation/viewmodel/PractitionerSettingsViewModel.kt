@@ -22,18 +22,18 @@ import pe.edu.upc.healthify.features.main.presentation.state.PractitionerSetting
 import javax.inject.Inject
 
 sealed interface PractitionerSettingsEvent {
-    /** El idioma se aplicó: antes de Android 13 la pantalla se recrea para verlo. */
+    /** The language was applied: before Android 13 the screen is recreated to show it. */
     data object LanguageApplied : PractitionerSettingsEvent
 }
 
 /**
- * PR20 · Ajustes: Mi cuenta, Idioma y Cerrar sesión. Se abre desde el menú principal (PR1.D), como PT21 del paciente.
+ * Practitioner settings: My account, Language and Sign out. Opened from the main menu, like the patient's Settings.
  *
- * DECISIÓN PR20: como PT21, «Mi cuenta» usa el usuario de la sesión guardado en el teléfono (no hace falta
+ * As for the patient, "My account" uses the session user stored on the phone (no need for
  * `GET /users/{uid}`).
- * DECISIÓN PR20.I: como PT21.I, el idioma se aplica al tocarlo y luego se guarda en la cuenta (IAM-3); si eso falla
- * (sin red, 5xx) se reintenta al volver la conexión mientras siga en Ajustes. Cambia solo la interfaz: los datos
- * clínicos y las notas no se traducen.
+ * As for the patient, the language is applied on tap and then saved to the account; if that fails
+ * (offline, 5xx) it is retried when the connection comes back while Settings is still open. Only the UI changes:
+ * clinical data and notes are not translated.
  */
 @HiltViewModel
 class PractitionerSettingsViewModel @Inject constructor(
@@ -50,7 +50,7 @@ class PractitionerSettingsViewModel @Inject constructor(
     private val _events = Channel<PractitionerSettingsEvent>(Channel.BUFFERED)
     val events: Flow<PractitionerSettingsEvent> = _events.receiveAsFlow()
 
-    /** Idioma elegido que la cuenta todavía no guardó. */
+    /** Chosen language the account has not saved yet. */
     private var pendingAccountLanguage: PreferredLanguage? = null
 
     init {
@@ -73,7 +73,7 @@ class PractitionerSettingsViewModel @Inject constructor(
 
     fun onDismissLanguage() = _state.update { it.copy(showLanguageSheet = false) }
 
-    /** PR20.I: se aplica de inmediato y vuelve a Ajustes. */
+    /** Applied right away, then returns to Settings. */
     fun onLanguageSelected(language: PreferredLanguage) {
         _state.update { it.copy(showLanguageSheet = false, language = language) }
         val applied = applyAppLanguage(language)

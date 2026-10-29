@@ -29,20 +29,20 @@ import pe.edu.upc.healthify.features.main.presentation.state.PatientSettingsUiSt
 import javax.inject.Inject
 
 sealed interface PatientSettingsEvent {
-    /** El idioma se aplicó: antes de Android 13 la pantalla se recrea para verlo. */
+    /** The language was applied: before Android 13 the screen is recreated to show it. */
     data object LanguageApplied : PatientSettingsEvent
 
-    /** Abrir `CreateDocument("application/zip")` con este nombre sugerido. */
+    /** Open `CreateDocument("application/zip")` with this suggested name. */
     data class PickDataExportDestination(val fileName: DataExportFileName) : PatientSettingsEvent
 }
 
 /**
- * PT21 · Ajustes: compone Iam (cuenta, idioma), CareRelationship (estado de las funciones con IA) y la descarga de
- * la copia de datos (ZIP de CSV, escrito en el documento que elige la persona).
+ * Patient settings: combines Iam (account, language), CareRelationship (AI features status) and the data copy
+ * download (ZIP of CSV files, written to the document the person picks).
  *
- * DECISIÓN PT21: «Mi cuenta» usa el usuario de la sesión guardado en el teléfono (no hace falta `GET /users/{uid}`).
- * DECISIÓN PT21.I: el idioma se aplica al tocarlo y luego se guarda en la cuenta (IAM-3); si eso falla (sin red, 5xx)
- * se reintenta al volver la conexión mientras siga en Ajustes.
+ * "My account" uses the session user stored on the phone (no need for `GET /users/{uid}`).
+ * The language is applied on tap and then saved to the account; if that fails (offline, 5xx)
+ * it is retried when the connection comes back while Settings is still open.
  */
 @HiltViewModel
 class PatientSettingsViewModel @Inject constructor(
@@ -64,7 +64,7 @@ class PatientSettingsViewModel @Inject constructor(
 
     private var patientId: Long? = null
 
-    /** Idioma elegido que la cuenta todavía no guardó. */
+    /** Chosen language the account has not saved yet. */
     private var pendingAccountLanguage: PreferredLanguage? = null
 
     init {
@@ -86,7 +86,7 @@ class PatientSettingsViewModel @Inject constructor(
         }
     }
 
-    /** Al volver de PT21.IA el estado de la IA pudo cambiar. */
+    /** On returning from the AI features screen the AI status may have changed. */
     fun onResume() {
         _state.update { it.copy(language = getAppLanguage()) }
         viewModelScope.launch { refreshAiStatus() }
@@ -96,7 +96,7 @@ class PatientSettingsViewModel @Inject constructor(
 
     fun onDismissLanguage() = _state.update { it.copy(showLanguageSheet = false) }
 
-    /** PT21.I: se aplica de inmediato y vuelve a Ajustes. */
+    /** Applied right away, then returns to Settings. */
     fun onLanguageSelected(language: PreferredLanguage) {
         _state.update { it.copy(showLanguageSheet = false, language = language) }
         val applied = applyAppLanguage(language)
@@ -107,15 +107,15 @@ class PatientSettingsViewModel @Inject constructor(
     }
 
     /**
-     * «Descargar una copia de mis datos»: pide a la pantalla que abra el selector de archivos con el nombre sugerido.
-     * Sin conexión no hace nada (el ítem ya se ve deshabilitado y explica que hace falta conexión).
+     * "Download a copy of my data": asks the screen to open the file picker with the suggested name.
+     * Offline it does nothing (the item already shows as disabled and explains a connection is needed).
      */
     fun onDataExport() {
         if (_state.value.isOffline || _state.value.dataExport == DataExportStatus.InProgress) return
         viewModelScope.launch { _events.send(PatientSettingsEvent.PickDataExportDestination(getDataExportFileName())) }
     }
 
-    /** El selector devolvió el documento elegido; `null` si la persona lo canceló. */
+    /** The picker returned the chosen document; `null` if the person cancelled. */
     fun onDataExportDestinationPicked(destinationUri: String?) {
         val pid = patientId
         if (destinationUri == null || pid == null) return
