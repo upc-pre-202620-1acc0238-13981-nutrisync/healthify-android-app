@@ -75,8 +75,8 @@ data class MyConsultationsActions(
     val onAddToCalendar: (NextFollowUp) -> Unit = {},
     /** «Responder» (PT25.2) o «Editar mi respuesta» (PT25.3 → PT25.2). */
     val onOpenCheckIn: (followUpId: Long) -> Unit = {},
-    /** Una consulta anterior con versión del plan → PT4.1. */
-    val onOpenPlanVersions: () -> Unit = {},
+    /** Una consulta anterior con versión del plan → PT4.1 abierta en esa versión. */
+    val onOpenPlanVersion: (version: Int) -> Unit = {},
 )
 
 /** PT25 · Mis consultas (+ PT25.3 respuesta enviada). Se llega desde PT20 «Mis consultas» y desde PT25.1. */
@@ -84,7 +84,7 @@ data class MyConsultationsActions(
 fun MyConsultationsScreen(
     onBack: () -> Unit,
     onOpenCheckIn: (followUpId: Long) -> Unit,
-    onOpenPlanVersions: () -> Unit,
+    onOpenPlanVersion: (version: Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MyConsultationsViewModel = hiltViewModel(),
 ) {
@@ -102,7 +102,7 @@ fun MyConsultationsScreen(
             onRetry = viewModel::onRetry,
             onAddToCalendar = calendarHandler,
             onOpenCheckIn = onOpenCheckIn,
-            onOpenPlanVersions = onOpenPlanVersions,
+            onOpenPlanVersion = onOpenPlanVersion,
         ),
         snackbarHostState = snackbarHostState,
         modifier = modifier,
@@ -196,7 +196,7 @@ private fun ColumnScope.ConsultationsBody(state: MyConsultationsUiState, actions
         is CheckInCard.Sent -> SentCheckInCard(card, onEdit = { actions.onOpenCheckIn(card.followUpId) })
     }
     if (state.suggestedQuestions.isNotEmpty()) SuggestedQuestionsCard(state.suggestedQuestions)
-    if (state.past.isNotEmpty()) PastConsultationsSection(state.past, actions.onOpenPlanVersions)
+    if (state.past.isNotEmpty()) PastConsultationsSection(state.past, actions.onOpenPlanVersion)
 }
 
 @Composable
@@ -310,7 +310,7 @@ private fun SuggestedQuestionsCard(questions: List<SuggestedQuestion>) {
 }
 
 @Composable
-private fun PastConsultationsSection(past: List<PastConsultation>, onOpenPlanVersions: () -> Unit) {
+private fun PastConsultationsSection(past: List<PastConsultation>, onOpenPlanVersion: (version: Int) -> Unit) {
     val dimens = HealthifyTheme.dimens
     val scheme = MaterialTheme.colorScheme
     val locale = currentLocale()
@@ -325,15 +325,20 @@ private fun PastConsultationsSection(past: List<PastConsultation>, onOpenPlanVer
             Column(modifier = Modifier.padding(horizontal = dimens.space16, vertical = dimens.space4)) {
                 past.forEachIndexed { index, consultation ->
                     if (index > 0) HorizontalDivider(color = scheme.outlineVariant, thickness = dimens.borderThin)
-                    // DECISIÓN PT25: el chevron de una consulta con plan publicado abre PT4.1 (versiones del plan); sin
-                    // versión no hay destino y la fila no es táctil.
-                    val clickable = consultation.planVersion != null
+                    // DECISIÓN PT25: el chevron de una consulta con plan publicado abre PT4.1 en el detalle de la versión que
+                    // se publicó en ella; sin versión no hay destino y la fila no es táctil.
+                    val planVersion = consultation.planVersion
+                    val clickable = planVersion != null
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .heightIn(min = dimens.touchMin)
                             .then(
-                                if (clickable) Modifier.clickable(role = Role.Button, onClick = onOpenPlanVersions) else Modifier,
+                                if (planVersion != null) {
+                                    Modifier.clickable(role = Role.Button, onClick = { onOpenPlanVersion(planVersion) })
+                                } else {
+                                    Modifier
+                                },
                             )
                             .padding(vertical = dimens.space12),
                         horizontalArrangement = Arrangement.spacedBy(dimens.space8),

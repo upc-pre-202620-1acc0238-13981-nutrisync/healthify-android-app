@@ -57,8 +57,8 @@ data class MonitoringNavigationCallbacks(
     val onOpenMyConsultations: () -> Unit,
     /** PT25 → PT25.2. */
     val onOpenCheckIn: (followUpId: Long) -> Unit,
-    /** PT25 consulta anterior → PT4.1. */
-    val onOpenPlanVersions: () -> Unit,
+    /** PT25 consulta anterior → PT4.1 con el detalle de la versión que se publicó en ella. */
+    val onOpenPlanVersion: (version: Int) -> Unit,
 )
 
 /** Destinos del paciente de MonitoringAdherence en el grafo raíz (pantallas completas sobre el shell). */
@@ -80,7 +80,7 @@ fun NavGraphBuilder.monitoringDestinations(callbacks: MonitoringNavigationCallba
         MyConsultationsScreen(
             onBack = callbacks.onBack,
             onOpenCheckIn = callbacks.onOpenCheckIn,
-            onOpenPlanVersions = callbacks.onOpenPlanVersions,
+            onOpenPlanVersion = callbacks.onOpenPlanVersion,
         )
     }
     // PT25.2 (y PT25.2.E dentro de la misma pantalla): al enviar vuelve a PT25, que relee y muestra PT25.3.

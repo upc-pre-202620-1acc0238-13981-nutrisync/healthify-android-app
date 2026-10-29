@@ -260,7 +260,7 @@ fun AppNavHost(
         nutritionalCareDestinations(
             NutritionalCareNavigationCallbacks(
                 onBack = { navController.popBackStack() },
-                onOpenPlanVersions = { navController.navigateSingleTop(PlanVersionsRoute) },
+                onOpenPlanVersions = { navController.navigateSingleTop(PlanVersionsRoute()) },
             ),
         )
         monitoringDestinations(
@@ -276,7 +276,7 @@ fun AppNavHost(
                     }
                 },
                 onOpenCheckIn = { id -> navController.navigateSingleTop(CheckInRoute(id)) },
-                onOpenPlanVersions = { navController.navigateSingleTop(PlanVersionsRoute) },
+                onOpenPlanVersion = { version -> navController.navigateSingleTop(PlanVersionsRoute(version)) },
             ),
         )
         composable<SignOutConfirmationRoute> {
