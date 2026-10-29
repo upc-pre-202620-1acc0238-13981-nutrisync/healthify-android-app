@@ -7,6 +7,7 @@ import androidx.compose.ui.res.stringResource
 import pe.edu.upc.healthify.R
 import pe.edu.upc.healthify.core.designsystem.component.UiText
 import pe.edu.upc.healthify.core.designsystem.component.currentLocale
+import pe.edu.upc.healthify.features.intake.domain.valueobject.DietaryRestriction
 import pe.edu.upc.healthify.features.intake.domain.valueobject.RestrictionCode
 import java.time.LocalDate
 import java.time.OffsetDateTime
@@ -90,6 +91,25 @@ val RestrictionCode.ideasPhraseRes: Int
         RestrictionCode.KOSHER -> R.string.ideas_restriction_kosher
         RestrictionCode.HALAL -> R.string.ideas_restriction_halal
     }
+
+/** Nombre de la restricción («Sin mariscos»); una legada o desconocida se muestra tal cual (X-2). */
+@Composable
+@ReadOnlyComposable
+fun restrictionName(restriction: DietaryRestriction): String = when (restriction) {
+    is DietaryRestriction.Legacy -> restriction.text
+    is DietaryRestriction.Catalog -> stringResource(
+        when (restriction.code) {
+            RestrictionCode.LACTOSE_FREE -> R.string.restriction_lactose_free
+            RestrictionCode.GLUTEN_FREE -> R.string.restriction_gluten_free
+            RestrictionCode.VEGAN -> R.string.restriction_vegan
+            RestrictionCode.VEGETARIAN -> R.string.restriction_vegetarian
+            RestrictionCode.TREE_NUT_FREE -> R.string.restriction_tree_nut_free
+            RestrictionCode.SHELLFISH_FREE -> R.string.restriction_shellfish_free
+            RestrictionCode.KOSHER -> R.string.restriction_kosher
+            RestrictionCode.HALAL -> R.string.restriction_halal
+        },
+    )
+}
 
 /** «no llevan mariscos», «no llevan gluten y no llevan lácteos», «a, b y c» (`null` si no hay ninguna). */
 fun restrictionsPhrase(restrictions: List<RestrictionCode>): UiText? {

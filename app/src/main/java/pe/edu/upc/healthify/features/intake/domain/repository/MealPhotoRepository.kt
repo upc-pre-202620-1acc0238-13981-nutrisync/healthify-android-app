@@ -5,6 +5,7 @@ import pe.edu.upc.healthify.features.intake.domain.entity.MealPhotoAnalysis
 import pe.edu.upc.healthify.features.intake.domain.entity.PendingMealPhoto
 import pe.edu.upc.healthify.features.intake.domain.valueobject.LocalTimestamp
 import pe.edu.upc.healthify.features.intake.domain.valueobject.PatientId
+import java.time.LocalDate
 
 /**
  * Foto del plato (IN-7). La foto **nunca** sale del teléfono con metadatos: antes de subirla se redimensiona a
@@ -14,11 +15,13 @@ import pe.edu.upc.healthify.features.intake.domain.valueobject.PatientId
 interface MealPhotoRepository {
 
     /**
-     * `POST /patients/{pid}/meal-photo-analyses` (multipart `photo`). No borra [photoPath]: la foto sigue disponible
-     * para reintentar hasta que la pantalla la [discardPhoto]. Errores: `403 AiConsentRequired`, `413
+     * `POST /patients/{pid}/meal-photo-analyses` (multipart `photo` y `localDate`). No borra [photoPath]: la foto sigue
+     * disponible para reintentar hasta que la pantalla la [discardPhoto]. Errores: `403 AiConsentRequired`, `413
      * PhotoTooLarge`, `422 PhotoNotRecognized`, `429 AiRateLimited`, `503 AiFeatureDisabled`/`AiProviderUnavailable`.
+     *
+     * @param localDate el día de la comida: con él la sugerencia de plan (IN-8) pesa lo que queda hoy. Nunca va a la IA.
      */
-    suspend fun analyze(patientId: PatientId, photoPath: String): Result<MealPhotoAnalysis>
+    suspend fun analyze(patientId: PatientId, photoPath: String, localDate: LocalDate?): Result<MealPhotoAnalysis>
 
     /** Guarda la foto tomada sin conexión para analizarla al volver la red. */
     suspend fun savePendingPhoto(patientId: PatientId, photoPath: String, capturedAt: LocalTimestamp): PendingMealPhoto
