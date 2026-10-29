@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -5,6 +7,14 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.serialization)
 }
+
+// Release signing: keystore.properties at the root locally, environment variables in CI.
+val keystoreProperties = Properties().apply {
+    rootProject.file("keystore.properties").takeIf { it.exists() }?.inputStream()?.use(::load)
+}
+
+fun signingValue(key: String): String? =
+    keystoreProperties.getProperty(key) ?: providers.environmentVariable(key).orNull
 
 android {
     namespace = "pe.edu.upc.healthify"
@@ -24,6 +34,18 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        // Without a keystore the release build stays unsigned instead of failing.
+        signingValue("KEYSTORE_FILE")?.let { keystoreFile ->
+            create("release") {
+                storeFile = rootProject.file(keystoreFile)
+                storePassword = signingValue("KEYSTORE_PASSWORD")
+                keyAlias = signingValue("KEY_ALIAS")
+                keyPassword = signingValue("KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         debug {
             // Port of the healthify-platform "http" profile (Properties/launchSettings.json).
@@ -31,6 +53,7 @@ android {
             buildConfigField("String", "BASE_URL", "\"https://platform.healthify.lat/api/v1/\"")
         }
         release {
+            signingConfig = signingConfigs.findByName("release")
             buildConfigField("String", "BASE_URL", "\"https://platform.healthify.lat/api/v1/\"")
             optimization {
                 enable = false
