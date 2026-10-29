@@ -47,9 +47,9 @@ class SignInViewModel @Inject constructor(
 
     fun onPasswordChange(value: String) = _state.update { it.copy(password = value, error = it.error.keepLock()) }
 
-    fun onForgotPasswordClick() = _state.update { it.copy(showForgotPasswordDialog = true) }
-
-    fun onForgotPasswordDismiss() = _state.update { it.copy(showForgotPasswordDialog = false) }
+    fun onForgotPasswordClick() {
+        viewModelScope.launch { _events.send(SignInEvent.NavigateToForgotPassword) }
+    }
 
     fun onCreateAccountClick() {
         viewModelScope.launch { _events.send(SignInEvent.NavigateToSignUp) }

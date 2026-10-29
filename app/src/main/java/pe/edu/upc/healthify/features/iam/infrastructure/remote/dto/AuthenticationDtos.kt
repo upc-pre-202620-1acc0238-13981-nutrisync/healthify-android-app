@@ -41,6 +41,33 @@ data class TokenRefreshResponseDto(
     val expiresAt: String? = null,
 )
 
+/** `PasswordResetRequestResource(Email)` (IAM-2). */
+@Serializable
+data class PasswordResetRequestDto(
+    val email: String,
+)
+
+/** `PasswordResetVerificationResource(Email, Code)` (IAM-2). */
+@Serializable
+data class PasswordResetVerificationRequestDto(
+    val email: String,
+    val code: String,
+)
+
+/** `200` de `POST /authentication/password-reset-verifications`: `{ resetToken, expiresAt }`. */
+@Serializable
+data class PasswordResetVerificationResponseDto(
+    val resetToken: String,
+    val expiresAt: String? = null,
+)
+
+/** `PasswordResetResource(ResetToken, NewPassword)` (IAM-2). */
+@Serializable
+data class PasswordResetDto(
+    val resetToken: String,
+    val newPassword: String,
+)
+
 /** `SignUpResource(Email, Password, Role, GivenNames, FamilyNames)` (F1, IAM-1). */
 @Serializable
 data class SignUpRequestDto(

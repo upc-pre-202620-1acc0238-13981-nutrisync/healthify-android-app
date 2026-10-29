@@ -1,5 +1,9 @@
 package pe.edu.upc.healthify.features.iam.infrastructure.remote
 
+import pe.edu.upc.healthify.features.iam.infrastructure.remote.dto.PasswordResetDto
+import pe.edu.upc.healthify.features.iam.infrastructure.remote.dto.PasswordResetRequestDto
+import pe.edu.upc.healthify.features.iam.infrastructure.remote.dto.PasswordResetVerificationRequestDto
+import pe.edu.upc.healthify.features.iam.infrastructure.remote.dto.PasswordResetVerificationResponseDto
 import pe.edu.upc.healthify.features.iam.infrastructure.remote.dto.SignInRequestDto
 import pe.edu.upc.healthify.features.iam.infrastructure.remote.dto.SignInResponseDto
 import pe.edu.upc.healthify.features.iam.infrastructure.remote.dto.SignUpRequestDto
@@ -18,6 +22,22 @@ interface AuthenticationService {
 
     @POST("authentication/sign-in")
     suspend fun signIn(@Body body: SignInRequestDto): SignInResponseDto
+
+    /** IAM-2. `202` sin cuerpo, exista o no la cuenta. */
+    @POST("authentication/password-reset-requests")
+    suspend fun requestPasswordReset(@Body body: PasswordResetRequestDto)
+
+    /** IAM-2. `200` con el token; `400` con `PasswordResetCodeInvalid`. */
+    @POST("authentication/password-reset-verifications")
+    suspend fun verifyPasswordResetCode(
+        @Body body: PasswordResetVerificationRequestDto,
+    ): PasswordResetVerificationResponseDto
+
+    /**
+     * IAM-2. `204` sin cuerpo; `400` con `PasswordResetTokenInvalid`, `WeakPassword` o `PasswordReuseNotAllowed`.
+     */
+    @POST("authentication/password-resets")
+    suspend fun resetPassword(@Body body: PasswordResetDto)
 
     /** `Response` para distinguir el 401 (sesión terminada) de un fallo transitorio. */
     @POST("authentication/token-refreshes")
