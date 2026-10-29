@@ -5,11 +5,11 @@ import pe.edu.upc.healthify.features.intake.domain.valueobject.LocalTimestamp
 import pe.edu.upc.healthify.features.intake.domain.valueobject.WeightKg
 
 /**
- * Un autopesaje nuevo (PT12, F19). IN-3: el único protocolo que se pregunta es «¿Te pesaste en ayunas?»; una lectura
- * sin ayuno se guarda completa y solo no suaviza la tendencia (nada se rechaza ni se marca).
+ * A new self weigh-in. The only protocol question asked is "Did you weigh yourself fasting?"; a non-fasting
+ * reading is stored in full and only does not smooth the trend (nothing is rejected or flagged).
  *
- * [clientEntryId] se genera una vez por autopesaje: si queda en la cola offline, se reenvía siempre igual a
- * `…/synchronization` y el backend no lo duplica (IN-4).
+ * [clientEntryId] is generated once per self weigh-in: if it stays in the offline queue, it is always resent the
+ * same way to `…/synchronization` and the backend does not duplicate it.
  */
 data class NewSelfWeighIn(
     val weight: WeightKg,
@@ -18,14 +18,14 @@ data class NewSelfWeighIn(
     val clientEntryId: ClientEntryId,
 )
 
-/** Qué pasó al guardar: llegó al backend o quedó en el teléfono hasta tener conexión. */
+/** What happened on save: it reached the backend or stayed on the phone until there is a connection. */
 enum class SelfWeighInOutcome { RECORDED, QUEUED }
 
 /**
- * Un autopesaje que espera en la cola del teléfono (PT19). Se muestra la hora tal como se guardó.
+ * A self weigh-in waiting in the phone's queue. The time is shown as it was saved.
  *
- * @param rejectionCode el backend no lo aceptó al sincronizar (`ImplausibleWeightValue`…): queda a la vista y no se
- *   reintenta.
+ * @param rejectionCode the backend did not accept it on sync (`ImplausibleWeightValue`…): it stays visible and is
+ *   not retried.
  */
 data class PendingSelfWeighIn(
     val clientEntryId: ClientEntryId,

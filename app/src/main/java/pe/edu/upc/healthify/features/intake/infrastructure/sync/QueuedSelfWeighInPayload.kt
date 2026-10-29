@@ -3,9 +3,9 @@ package pe.edu.upc.healthify.features.intake.infrastructure.sync
 import kotlinx.serialization.Serializable
 
 /**
- * Lo que Intake guarda en la cola offline genérica (`pending_operations.payload`) para un autopesaje: lo que pide
- * `PendingSelfWeighInResource` (IN-4). [localTimestamp] es el texto ISO-8601 exacto que declaró el paciente y se
- * reenvía sin tocar.
+ * What Intake stores in the generic offline queue (`pending_operations.payload`) for a self weigh-in: what
+ * `PendingSelfWeighInResource` asks for. [localTimestamp] is the exact ISO-8601 text the patient declared and is
+ * resent untouched.
  */
 @Serializable
 data class QueuedSelfWeighInPayload(
@@ -15,7 +15,7 @@ data class QueuedSelfWeighInPayload(
     val fastedState: Boolean,
 ) {
     companion object {
-        /** El `type` de la cola para los autopesajes (lo envía [SelfWeighInSyncSender]). */
+        /** The queue `type` for self weigh-ins ([SelfWeighInSyncSender] sends them). */
         const val TYPE = "intake.self-weigh-in"
     }
 }

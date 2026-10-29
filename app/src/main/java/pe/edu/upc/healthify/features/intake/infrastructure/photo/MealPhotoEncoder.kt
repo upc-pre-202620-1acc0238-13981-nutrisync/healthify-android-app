@@ -15,25 +15,25 @@ import javax.inject.Inject
 import kotlin.math.max
 import kotlin.math.roundToInt
 
-/** Prepara la foto del plato para subirla (IN-7). Separado del repositorio para probar este en la JVM. */
+/** Prepares the dish photo for upload. Kept apart from the repository so it can be tested on the JVM. */
 interface MealPhotoEncoder {
 
     /**
-     * Lee [photoPath], la achica a [MAX_SIDE_PX] px por el lado mayor, la comprime a JPEG (≤ [MAX_BYTES]) y le borra
-     * todos los metadatos. @throws IOException si el archivo no se puede leer o decodificar.
+     * Reads [photoPath], shrinks it to [MAX_SIDE_PX] px on the longer side, compresses it to JPEG (≤ [MAX_BYTES]) and
+     * strips all metadata. @throws IOException if the file cannot be read or decoded.
      */
     suspend fun encodeForUpload(photoPath: String): ByteArray
 
-    /** Si [photoPath] es una foto de este flujo (dentro de [photosDir]): solo esas se borran. */
+    /** Whether [photoPath] is a photo from this flow (inside [photosDir]): only those are deleted. */
     fun isOwnPhoto(photoPath: String): Boolean
 
-    /** Carpeta de las fotos del plato en `cacheDir`. */
+    /** Folder for the dish photos in `cacheDir`. */
     val photosDir: File
 
     companion object {
         const val MAX_SIDE_PX = 1024
 
-        /** `Intake:MealPhoto:MaxBytes` del backend (2 MB); con 1024 px nunca se acerca. */
+        /** The backend's `Intake:MealPhoto:MaxBytes` (2 MB); at 1024 px it never gets close. */
         const val MAX_BYTES = 2 * 1024 * 1024
     }
 }
@@ -62,7 +62,7 @@ class AndroidMealPhotoEncoder @Inject constructor(
                 quality -= QUALITY_STEP
                 jpeg = scaled.toJpeg(quality)
             }
-            // Bitmap.compress no escribe EXIF, pero se limpia igual: es la regla, no un efecto secundario.
+            // Bitmap.compress does not write EXIF, but it is stripped anyway: it is the rule, not a side effect.
             JpegMetadataStripper.strip(jpeg)
         } finally {
             if (scaled !== decoded) scaled.recycle()
@@ -77,7 +77,7 @@ class AndroidMealPhotoEncoder @Inject constructor(
             false
         }
 
-    /** La mayor potencia de 2 que deja el lado mayor en al menos [MealPhotoEncoder.MAX_SIDE_PX]. */
+    /** The largest power of 2 that leaves the longer side at least [MealPhotoEncoder.MAX_SIDE_PX]. */
     private fun sampleSizeFor(longSide: Int): Int {
         var sample = 1
         while (longSide / (sample * 2) >= MealPhotoEncoder.MAX_SIDE_PX) sample *= 2
@@ -98,7 +98,7 @@ class AndroidMealPhotoEncoder @Inject constructor(
         }
 
     companion object {
-        /** Carpeta en `cacheDir` donde la cámara de PT5 guarda la foto (sin EXIF) mientras dura el flujo. */
+        /** Folder in `cacheDir` where the meal camera keeps the photo (no EXIF) for the length of the flow. */
         const val PHOTOS_DIR = "meal_photos"
         private const val INITIAL_QUALITY = 85
         private const val MIN_QUALITY = 55

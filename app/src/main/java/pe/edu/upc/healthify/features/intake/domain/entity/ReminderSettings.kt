@@ -4,17 +4,17 @@ import java.time.LocalTime
 import java.time.ZonedDateTime
 
 /**
- * PT22 · los recordatorios locales del paciente (configuración del teléfono, nada va al backend). El tono de los avisos
- * es neutro, nunca de presión («Es hora de tu autopesaje»).
+ * The patient's local reminders (phone settings, nothing goes to the backend). The notification tone is
+ * neutral, never pushy ("Time for your self weigh-in").
  *
- * DECISIÓN PT22: las horas son las del frame (7:30 a. m.; 1:00 p. m. y 8:00 p. m.); el Figma no permite cambiarlas.
+ * The times are the ones in the design (7:30 a.m.; 1:00 p.m. and 8:00 p.m.); the design does not let them change.
  */
 enum class ReminderKind(val times: List<LocalTime>) {
     SELF_WEIGH_IN(listOf(LocalTime.of(7, 30))),
     MEALS(listOf(LocalTime.of(13, 0), LocalTime.of(20, 0))),
 }
 
-/** Ambos empiezan apagados: un aviso solo llega si el paciente lo pidió. */
+/** Both start off: a notification only arrives if the patient asked for it. */
 data class ReminderSettings(
     val selfWeighInEnabled: Boolean = false,
     val mealsEnabled: Boolean = false,
@@ -31,8 +31,8 @@ data class ReminderSettings(
 
     companion object {
         /**
-         * La próxima vez que toca un aviso a la hora [time] (hoy si todavía no pasó, si no mañana), en la zona de
-         * [now]. Con el cambio de horario se usa la hora local válida más cercana.
+         * The next time a notification is due at [time] (today if it has not passed yet, otherwise tomorrow), in the
+         * zone of [now]. Across a daylight saving change the nearest valid local time is used.
          */
         fun nextOccurrence(time: LocalTime, now: ZonedDateTime): ZonedDateTime {
             val today = now.toLocalDate().atTime(time).atZone(now.zone)

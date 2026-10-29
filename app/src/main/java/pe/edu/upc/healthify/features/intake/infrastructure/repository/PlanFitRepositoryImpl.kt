@@ -13,7 +13,7 @@ import pe.edu.upc.healthify.features.intake.infrastructure.remote.PlanFitService
 import java.time.LocalDate
 import javax.inject.Inject
 
-/** IN-8 · sin caché: la sugerencia depende de lo que queda hoy y solo existe con conexión. */
+/** No cache: the suggestion depends on what is left today and only exists online. */
 class PlanFitRepositoryImpl @Inject constructor(
     private val service: PlanFitService,
 ) : PlanFitRepository {

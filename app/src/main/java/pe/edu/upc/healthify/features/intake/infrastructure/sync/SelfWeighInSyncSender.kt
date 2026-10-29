@@ -14,10 +14,10 @@ import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.SyncSelfWe
 import javax.inject.Inject
 
 /**
- * Envía los autopesajes encolados a `POST /self-weigh-ins/synchronization` (IN-4). Idempotente por `clientEntryId`:
- * `Created` y `AlreadyPresent` salen de la cola; `Rejected` queda con su motivo a la vista (PT19) y no se reintenta.
- * Sin red, 5xx o sesión por renovar → se reintenta el lote más tarde. El backend recalcula la tendencia una vez por
- * lote.
+ * Sends the queued self weigh-ins to `POST /self-weigh-ins/synchronization`. Idempotent by `clientEntryId`:
+ * `Created` and `AlreadyPresent` leave the queue; `Rejected` stays visible with its reason and is not retried.
+ * No network, 5xx or a session to renew → the batch is retried later. The backend recomputes the trend once per
+ * batch.
  */
 class SelfWeighInSyncSender @Inject constructor(
     private val service: SelfWeighInService,
@@ -52,7 +52,7 @@ class SelfWeighInSyncSender @Inject constructor(
             return SendBatchResult.Delivered(accepted = accepted, rejected = rejected)
         }
         return when (val error = result.domainErrorOrNull()) {
-            // Un 400/403 de todo el lote no se arregla reintentando: quedan rechazados con el código, a la vista.
+            // A 400/403 for the whole batch is not fixed by retrying: they stay rejected with the code, visible.
             is DomainError.Validation -> rejectAll(operations, error.code, unreadable)
             is DomainError.Forbidden -> rejectAll(operations, error.code ?: CODE_FORBIDDEN, unreadable)
             else -> SendBatchResult.RetryLater

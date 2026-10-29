@@ -40,12 +40,12 @@ import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.PlanFitDto
 import pe.edu.upc.healthify.features.intake.infrastructure.sync.QueuedDiaryEntryPayload
 import java.time.format.DateTimeFormatter
 
-/** ISO-8601 con offset (`2026-09-09T13:15:00-05:00`): el formato con que viaja y se guarda el momento declarado. */
+/** ISO-8601 with offset (`2026-09-09T13:15:00-05:00`): the format the declared moment travels and is stored in. */
 fun LocalTimestamp.toIsoString(): String = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(value)
 
-// ----- Diario -----
+// ----- Diary -----
 
-/** `null` si el recurso no se puede mostrar (momento ilegible, procedencia desconocida, cifras inválidas). */
+/** `null` if the resource cannot be shown (unreadable moment, unknown origin, invalid figures). */
 fun DiaryEntryDto.toDomainOrNull(): DiaryEntry? {
     val timestamp = localTimestamp.toOffsetDateTimeOrNull() ?: return null
     val provenanceValue = EntryProvenance.fromCode(provenance) ?: return null
@@ -110,8 +110,8 @@ fun NewPhotoMeal.toRequestDto(patientId: Long) = PhotoLogRequestDto(
 )
 
 /**
- * Sin conexión, la foto confirmada se encola como `Photo` confirmada con el plato y los gramos que eligió el paciente
- * (la sincronización no lleva `analysisId`; la confianza viaja como dato de la estimación).
+ * Offline, the confirmed photo is queued as a confirmed `Photo` with the dish and grams the patient picked
+ * (the sync does not carry `analysisId`; the confidence travels as estimate data).
  */
 fun NewPhotoMeal.toQueuedPayload() = QueuedDiaryEntryPayload(
     clientEntryId = clientEntryId.value,
@@ -125,7 +125,7 @@ fun NewPhotoMeal.toQueuedPayload() = QueuedDiaryEntryPayload(
     planAdherence = planAdherence.code,
 )
 
-/** PT7 sin confirmar: «Por confirmar» (`photo-logs` sin `confirmation`). */
+/** Leaving the photo unconfirmed: "To confirm" (`photo-logs` without `confirmation`). */
 fun MealPhotoAnalysis.toUnconfirmedRequestDto(patientId: Long, localTimestamp: LocalTimestamp, clientEntryId: ClientEntryId) =
     PhotoLogRequestDto(
         patientId = patientId,
@@ -161,8 +161,8 @@ fun NewMealGroup.toRequestDto(patientId: Long) = MealGroupLogRequestDto(
 )
 
 /**
- * DECISIÓN PT14.5: la sincronización no tiene lotes agrupados; sin conexión cada alimento de la idea se encola como
- * una comida a mano con el mismo momento (se pierde solo la agrupación visual).
+ * The sync has no grouped batches; offline each food of the idea is queued as a manual meal with the same
+ * moment (only the visual grouping is lost).
  */
 fun MealGroupItem.toQueuedPayload(group: NewMealGroup) = QueuedDiaryEntryPayload(
     clientEntryId = clientEntryId.value,
@@ -186,7 +186,7 @@ fun QueuedDiaryEntryPayload.toPendingDto() = PendingDiaryEntryDto(
     planAdherence = planAdherence,
 )
 
-/** `null` si lo guardado ya no se puede leer como una comida válida. */
+/** `null` if what was saved can no longer be read as a valid meal. */
 fun QueuedDiaryEntryPayload.toDomainOrNull(rejectionCode: String?): PendingDiaryEntry? {
     val timestamp = localTimestamp.toOffsetDateTimeOrNull() ?: return null
     return try {
@@ -206,9 +206,9 @@ fun QueuedDiaryEntryPayload.toDomainOrNull(rejectionCode: String?): PendingDiary
     }
 }
 
-// ----- Foto -----
+// ----- Photo -----
 
-/** @throws IllegalArgumentException si el análisis rompe una invariante (confianza fuera de 0–1, gramos ≤ 0…). */
+/** @throws IllegalArgumentException if the analysis breaks an invariant (confidence outside 0–1, grams ≤ 0…). */
 fun MealPhotoAnalysisDto.toDomain(): MealPhotoAnalysis = MealPhotoAnalysis(
     id = MealPhotoAnalysisId(analysisId),
     food = MealFood(referenceFoodId = referenceFoodId, name = foodName.trim()),
@@ -228,11 +228,11 @@ fun MealPhotoAnalysisDto.toDomain(): MealPhotoAnalysis = MealPhotoAnalysis(
     planFit = planFit?.toDomainOrNull(),
 )
 
-// ----- Sugerencia de plan -----
+// ----- Plan suggestion -----
 
 /**
- * IN-8. `null` si la sugerencia no se puede usar (respuesta desconocida o sin responder): nunca se inventa una. Un
- * código de restricción desconocido se muestra tal cual (X-2).
+ * `null` if the suggestion cannot be used (unknown or unanswered): one is never made up. An unknown
+ * restriction code is shown as is.
  */
 fun PlanFitDto.toDomainOrNull(): PlanFit? {
     val suggested = PlanAdherence.fromCode(suggestedAdherence).takeIf { it.isAnswered } ?: return null

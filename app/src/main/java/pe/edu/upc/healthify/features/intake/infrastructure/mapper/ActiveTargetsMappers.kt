@@ -17,12 +17,12 @@ import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.DailyIntak
 import java.time.Instant
 
 /**
- * `ActiveTargetsResource` → dominio.
- * - Indicaciones: `guidelineItems` si llega (NC-6); si no (backend previo), cada texto de `guidelines` es una
- *   indicación propia, salvo que sea un código del catálogo.
- * - Restricciones: primero los códigos (traducibles), después `legacyRestrictions` tal cual.
+ * `ActiveTargetsResource` → domain.
+ * - Guidelines: `guidelineItems` if present; otherwise (older backend) each `guidelines` text is its own
+ *   guideline, unless it is a catalog code.
+ * - Restrictions: the (translatable) codes first, then `legacyRestrictions` as is.
  *
- * @throws IllegalArgumentException si el recurso rompe una invariante (versión ≤ 0, energía ≤ 0, fecha ilegible).
+ * @throws IllegalArgumentException if the resource breaks an invariant (version ≤ 0, energy ≤ 0, unreadable date).
  */
 fun ActiveTargetsDto.toDomain(): ActiveTargets {
     val guidelineList = guidelineItems?.mapNotNull { PlanGuideline.of(it.code, it.custom) }
@@ -43,7 +43,7 @@ fun ActiveTargetsDto.toDomain(): ActiveTargets {
     )
 }
 
-/** IN-9. `null` si el recurso rompe una invariante (fecha ilegible o valores negativos): el medidor usa las metas. */
+/** `null` if the resource breaks an invariant (unreadable date or negative values): the gauge uses the targets. */
 fun DailyIntakeDto.toDomainOrNull(): DailyIntake? {
     val day = date.toLocalDateOrNull() ?: return null
     return runCatching {
@@ -69,7 +69,7 @@ fun ActiveTargetsDto.toEntity(json: Json, savedAt: Instant): ActiveTargetsCacheE
         savedAtEpochMillis = savedAt.toEpochMilli(),
     )
 
-/** La copia guardada, o `null` si ya no se puede leer (formato viejo o dañado): se trata como «sin copia». */
+/** The saved copy, or `null` if it can no longer be read (old or damaged format): treated as "no copy". */
 fun ActiveTargetsCacheEntity.toDtoOrNull(json: Json): ActiveTargetsDto? =
     try {
         json.decodeFromString(ActiveTargetsDto.serializer(), payloadJson)

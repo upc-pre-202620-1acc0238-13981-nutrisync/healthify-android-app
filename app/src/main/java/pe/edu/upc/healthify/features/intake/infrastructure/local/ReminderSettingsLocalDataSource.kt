@@ -14,7 +14,7 @@ import javax.inject.Inject
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
-/** DataStore de los recordatorios locales (PT22): solo banderas por paciente, nada clínico. */
+/** DataStore for the local reminders: only per-patient flags, nothing clinical. */
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class ReminderDataStore

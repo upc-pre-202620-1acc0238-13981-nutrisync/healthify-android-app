@@ -20,8 +20,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Avisos locales de PT22 con tono neutro, nunca de presión. No llevan datos clínicos (ni peso, ni comidas, ni metas):
- * solo invitan a abrir la app.
+ * Local reminder notifications with a neutral tone, never pushy. They carry no clinical data (no weight, meals or
+ * targets): they only invite the patient to open the app.
  */
 @Singleton
 class ReminderNotifier @Inject constructor(
@@ -36,7 +36,7 @@ class ReminderNotifier @Inject constructor(
             return
         }
         if (!NotificationManagerCompat.from(appContext).areNotificationsEnabled()) return
-        // Los textos en el idioma elegido en la app (antes de Android 13 el contexto de la app no lo sabe).
+        // Texts in the language picked in the app (before Android 13 the app context does not know it).
         val context = AndroidAppLanguageSetter.wrap(appContext)
         ensureChannel(context)
         val (title, text) = when (kind) {
@@ -61,7 +61,7 @@ class ReminderNotifier @Inject constructor(
         try {
             NotificationManagerCompat.from(context).notify(NOTIFICATION_ID_BASE + kind.ordinal, notification)
         } catch (_: SecurityException) {
-            // El permiso se retiró entre la verificación y el aviso: no se avisa (no es un error para el paciente).
+            // The permission was revoked between the check and the notification: skip it (not a patient error).
             return
         }
     }

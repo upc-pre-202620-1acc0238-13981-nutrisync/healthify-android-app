@@ -3,11 +3,11 @@ package pe.edu.upc.healthify.features.intake.infrastructure.remote.dto
 import kotlinx.serialization.Serializable
 
 /**
- * `ActiveTargetsResource` (§5.5, NC-6/8/9). `guidelines` repite las indicaciones como texto plano para clientes
- * viejos; la app usa `guidelineItems` (código **o** texto propio) cuando llega. `legacyRestrictions` son
- * restricciones escritas antes de la lista cerrada: se muestran tal cual.
+ * `ActiveTargetsResource`. `guidelines` repeats the guidelines as plain text for older clients; the app uses
+ * `guidelineItems` (a code **or** custom text) when present. `legacyRestrictions` are restrictions written
+ * before the closed list existed: they are shown as is.
  *
- * También es el formato de la copia offline (Room guarda este JSON).
+ * It is also the format of the offline copy (Room stores this JSON).
  */
 @Serializable
 data class ActiveTargetsDto(
@@ -27,7 +27,7 @@ data class ActiveTargetsDto(
     val patientMessage: String? = null,
 )
 
-/** `ActiveGuidelineResource(Code, Custom)`: uno de los dos. */
+/** `ActiveGuidelineResource(Code, Custom)`: one of the two. */
 @Serializable
 data class GuidelineItemDto(
     val code: String? = null,
@@ -45,7 +45,7 @@ data class PlanChangeDto(
     val to: Double? = null,
 )
 
-/** `DailyIntakeResource` (IN-9, `GET /patients/{pid}/daily-intake?date=`): lo registrado hoy y lo que queda. */
+/** `DailyIntakeResource` (`GET /patients/{pid}/daily-intake?date=`): what was logged today and what is left. */
 @Serializable
 data class DailyIntakeDto(
     val date: String,

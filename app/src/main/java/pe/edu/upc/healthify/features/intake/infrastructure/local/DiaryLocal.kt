@@ -11,8 +11,8 @@ import androidx.room3.Upsert
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Copia offline de un día del diario (PT14.O): la lista de `DiaryEntryResource` tal como llegó (JSON). Así sin
- * conexión se ve lo ya registrado y los textos se arman en el idioma que tenga la app al leerla.
+ * Offline copy of one diary day: the list of `DiaryEntryResource` as it arrived (JSON). That way, offline,
+ * what was already logged is visible and the texts are built in the app's current language when read.
  */
 @Entity(tableName = "diary_day_cache", primaryKeys = ["patient_id", "date"])
 data class DiaryDayCacheEntity(
@@ -35,14 +35,14 @@ interface DiaryDayCacheDao {
     @Upsert
     suspend fun upsert(entity: DiaryDayCacheEntity)
 
-    /** Solo se guardan los últimos días: los más viejos no se consultan sin conexión. */
+    /** Only the latest days are kept: older ones are not looked up offline. */
     @Query("DELETE FROM diary_day_cache WHERE patient_id = :patientId AND date < :oldestDate")
     suspend fun deleteOlderThan(patientId: Long, oldestDate: String)
 }
 
 /**
- * Foto del plato tomada sin conexión, esperando para analizarse (IN-7). El archivo vive en `cacheDir` (sin EXIF:
- * se reencodó al capturarla) y se borra al analizarla o descartarla. Solo el dueño la ve.
+ * Dish photo taken offline, waiting to be analyzed. The file lives in `cacheDir` (no EXIF: it was
+ * re-encoded on capture) and is deleted once analyzed or discarded. Only its owner sees it.
  */
 @Entity(tableName = "pending_meal_photos")
 data class PendingMealPhotoEntity(
@@ -52,7 +52,7 @@ data class PendingMealPhotoEntity(
     val ownerUserId: Long,
     @ColumnInfo(name = "file_path")
     val filePath: String,
-    /** Momento de la captura (ISO-8601 con offset): el «¿Cuándo comiste?» propuesto. */
+    /** Capture moment (ISO-8601 with offset): the proposed "When did you eat?". */
     @ColumnInfo(name = "captured_at")
     val capturedAt: String,
     @ColumnInfo(name = "created_at_epoch_ms")

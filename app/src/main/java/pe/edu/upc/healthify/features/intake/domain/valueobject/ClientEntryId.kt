@@ -3,9 +3,9 @@ package pe.edu.upc.healthify.features.intake.domain.valueobject
 import java.util.UUID
 
 /**
- * Id que el teléfono genera **una vez** por registro (UUID) y reenvía siempre igual: en `manual-logs`,
- * `photo-logs`, cada ítem de `manual-logs/batch` y la sincronización offline. Así un reintento o un reenvío nunca
- * duplica la comida en el diario (IN-7, F20).
+ * Id the phone generates **once** per log (UUID) and always resends unchanged: in `manual-logs`,
+ * `photo-logs`, each item of `manual-logs/batch` and the offline sync. That way a retry or a resend never
+ * duplicates the meal in the diary.
  */
 @JvmInline
 value class ClientEntryId(val value: String) {

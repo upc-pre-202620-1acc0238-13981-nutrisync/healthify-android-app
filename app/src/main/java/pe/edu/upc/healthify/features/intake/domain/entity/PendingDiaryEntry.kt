@@ -6,12 +6,12 @@ import pe.edu.upc.healthify.features.intake.domain.valueobject.LocalTimestamp
 import pe.edu.upc.healthify.features.intake.domain.valueobject.PlanAdherence
 
 /**
- * Una comida registrada sin conexión que espera en la cola del teléfono (PT14.O «Pendiente de enviar», PT19). Se
- * reenvía siempre con el mismo [clientEntryId] y el mismo [localTimestamp] (nunca se reescribe la hora local).
+ * A meal logged offline that waits in the phone's queue ("Pending to send"). It is always resent with the
+ * same [clientEntryId] and the same [localTimestamp] (the local time is never rewritten).
  *
- * @param confirmed `false` = foto «Por confirmar» guardada al salir de PT7 sin confirmar.
- * @param rejectionCode el backend no la aceptó al sincronizar (`LocalTimestampCannotBeRewritten`,
- *   `ReferenceFoodNotResolved`…): queda a la vista y no se reintenta.
+ * @param confirmed `false` = a "To confirm" photo saved when leaving the photo result without confirming.
+ * @param rejectionCode the backend did not accept it on sync (`LocalTimestampCannotBeRewritten`,
+ *   `ReferenceFoodNotResolved`…): it stays visible and is not retried.
  */
 data class PendingDiaryEntry(
     val clientEntryId: ClientEntryId,

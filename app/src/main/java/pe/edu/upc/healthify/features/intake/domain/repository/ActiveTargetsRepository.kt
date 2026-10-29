@@ -5,20 +5,20 @@ import pe.edu.upc.healthify.features.intake.domain.entity.DailyIntake
 import pe.edu.upc.healthify.features.intake.domain.valueobject.PatientId
 import java.time.LocalDate
 
-/** Metas vigentes del paciente con sesión (`GET /patients/{patientId}/active-targets`) y su copia offline. */
+/** Active targets of the signed-in patient (`GET /patients/{patientId}/active-targets`) and their offline copy. */
 interface ActiveTargetsRepository {
 
     /**
-     * Pide las metas al backend y actualiza la copia del dispositivo.
-     * - `404 ActiveTargetsCacheNotFound` → sin metas ([ActiveTargetsLookup.None]) y se borra la copia.
-     * - Cualquier otro fallo con copia guardada → la copia (`fromCache = true`).
-     * - Cualquier otro fallo sin copia → el error.
+     * Asks the backend for the targets and updates the device copy.
+     * - `404 ActiveTargetsCacheNotFound` → no targets ([ActiveTargetsLookup.None]) and the copy is deleted.
+     * - Any other failure with a saved copy → the copy (`fromCache = true`).
+     * - Any other failure without a copy → the error.
      */
     suspend fun getActiveTargets(patientId: PatientId): Result<ActiveTargetsLookup>
 
     /**
-     * IN-9 · lo registrado en [date] y lo que queda de cada meta (`GET /patients/{pid}/daily-intake`). Solo en línea:
-     * no se guarda copia (sin conexión el medidor muestra las metas).
+     * What was logged on [date] and what is left of each target (`GET /patients/{pid}/daily-intake`). Online only:
+     * no copy is kept (offline the gauge shows the targets).
      */
     suspend fun getDailyIntake(patientId: PatientId, date: LocalDate): Result<DailyIntake>
 }

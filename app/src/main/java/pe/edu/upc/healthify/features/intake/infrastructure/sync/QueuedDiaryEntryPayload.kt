@@ -3,11 +3,11 @@ package pe.edu.upc.healthify.features.intake.infrastructure.sync
 import kotlinx.serialization.Serializable
 
 /**
- * Lo que Intake guarda en la cola offline genérica (`pending_operations.payload`) para una comida. Lleva lo que pide
- * `PendingDiaryEntryResource` más [foodName], solo para mostrarla en PT14.O y PT19 (no se envía).
+ * What Intake stores in the generic offline queue (`pending_operations.payload`) for a meal. It carries what
+ * `PendingDiaryEntryResource` asks for plus [foodName], only to show it in the pending lists (it is not sent).
  *
- * [localTimestamp] es el texto ISO-8601 exacto que declaró el paciente: se reenvía sin tocar (el backend rechaza
- * con `LocalTimestampCannotBeRewritten` un reenvío que discrepa).
+ * [localTimestamp] is the exact ISO-8601 text the patient declared: it is resent untouched (the backend rejects
+ * a resend that differs with `LocalTimestampCannotBeRewritten`).
  */
 @Serializable
 data class QueuedDiaryEntryPayload(
@@ -22,7 +22,7 @@ data class QueuedDiaryEntryPayload(
     val planAdherence: String? = null,
 ) {
     companion object {
-        /** El `type` de la cola para las comidas del diario (lo envía [DiaryEntrySyncSender]). */
+        /** The queue `type` for diary meals ([DiaryEntrySyncSender] sends them). */
         const val TYPE = "intake.diary-entry"
     }
 }

@@ -6,12 +6,12 @@ import pe.edu.upc.healthify.features.intake.domain.valueobject.MealPhotoAnalysis
 import java.time.Instant
 
 /**
- * Lo que la IA del servidor estimó a partir de la foto (`MealPhotoAnalysisResource`, IN-7). Es una **propuesta**,
- * nunca ingesta: no se guarda nada en el diario hasta que el paciente confirma (*Estimate Stored As Proposal Only*).
+ * What the server AI estimated from the photo (`MealPhotoAnalysisResource`). It is a **proposal**, never
+ * intake: nothing is stored in the diary until the patient confirms (*Estimate Stored As Proposal Only*).
  *
- * @param confidence siempre presente, entre 0 y 1 (*Confidence Always Attached*).
- * @param expiresAt el análisis vence a las 24 h (`422 MealPhotoAnalysisExpired`).
- * @param planFit la sugerencia de «¿Estaba en tu plan?» para el plato (IN-8); `null` si no hay (sin plan publicado).
+ * @param confidence always present, between 0 and 1 (*Confidence Always Attached*).
+ * @param expiresAt the analysis expires after 24 h (`422 MealPhotoAnalysisExpired`).
+ * @param planFit the "Was it in your plan?" suggestion for the dish; `null` if there is none (no published plan).
  */
 data class MealPhotoAnalysis(
     val id: MealPhotoAnalysisId,
@@ -28,7 +28,7 @@ data class MealPhotoAnalysis(
         require(alternatives.size <= MAX_ALTERNATIVES) { "At most $MAX_ALTERNATIVES alternatives" }
     }
 
-    /** Las alternativas que se pueden elegir: solo las que el catálogo resolvió. */
+    /** The alternatives that can be picked: only the ones the catalog resolved. */
     val selectableAlternatives: List<MealPhotoAlternative> get() = alternatives.filter { it.food != null }
 
     companion object {
@@ -37,8 +37,8 @@ data class MealPhotoAnalysis(
 }
 
 /**
- * Otro plato posible. [food] es `null` si no está en el catálogo local (se muestra, pero no se puede elegir).
- * [planFit] es su propia sugerencia de plan (IN-8), `null` si no hay.
+ * Another possible dish. [food] is `null` if it is not in the local catalog (it is shown, but cannot be picked).
+ * [planFit] is its own plan suggestion, `null` if there is none.
  */
 data class MealPhotoAlternative(
     val name: String,
@@ -53,10 +53,10 @@ data class MealPhotoAlternative(
 }
 
 /**
- * Foto tomada sin conexión que espera para analizarse al volver la red (PT5 «Sin conexión: la captura funciona
- * igual, queda pendiente»). Vive en `cacheDir` y se borra al analizarla o descartarla.
+ * A photo taken offline that waits to be analyzed when the network returns (capture still works offline and
+ * stays pending). It lives in `cacheDir` and is deleted once analyzed or discarded.
  *
- * @param capturedAt cuándo se tomó: es el «¿Cuándo comiste?» propuesto al registrarla.
+ * @param capturedAt when it was taken: it is the proposed "When did you eat?" when logging it.
  */
 data class PendingMealPhoto(
     val id: String,

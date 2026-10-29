@@ -1,8 +1,8 @@
 package pe.edu.upc.healthify.features.intake.domain.valueobject
 
 /**
- * Una línea de «Qué cambió en esta versión» (NC-8, `changesFromPrevious`). El backend manda el tipo y sus datos; la
- * frase se arma en el dispositivo, en el idioma del lector.
+ * One line of "What changed in this version" (`changesFromPrevious`). The backend sends the type and its data; the
+ * sentence is built on the device, in the reader's language.
  */
 sealed interface PlanChange {
     data class GuidelineAdded(val guideline: PlanGuideline) : PlanChange
@@ -15,8 +15,8 @@ sealed interface PlanChange {
 
     companion object {
         /**
-         * Lee un `PlanChangeResource`. DECISIÓN PT4: un tipo desconocido o incompleto se omite (`null`): el resto de
-         * la lista sigue siendo válida y no se inventa una frase.
+         * Reads a `PlanChangeResource`. An unknown or incomplete type is skipped (`null`): the rest of the list is
+         * still valid and no sentence is made up.
          */
         fun of(type: String, code: String?, custom: String?, macro: String?, from: Double?, to: Double?): PlanChange? =
             when (type) {
@@ -33,7 +33,7 @@ sealed interface PlanChange {
                 else -> null
             }
 
-        /** En las restricciones, `custom` es una restricción legada que quedó fuera de la lista cerrada. */
+        /** For restrictions, `custom` is a legacy restriction that was left out of the closed list. */
         private fun restriction(code: String?, custom: String?): DietaryRestriction? =
             DietaryRestriction.ofCode(code) ?: DietaryRestriction.legacy(custom)
     }
