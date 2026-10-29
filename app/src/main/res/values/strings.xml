@@ -1338,6 +1338,18 @@
 
     <string name="practitioner_sign_out_body">Tendrás que volver a ingresar tu correo y contraseña. Tus pacientes y sus datos quedan guardados.</string>
 
+    <!-- Avisos locales de la próxima consulta -->
+    <string name="consultation_reminder_channel_name">Consultas</string>
+    <string name="consultation_reminder_channel_description">Avisos antes de cada consulta agendada.</string>
+    <string name="consultation_reminder_patient_title_day">Tu consulta es mañana</string>
+    <string name="consultation_reminder_patient_title_hour">Tu consulta es en una hora</string>
+    <string name="consultation_reminder_patient_text">Con tu nutricionista a las %1$s.</string>
+    <string name="consultation_reminder_practitioner_title_day">Consulta mañana</string>
+    <string name="consultation_reminder_practitioner_title_hour">Consulta en una hora</string>
+    <string name="consultation_reminder_practitioner_text">Con %1$s a las %2$s.</string>
+    <string name="consultation_reminder_practitioner_text_no_name">Con tu paciente a las %1$s.</string>
+    <string name="consultation_reminder_public_text">Abre la app para ver los detalles.</string>
+
     <!-- PT3 · Medidor del día y Tu semana -->
     <string name="home_gauge_left_today">te quedan hoy</string>
     <string name="home_gauge_target_today">tu meta de hoy</string>

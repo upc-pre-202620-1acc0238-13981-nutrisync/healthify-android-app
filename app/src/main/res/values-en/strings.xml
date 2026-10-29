@@ -1302,6 +1302,18 @@
 
     <string name="practitioner_sign_out_body">You\'ll have to enter your email and password again. Your patients and their data stay saved.</string>
 
+    <!-- Local notices for the next consultation -->
+    <string name="consultation_reminder_channel_name">Consultations</string>
+    <string name="consultation_reminder_channel_description">Notices before each scheduled consultation.</string>
+    <string name="consultation_reminder_patient_title_day">Your consultation is tomorrow</string>
+    <string name="consultation_reminder_patient_title_hour">Your consultation is in one hour</string>
+    <string name="consultation_reminder_patient_text">With your dietitian at %1$s.</string>
+    <string name="consultation_reminder_practitioner_title_day">Consultation tomorrow</string>
+    <string name="consultation_reminder_practitioner_title_hour">Consultation in one hour</string>
+    <string name="consultation_reminder_practitioner_text">With %1$s at %2$s.</string>
+    <string name="consultation_reminder_practitioner_text_no_name">With your patient at %1$s.</string>
+    <string name="consultation_reminder_public_text">Open the app to see the details.</string>
+
     <!-- PT3 · Daily gauge and Your week -->
     <string name="home_gauge_left_today">left for today</string>
     <string name="home_gauge_target_today">your goal for today</string>
