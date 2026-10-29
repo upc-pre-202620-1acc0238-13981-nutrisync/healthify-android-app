@@ -1310,6 +1310,5 @@
     <string name="local_food_fat_example">E.g. 6</string>
     <string name="local_food_save">Save food</string>
 
-    <string name="practitioner_settings_food_catalog">Food catalog</string>
     <string name="practitioner_sign_out_body">You\'ll have to enter your email and password again. Your patients and their data stay saved.</string>
 </resources>

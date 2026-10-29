@@ -1346,6 +1346,5 @@
     <string name="local_food_fat_example">Ej. 6</string>
     <string name="local_food_save">Guardar alimento</string>
 
-    <string name="practitioner_settings_food_catalog">Catálogo de alimentos</string>
     <string name="practitioner_sign_out_body">Tendrás que volver a ingresar tu correo y contraseña. Tus pacientes y sus datos quedan guardados.</string>
 </resources>
