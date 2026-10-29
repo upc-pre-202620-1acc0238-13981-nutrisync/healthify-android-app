@@ -9,6 +9,7 @@ import pe.edu.upc.healthify.features.monitoring.domain.entity.FollowUpPreparatio
 import pe.edu.upc.healthify.features.monitoring.domain.entity.FollowUpState
 import pe.edu.upc.healthify.features.monitoring.domain.entity.NewFollowUp
 import pe.edu.upc.healthify.features.monitoring.domain.entity.NewReferral
+import pe.edu.upc.healthify.features.monitoring.domain.repository.ConsultationReminderScheduler
 import pe.edu.upc.healthify.features.monitoring.domain.repository.PractitionerAgendaRepository
 import pe.edu.upc.healthify.features.monitoring.infrastructure.mapper.rescheduleDto
 import pe.edu.upc.healthify.features.monitoring.infrastructure.mapper.toDomainOrNull
@@ -21,8 +22,10 @@ import retrofit2.HttpException
 import java.time.Instant
 import javax.inject.Inject
 
+/** Agendar, mover o cancelar una consulta reprograma también los avisos locales de las próximas consultas. */
 class PractitionerAgendaRepositoryImpl @Inject constructor(
     private val service: PractitionerAgendaService,
+    private val reminderScheduler: ConsultationReminderScheduler,
 ) : PractitionerAgendaRepository {
 
     override suspend fun getAgenda(practitionerId: Long, state: FollowUpState?, from: Instant?): Result<List<AgendaVisit>> =
@@ -30,22 +33,25 @@ class PractitionerAgendaRepositoryImpl @Inject constructor(
             .map { visits -> visits.mapNotNull { it.toDomainOrNull() } }
 
     override suspend fun schedule(followUp: NewFollowUp): Result<AgendaVisit> =
-        apiCall { service.schedule(followUp.toDto()) }.toVisit()
+        apiCall { service.schedule(followUp.toDto()) }.toVisit().refreshingReminders()
 
     override suspend fun cancel(followUpId: Long, reason: CancellationReason?): Result<Unit> = apiCall {
         val response = service.cancel(followUpId, CancelFollowUpRequestDto(reason?.text))
         if (!response.isSuccessful) throw HttpException(response)
-    }
+    }.refreshingReminders()
 
     override suspend fun reschedule(
         followUpId: Long,
         scheduledFor: Instant,
         preparation: FollowUpPreparation,
-    ): Result<AgendaVisit> = apiCall { service.reschedule(followUpId, rescheduleDto(scheduledFor, preparation)) }.toVisit()
+    ): Result<AgendaVisit> =
+        apiCall { service.reschedule(followUpId, rescheduleDto(scheduledFor, preparation)) }.toVisit().refreshingReminders()
 
     override suspend fun recordReferral(referral: NewReferral): Result<Unit> = apiCall {
         service.recordReferral(referral.toDto()).close()
     }
+
+    private fun <T> Result<T>.refreshingReminders(): Result<T> = onSuccess { reminderScheduler.requestRefresh() }
 
     private fun Result<ScheduledFollowUpDto>.toVisit(): Result<AgendaVisit> = fold(
         onSuccess = { dto ->
