@@ -17,22 +17,28 @@ import pe.edu.upc.healthify.features.foodcatalog.application.usecase.RefreshLoca
 import pe.edu.upc.healthify.features.foodcatalog.application.usecase.SearchFoodsUseCase
 import pe.edu.upc.healthify.features.iam.application.usecase.GetAccountCreatedOnUseCase
 import pe.edu.upc.healthify.features.iam.application.usecase.ObserveCurrentUserUseCase
+import pe.edu.upc.healthify.features.intake.application.usecase.CheckPlanFitUseCase
 import pe.edu.upc.healthify.features.intake.application.usecase.LogManualMealUseCase
 import pe.edu.upc.healthify.features.intake.domain.entity.MealLogOutcome
+import pe.edu.upc.healthify.features.intake.domain.valueobject.DietaryRestriction
 import pe.edu.upc.healthify.features.intake.domain.valueobject.LocalTimestamp
 import pe.edu.upc.healthify.features.intake.domain.valueobject.PlanAdherence
+import pe.edu.upc.healthify.features.intake.domain.valueobject.RestrictionCode
 import pe.edu.upc.healthify.features.intake.presentation.navigation.ManualMealRoute
 import pe.edu.upc.healthify.features.intake.presentation.state.ManualMealEvent
 import pe.edu.upc.healthify.features.intake.presentation.state.ManualMealUiState
 import pe.edu.upc.healthify.testing.FakeAccountRepository
 import pe.edu.upc.healthify.testing.FakeConnectivityObserver
 import pe.edu.upc.healthify.testing.FakeDiaryRepository
+import pe.edu.upc.healthify.testing.FakePlanFitRepository
 import pe.edu.upc.healthify.testing.FakeReferenceFoodRepository
 import pe.edu.upc.healthify.testing.FakeSessionRepository
 import pe.edu.upc.healthify.testing.MainDispatcherRule
 import pe.edu.upc.healthify.testing.failureOf
 import pe.edu.upc.healthify.testing.fixedClock
+import pe.edu.upc.healthify.testing.planFit
 import pe.edu.upc.healthify.testing.referenceFood
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -53,10 +59,13 @@ class ManualMealViewModelTest {
             SearchFoodsUseCase(foods),
             RefreshLocalFoodCatalogUseCase(foods),
             LogManualMealUseCase(diary),
+            PlanFitSuggester(CheckPlanFitUseCase(planFits), fixedClock),
             FakeConnectivityObserver(),
             fixedClock,
         )
     }
+
+    private val planFits = FakePlanFitRepository()
 
     private val quinua = referenceFood(1, "Quinua cocida")
 
@@ -172,6 +181,52 @@ class ManualMealViewModelTest {
 
         assertEquals(LocalTimestamp.Validity.TOO_OLD, viewModel.state.value.form.mealTimeError)
         assertFalse(viewModel.state.value.saveFailed)
+    }
+
+    @Test
+    fun `the plan answer is preselected from the suggestion and follows the food until the patient answers`() =
+        runTest(mainDispatcherRule.dispatcher) {
+            planFits.result = Result.success(planFit(inPlan = true))
+            selectQuinua()
+            viewModel.onPortionChange("150")
+            advanceUntilIdle()
+
+            assertEquals(true, viewModel.state.value.form.inPlan)
+            assertEquals(Triple(1L, 150.0, LocalDate.parse("2026-10-07")), planFits.requests.last())
+
+            planFits.result = Result.success(planFit(inPlan = false, restrictions = listOf(DietaryRestriction.Catalog(RestrictionCode.GLUTEN_FREE))))
+            viewModel.onPortionChange("200")
+            advanceUntilIdle()
+            assertEquals(false, viewModel.state.value.form.inPlan)
+            assertTrue(viewModel.state.value.form.planSuggestion!!.breaksRestrictions)
+        }
+
+    @Test
+    fun `once the patient answers, a new suggestion never changes the answer that gets logged`() =
+        runTest(mainDispatcherRule.dispatcher) {
+            planFits.result = Result.success(planFit(inPlan = false))
+            selectQuinua()
+            viewModel.onPortionChange("150")
+            advanceUntilIdle()
+            viewModel.onPlanAnswer(true)
+            assertTrue(viewModel.state.value.form.planSuggestionOverridden)
+
+            viewModel.onPortionChange("180")
+            advanceUntilIdle()
+            viewModel.onSubmit()
+            advanceUntilIdle()
+
+            assertEquals(PlanAdherence.IN_PLAN, diary.manualMeals.single().planAdherence)
+        }
+
+    @Test
+    fun `without a suggestion (offline or no plan) the patient answers as always`() = runTest(mainDispatcherRule.dispatcher) {
+        selectQuinua()
+        viewModel.onPortionChange("150")
+        advanceUntilIdle()
+
+        assertNull(viewModel.state.value.form.inPlan)
+        assertNull(viewModel.state.value.form.planSuggestion)
     }
 
     @Test

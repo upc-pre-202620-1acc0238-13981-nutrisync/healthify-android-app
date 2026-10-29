@@ -14,16 +14,21 @@ import pe.edu.upc.healthify.features.carerelationship.application.usecase.GetAiP
 import pe.edu.upc.healthify.features.iam.application.usecase.GetAccountCreatedOnUseCase
 import pe.edu.upc.healthify.features.iam.application.usecase.ObserveCurrentUserUseCase
 import pe.edu.upc.healthify.features.intake.application.usecase.AnalyzeMealPhotoUseCase
+import pe.edu.upc.healthify.features.intake.application.usecase.CheckPlanFitUseCase
 import pe.edu.upc.healthify.features.intake.application.usecase.DiscardMealPhotoUseCase
 import pe.edu.upc.healthify.features.intake.application.usecase.GetPendingMealPhotoUseCase
 import pe.edu.upc.healthify.features.intake.application.usecase.KeepPhotoMealUnconfirmedUseCase
 import pe.edu.upc.healthify.features.intake.application.usecase.LogPhotoMealUseCase
 import pe.edu.upc.healthify.features.intake.application.usecase.SavePendingMealPhotoUseCase
 import pe.edu.upc.healthify.features.intake.domain.entity.MealLogOutcome
+import pe.edu.upc.healthify.features.intake.domain.entity.MealPhotoAlternative
 import pe.edu.upc.healthify.features.intake.domain.entity.PendingMealPhoto
 import pe.edu.upc.healthify.features.intake.domain.entity.PhotoConfirmation
+import pe.edu.upc.healthify.features.intake.domain.valueobject.DietaryRestriction
 import pe.edu.upc.healthify.features.intake.domain.valueobject.LocalTimestamp
+import pe.edu.upc.healthify.features.intake.domain.valueobject.MealFood
 import pe.edu.upc.healthify.features.intake.domain.valueobject.PlanAdherence
+import pe.edu.upc.healthify.features.intake.domain.valueobject.RestrictionCode
 import pe.edu.upc.healthify.features.intake.presentation.navigation.MealPhotoRoute
 import pe.edu.upc.healthify.features.intake.presentation.state.AnalysisFailure
 import pe.edu.upc.healthify.features.intake.presentation.state.MealPhotoEvent
@@ -33,11 +38,15 @@ import pe.edu.upc.healthify.testing.FakeAccountRepository
 import pe.edu.upc.healthify.testing.FakeConnectivityObserver
 import pe.edu.upc.healthify.testing.FakeDiaryRepository
 import pe.edu.upc.healthify.testing.FakeMealPhotoRepository
+import pe.edu.upc.healthify.testing.FakePlanFitRepository
 import pe.edu.upc.healthify.testing.FakeSessionRepository
 import pe.edu.upc.healthify.testing.MainDispatcherRule
 import pe.edu.upc.healthify.testing.aiPreferences
 import pe.edu.upc.healthify.testing.failureOf
 import pe.edu.upc.healthify.testing.fixedClock
+import pe.edu.upc.healthify.testing.mealPhotoAnalysis
+import pe.edu.upc.healthify.testing.planFit
+import java.time.LocalDate
 import java.time.OffsetDateTime
 
 class MealPhotoViewModelTest {
@@ -63,6 +72,7 @@ class MealPhotoViewModelTest {
             DiscardMealPhotoUseCase(photos),
             LogPhotoMealUseCase(diary),
             KeepPhotoMealUnconfirmedUseCase(diary),
+            PlanFitSuggester(CheckPlanFitUseCase(FakePlanFitRepository()), fixedClock),
             connectivity,
             fixedClock,
         )
@@ -121,6 +131,54 @@ class MealPhotoViewModelTest {
 
         assertTrue(viewModel.state.value.form.showPlanError)
         assertTrue(diary.photoMeals.isEmpty())
+    }
+
+    @Test
+    fun `the AI suggestion comes preselected and is logged when the patient keeps it`() {
+        val shellfish = DietaryRestriction.Catalog(RestrictionCode.SHELLFISH_FREE)
+        photos.analyzeResults = listOf(Result.success(mealPhotoAnalysis(planFit = planFit(inPlan = false, restrictions = listOf(shellfish)))))
+
+        takeAndUsePhoto()
+
+        val form = viewModel.state.value.form
+        assertEquals(false, form.inPlan)
+        assertEquals(listOf(shellfish), form.planSuggestion?.violatedRestrictions)
+        // El día de la comida viaja con la foto para pesar lo que queda hoy.
+        assertEquals(listOf(LocalDate.parse("2026-10-07")), photos.analyzedDates)
+
+        viewModel.onConfirmProposal()
+
+        assertEquals(PlanAdherence.OFF_PLAN, diary.photoMeals.single().planAdherence)
+    }
+
+    @Test
+    fun `the patient can change the suggestion and their answer is the one logged`() {
+        photos.analyzeResults = listOf(Result.success(mealPhotoAnalysis(planFit = planFit(inPlan = false))))
+        takeAndUsePhoto()
+
+        viewModel.onPlanAnswer(true)
+        assertTrue(viewModel.state.value.form.planSuggestionOverridden)
+        viewModel.onConfirmProposal()
+
+        assertEquals(PlanAdherence.IN_PLAN, diary.photoMeals.single().planAdherence)
+    }
+
+    @Test
+    fun `each alternative brings its own suggestion until the patient answers`() {
+        val alternatives = listOf(
+            MealPhotoAlternative("Tallarín saltado", 300.0, MealFood(31, "Tallarín saltado"), planFit(inPlan = false)),
+        )
+        photos.analyzeResults = listOf(Result.success(mealPhotoAnalysis(alternatives = alternatives, planFit = planFit(inPlan = true))))
+        takeAndUsePhoto()
+        assertEquals(true, viewModel.state.value.form.inPlan)
+
+        viewModel.onAlternativeSelected(0)
+        assertEquals(false, viewModel.state.value.form.inPlan)
+
+        viewModel.onPlanAnswer(true)
+        viewModel.onAlternativeSelected(null)
+        viewModel.onAlternativeSelected(0)
+        assertEquals(true, viewModel.state.value.form.inPlan)
     }
 
     @Test

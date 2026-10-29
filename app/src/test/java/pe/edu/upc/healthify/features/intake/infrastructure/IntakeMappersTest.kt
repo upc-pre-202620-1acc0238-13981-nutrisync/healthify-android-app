@@ -6,6 +6,8 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import pe.edu.upc.healthify.features.intake.domain.entity.PlanFitReason
+import pe.edu.upc.healthify.features.intake.domain.valueobject.DietaryRestriction
 import pe.edu.upc.healthify.features.intake.domain.valueobject.EntryProvenance
 import pe.edu.upc.healthify.features.intake.domain.valueobject.PlanAdherence
 import pe.edu.upc.healthify.features.intake.domain.valueobject.RestrictionCode
@@ -18,6 +20,7 @@ import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.MealIdeaIn
 import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.MealIdeasDto
 import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.MealPhotoAlternativeDto
 import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.MealPhotoAnalysisDto
+import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.PlanFitDto
 import pe.edu.upc.healthify.features.intake.infrastructure.sync.QueuedDiaryEntryPayload
 
 class IntakeMappersTest {
@@ -88,6 +91,33 @@ class IntakeMappersTest {
         assertThrows(IllegalArgumentException::class.java) {
             MealPhotoAnalysisDto("8f14e45f-ceea-467a-9a3b-2c0b1e5f9d10", 12, "Lomo", 320.0, 1.4, emptyList(), "2026-10-08T13:00:00Z").toDomain()
         }
+        // Un backend sin IN-8 no manda sugerencia: el paciente responde como siempre.
+        assertNull(analysis.planFit)
+    }
+
+    @Test
+    fun `a plan suggestion keeps its restrictions and an unusable one is dropped`() {
+        val analysis = MealPhotoAnalysisDto(
+            analysisId = "8f14e45f-ceea-467a-9a3b-2c0b1e5f9d10",
+            referenceFoodId = 12,
+            foodName = "Ceviche",
+            estimatedGrams = 300.0,
+            confidence = 0.8,
+            alternatives = listOf(MealPhotoAlternativeDto("Arroz", 150.0, 31, PlanFitDto("InPlan", reason = "Fits"))),
+            expiresAt = "2026-10-08T13:00:00Z",
+            planFit = PlanFitDto("OffPlan", listOf("ShellfishFree", "Sin ají"), "BreaksRestriction", 330.0, 590.0),
+        ).toDomain()
+
+        val fit = requireNotNull(analysis.planFit)
+        assertEquals(PlanAdherence.OFF_PLAN, fit.suggested)
+        assertEquals(PlanFitReason.BREAKS_RESTRICTION, fit.reason)
+        assertEquals(
+            listOf(DietaryRestriction.Catalog(RestrictionCode.SHELLFISH_FREE), DietaryRestriction.Legacy("Sin ají")),
+            fit.violatedRestrictions,
+        )
+        assertTrue(analysis.alternatives.single().planFit!!.suggestsInPlan)
+        assertNull(PlanFitDto("NotAnswered").toDomainOrNull())
+        assertNull(PlanFitDto("Maybe").toDomainOrNull())
     }
 
     @Test
