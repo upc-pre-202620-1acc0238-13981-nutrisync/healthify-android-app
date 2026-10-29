@@ -52,6 +52,7 @@ import pe.edu.upc.healthify.features.carerelationship.presentation.navigation.Sw
 import pe.edu.upc.healthify.features.carerelationship.presentation.navigation.WithdrawConsentRoute
 import pe.edu.upc.healthify.features.carerelationship.presentation.navigation.careRelationshipDestinations
 import pe.edu.upc.healthify.features.iam.presentation.navigation.IamNavigationCallbacks
+import pe.edu.upc.healthify.features.iam.presentation.navigation.ForgotPasswordRoute
 import pe.edu.upc.healthify.features.iam.presentation.navigation.SessionExpiredRoute
 import pe.edu.upc.healthify.features.iam.presentation.navigation.ShellLoadingRoute
 import pe.edu.upc.healthify.features.iam.presentation.navigation.SignInRoute
@@ -158,6 +159,14 @@ fun AppNavHost(
                     onGoToSignUp = {
                         navController.navigate(SignUpRoute) {
                             popUpTo<SignInRoute> { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    },
+                    onGoToForgotPassword = { navController.navigate(ForgotPasswordRoute) { launchSingleTop = true } },
+                    // IAM-2 → S4: la recuperación sale del back stack; S4 (si estaba debajo) se reutiliza.
+                    onForgotPasswordDone = {
+                        navController.navigate(SignInRoute) {
+                            popUpTo<ForgotPasswordRoute> { inclusive = true }
                             launchSingleTop = true
                         }
                     },
