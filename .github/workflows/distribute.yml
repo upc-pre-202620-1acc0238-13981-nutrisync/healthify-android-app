@@ -1,0 +1,60 @@
+name: Distribute
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: distribute
+  cancel-in-progress: false
+
+jobs:
+  distribute:
+    name: Signed release to Firebase App Distribution
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 20
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@v5
+
+      - name: Write signing key and Firebase credentials
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/upload.jks"
+          echo "$FIREBASE_SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/firebase-service-account.json"
+
+      - name: Write release notes
+        run: git log -10 --no-merges --pretty=format:'- %s' > "$RUNNER_TEMP/release-notes.txt"
+
+      - name: Build and upload
+        env:
+          KEYSTORE_FILE: ${{ runner.temp }}/upload.jks
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+          FIREBASE_SERVICE_CREDENTIALS_FILE: ${{ runner.temp }}/firebase-service-account.json
+        run: >
+          ./gradlew assembleRelease
+          appDistributionUploadRelease --releaseNotesFile="$RUNNER_TEMP/release-notes.txt"
+          -PversionCode=${{ github.run_number }}
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v5
+        with:
+          name: healthify-release-${{ github.run_number }}
+          path: app/build/outputs/apk/release/*.apk
+
+      - name: Remove signing key and credentials
+        if: always()
+        run: rm -f "$RUNNER_TEMP/upload.jks" "$RUNNER_TEMP/firebase-service-account.json"
