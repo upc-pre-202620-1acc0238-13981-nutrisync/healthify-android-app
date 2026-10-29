@@ -1,5 +1,6 @@
 package pe.edu.upc.healthify.features.intake.presentation.state
 
+import pe.edu.upc.healthify.features.intake.domain.entity.PlanFit
 import pe.edu.upc.healthify.features.intake.domain.valueobject.LocalTimestamp
 import pe.edu.upc.healthify.features.intake.domain.valueobject.PlanAdherence
 import pe.edu.upc.healthify.features.intake.domain.valueobject.PortionGrams
@@ -13,6 +14,9 @@ import java.time.temporal.ChronoUnit
 /**
  * Los campos comunes de PT8 y PT10.1: porción, «¿Cuándo comiste?» y «¿Estaba en tu plan?». Los errores solo se
  * muestran después de intentar confirmar (o si el backend rechaza el momento).
+ *
+ * @param planSuggestion la sugerencia del servidor para «¿Estaba en tu plan?» (IN-8), que se preselecciona.
+ * @param planAnsweredByPatient el paciente ya tocó Sí/No: una sugerencia nueva ya no cambia su respuesta.
  */
 data class MealFormState(
     val portionText: String = "",
@@ -22,7 +26,26 @@ data class MealFormState(
     val mealTimeError: LocalTimestamp.Validity? = null,
     val showPlanError: Boolean = false,
     val showTimePicker: Boolean = false,
+    val planSuggestion: PlanFit? = null,
+    val planAnsweredByPatient: Boolean = false,
 ) {
+    /** El paciente eligió Sí/No (aunque coincida con la sugerencia): desde ahora manda su respuesta. */
+    fun answerPlan(inPlan: Boolean): MealFormState =
+        copy(inPlan = inPlan, planAnsweredByPatient = true, showPlanError = false)
+
+    /**
+     * IN-8 · llega una sugerencia (o deja de haberla). Mientras el paciente no haya respondido, la respuesta sigue a la
+     * sugerencia: se preselecciona, y sin sugerencia vuelve a quedar sin responder.
+     */
+    fun withPlanSuggestion(fit: PlanFit?): MealFormState {
+        if (planAnsweredByPatient) return copy(planSuggestion = fit)
+        return copy(planSuggestion = fit, inPlan = fit?.suggestsInPlan, showPlanError = showPlanError && fit == null)
+    }
+
+    /** El paciente eligió lo contrario de lo sugerido. */
+    val planSuggestionOverridden: Boolean
+        get() = planSuggestion != null && inPlan != null && inPlan != planSuggestion.suggestsInPlan
+
     /**
      * Aplica las reglas de los value objects (porción 1–2000 g, ventana de 48 h, respuesta Sí/No) y deja visibles los
      * errores. Con [checkTime] en `false` el momento se respeta tal cual (una entrada ya registrada no se reescribe).
