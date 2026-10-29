@@ -360,7 +360,12 @@ private fun MealFields(state: ManualMealUiState, actions: ManualMealActions) {
         )
     }
     if (state.selectedFood != null) {
-        PlanAdherenceCard(answer = form.inPlan, onAnswer = actions.onPlanAnswer, showError = form.showPlanError)
+        PlanAdherenceCard(
+            answer = form.inPlan,
+            onAnswer = actions.onPlanAnswer,
+            showError = form.showPlanError,
+            suggestion = form.planSuggestion,
+        )
     }
     HealthifyButton(
         text = stringResource(R.string.manual_register),

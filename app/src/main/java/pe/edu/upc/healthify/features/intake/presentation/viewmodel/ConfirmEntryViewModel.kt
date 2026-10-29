@@ -44,6 +44,7 @@ class ConfirmEntryViewModel @Inject constructor(
     private val observeCurrentUser: ObserveCurrentUserUseCase,
     private val getDiaryDay: GetDiaryDayUseCase,
     private val confirmDiaryEntry: ConfirmDiaryEntryUseCase,
+    private val planFitSuggester: PlanFitSuggester,
     connectivityObserver: ConnectivityObserver,
     private val clock: Clock,
 ) : ViewModel() {
@@ -63,6 +64,8 @@ class ConfirmEntryViewModel @Inject constructor(
     private val _events = Channel<ConfirmEntryEvent>(Channel.BUFFERED)
     val events: Flow<ConfirmEntryEvent> = _events.receiveAsFlow()
 
+    private var patientId: Long? = null
+
     init {
         viewModelScope.launch {
             connectivityObserver.isOnline.collect { online -> _state.update { it.copy(isOffline = !online) } }
@@ -72,7 +75,10 @@ class ConfirmEntryViewModel @Inject constructor(
                 val name = savedStateHandle.get<String>(PickedFoodResult.KEY_NAME)
                 savedStateHandle[PickedFoodResult.KEY_ID] = null
                 savedStateHandle[PickedFoodResult.KEY_NAME] = null
-                if (id > 0 && !name.isNullOrBlank()) _state.update { it.copy(food = MealFood(id, name), foodNotResolved = false) }
+                if (id > 0 && !name.isNullOrBlank()) {
+                    _state.update { it.copy(food = MealFood(id, name), foodNotResolved = false) }
+                    requestPlanFit()
+                }
             }
         }
         load()
@@ -84,6 +90,7 @@ class ConfirmEntryViewModel @Inject constructor(
         _state.update { it.copy(isLoading = true, loadFailed = false) }
         viewModelScope.launch {
             val user = observeCurrentUser().first()
+            patientId = user?.id?.value
             val day = date?.takeIf { entryId > 0 }?.let { d -> user?.let { getDiaryDay(it.id.value, d) } }
             val entry = day?.getOrNull()?.entries?.firstOrNull { it.id.value == entryId }
             val proposedFoodId = entry?.proposedFoodId
@@ -104,6 +111,7 @@ class ConfirmEntryViewModel @Inject constructor(
                             form = it.form.copy(portionText = gramsInput(grams), mealTime = entry.localTimestamp.value),
                         )
                     }
+                    requestPlanFit()
                 }
                 else -> _state.update { it.copy(isLoading = false, loadFailed = true) }
             }
@@ -112,10 +120,20 @@ class ConfirmEntryViewModel @Inject constructor(
 
     fun onPortionChange(text: String) {
         _state.update { it.copy(form = it.form.copy(portionText = text, showPortionError = false)) }
+        requestPlanFit()
     }
 
     fun onPlanAnswer(inPlan: Boolean) {
-        _state.update { it.copy(form = it.form.copy(inPlan = inPlan, showPlanError = false)) }
+        _state.update { it.copy(form = it.form.answerPlan(inPlan)) }
+    }
+
+    /** IN-8 · la sugerencia de «¿Estaba en tu plan?» para el plato y los gramos que se van a confirmar. */
+    private fun requestPlanFit() {
+        val pid = patientId ?: return
+        val current = _state.value
+        planFitSuggester.request(viewModelScope, pid, current.food ?: current.proposedFood, current.form) { fit ->
+            _state.update { it.copy(form = it.form.withPlanSuggestion(fit)) }
+        }
     }
 
     fun onChangeFood() {
