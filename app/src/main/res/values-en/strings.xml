@@ -45,6 +45,9 @@
     <string name="menu_pending">Pending</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_sign_out">Sign out</string>
+    <!-- Practitioner main menu (Settings and Sign out reuse the patient texts) -->
+    <string name="menu_role_practitioner">Nutritionist</string>
+    <string name="menu_food_catalog">Food catalog</string>
     <string name="nav_patients">Patients</string>
     <string name="nav_inbox">Inbox</string>
     <string name="nav_agenda">Schedule</string>

@@ -49,6 +49,9 @@
     <string name="menu_pending">Pendientes</string>
     <string name="menu_settings">Ajustes</string>
     <string name="menu_sign_out">Cerrar sesión</string>
+    <!-- Menú principal del nutricionista (Ajustes y Cerrar sesión usan los textos del paciente) -->
+    <string name="menu_role_practitioner">Nutricionista</string>
+    <string name="menu_food_catalog">Catálogo de alimentos</string>
     <string name="nav_patients">Pacientes</string>
     <string name="nav_inbox">Bandeja</string>
     <string name="nav_agenda">Agenda</string>
