@@ -6,12 +6,12 @@ import kotlinx.coroutines.flow.Flow
 import pe.edu.upc.healthify.features.iam.application.usecase.ObserveSessionExpiredUseCase
 import javax.inject.Inject
 
-/** Estado de la app que solo le importa al grafo raíz: el aviso «la sesión expiró» (refresh rechazado) → S6. */
+/** App state that only the root graph cares about: the "session expired" notice (refresh rejected). */
 @HiltViewModel
 class AppNavigationViewModel @Inject constructor(
     observeSessionExpired: ObserveSessionExpiredUseCase,
 ) : ViewModel() {
 
-    /** Único colector de [ObserveSessionExpiredUseCase] (el canal es CONFLATED: espera si la app está en fondo). */
+    /** Sole collector of [ObserveSessionExpiredUseCase] (CONFLATED channel: it waits while the app is in background). */
     val sessionExpired: Flow<Unit> = observeSessionExpired()
 }

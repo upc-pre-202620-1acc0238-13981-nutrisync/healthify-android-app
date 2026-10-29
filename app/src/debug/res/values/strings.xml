@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Textos del catálogo interno del sistema de diseño (solo debug, herramienta de revisión en español). -->
+<!-- Design system catalog strings. Debug only, Spanish only: it is an internal review tool. -->
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="es">
     <string name="catalog_launcher_label" translatable="false">Healthify · Catálogo DS</string>
     <string name="catalog_title" translatable="false">CATÁLOGO DS</string>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- API 31+. Datos de salud y tokens cifrados con una clave del Keystore: nunca se respaldan ni se transfieren. -->
+<!-- API 31+. Health data and tokens encrypted with a Keystore key: never backed up or transferred. -->
 <data-extraction-rules>
     <cloud-backup>
         <exclude domain="root" path="." />

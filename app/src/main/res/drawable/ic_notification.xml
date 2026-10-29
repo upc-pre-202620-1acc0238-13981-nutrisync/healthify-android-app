@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- PT22 · ícono de los avisos locales (Icon/bell del sistema de diseño), monocromo como pide la barra de estado. -->
+<!-- Local notification icon (Icon/bell from the design system), monochrome as the status bar requires. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"

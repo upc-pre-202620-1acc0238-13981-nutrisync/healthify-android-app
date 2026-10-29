@@ -7,9 +7,9 @@ import androidx.activity.enableEdgeToEdge
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 
 /**
- * Catálogo interno del sistema de diseño (solo debug): todos los componentes de `core/designsystem` con
- * sus estados, para revisarlos contra el Figma «Sistema de diseño · Healthify M3».
- * Tiene su propio ícono en el launcher («Healthify · Catálogo DS»).
+ * Debug-only catalog of every `core/designsystem` component and its states, used to check them
+ * against the Figma design system. It has no launcher icon; open it with
+ * `adb shell am start -n pe.edu.upc.healthify/.core.designsystem.catalog.DesignSystemCatalogActivity`.
  */
 class DesignSystemCatalogActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
