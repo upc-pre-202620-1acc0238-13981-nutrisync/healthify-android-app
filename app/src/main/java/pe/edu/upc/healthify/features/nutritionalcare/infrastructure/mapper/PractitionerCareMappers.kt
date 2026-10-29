@@ -6,6 +6,7 @@ import pe.edu.upc.healthify.core.network.toLocalDateOrNull
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.BaselineSummary
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.BiochemistryPanel
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.CalculationBasis
+import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.ClinicalWeightSummary
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.ComplianceRatio
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.Consultation
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.ConsultationDiagnosis
@@ -15,6 +16,7 @@ import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.ConsultationT
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.DiagnosisChoice
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.DiagnosisSuggestion
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.EatingHabits
+import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.EvaluationDetail
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.GuidelineSuggestions
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.NewBaseline
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.NewMeasurement
@@ -30,7 +32,6 @@ import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.Publication
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.PublicationDraft
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.RecordActiveTargets
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.RecordBmi
-import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.ClinicalWeightSummary
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.RecordComplianceWindow
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.RecordDiagnosis
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.RecordEvaluation
@@ -64,6 +65,7 @@ import pe.edu.upc.healthify.features.nutritionalcare.infrastructure.remote.dto.E
 import pe.edu.upc.healthify.features.nutritionalcare.infrastructure.remote.dto.GuidelineSuggestionsDto
 import pe.edu.upc.healthify.features.nutritionalcare.infrastructure.remote.dto.MeasurementRequestDto
 import pe.edu.upc.healthify.features.nutritionalcare.infrastructure.remote.dto.NutritionPlanDto
+import pe.edu.upc.healthify.features.nutritionalcare.infrastructure.remote.dto.NutritionalAssessmentDto
 import pe.edu.upc.healthify.features.nutritionalcare.infrastructure.remote.dto.PatientBaselineDto
 import pe.edu.upc.healthify.features.nutritionalcare.infrastructure.remote.dto.PatientBaselineRequestDto
 import pe.edu.upc.healthify.features.nutritionalcare.infrastructure.remote.dto.PatientSummaryDto
@@ -163,6 +165,29 @@ fun ConsultationDto.toDomain(): Consultation = Consultation(
     },
     publishedPlanVersion = publishedPlanVersion,
 )
+
+/** La medición más reciente de la evaluación; sin medición el recurso no se puede mostrar. */
+fun NutritionalAssessmentDto.toDomain(): EvaluationDetail {
+    val latest = anthropometry.maxByOrNull { it.takenAt.toInstantOrNull() ?: Instant.MIN } ?: malformed("anthropometry")
+    return EvaluationDetail(
+        assessmentId = assessmentId,
+        takenAt = latest.takenAt.instantOrFail("takenAt"),
+        measurement = ConsultationMeasurement(
+            weightKg = latest.weightKg,
+            heightCm = latest.heightCm,
+            waistCm = latest.waistCircumferenceCm,
+            bodyFatPercentage = latest.bodyFatPercentage,
+            bmi = latest.bmi,
+            protocolChecks = latest.protocolChecks.orEmpty().mapNotNull(ProtocolCheck::fromCode).toSet(),
+            activityLevel = ActivityLevel.fromCode(activityLevel),
+            habits = eatingHabits?.toDomain(),
+            biochemistry = biochemistryPanel?.toDomain(),
+            ageYears = ageYears,
+            sex = BiologicalSex.fromCode(biologicalSex),
+        ),
+        bmiCategory = DiagnosisCode.fromCode(latest.bmiCategory),
+    )
+}
 
 private fun EatingHabitsDto.toDomain(): EatingHabits? =
     if (mealsPerDay == null && waterLitersPerDay == null && mealsOutPerWeek == null) {
@@ -327,7 +352,14 @@ fun PractitionerRecordDto.toDomain(): PractitionerPatientRecord = PractitionerPa
     },
     referrals = followUp?.referrals.orEmpty().mapNotNull { r ->
         r.issuedAt.toInstantOrNull()?.let {
-            ReferralSummary(r.referralId, r.specialty, it, isOpen = r.status.equals("Open", ignoreCase = true))
+            ReferralSummary(
+                id = r.referralId,
+                specialty = r.specialty,
+                issuedAt = it,
+                isOpen = r.status.equals("Open", ignoreCase = true),
+                reason = r.reason.trim(),
+                closedAt = r.closedAt?.toInstantOrNull(),
+            )
         }
     },
     evaluations = evaluations.mapNotNull { e ->

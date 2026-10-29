@@ -1338,6 +1338,20 @@
 
     <string name="practitioner_sign_out_body">Tendrás que volver a ingresar tu correo y contraseña. Tus pacientes y sus datos quedan guardados.</string>
 
+    <!-- Detalle de una versión del plan (PT4.1 / PAC-4) -->
+    <string name="plan_version_detail_published">Publicada el %1$s</string>
+    <string name="plan_version_detail_changes">Qué cambió en esta versión</string>
+    <string name="plan_version_detail_message_to_patient">Mensaje al paciente</string>
+
+    <!-- Detalle de evaluación y derivaciones (PAC-3 / PT20) -->
+    <string name="evaluation_detail_title">Evaluación</string>
+    <string name="referral_detail_open">En curso</string>
+    <string name="referral_detail_closed">Cerrada</string>
+    <string name="referral_detail_issued_on">Registrada el %1$s</string>
+    <string name="referral_detail_closed_on">cerrada el %1$s</string>
+    <string name="referral_detail_reason">Motivo</string>
+    <string name="referral_detail_no_reason">Sin motivo registrado.</string>
+
     <!-- Avisos locales de la próxima consulta -->
     <string name="consultation_reminder_channel_name">Consultas</string>
     <string name="consultation_reminder_channel_description">Avisos antes de cada consulta agendada.</string>

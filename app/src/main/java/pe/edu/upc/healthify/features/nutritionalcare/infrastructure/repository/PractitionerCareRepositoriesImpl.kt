@@ -8,6 +8,7 @@ import pe.edu.upc.healthify.core.network.apiCall
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.Consultation
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.DiagnosisChoice
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.DiagnosisSuggestion
+import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.EvaluationDetail
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.GuidelineSuggestions
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.NewBaseline
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.NewMeasurement
@@ -90,6 +91,9 @@ class PractitionerRecordRepositoryImpl @Inject constructor(
 
     override suspend fun getRecord(patientId: PatientId): Result<PractitionerPatientRecord> =
         apiCall { service.getRecord(patientId.value, RECORD_DAYS) }.mapResource { it.toDomain() }
+
+    override suspend fun getEvaluation(assessmentId: Long): Result<EvaluationDetail> =
+        apiCall { service.getAssessment(assessmentId) }.mapResource { it.toDomain() }
 
     private companion object {
         /** `PatientRecordComposer.DefaultDays`. */

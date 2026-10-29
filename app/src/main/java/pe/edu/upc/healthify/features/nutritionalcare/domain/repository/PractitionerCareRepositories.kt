@@ -3,6 +3,7 @@ package pe.edu.upc.healthify.features.nutritionalcare.domain.repository
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.Consultation
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.DiagnosisChoice
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.DiagnosisSuggestion
+import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.EvaluationDetail
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.GuidelineSuggestions
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.NewBaseline
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.NewMeasurement
@@ -44,6 +45,9 @@ interface PatientSummaryRepository {
 /** RM-4 · `GET /patients/{pid}/record?days=30` con el token del profesional (PAC-3). */
 interface PractitionerRecordRepository {
     suspend fun getRecord(patientId: PatientId): Result<PractitionerPatientRecord>
+
+    /** PAC-3 · detalle de una evaluación (`GET /nutritional-assessments/{id}`). */
+    suspend fun getEvaluation(assessmentId: Long): Result<EvaluationDetail>
 }
 
 /** PAC-4 · `GET /patients/{pid}/nutrition-plans` (solo versiones publicadas). */

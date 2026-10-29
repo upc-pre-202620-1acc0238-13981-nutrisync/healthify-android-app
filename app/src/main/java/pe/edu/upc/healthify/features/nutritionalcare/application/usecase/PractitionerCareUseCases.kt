@@ -6,6 +6,7 @@ import pe.edu.upc.healthify.core.common.error.domainFailure
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.Consultation
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.DiagnosisChoice
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.DiagnosisSuggestion
+import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.EvaluationDetail
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.GuidelineSuggestions
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.NewBaseline
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.NewMeasurement
@@ -39,6 +40,11 @@ class GetPractitionerRecordUseCase @Inject constructor(private val repository: P
 }
 
 /** PAC-4 · el historial del plan. */
+/** PAC-3 · una evaluación del expediente, al tocarla. */
+class GetEvaluationDetailUseCase @Inject constructor(private val repository: PractitionerRecordRepository) {
+    suspend operator fun invoke(assessmentId: Long): Result<EvaluationDetail> = repository.getEvaluation(assessmentId)
+}
+
 class GetPlanHistoryUseCase @Inject constructor(private val repository: NutritionPlanRepository) {
     suspend operator fun invoke(patientId: Long): Result<PlanHistory> = repository.getHistory(PatientId(patientId))
 }

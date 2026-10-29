@@ -1302,6 +1302,20 @@
 
     <string name="practitioner_sign_out_body">You\'ll have to enter your email and password again. Your patients and their data stay saved.</string>
 
+    <!-- Plan version detail (PT4.1 / PAC-4) -->
+    <string name="plan_version_detail_published">Published on %1$s</string>
+    <string name="plan_version_detail_changes">What changed in this version</string>
+    <string name="plan_version_detail_message_to_patient">Message to the patient</string>
+
+    <!-- Assessment and referral detail (PAC-3 / PT20) -->
+    <string name="evaluation_detail_title">Assessment</string>
+    <string name="referral_detail_open">Ongoing</string>
+    <string name="referral_detail_closed">Closed</string>
+    <string name="referral_detail_issued_on">Recorded on %1$s</string>
+    <string name="referral_detail_closed_on">closed on %1$s</string>
+    <string name="referral_detail_reason">Reason</string>
+    <string name="referral_detail_no_reason">No reason recorded.</string>
+
     <!-- Local notices for the next consultation -->
     <string name="consultation_reminder_channel_name">Consultations</string>
     <string name="consultation_reminder_channel_description">Notices before each scheduled consultation.</string>

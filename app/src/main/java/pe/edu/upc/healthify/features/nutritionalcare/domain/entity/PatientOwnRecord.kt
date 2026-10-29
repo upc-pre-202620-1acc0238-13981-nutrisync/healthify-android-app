@@ -111,4 +111,6 @@ data class RecordReferral(
     val specialty: String,
     val issuedAt: Instant,
     val isOpen: Boolean,
+    val reason: String = "",
+    val closedAt: Instant? = null,
 )
