@@ -11,12 +11,31 @@ concurrency:
 
 jobs:
   distribute:
-    name: Signed release to Firebase App Distribution
+    name: Signed release to Firebase App Distribution and GitHub
     runs-on: ubuntu-latest
+    permissions:
+      # Creates the version tag and the GitHub release.
+      contents: write
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 20
+
+      # A push to main must bring a new versionName; a manual run of an already released version only redistributes it.
+      - name: Check the version is new
+        id: version
+        run: |
+          version=$(grep -oP 'versionName = "\K[^"]+' app/build.gradle.kts)
+          echo "tag=v$version" >> "$GITHUB_OUTPUT"
+          if git ls-remote --exit-code --tags origin "refs/tags/v$version" > /dev/null; then
+            echo "released=true" >> "$GITHUB_OUTPUT"
+            if [ "$GITHUB_EVENT_NAME" = "push" ]; then
+              echo "::error::v$version is already released. Bump versionName in app/build.gradle.kts."
+              exit 1
+            fi
+          else
+            echo "released=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - uses: actions/setup-java@v5
         with:
@@ -54,6 +73,16 @@ jobs:
         with:
           name: healthify-release-${{ github.run_number }}
           path: app/build/outputs/apk/release/*.apk
+
+      - name: Create GitHub release
+        if: steps.version.outputs.released == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          cp app/build/outputs/apk/release/app-release.apk "$RUNNER_TEMP/healthify-$TAG.apk"
+          gh release create "$TAG" "$RUNNER_TEMP/healthify-$TAG.apk" \
+            --target "$GITHUB_SHA" --title "$TAG" --generate-notes
 
       - name: Remove signing key and credentials
         if: always()
