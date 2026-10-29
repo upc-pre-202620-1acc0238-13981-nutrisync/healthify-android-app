@@ -55,7 +55,6 @@ enum class PractitionerTab(@param:StringRes val labelRes: Int) {
     Patients(R.string.nav_patients),
     Inbox(R.string.nav_inbox),
     Agenda(R.string.nav_agenda),
-    Settings(R.string.nav_settings),
 }
 
 /** Un destino genérico de [HealthifyNavigationBar]. */
@@ -219,7 +218,7 @@ private fun RegisterMealNavButton(onClick: () -> Unit, modifier: Modifier = Modi
     }
 }
 
-/** NavigationBar del nutricionista: Pacientes · Bandeja · Agenda · Ajustes. */
+/** NavigationBar del nutricionista: Pacientes · Bandeja · Agenda (Ajustes se abre desde el menú principal). */
 @Composable
 fun PractitionerNavigationBar(
     selected: PractitionerTab,
@@ -250,7 +249,6 @@ private val PractitionerTab.icon: ImageVector
         PractitionerTab.Patients -> HealthifyIcons.Patients
         PractitionerTab.Inbox -> HealthifyIcons.Inbox
         PractitionerTab.Agenda -> HealthifyIcons.Agenda
-        PractitionerTab.Settings -> HealthifyIcons.Settings
     }
 
 @Preview(name = "NavigationBar/Paciente · Activo", widthDp = 360, heightDp = 460)

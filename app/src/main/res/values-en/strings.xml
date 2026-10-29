@@ -36,7 +36,6 @@
     <string name="nav_diary">Diary</string>
     <string name="nav_progress">Progress</string>
     <string name="nav_record">Record</string>
-    <string name="nav_settings">Settings</string>
     <!-- Patient main menu -->
     <string name="menu_cd_open">Open menu</string>
     <string name="menu_role_patient">Patient</string>
