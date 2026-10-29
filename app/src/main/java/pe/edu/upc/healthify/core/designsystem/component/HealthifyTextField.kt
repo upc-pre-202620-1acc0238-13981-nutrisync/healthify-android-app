@@ -153,7 +153,8 @@ internal fun HealthifyTextFieldImpl(
     val trailing: (@Composable () -> Unit)? = if (isPassword) {
         {
             HealthifyIconButton(
-                icon = HealthifyIcons.Visibility,
+                // Ojo abierto = «mostrar»; ojo tachado = «ocultar» (la contraseña ya se ve).
+                icon = if (passwordVisible) HealthifyIcons.VisibilityOff else HealthifyIcons.Visibility,
                 contentDescription = stringResource(
                     if (passwordVisible) R.string.ds_hide_password else R.string.ds_show_password,
                 ),

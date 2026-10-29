@@ -271,6 +271,8 @@
     <string name="home_gap_action">Log now</string>
     <string name="home_energy_exceeded_title">Tomorrow is a new day</string>
     <string name="home_energy_exceeded_body">You\'ve gone past your energy goal today. That\'s okay: if you feel like something else, pick lighter options for the rest of the day.</string>
+    <string name="home_notice_expand">Show full message</string>
+    <string name="home_notice_collapse">Show less</string>
     <string name="home_targets_changed_title">YOUR TARGETS CHANGED</string>
     <string name="home_targets_changed_body">Your nutritionist adjusted your targets (version %1$d). Review them whenever you like: nothing changes in your diary.</string>
     <string name="home_targets_changed_primary">See my new targets</string>
