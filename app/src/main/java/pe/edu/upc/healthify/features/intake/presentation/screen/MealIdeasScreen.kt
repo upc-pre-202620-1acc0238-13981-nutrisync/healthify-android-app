@@ -14,9 +14,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,8 +27,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -149,6 +153,7 @@ private fun ColumnScope.IdeasListBody(state: MealIdeasUiState, actions: MealIdea
         .heightIn(min = HealthifyTheme.dimens.space64 * EMPTY_HEIGHT_FACTOR)
     when {
         state.isLoading -> {
+            LoadingIdeas()
             SkeletonCard()
             SkeletonCard()
         }
@@ -198,6 +203,30 @@ private fun ColumnScope.IdeasListBody(state: MealIdeasUiState, actions: MealIdea
             title = stringResource(R.string.ideas_unavailable_title),
             text = stringResource(R.string.ideas_unavailable_body),
             modifier = emptyModifier,
+        )
+    }
+}
+
+/** «Preparando tus ideas…»: la IA tarda unos segundos, así que el skeleton va con un indicador que se mueve. */
+@Composable
+private fun LoadingIdeas() {
+    val dimens = HealthifyTheme.dimens
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Polite },
+        horizontalArrangement = Arrangement.spacedBy(dimens.space12),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        CircularProgressIndicator(
+            color = MaterialTheme.colorScheme.primary,
+            strokeWidth = dimens.borderThick,
+            modifier = Modifier.size(dimens.icon),
+        )
+        Text(
+            text = stringResource(R.string.ideas_loading),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }
