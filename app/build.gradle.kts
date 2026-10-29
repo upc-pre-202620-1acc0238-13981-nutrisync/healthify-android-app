@@ -28,7 +28,8 @@ android {
         applicationId = "pe.edu.upc.healthify"
         minSdk = 24
         targetSdk = 37
-        versionCode = 1
+        // CI passes -PversionCode with the run number: each distributed build needs a higher one.
+        versionCode = providers.gradleProperty("versionCode").orNull?.toInt() ?: 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
