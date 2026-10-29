@@ -2,8 +2,12 @@ package pe.edu.upc.healthify.features.iam.domain.repository
 
 import pe.edu.upc.healthify.features.iam.domain.entity.Credentials
 import pe.edu.upc.healthify.features.iam.domain.entity.NewAccount
+import pe.edu.upc.healthify.features.iam.domain.entity.PasswordReset
 import pe.edu.upc.healthify.features.iam.domain.entity.SessionUser
+import pe.edu.upc.healthify.features.iam.domain.valueobject.EmailAddress
 import pe.edu.upc.healthify.features.iam.domain.valueobject.NavigationShell
+import pe.edu.upc.healthify.features.iam.domain.valueobject.PasswordResetCode
+import pe.edu.upc.healthify.features.iam.domain.valueobject.PasswordResetToken
 import pe.edu.upc.healthify.features.iam.domain.valueobject.SessionId
 
 /** Cuentas y sesiones contra el backend (§5.1 Iam). Los errores llegan como `DomainError` con el `code` de X-3. */
@@ -14,6 +18,24 @@ interface AuthenticationRepository {
 
     /** `POST /authentication/sign-in` (F2). Si responde, la sesión queda guardada en el dispositivo. */
     suspend fun signIn(credentials: Credentials): Result<SessionUser>
+
+    /**
+     * `POST /authentication/password-reset-requests` (IAM-2). Siempre `202`, exista o no la cuenta: el éxito no dice
+     * si se envió un correo.
+     */
+    suspend fun requestPasswordReset(email: EmailAddress): Result<Unit>
+
+    /**
+     * `POST /authentication/password-reset-verifications` (IAM-2). Un código correcto se cambia por el token que fija
+     * la contraseña; uno incorrecto responde `PasswordResetCodeInvalid` y gasta un intento.
+     */
+    suspend fun verifyPasswordResetCode(email: EmailAddress, code: PasswordResetCode): Result<PasswordResetToken>
+
+    /**
+     * `POST /authentication/password-resets` (IAM-2), con el token de la verificación. Si responde, todas las sesiones
+     * de la cuenta terminaron; no inicia sesión.
+     */
+    suspend fun resetPassword(reset: PasswordReset): Result<Unit>
 
     /** `POST /authentication/sign-out` (F3): termina la sesión en el backend y borra su refresh token. */
     suspend fun signOutRemotely(): Result<Unit>

@@ -5,15 +5,21 @@ import pe.edu.upc.healthify.core.common.error.domainFailure
 import pe.edu.upc.healthify.core.network.apiCall
 import pe.edu.upc.healthify.features.iam.domain.entity.Credentials
 import pe.edu.upc.healthify.features.iam.domain.entity.NewAccount
+import pe.edu.upc.healthify.features.iam.domain.entity.PasswordReset
 import pe.edu.upc.healthify.features.iam.domain.entity.SessionUser
 import pe.edu.upc.healthify.features.iam.domain.repository.AuthenticationRepository
+import pe.edu.upc.healthify.features.iam.domain.valueobject.EmailAddress
 import pe.edu.upc.healthify.features.iam.domain.valueobject.NavigationShell
+import pe.edu.upc.healthify.features.iam.domain.valueobject.PasswordResetCode
+import pe.edu.upc.healthify.features.iam.domain.valueobject.PasswordResetToken
 import pe.edu.upc.healthify.features.iam.domain.valueobject.SessionId
 import pe.edu.upc.healthify.features.iam.infrastructure.local.SessionLocalDataSource
 import pe.edu.upc.healthify.features.iam.infrastructure.mapper.toDomain
 import pe.edu.upc.healthify.features.iam.infrastructure.mapper.toDto
 import pe.edu.upc.healthify.features.iam.infrastructure.remote.AuthenticationService
 import pe.edu.upc.healthify.features.iam.infrastructure.remote.SessionService
+import pe.edu.upc.healthify.features.iam.infrastructure.remote.dto.PasswordResetRequestDto
+import pe.edu.upc.healthify.features.iam.infrastructure.remote.dto.PasswordResetVerificationRequestDto
 import javax.inject.Inject
 
 class AuthenticationRepositoryImpl @Inject constructor(
@@ -37,6 +43,28 @@ class AuthenticationRepositoryImpl @Inject constructor(
         localDataSource.save(user, accessToken = response.token, refreshToken = response.refreshToken)
         return Result.success(user)
     }
+
+    override suspend fun requestPasswordReset(email: EmailAddress): Result<Unit> =
+        apiCall { authenticationService.requestPasswordReset(PasswordResetRequestDto(email = email.value)) }
+
+    override suspend fun verifyPasswordResetCode(
+        email: EmailAddress,
+        code: PasswordResetCode,
+    ): Result<PasswordResetToken> {
+        val response = apiCall {
+            authenticationService.verifyPasswordResetCode(
+                PasswordResetVerificationRequestDto(email = email.value, code = code.value),
+            )
+        }.getOrElse { return Result.failure(it) }
+        return try {
+            Result.success(response.toDomain())
+        } catch (_: IllegalArgumentException) {
+            domainFailure(DomainError.Unexpected(MALFORMED_RESPONSE))
+        }
+    }
+
+    override suspend fun resetPassword(reset: PasswordReset): Result<Unit> =
+        apiCall { authenticationService.resetPassword(reset.toDto()) }
 
     override suspend fun signOutRemotely(): Result<Unit> = apiCall { sessionService.signOut() }
 

@@ -108,8 +108,33 @@
     <string name="sign_in_error_credentials">Incorrect email or password</string>
     <string name="sign_in_locked_title">Your account is temporarily locked</string>
     <string name="sign_in_locked_body">For your security, after 5 failed attempts. Try again later or recover your password.</string>
-    <string name="sign_in_forgot_dialog_title">Coming soon</string>
-    <string name="sign_in_forgot_dialog_body">Very soon you\'ll be able to recover your password from here.</string>
+
+    <!-- IAM-2 · Reset password -->
+    <string name="forgot_password_title">RESET PASSWORD</string>
+    <string name="forgot_password_email_subtitle">Enter your account email and we\'ll send you a 6-digit code.</string>
+    <string name="forgot_password_email_error">Enter a valid email</string>
+    <string name="forgot_password_send">Send code</string>
+    <string name="forgot_password_sending">Sending…</string>
+    <string name="forgot_password_back_to_sign_in">Back to sign in</string>
+    <string name="forgot_password_code_subtitle">If %1$s has an account, we sent it a code. Check your spam folder too.</string>
+    <string name="forgot_password_code_label">Code</string>
+    <string name="forgot_password_code_placeholder">6 digits</string>
+    <string name="forgot_password_code_error">The code is wrong or has expired. Ask for a new one.</string>
+    <string name="forgot_password_verify">Verify code</string>
+    <string name="forgot_password_verifying">Verifying…</string>
+    <string name="forgot_password_token_expired">The time to change your password ran out. Ask for a new code.</string>
+    <string name="forgot_password_new_password_subtitle">Code verified. Choose a new password, different from your current one.</string>
+    <string name="forgot_password_new_password">New password</string>
+    <string name="forgot_password_error_reused">Use a password different from your current one</string>
+    <string name="forgot_password_submit">Change password</string>
+    <string name="forgot_password_submitting">Changing…</string>
+    <string name="forgot_password_resend">Resend code</string>
+    <string name="forgot_password_resend_in">Resend code in %1$d s</string>
+    <string name="forgot_password_resent">We sent you a new code.</string>
+    <string name="forgot_password_change_email">Use another email</string>
+    <string name="forgot_password_done_title">PASSWORD UPDATED</string>
+    <string name="forgot_password_done_body">You can now sign in with your new password. For your security, we signed you out on your other devices.</string>
+    <string name="forgot_password_go_to_sign_in">Sign in</string>
 
     <!-- S5 · Loading -->
     <string name="shell_loading_text">Getting your space ready…</string>

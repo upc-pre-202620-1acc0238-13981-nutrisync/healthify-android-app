@@ -8,12 +8,15 @@ import pe.edu.upc.healthify.core.common.error.DomainError
 import pe.edu.upc.healthify.core.common.error.domainFailure
 import pe.edu.upc.healthify.features.iam.domain.entity.Credentials
 import pe.edu.upc.healthify.features.iam.domain.entity.NewAccount
+import pe.edu.upc.healthify.features.iam.domain.entity.PasswordReset
 import pe.edu.upc.healthify.features.iam.domain.entity.SessionUser
 import pe.edu.upc.healthify.features.iam.domain.repository.AccountRepository
 import pe.edu.upc.healthify.features.iam.domain.repository.AuthenticationRepository
 import pe.edu.upc.healthify.features.iam.domain.repository.SessionRepository
 import pe.edu.upc.healthify.features.iam.domain.valueobject.EmailAddress
 import pe.edu.upc.healthify.features.iam.domain.valueobject.NavigationShell
+import pe.edu.upc.healthify.features.iam.domain.valueobject.PasswordResetCode
+import pe.edu.upc.healthify.features.iam.domain.valueobject.PasswordResetToken
 import pe.edu.upc.healthify.features.iam.domain.valueobject.PersonName
 import pe.edu.upc.healthify.features.iam.domain.valueobject.PreferredLanguage
 import pe.edu.upc.healthify.features.iam.domain.valueobject.SessionId
@@ -69,6 +72,31 @@ class FakeAuthenticationRepository : AuthenticationRepository {
     override suspend fun signIn(credentials: Credentials): Result<SessionUser> {
         signIns += credentials
         return signInResult
+    }
+
+    var requestPasswordResetResult: Result<Unit> = Result.success(Unit)
+    var verifyPasswordResetCodeResult: Result<PasswordResetToken> = Result.success(PasswordResetToken("token-1"))
+    var resetPasswordResult: Result<Unit> = Result.success(Unit)
+    val passwordResetRequests = mutableListOf<EmailAddress>()
+    val codeVerifications = mutableListOf<Pair<EmailAddress, PasswordResetCode>>()
+    val passwordResets = mutableListOf<PasswordReset>()
+
+    override suspend fun requestPasswordReset(email: EmailAddress): Result<Unit> {
+        passwordResetRequests += email
+        return requestPasswordResetResult
+    }
+
+    override suspend fun verifyPasswordResetCode(
+        email: EmailAddress,
+        code: PasswordResetCode,
+    ): Result<PasswordResetToken> {
+        codeVerifications += email to code
+        return verifyPasswordResetCodeResult
+    }
+
+    override suspend fun resetPassword(reset: PasswordReset): Result<Unit> {
+        passwordResets += reset
+        return resetPasswordResult
     }
 
     override suspend fun signOutRemotely(): Result<Unit> {
