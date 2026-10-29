@@ -443,6 +443,13 @@
     <string name="meal_photo_expired_body">Esta estimación ya venció. Toma otra foto o registra la comida a mano.</string>
     <string name="plan_adherence_question">¿Esta comida estaba en tu plan?</string>
     <string name="plan_adherence_explanation">Si eliges «No», se marca como «Fuera del plan» para que tu nutricionista entienda tu semana. Igual cuenta en tu registro.</string>
+    <string name="plan_suggestion_badge">Sugerencia con IA</string>
+    <string name="plan_suggestion_fits">Marcamos «Sí»: parece encajar en tu plan. Puedes cambiarlo.</string>
+    <string name="plan_suggestion_breaks_restriction">Marcamos «No»: podría no respetar una restricción de tu plan. Puedes cambiarlo.</string>
+    <string name="plan_suggestion_exceeds">Marcamos «No»: son unas %1$s kcal y hoy te quedaban %2$s kcal. Puedes cambiarlo.</string>
+    <string name="plan_suggestion_exceeds_no_day">Marcamos «No»: parece más de lo que te quedaba hoy. Puedes cambiarlo.</string>
+    <string name="plan_suggestion_changed">Cambiaste la sugerencia: se registrará tu respuesta.</string>
+    <string name="plan_restriction_warning">Este plato podría llevar algo que tu plan restringe: %1$s. Revisa los ingredientes.</string>
     <string name="adjust_title">AJUSTAR GRAMOS</string>
     <string name="adjust_food_label">Alimento</string>
     <string name="adjust_food_support">¿No es este plato? Toca para cambiarlo.</string>
@@ -491,6 +498,7 @@
     <!-- PT14.4 / PT14.5 · Ideas con IA -->
     <string name="ideas_title">IDEAS PARA HOY</string>
     <string name="ideas_detail_title">IDEA PARA HOY</string>
+    <string name="ideas_loading">Preparando ideas para ti…</string>
     <string name="ideas_intro">Caben en lo que te queda hoy (%1$s kcal) y %2$s.</string>
     <string name="ideas_intro_no_restrictions">Caben en lo que te queda hoy (%1$s kcal) y respetan tu plan.</string>
     <string name="ideas_join_last">%1$s y %2$s</string>

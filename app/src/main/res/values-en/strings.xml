@@ -427,6 +427,13 @@
     <string name="meal_photo_expired_body">This estimate has expired. Take another photo or log the meal by hand.</string>
     <string name="plan_adherence_question">Was this meal in your plan?</string>
     <string name="plan_adherence_explanation">If you choose «No», it\'s marked «Off plan» so your nutritionist understands your week. It still counts in your log.</string>
+    <string name="plan_suggestion_badge">AI suggestion</string>
+    <string name="plan_suggestion_fits">We selected «Yes»: it seems to fit your plan. You can change it.</string>
+    <string name="plan_suggestion_breaks_restriction">We selected «No»: it may not follow a restriction in your plan. You can change it.</string>
+    <string name="plan_suggestion_exceeds">We selected «No»: it\'s about %1$s kcal and you had %2$s kcal left today. You can change it.</string>
+    <string name="plan_suggestion_exceeds_no_day">We selected «No»: it seems to be more than you had left today. You can change it.</string>
+    <string name="plan_suggestion_changed">You changed the suggestion: your answer is what gets logged.</string>
+    <string name="plan_restriction_warning">This dish may contain something your plan restricts: %1$s. Check the ingredients.</string>
     <string name="adjust_title">ADJUST GRAMS</string>
     <string name="adjust_food_label">Food</string>
     <string name="adjust_food_support">Not this dish? Tap to change it.</string>
@@ -474,6 +481,7 @@
     <!-- PT14.4 / PT14.5 · AI ideas -->
     <string name="ideas_title">IDEAS FOR TODAY</string>
     <string name="ideas_detail_title">IDEA FOR TODAY</string>
+    <string name="ideas_loading">Preparing ideas for you…</string>
     <string name="ideas_intro">They fit what you have left today (%1$s kcal) and %2$s.</string>
     <string name="ideas_intro_no_restrictions">They fit what you have left today (%1$s kcal) and follow your plan.</string>
     <string name="ideas_join_last">%1$s and %2$s</string>
