@@ -28,6 +28,7 @@ import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 import pe.edu.upc.healthify.features.intake.presentation.screen.DiaryCallbacks
 import pe.edu.upc.healthify.features.intake.presentation.screen.DiaryScreen
 import pe.edu.upc.healthify.features.intake.presentation.screen.WeightTrendScreen
+import pe.edu.upc.healthify.features.main.presentation.components.NotificationPermissionRequest
 import pe.edu.upc.healthify.features.main.presentation.components.PatientMenuContent
 import pe.edu.upc.healthify.features.main.presentation.components.PatientMenuItem
 import pe.edu.upc.healthify.features.main.presentation.components.PlaceholderScreen
@@ -90,6 +91,7 @@ fun PatientShellScreen(
     viewModel: PatientShellViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    NotificationPermissionRequest()
     LaunchedEffect(requestedTab) {
         if (requestedTab != null) {
             navController.navigateToTab(requestedTab.route())
@@ -134,6 +136,7 @@ fun PatientShellScreen(
                     onOpenMenu = onOpenMenu,
                     onOpenReminders = callbacks.onOpenReminders,
                     onOpenMyPlan = callbacks.onOpenMyPlan,
+                    onOpenDiary = { navController.navigateToTab(PatientTab.Diary.route()) },
                     onRegisterMeal = callbacks.onRegisterMeal,
                     onOpenHowAmIToday = callbacks.onOpenHowAmIToday,
                     onOpenFollowUp = callbacks.onOpenFollowUp,

@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pe.edu.upc.healthify.features.iam.application.usecase.ObserveCurrentUserUseCase
 import pe.edu.upc.healthify.features.main.presentation.state.PatientShellUiState
+import pe.edu.upc.healthify.features.monitoring.application.usecase.RequestConsultationRemindersUseCase
 import javax.inject.Inject
 
 /**
@@ -19,12 +20,15 @@ import javax.inject.Inject
 @HiltViewModel
 class PatientShellViewModel @Inject constructor(
     private val observeCurrentUser: ObserveCurrentUserUseCase,
+    private val requestConsultationReminders: RequestConsultationRemindersUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(PatientShellUiState())
     val state: StateFlow<PatientShellUiState> = _state.asStateFlow()
 
     init {
+        // Al entrar al shell se reprograman los avisos de las próximas consultas (también cambian desde otro teléfono).
+        requestConsultationReminders()
         viewModelScope.launch {
             observeCurrentUser().collect { user ->
                 _state.update {
