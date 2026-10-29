@@ -33,6 +33,7 @@ import pe.edu.upc.healthify.R
 import pe.edu.upc.healthify.core.designsystem.component.EmptyState
 import pe.edu.upc.healthify.core.designsystem.component.ErrorState
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyCard
+import pe.edu.upc.healthify.core.designsystem.component.HealthifyIconButton
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyTopAppBar
 import pe.edu.upc.healthify.core.designsystem.component.OfflineBanner
 import pe.edu.upc.healthify.core.designsystem.component.OfflineBannerType
@@ -41,6 +42,7 @@ import pe.edu.upc.healthify.core.designsystem.component.SystemBarsAppearance
 import pe.edu.upc.healthify.core.designsystem.component.UiText
 import pe.edu.upc.healthify.core.designsystem.component.asString
 import pe.edu.upc.healthify.core.designsystem.component.mediumDateText
+import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.InboxRow
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.ReviewInboxUiState
@@ -53,10 +55,13 @@ private val UnreadDotSize = 8.dp
 /**
  * PR13 · Bandeja de revisión (pestaña «Bandeja» del shell del nutricionista) + PR13.V al día. Nada de lo que hay aquí
  * cambió un plan: tocar un ítem abre PR14 (o PR14.IA si la IA propuso un plan).
+ *
+ * @param onOpenMenu ☰ · menú principal del shell (PR1.D).
  */
 @Composable
 fun ReviewInboxScreen(
     onOpenItem: (reviewItemId: Long) -> Unit,
+    onOpenMenu: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ReviewInboxViewModel = hiltViewModel(),
 ) {
@@ -65,7 +70,13 @@ fun ReviewInboxScreen(
         viewModel.onResume()
         onPauseOrDispose {}
     }
-    ReviewInboxContent(state = state, onOpenItem = onOpenItem, onRetry = viewModel::onRetry, modifier = modifier)
+    ReviewInboxContent(
+        state = state,
+        onOpenItem = onOpenItem,
+        onRetry = viewModel::onRetry,
+        onOpenMenu = onOpenMenu,
+        modifier = modifier,
+    )
 }
 
 @Composable
@@ -74,6 +85,7 @@ fun ReviewInboxContent(
     onOpenItem: (Long) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
+    onOpenMenu: () -> Unit = {},
 ) {
     val dimens = HealthifyTheme.dimens
     SystemBarsAppearance(darkBackground = false)
@@ -82,7 +94,16 @@ fun ReviewInboxContent(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface),
     ) {
-        HealthifyTopAppBar(title = stringResource(R.string.inbox_title))
+        HealthifyTopAppBar(
+            title = stringResource(R.string.inbox_title),
+            actions = {
+                HealthifyIconButton(
+                    icon = HealthifyIcons.Menu,
+                    contentDescription = stringResource(R.string.menu_cd_open),
+                    onClick = onOpenMenu,
+                )
+            },
+        )
         val items = state.items
         Box(
             modifier = Modifier
