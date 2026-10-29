@@ -1347,6 +1347,27 @@
 
     <string name="practitioner_sign_out_body">Tendrás que volver a ingresar tu correo y contraseña. Tus pacientes y sus datos quedan guardados.</string>
 
+    <!-- PT3 · Medidor del día y Tu semana -->
+    <string name="home_gauge_left_today">te quedan hoy</string>
+    <string name="home_gauge_target_today">tu meta de hoy</string>
+    <string name="home_gauge_target_met">Meta de hoy cumplida</string>
+    <string name="home_gauge_scale">%1$s de %2$s kcal</string>
+    <string name="home_gauge_needs_connection">Necesitas conexión para ver lo que llevas</string>
+    <string name="home_gauge_protein">de proteína</string>
+    <string name="home_gauge_carb">de carbohidrato</string>
+    <string name="home_gauge_fat">de grasa</string>
+    <string name="home_gauge_footer_left">Lo que te queda para hoy</string>
+    <string name="home_gauge_footer_targets">Tu meta de hoy</string>
+    <string name="home_week_title">Tu semana</string>
+    <plurals name="home_week_count">
+        <item quantity="one">%1$d de %2$d día</item>
+        <item quantity="many">%1$d de %2$d días</item>
+        <item quantity="other">%1$d de %2$d días</item>
+    </plurals>
+    <string name="home_week_legend">Día con registro</string>
+    <string name="home_week_day_logged">%1$s, con registro</string>
+    <string name="home_week_day_unlogged">%1$s, sin registro</string>
+
     <!-- PR1 · Mis pacientes agrupada por acción -->
     <string name="roster_search">Buscar paciente</string>
     <string name="roster_search_placeholder">Buscar paciente…</string>

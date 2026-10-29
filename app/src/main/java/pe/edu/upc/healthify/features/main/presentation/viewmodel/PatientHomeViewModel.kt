@@ -15,23 +15,29 @@ import pe.edu.upc.healthify.core.common.connectivity.ConnectivityObserver
 import pe.edu.upc.healthify.features.carerelationship.application.usecase.GetTargetsReadStatusUseCase
 import pe.edu.upc.healthify.features.iam.application.usecase.ObserveCurrentUserUseCase
 import pe.edu.upc.healthify.features.intake.application.usecase.GetActiveTargetsUseCase
+import pe.edu.upc.healthify.features.intake.application.usecase.GetDailyIntakeUseCase
 import pe.edu.upc.healthify.features.intake.application.usecase.ObserveSyncedDiaryEntriesUseCase
 import pe.edu.upc.healthify.features.intake.domain.entity.ActiveTargets
+import pe.edu.upc.healthify.features.main.presentation.state.HomeDay
 import pe.edu.upc.healthify.features.main.presentation.state.HomeFollowUp
+import pe.edu.upc.healthify.features.main.presentation.state.HomeMacros
 import pe.edu.upc.healthify.features.main.presentation.state.HomeTargets
+import pe.edu.upc.healthify.features.main.presentation.state.HomeWeek
 import pe.edu.upc.healthify.features.main.presentation.state.PatientHomeUiState
 import pe.edu.upc.healthify.features.monitoring.application.usecase.AcknowledgeConsistencyPromptUseCase
 import pe.edu.upc.healthify.features.monitoring.application.usecase.DetectLoggingGapUseCase
 import pe.edu.upc.healthify.features.monitoring.application.usecase.GetConsistencyIndexUseCase
+import pe.edu.upc.healthify.features.monitoring.application.usecase.GetLoggedWeekUseCase
 import pe.edu.upc.healthify.features.monitoring.application.usecase.GetNextFollowUpUseCase
 import pe.edu.upc.healthify.features.monitoring.application.usecase.GetTodayProgressUseCase
+import pe.edu.upc.healthify.features.monitoring.domain.entity.LoggedWeek
 import java.time.Clock
 import javax.inject.Inject
 
 /**
- * PT3 · Inicio. Compone cuatro contextos con sus use cases: las metas vigentes (Intake, con copia offline), cómo va
- * hoy, el índice de consistencia y la próxima consulta (Monitoring) y si hay metas nuevas sin revisar
- * (CareRelationship). Las metas mandan: sin ellas la pantalla es PT3.V; lo demás se pinta a medida que llega y,
+ * PT3 · Inicio. Compone cuatro contextos con sus use cases: las metas vigentes y lo que queda hoy de cada macro
+ * (Intake, las metas con copia offline), cómo va hoy, la semana registrada, el índice de consistencia y la próxima
+ * consulta (Monitoring) y si hay metas nuevas sin revisar (CareRelationship). Las metas mandan: sin ellas la pantalla es PT3.V; lo demás se pinta a medida que llega y,
  * si falla, simplemente no aparece (nunca bloquea Inicio).
  *
  * Se refresca al crearse, al volver a la pantalla ([onScreenResumed]), al recuperar la conexión y cuando el backend
@@ -41,7 +47,9 @@ import javax.inject.Inject
 class PatientHomeViewModel @Inject constructor(
     private val observeCurrentUser: ObserveCurrentUserUseCase,
     private val getActiveTargets: GetActiveTargetsUseCase,
+    private val getDailyIntake: GetDailyIntakeUseCase,
     private val getTodayProgress: GetTodayProgressUseCase,
+    private val getLoggedWeek: GetLoggedWeekUseCase,
     private val getNextFollowUp: GetNextFollowUpUseCase,
     private val getConsistencyIndex: GetConsistencyIndexUseCase,
     private val acknowledgeConsistencyPrompt: AcknowledgeConsistencyPromptUseCase,
@@ -126,6 +134,8 @@ class PatientHomeViewModel @Inject constructor(
             coroutineScope {
                 launch { loadTargetsAndGap(uid) }
                 launch { loadToday(uid) }
+                launch { loadMacrosLeft(uid) }
+                launch { loadWeek(uid) }
                 launch { loadNextFollowUp(uid) }
                 launch { loadConsistency(uid) }
                 launch { loadTargetsChanged(uid) }
@@ -158,6 +168,21 @@ class PatientHomeViewModel @Inject constructor(
         }
     }
 
+    private suspend fun loadMacrosLeft(uid: Long) {
+        // Sin red (o sin metas) se conserva lo último leído; sin lectura el medidor muestra las metas en gramos.
+        getDailyIntake(uid).onSuccess { intake ->
+            _state.update {
+                it.copy(macrosLeft = HomeMacros(intake.remainingProteinG, intake.remainingCarbG, intake.remainingFatG))
+            }
+        }
+    }
+
+    private suspend fun loadWeek(uid: Long) {
+        getLoggedWeek(uid).onSuccess { week ->
+            _state.update { it.copy(week = week.toHomeWeek()) }
+        }
+    }
+
     private suspend fun loadNextFollowUp(uid: Long) {
         getNextFollowUp(uid).onSuccess { next ->
             _state.update { it.copy(nextFollowUp = next?.let { f -> HomeFollowUp(f.id.value, f.scheduledFor) }) }
@@ -181,6 +206,10 @@ class PatientHomeViewModel @Inject constructor(
         const val FIRST_ADJUSTED_VERSION = 2
     }
 }
+
+private fun LoggedWeek.toHomeWeek() = HomeWeek(
+    days = days.map { HomeDay(date = it.date, isLogged = it.isLogged, isToday = it.date == today) },
+)
 
 private fun ActiveTargets.toHomeTargets() = HomeTargets(
     planVersion = planVersion,

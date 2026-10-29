@@ -1,29 +1,32 @@
 package pe.edu.upc.healthify.testing
 
+import pe.edu.upc.healthify.core.common.error.DomainError
 import pe.edu.upc.healthify.features.intake.domain.entity.ActiveTargets
 import pe.edu.upc.healthify.features.intake.domain.entity.ActiveTargetsLookup
+import pe.edu.upc.healthify.features.intake.domain.entity.DailyIntake
 import pe.edu.upc.healthify.features.intake.domain.repository.ActiveTargetsRepository
 import pe.edu.upc.healthify.features.intake.domain.valueobject.DailyTargets
 import pe.edu.upc.healthify.features.intake.domain.valueobject.DietaryRestriction
 import pe.edu.upc.healthify.features.intake.domain.valueobject.GuidelineCode
+import pe.edu.upc.healthify.features.intake.domain.valueobject.PatientId as IntakePatientId
 import pe.edu.upc.healthify.features.intake.domain.valueobject.PlanChange
 import pe.edu.upc.healthify.features.intake.domain.valueobject.PlanGuideline
 import pe.edu.upc.healthify.features.intake.domain.valueobject.RestrictionCode
+import pe.edu.upc.healthify.features.monitoring.domain.entity.ComplianceDay
 import pe.edu.upc.healthify.features.monitoring.domain.entity.ComplianceSummary
 import pe.edu.upc.healthify.features.monitoring.domain.entity.ConsistencyIndex
 import pe.edu.upc.healthify.features.monitoring.domain.entity.DailyProgress
 import pe.edu.upc.healthify.features.monitoring.domain.entity.NextFollowUp
 import pe.edu.upc.healthify.features.monitoring.domain.repository.PatientMonitoringRepository
 import pe.edu.upc.healthify.features.monitoring.domain.valueobject.ComplianceOutcome
+import pe.edu.upc.healthify.features.monitoring.domain.valueobject.PatientId as MonitoringPatientId
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.PlanVersion
 import pe.edu.upc.healthify.features.nutritionalcare.domain.repository.PlanVersionRepository
+import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.PatientId as NutritionalCarePatientId
 import java.time.Clock
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
-import pe.edu.upc.healthify.features.intake.domain.valueobject.PatientId as IntakePatientId
-import pe.edu.upc.healthify.features.monitoring.domain.valueobject.PatientId as MonitoringPatientId
-import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.PatientId as NutritionalCarePatientId
 
 /** «Hoy» de los tests: 2026-10-07 a las 13:00 UTC, en UTC. */
 val TODAY: LocalDate = LocalDate.of(2026, 10, 7)
@@ -60,6 +63,11 @@ class FakeActiveTargetsRepository : ActiveTargetsRepository {
         calls++
         return result
     }
+
+    var dailyIntakeResult: Result<DailyIntake> = failureOf(DomainError.Network)
+
+    override suspend fun getDailyIntake(patientId: IntakePatientId, date: LocalDate): Result<DailyIntake> =
+        dailyIntakeResult
 }
 
 class FakePatientMonitoringRepository : PatientMonitoringRepository {
@@ -74,6 +82,14 @@ class FakePatientMonitoringRepository : PatientMonitoringRepository {
     var acknowledgements = 0
 
     override suspend fun getDailyProgress(patientId: MonitoringPatientId, date: LocalDate) = progressResult
+
+    var complianceDaysResult: Result<List<ComplianceDay>> = Result.success(emptyList())
+
+    override suspend fun getComplianceDays(
+        patientId: MonitoringPatientId,
+        from: LocalDate,
+        to: LocalDate,
+    ): Result<List<ComplianceDay>> = complianceDaysResult
 
     override suspend fun getComplianceSummary(
         patientId: MonitoringPatientId,

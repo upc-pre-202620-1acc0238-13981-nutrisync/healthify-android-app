@@ -1311,6 +1311,26 @@
 
     <string name="practitioner_sign_out_body">You\'ll have to enter your email and password again. Your patients and their data stay saved.</string>
 
+    <!-- PT3 · Daily gauge and Your week -->
+    <string name="home_gauge_left_today">left for today</string>
+    <string name="home_gauge_target_today">your goal for today</string>
+    <string name="home_gauge_target_met">Today\'s goal reached</string>
+    <string name="home_gauge_scale">%1$s of %2$s kcal</string>
+    <string name="home_gauge_needs_connection">You need a connection to see what you\'ve logged</string>
+    <string name="home_gauge_protein">of protein</string>
+    <string name="home_gauge_carb">of carbohydrate</string>
+    <string name="home_gauge_fat">of fat</string>
+    <string name="home_gauge_footer_left">What\'s left for today</string>
+    <string name="home_gauge_footer_targets">Your goal for today</string>
+    <string name="home_week_title">Your week</string>
+    <plurals name="home_week_count">
+        <item quantity="one">%1$d of %2$d day</item>
+        <item quantity="other">%1$d of %2$d days</item>
+    </plurals>
+    <string name="home_week_legend">Day with entries</string>
+    <string name="home_week_day_logged">%1$s, with entries</string>
+    <string name="home_week_day_unlogged">%1$s, no entries</string>
+
     <!-- PR1 · My patients grouped by action -->
     <string name="roster_search">Search patient</string>
     <string name="roster_search_placeholder">Search patient…</string>
