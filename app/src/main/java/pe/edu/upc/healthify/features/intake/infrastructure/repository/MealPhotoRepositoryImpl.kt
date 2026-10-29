@@ -27,6 +27,7 @@ import pe.edu.upc.healthify.features.intake.infrastructure.remote.MealPhotoServi
 import java.io.File
 import java.io.IOException
 import java.time.Clock
+import java.time.LocalDate
 import java.util.UUID
 import javax.inject.Inject
 
@@ -42,7 +43,7 @@ class MealPhotoRepositoryImpl @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : MealPhotoRepository {
 
-    override suspend fun analyze(patientId: PatientId, photoPath: String): Result<MealPhotoAnalysis> {
+    override suspend fun analyze(patientId: PatientId, photoPath: String, localDate: LocalDate?): Result<MealPhotoAnalysis> {
         val jpeg = try {
             encoder.encodeForUpload(photoPath)
         } catch (e: CancellationException) {
@@ -57,7 +58,8 @@ class MealPhotoRepositoryImpl @Inject constructor(
             filename = UPLOAD_FILE_NAME,
             body = jpeg.toRequestBody(JPEG_MEDIA_TYPE.toMediaType()),
         )
-        val result = apiCall { service.analyze(patientId.value, part) }
+        val date = localDate?.toString()?.toRequestBody(TEXT_MEDIA_TYPE.toMediaType())
+        val result = apiCall { service.analyze(patientId.value, part, date) }
         val dto = result.getOrElse { return Result.failure(it) }
         return try {
             Result.success(dto.toDomain())
@@ -107,6 +109,7 @@ class MealPhotoRepositoryImpl @Inject constructor(
         const val PART_NAME = "photo"
         const val UPLOAD_FILE_NAME = "meal.jpg"
         const val JPEG_MEDIA_TYPE = "image/jpeg"
+        const val TEXT_MEDIA_TYPE = "text/plain"
 
         /** La foto ya no está o no se pudo decodificar: se trata como `UnsupportedPhotoFormat` (tomar otra). */
         const val CODE_UNREADABLE_PHOTO = "UnsupportedPhotoFormat"

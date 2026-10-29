@@ -12,6 +12,7 @@ import pe.edu.upc.healthify.features.intake.domain.repository.ActiveTargetsRepos
 import pe.edu.upc.healthify.features.intake.domain.repository.DiaryRepository
 import pe.edu.upc.healthify.features.intake.domain.repository.MealIdeasRepository
 import pe.edu.upc.healthify.features.intake.domain.repository.MealPhotoRepository
+import pe.edu.upc.healthify.features.intake.domain.repository.PlanFitRepository
 import pe.edu.upc.healthify.features.intake.domain.repository.SelfWeighInRepository
 import pe.edu.upc.healthify.features.intake.infrastructure.local.ActiveTargetsCacheDao
 import pe.edu.upc.healthify.features.intake.infrastructure.local.DiaryDayCacheDao
@@ -23,11 +24,13 @@ import pe.edu.upc.healthify.features.intake.infrastructure.remote.ActiveTargetsS
 import pe.edu.upc.healthify.features.intake.infrastructure.remote.DiaryService
 import pe.edu.upc.healthify.features.intake.infrastructure.remote.MealIdeasService
 import pe.edu.upc.healthify.features.intake.infrastructure.remote.MealPhotoService
+import pe.edu.upc.healthify.features.intake.infrastructure.remote.PlanFitService
 import pe.edu.upc.healthify.features.intake.infrastructure.remote.SelfWeighInService
 import pe.edu.upc.healthify.features.intake.infrastructure.repository.ActiveTargetsRepositoryImpl
 import pe.edu.upc.healthify.features.intake.infrastructure.repository.DiaryRepositoryImpl
 import pe.edu.upc.healthify.features.intake.infrastructure.repository.MealIdeasRepositoryImpl
 import pe.edu.upc.healthify.features.intake.infrastructure.repository.MealPhotoRepositoryImpl
+import pe.edu.upc.healthify.features.intake.infrastructure.repository.PlanFitRepositoryImpl
 import pe.edu.upc.healthify.features.intake.infrastructure.repository.SelfWeighInRepositoryImpl
 import pe.edu.upc.healthify.features.intake.infrastructure.sync.DiaryEntrySyncSender
 import pe.edu.upc.healthify.features.intake.infrastructure.sync.SelfWeighInSyncSender
@@ -54,6 +57,10 @@ object IntakeProvidesModule {
     @Provides
     @Singleton
     fun provideMealIdeasService(retrofit: Retrofit): MealIdeasService = retrofit.create(MealIdeasService::class.java)
+
+    @Provides
+    @Singleton
+    fun providePlanFitService(retrofit: Retrofit): PlanFitService = retrofit.create(PlanFitService::class.java)
 
     @Provides
     @Singleton
@@ -87,6 +94,9 @@ interface IntakeBindingsModule {
 
     @Binds
     fun bindMealIdeasRepository(impl: MealIdeasRepositoryImpl): MealIdeasRepository
+
+    @Binds
+    fun bindPlanFitRepository(impl: PlanFitRepositoryImpl): PlanFitRepository
 
     @Binds
     fun bindSelfWeighInRepository(impl: SelfWeighInRepositoryImpl): SelfWeighInRepository
