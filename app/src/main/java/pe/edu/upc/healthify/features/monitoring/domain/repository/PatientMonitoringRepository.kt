@@ -1,5 +1,6 @@
 package pe.edu.upc.healthify.features.monitoring.domain.repository
 
+import pe.edu.upc.healthify.features.monitoring.domain.entity.ComplianceDay
 import pe.edu.upc.healthify.features.monitoring.domain.entity.ComplianceSummary
 import pe.edu.upc.healthify.features.monitoring.domain.entity.ConsistencyIndex
 import pe.edu.upc.healthify.features.monitoring.domain.entity.DailyProgress
@@ -15,6 +16,9 @@ interface PatientMonitoringRepository {
 
     /** `GET …/daily-compliance?from=&to=` (MA-6, máx. 31 días). */
     suspend fun getComplianceSummary(patientId: PatientId, from: LocalDate, to: LocalDate): Result<ComplianceSummary>
+
+    /** `GET …/daily-compliance?from=&to=` (MA-6): el resultado de cada día del rango que el backend evaluó. */
+    suspend fun getComplianceDays(patientId: PatientId, from: LocalDate, to: LocalDate): Result<List<ComplianceDay>>
 
     /** `GET …/consistency-index`; `null` si todavía no hay índice (`422 BothSeriesRequired`). */
     suspend fun getConsistencyIndex(patientId: PatientId): Result<ConsistencyIndex?>
