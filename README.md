@@ -9,3 +9,14 @@ healthify android app
 | `distribute.yml` | Pushes to `main`, or by hand from the Actions tab | Builds the signed release APK and uploads it to Firebase App Distribution (group `qa`) |
 
 Each distributed build takes the workflow run number as its `versionCode`.
+
+### Repository secrets
+
+| Secret | Value |
+|---|---|
+| `FIREBASE_APP_ID` | Firebase App ID of `pe.edu.upc.healthify` |
+| `FIREBASE_SERVICE_ACCOUNT_JSON` | JSON key of a service account with the *Firebase App Distribution Admin* role |
+| `KEYSTORE_BASE64` | Upload keystore (`.jks`) encoded in base64 |
+| `KEYSTORE_PASSWORD` | Keystore password |
+| `KEY_ALIAS` | Key alias |
+| `KEY_PASSWORD` | Key password |
