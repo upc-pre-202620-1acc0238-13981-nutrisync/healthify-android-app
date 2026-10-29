@@ -1,5 +1,6 @@
 package pe.edu.upc.healthify.features.main.presentation.screen
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -31,10 +32,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -737,6 +740,7 @@ private fun EnergyExceededCard() {
 /**
  * Aviso de Inicio, en su variante compacta (Inicio cabe en una pantalla): insignia, título opcional y texto de hasta
  * dos líneas. Con [onClick] toda la tarjeta navega (chevron); [onClickLabel] es lo que anuncia el lector de pantalla.
+ * Sin [onClick], si el texto no entra en dos líneas, tocar la tarjeta lo despliega entero (y lo vuelve a plegar).
  */
 @Composable
 private fun HomeNoticeCard(
@@ -752,18 +756,24 @@ private fun HomeNoticeCard(
     val dimens = HealthifyTheme.dimens
     val scheme = MaterialTheme.colorScheme
     val shape = RoundedCornerShape(dimens.radiusXl)
+    var expanded by rememberSaveable(body) { mutableStateOf(false) }
+    var overflows by remember(body) { mutableStateOf(false) }
+    val expandable = onClick == null && (overflows || expanded)
+    val toggleLabel = stringResource(if (expanded) R.string.home_notice_collapse else R.string.home_notice_expand)
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .animateContentSize()
             .elevation(dimens.elevation1, shape)
             .clip(shape)
             .background(containerColor)
             .then(if (borderColor != null) Modifier.border(dimens.borderThin, borderColor, shape) else Modifier)
             .then(
-                if (onClick != null) {
-                    Modifier.clickable(role = Role.Button, onClickLabel = onClickLabel, onClick = onClick)
-                } else {
-                    Modifier.semantics(mergeDescendants = true) {}
+                when {
+                    onClick != null ->
+                        Modifier.clickable(role = Role.Button, onClickLabel = onClickLabel, onClick = onClick)
+                    expandable -> Modifier.clickable(role = Role.Button, onClickLabel = toggleLabel) { expanded = !expanded }
+                    else -> Modifier.semantics(mergeDescendants = true) {}
                 },
             )
             .padding(dimens.space12),
@@ -779,11 +789,21 @@ private fun HomeNoticeCard(
                 text = body,
                 style = if (title != null) MaterialTheme.typography.bodySmall else MaterialTheme.typography.labelMedium,
                 color = if (title != null) scheme.onSurfaceVariant else scheme.onSurface,
-                maxLines = NOTICE_MAX_LINES,
+                maxLines = if (expanded) Int.MAX_VALUE else NOTICE_MAX_LINES,
                 overflow = TextOverflow.Ellipsis,
+                onTextLayout = { if (!expanded) overflows = it.hasVisualOverflow },
             )
         }
-        if (onClick != null) Icon(HealthifyIcons.ChevronRight, contentDescription = null, tint = scheme.onSurfaceVariant)
+        when {
+            onClick != null -> Icon(HealthifyIcons.ChevronRight, contentDescription = null, tint = scheme.onSurfaceVariant)
+            // Chevron hacia abajo (plegado) o hacia arriba (desplegado).
+            expandable -> Icon(
+                HealthifyIcons.ChevronRight,
+                contentDescription = null,
+                tint = scheme.onSurfaceVariant,
+                modifier = Modifier.rotate(if (expanded) -90f else 90f),
+            )
+        }
     }
 }
 
