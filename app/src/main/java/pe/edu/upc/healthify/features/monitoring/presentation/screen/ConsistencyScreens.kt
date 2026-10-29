@@ -32,13 +32,13 @@ import pe.edu.upc.healthify.core.designsystem.component.SystemBarsAppearance
 import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 
-// Medidas del frame «PT16 · Algo no cuadra»: ícono de ayuda de 37 dp.
+// Measurements from the "Something doesn't add up" frame: 37 dp help icon.
 private val HelpIconSize = 37.dp
 
 /**
- * PT16 · Algo no cuadra. Pregunta abierta, nunca acusación (*Invitation Tone Never Accusation*), y ocurre **antes**
- * de cualquier escalación. Contenido estático: el acuse de MA-7 ya se registró al pintar la tarjeta en PT3, y desde
- * PT3 solo se llega con alerta activa.
+ * Something doesn't add up. An open question, never an accusation (*Invitation Tone Never Accusation*), and it
+ * happens **before** any escalation. Static content: the acknowledgement was already recorded when the home card was
+ * drawn, and the home card only links here with an active alert.
  */
 @Composable
 fun ConsistencyNoticeScreen(
@@ -99,8 +99,8 @@ fun ConsistencyNoticeScreen(
 }
 
 /**
- * PT17 · Qué pasa si esto sigue así. Hace explícita la escalación (nunca sorpresa) y deja claro que una señal
- * notifica pero no cambia el plan (*Signal Notifies Never Modifies The Plan*). Estático, también sin conexión.
+ * What happens if this keeps up. Makes escalation explicit (never a surprise) and makes clear that a signal
+ * notifies but does not change the plan (*Signal Notifies Never Modifies The Plan*). Static, also offline.
  */
 @Composable
 fun ConsistencyEscalationInfoScreen(
@@ -163,13 +163,13 @@ private fun StaticScreen(
     }
 }
 
-@Preview(name = "PT16 · Algo no cuadra", widthDp = 360, heightDp = 800)
+@Preview(name = "Something doesn't add up", widthDp = 360, heightDp = 800)
 @Composable
 private fun ConsistencyNoticePreview() {
     HealthifyTheme { ConsistencyNoticeScreen(onBack = {}, onReviewDiary = {}, onWhatItMeans = {}) }
 }
 
-@Preview(name = "PT17 · Qué pasa si esto sigue así", widthDp = 360, heightDp = 800)
+@Preview(name = "What happens if this keeps up", widthDp = 360, heightDp = 800)
 @Composable
 private fun ConsistencyEscalationInfoPreview() {
     HealthifyTheme { ConsistencyEscalationInfoScreen(onBack = {}) }

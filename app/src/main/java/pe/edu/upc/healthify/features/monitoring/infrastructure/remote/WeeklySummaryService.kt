@@ -4,12 +4,12 @@ import pe.edu.upc.healthify.features.monitoring.infrastructure.remote.dto.Weekly
 import retrofit2.http.GET
 import retrofit2.http.Path
 
-/** IA-2 · resumen semanal del paciente (solo el dueño). */
+/** The patient's weekly summary (owner only). */
 interface WeeklySummaryService {
 
     /**
-     * `404 NotEnoughData` mientras no hay resumen · `403 AiConsentRequired` (o vacío) con la función apagada ·
-     * `503 AiFeatureDisabled` con la IA del servidor apagada.
+     * `404 NotEnoughData` while there is no summary · `403 AiConsentRequired` (or empty) with the feature off ·
+     * `503 AiFeatureDisabled` with the server's AI off.
      */
     @GET("patients/{patientId}/weekly-summaries/latest")
     suspend fun getLatest(@Path("patientId") patientId: Long): WeeklySummaryDto

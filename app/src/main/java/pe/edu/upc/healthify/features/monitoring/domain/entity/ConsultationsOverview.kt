@@ -4,29 +4,29 @@ import pe.edu.upc.healthify.features.monitoring.domain.valueobject.ConsultationL
 import java.time.Instant
 
 /**
- * PT25 · Mis consultas (`PatientConsultationsOverviewResource`, RM-5): la próxima consulta, el check-in de esa
- * consulta y las ya realizadas (la más reciente primero). Sin diagnóstico, base de cálculo, peso ni IMC. Un contexto
- * que no responde deja su sección vacía (`next = null`, `past` vacía).
+ * My visits (`PatientConsultationsOverviewResource`): the next visit, that visit's check-in and the past ones
+ * (most recent first). No diagnosis, calculation basis, weight or BMI. A context that does not respond leaves its
+ * section empty (`next = null`, `past` empty).
  */
 data class ConsultationsOverview(
     val next: NextFollowUp?,
-    /** `null` = todavía sin responder (PT25 «Responder»); con valor = PT25.3. */
+    /** `null` = not answered yet ("Reply"); with a value = the sent reply. */
     val checkIn: CheckInSummary?,
     val past: List<PastConsultation>,
 ) {
-    /** PT25 card «¿Cómo te fue estas semanas?»: hay consulta, sin responder y todavía antes de su hora. */
+    /** "How did these weeks go?" card: there is a visit, not answered and still before its time. */
     fun canAnswerCheckIn(now: Instant): Boolean = next != null && checkIn == null && next.acceptsCheckInAt(now)
 
-    /** PT25.3 «Editar mi respuesta»: bloqueado si el backend lo dice o si ya llegó la hora de la consulta. */
+    /** "Edit my reply": locked if the backend says so or the visit's time has arrived. */
     fun canEditCheckIn(now: Instant): Boolean =
         next != null && checkIn != null && !checkIn.isLocked && next.acceptsCheckInAt(now)
 }
 
-/** Una consulta ya realizada (`PastConsultationResource`). */
+/** A past visit (`PastConsultationResource`). */
 data class PastConsultation(
     val id: Long,
     val date: Instant,
     val label: ConsultationLabel?,
-    /** Versión del plan que se publicó en esa consulta, si hubo. */
+    /** Plan version published in that visit, if any. */
     val planVersion: Int?,
 )

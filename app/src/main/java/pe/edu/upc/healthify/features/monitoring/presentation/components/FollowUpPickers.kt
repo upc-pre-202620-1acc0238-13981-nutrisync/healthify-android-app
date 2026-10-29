@@ -44,7 +44,7 @@ import java.time.ZoneOffset
 
 private val DialogMaxWidth = 312.dp
 
-/** Fecha de PR17 (Material 3): desde hoy (la hora decide si el momento es futuro). */
+/** Visit date (Material 3): from today on (the time decides whether the moment is in the future). */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FollowUpDatePickerDialog(
@@ -82,7 +82,7 @@ fun FollowUpDatePickerDialog(
     }
 }
 
-/** Hora de PR17. */
+/** Visit time. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FollowUpTimePickerDialog(initial: LocalTime?, onConfirm: (LocalTime) -> Unit, onDismiss: () -> Unit) {

@@ -1,6 +1,6 @@
 package pe.edu.upc.healthify.features.monitoring.domain.valueobject
 
-/** Id del paciente en MonitoringAdherence: es el `userId` de su cuenta (el backend lo compara con el token). */
+/** Patient id in MonitoringAdherence: the account's `userId` (the backend compares it with the token). */
 @JvmInline
 value class PatientId(val value: Long) {
     init {

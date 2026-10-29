@@ -73,13 +73,13 @@ data class MyConsultationsActions(
     val onBack: () -> Unit,
     val onRetry: () -> Unit = {},
     val onAddToCalendar: (NextFollowUp) -> Unit = {},
-    /** «Responder» (PT25.2) o «Editar mi respuesta» (PT25.3 → PT25.2). */
+    /** "Reply" or "Edit my reply" (both open the check-in form). */
     val onOpenCheckIn: (followUpId: Long) -> Unit = {},
-    /** Una consulta anterior con versión del plan → PT4.1 abierta en esa versión. */
+    /** A past visit with a plan version -> the plan screen opened on that version. */
     val onOpenPlanVersion: (version: Int) -> Unit = {},
 )
 
-/** PT25 · Mis consultas (+ PT25.3 respuesta enviada). Se llega desde PT20 «Mis consultas» y desde PT25.1. */
+/** My visits (with the sent reply). Reached from the profile's "My visits" and from the preparation screen. */
 @Composable
 fun MyConsultationsScreen(
     onBack: () -> Unit,
@@ -109,7 +109,7 @@ fun MyConsultationsScreen(
     )
 }
 
-/** «Agregar a mi calendario» con el aviso si el teléfono no tiene app de calendario. */
+/** "Add to my calendar", with a notice if the phone has no calendar app. */
 @Composable
 internal fun rememberAddToCalendarHandler(snackbarHostState: SnackbarHostState): (NextFollowUp) -> Unit {
     val context = LocalContext.current
@@ -225,7 +225,7 @@ private fun AnswerCheckInCard(onAnswer: () -> Unit) {
     }
 }
 
-/** PT25.3 · «Le contaste a tu nutricionista cómo te fue» con «Editar mi respuesta» hasta la hora de la consulta. */
+/** "You told your nutritionist how it went", with "Edit my reply" until the visit's time. */
 @Composable
 private fun SentCheckInCard(card: CheckInCard.Sent, onEdit: () -> Unit) {
     val dimens = HealthifyTheme.dimens
@@ -271,7 +271,7 @@ private fun SentCheckInCard(card: CheckInCard.Sent, onEdit: () -> Unit) {
     }
 }
 
-/** «Prepara tu consulta» (IA-4): las preguntas van tal cual las generó la IA (ya en el idioma del lector). */
+/** "Prepare for your visit": the questions go as the AI generated them (already in the reader's language). */
 @Composable
 private fun SuggestedQuestionsCard(questions: List<SuggestedQuestion>) {
     val dimens = HealthifyTheme.dimens
@@ -325,8 +325,8 @@ private fun PastConsultationsSection(past: List<PastConsultation>, onOpenPlanVer
             Column(modifier = Modifier.padding(horizontal = dimens.space16, vertical = dimens.space4)) {
                 past.forEachIndexed { index, consultation ->
                     if (index > 0) HorizontalDivider(color = scheme.outlineVariant, thickness = dimens.borderThin)
-                    // DECISIÓN PT25: el chevron de una consulta con plan publicado abre PT4.1 en el detalle de la versión que
-                    // se publicó en ella; sin versión no hay destino y la fila no es táctil.
+                    // The chevron of a visit with a published plan opens the plan screen on the version published
+                    // in it; without a version there is no destination and the row is not tappable.
                     val planVersion = consultation.planVersion
                     val clickable = planVersion != null
                     Row(
@@ -393,13 +393,13 @@ private val PreviewState = MyConsultationsUiState(
     ),
 )
 
-@Preview(name = "PT25 · Mis consultas", widthDp = 360, heightDp = 800)
+@Preview(name = "My visits", widthDp = 360, heightDp = 800)
 @Composable
 private fun MyConsultationsPreview() {
     HealthifyTheme { MyConsultationsContent(state = PreviewState, actions = MyConsultationsActions(onBack = {})) }
 }
 
-@Preview(name = "PT25.3 · Respuesta enviada", widthDp = 360, heightDp = 800)
+@Preview(name = "Reply sent", widthDp = 360, heightDp = 800)
 @Composable
 private fun MyConsultationsSentPreview() {
     HealthifyTheme {
@@ -412,7 +412,7 @@ private fun MyConsultationsSentPreview() {
     }
 }
 
-@Preview(name = "PT25.3 · Respuesta bloqueada", widthDp = 360, heightDp = 800)
+@Preview(name = "Reply locked", widthDp = 360, heightDp = 800)
 @Composable
 private fun MyConsultationsLockedPreview() {
     HealthifyTheme {
@@ -426,7 +426,7 @@ private fun MyConsultationsLockedPreview() {
     }
 }
 
-@Preview(name = "PT25 · Sin consulta agendada", widthDp = 360, heightDp = 800)
+@Preview(name = "No visit scheduled", widthDp = 360, heightDp = 800)
 @Composable
 private fun MyConsultationsEmptyPreview() {
     HealthifyTheme {
@@ -437,13 +437,13 @@ private fun MyConsultationsEmptyPreview() {
     }
 }
 
-@Preview(name = "PT25 · Cargando", widthDp = 360, heightDp = 800)
+@Preview(name = "Loading", widthDp = 360, heightDp = 800)
 @Composable
 private fun MyConsultationsLoadingPreview() {
     HealthifyTheme { MyConsultationsContent(state = MyConsultationsUiState(), actions = MyConsultationsActions(onBack = {})) }
 }
 
-@Preview(name = "PT25 · Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun MyConsultationsOfflinePreview() {
     HealthifyTheme {
@@ -454,7 +454,7 @@ private fun MyConsultationsOfflinePreview() {
     }
 }
 
-@Preview(name = "PT25 · Error", widthDp = 360, heightDp = 800)
+@Preview(name = "Error", widthDp = 360, heightDp = 800)
 @Composable
 private fun MyConsultationsErrorPreview() {
     HealthifyTheme {

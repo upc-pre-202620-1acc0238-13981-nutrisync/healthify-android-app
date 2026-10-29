@@ -24,9 +24,9 @@ class WeeklySummaryRepositoryImpl @Inject constructor(
         }
         val error = result.domainErrorOrNull() ?: DomainError.Unexpected()
         return when {
-            // 404 NotEnoughData (con o sin código): todavía no hay resumen.
+            // 404 NotEnoughData (with or without a code): no summary yet.
             error is DomainError.NotFound -> Result.success(WeeklySummaryAvailability.NotYet)
-            // 403: función apagada o sin consentimiento (con AiConsentRequired o el Forbid() vacío).
+            // 403: feature off or no consent (with AiConsentRequired or the empty Forbid()).
             error is DomainError.Forbidden -> Result.success(WeeklySummaryAvailability.Off)
             error is DomainError.Unexpected && error.code == CODE_AI_FEATURE_DISABLED ->
                 Result.success(WeeklySummaryAvailability.Off)

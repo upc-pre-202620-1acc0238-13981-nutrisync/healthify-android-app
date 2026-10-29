@@ -24,9 +24,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Aviso local de una consulta próxima: «Tu consulta es mañana · Con tu nutricionista a las 10:00» (paciente) o
- * «Consulta en una hora · Con Ana Flores a las 10:00» (nutricionista). En la pantalla bloqueada se ve una versión sin
- * nombres.
+ * Local reminder for an upcoming visit: "Your visit is tomorrow · With your nutritionist at 10:00" (patient) or
+ * "Visit in one hour · With Ana Flores at 10:00" (nutritionist). The lock screen shows a version without names.
  */
 @Singleton
 class ConsultationReminderNotifier @Inject constructor(
@@ -41,7 +40,7 @@ class ConsultationReminderNotifier @Inject constructor(
             return
         }
         if (!NotificationManagerCompat.from(appContext).areNotificationsEnabled()) return
-        // Los textos en el idioma elegido en la app (antes de Android 13 el contexto de la app no lo sabe).
+        // Texts in the language picked in the app (before Android 13 the app context does not know it).
         val context = AndroidAppLanguageSetter.wrap(appContext)
         ensureChannel(context)
         val isDayBefore = lead >= Duration.ofHours(DAY_BEFORE_HOURS)
@@ -84,10 +83,10 @@ class ConsultationReminderNotifier @Inject constructor(
             .setAutoCancel(true)
             .build()
         try {
-            // Un aviso por consulta: el de una hora antes reemplaza al del día anterior.
+            // One notification per visit: the one-hour reminder replaces the day-before one.
             NotificationManagerCompat.from(context).notify(NOTIFICATION_TAG, followUpId.toInt(), notification)
         } catch (_: SecurityException) {
-            // El permiso se retiró entre la verificación y el aviso: no se avisa.
+            // The permission was revoked between the check and the notification: nothing is shown.
             return
         }
     }

@@ -44,10 +44,10 @@ import pe.edu.upc.healthify.features.monitoring.presentation.components.messageR
 import pe.edu.upc.healthify.features.monitoring.presentation.state.HowAmITodayUiState
 import pe.edu.upc.healthify.features.monitoring.presentation.viewmodel.HowAmITodayViewModel
 
-// Medidas del frame «PT15 · Cómo voy hoy»: acento vertical de 6 dp.
+// Measurements from the "How am I doing today" frame: 6 dp vertical accent.
 private val AccentWidth = 6.dp
 
-/** PT15 · Cómo voy hoy (+ PT15.O sin conexión). */
+/** How am I doing today (with the offline state). */
 @Composable
 fun HowAmITodayScreen(
     onBack: () -> Unit,
@@ -137,7 +137,7 @@ private fun OutcomeCard(outcome: ComplianceOutcome) {
     }
 }
 
-@Preview(name = "PT15 · Cómo voy hoy (Met)", widthDp = 360, heightDp = 800)
+@Preview(name = "How am I doing today (Met)", widthDp = 360, heightDp = 800)
 @Composable
 private fun HowAmITodayPreview() {
     HealthifyTheme {
@@ -149,7 +149,7 @@ private fun HowAmITodayPreview() {
     }
 }
 
-@Preview(name = "PT15 · Exceeded / Short / Unlogged", widthDp = 360, heightDp = 800)
+@Preview(name = "Exceeded / Short / Unlogged", widthDp = 360, heightDp = 800)
 @Composable
 private fun HowAmITodayOutcomesPreview() {
     HealthifyTheme {
@@ -161,13 +161,13 @@ private fun HowAmITodayOutcomesPreview() {
     }
 }
 
-@Preview(name = "PT15 · Cargando", widthDp = 360, heightDp = 800)
+@Preview(name = "Loading", widthDp = 360, heightDp = 800)
 @Composable
 private fun HowAmITodayLoadingPreview() {
     HealthifyTheme { HowAmITodayContent(state = HowAmITodayUiState(), onBack = {}, onRetry = {}) }
 }
 
-@Preview(name = "PT15.O · Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun HowAmITodayOfflinePreview() {
     HealthifyTheme {
@@ -175,7 +175,7 @@ private fun HowAmITodayOfflinePreview() {
     }
 }
 
-@Preview(name = "PT15 · Error", widthDp = 360, heightDp = 800)
+@Preview(name = "Error", widthDp = 360, heightDp = 800)
 @Composable
 private fun HowAmITodayErrorPreview() {
     HealthifyTheme {

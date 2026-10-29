@@ -9,11 +9,11 @@ import pe.edu.upc.healthify.R
 import pe.edu.upc.healthify.features.monitoring.domain.valueobject.ComplianceOutcome
 
 /*
- * Textos y color del resultado del día (nota de PT15). Tono de invitación: nunca «te pasaste», y un día sin
- * registro nunca se pinta como falla (ni rojo ni error): es «Todavía no registraste nada hoy».
+ * Texts and color for the day's outcome. Invitation tone: never "you went over", and a day without logs is never
+ * drawn as a failure (no red, no error): it is "You haven't logged anything today yet".
  */
 
-/** Frase de la fila «Cómo voy hoy» de PT3 (sin punto final, como el frame). */
+/** Sentence for the home "How am I doing today" row (no trailing period, as in the frame). */
 @get:StringRes
 val ComplianceOutcome.homeSummaryRes: Int
     get() = when (this) {
@@ -23,7 +23,7 @@ val ComplianceOutcome.homeSummaryRes: Int
         ComplianceOutcome.UNLOGGED -> R.string.home_outcome_unlogged
     }
 
-/** Frase de la tarjeta de PT15. */
+/** Sentence for the How am I doing today card. */
 @get:StringRes
 val ComplianceOutcome.messageRes: Int
     get() = when (this) {
@@ -43,8 +43,8 @@ val ComplianceOutcome.glyphRes: Int
     }
 
 /**
- * Acento de la tarjeta. DECISIÓN PT15: el frame solo dibuja `Met` (`tertiary`); `Exceeded`/`Short` usan `secondary`
- * (el naranja de la marca, no un color de error) y `Unlogged` el neutro `outlineVariant`.
+ * Card accent. The frame only draws `Met` (`tertiary`); `Exceeded`/`Short` use `secondary`
+ * (the brand orange, not an error color) and `Unlogged` the neutral `outlineVariant`.
  */
 @Composable
 @ReadOnlyComposable

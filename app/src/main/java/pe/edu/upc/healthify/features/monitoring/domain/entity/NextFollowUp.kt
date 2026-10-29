@@ -5,11 +5,11 @@ import pe.edu.upc.healthify.features.monitoring.domain.valueobject.PreparationIn
 import java.time.Instant
 
 /**
- * Próxima consulta del paciente (`PatientFollowUpResource`, MA-3; `UpcomingConsultationResource`, RM-5). Solo
- * lectura: agendarla o moverla lo hace el nutricionista. No expone notas clínicas ni diagnóstico.
+ * The patient's next visit (`PatientFollowUpResource`; `UpcomingConsultationResource`). Read-only: the nutritionist
+ * schedules or moves it. It exposes no clinical notes or diagnosis.
  *
- * @param scheduledAt cuándo la agendó el nutricionista («Agendada el 4 de septiembre»), si el backend lo sabe.
- * @param practitionerFullName nombre del nutricionista tal cual (texto de una persona).
+ * @param scheduledAt when the nutritionist scheduled it ("Scheduled on September 4"), if the backend knows.
+ * @param practitionerFullName the nutritionist's name as is (a person's text).
  */
 data class NextFollowUp(
     val id: FollowUpId,
@@ -20,13 +20,13 @@ data class NextFollowUp(
     val practitionerFullName: String? = null,
 ) {
     /**
-     * MA-4 «Check In Editable Until The Visit»: el check-in se envía o edita solo antes de la hora de la consulta.
-     * El backend es quien decide (`409 CheckInLocked`); esto evita ofrecer lo que ya no se puede.
+     * "Check In Editable Until The Visit": the check-in can only be sent or edited before the visit's time.
+     * The backend decides (`409 CheckInLocked`); this avoids offering what is no longer possible.
      */
     fun acceptsCheckInAt(now: Instant): Boolean = now.isBefore(scheduledFor)
 }
 
-/** Id de una consulta agendada (`followUpId`). */
+/** Id of a scheduled visit (`followUpId`). */
 @JvmInline
 value class FollowUpId(val value: Long) {
     init {

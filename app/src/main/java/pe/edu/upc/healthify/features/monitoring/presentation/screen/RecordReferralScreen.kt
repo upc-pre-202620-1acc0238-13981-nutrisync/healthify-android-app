@@ -45,7 +45,7 @@ data class RecordReferralActions(
     val onNoActiveLinkDismissed: () -> Unit = {},
 )
 
-/** PR16 · Registrar derivación (+ PR16.E campos obligatorios, PR16.2 error al registrar). */
+/** Record a referral (with required-field and send-error states). */
 @Composable
 fun RecordReferralScreen(
     onBack: () -> Unit,
@@ -116,7 +116,7 @@ fun RecordReferralContent(state: RecordReferralUiState, actions: RecordReferralA
                     enabled = !state.isSaving,
                     imeAction = ImeAction.Next,
                 )
-                // Texto clínico del profesional: se guarda y se muestra tal cual.
+                // The practitioner's clinical text: saved and shown as is.
                 HealthifyTextField(
                     value = state.reason,
                     onValueChange = actions.onReasonChange,
@@ -147,13 +147,13 @@ fun RecordReferralContent(state: RecordReferralUiState, actions: RecordReferralA
     }
 }
 
-@Preview(name = "PR16 · Registrar derivación", widthDp = 360, heightDp = 800)
+@Preview(name = "Record referral", widthDp = 360, heightDp = 800)
 @Composable
 private fun RecordReferralPreview() {
     HealthifyTheme { RecordReferralContent(state = RecordReferralUiState(), actions = RecordReferralActions()) }
 }
 
-@Preview(name = "PR16.E · Campos obligatorios", widthDp = 360, heightDp = 800)
+@Preview(name = "Required fields", widthDp = 360, heightDp = 800)
 @Composable
 private fun RecordReferralMissingPreview() {
     HealthifyTheme {
@@ -164,13 +164,13 @@ private fun RecordReferralMissingPreview() {
     }
 }
 
-@Preview(name = "PR16.2 · Error al registrar", widthDp = 360, heightDp = 800)
+@Preview(name = "Could not record", widthDp = 360, heightDp = 800)
 @Composable
 private fun RecordReferralFailedPreview() {
     HealthifyTheme { RecordReferralContent(state = RecordReferralUiState(failed = true), actions = RecordReferralActions()) }
 }
 
-@Preview(name = "PR16 · Guardando", widthDp = 360, heightDp = 800)
+@Preview(name = "Saving", widthDp = 360, heightDp = 800)
 @Composable
 private fun RecordReferralSavingPreview() {
     HealthifyTheme {

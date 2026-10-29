@@ -7,8 +7,9 @@ import pe.edu.upc.healthify.features.monitoring.domain.valueobject.PatientId
 import javax.inject.Inject
 
 /**
- * MA-7: se llama cuando la tarjeta «Algo no cuadra» **se pintó** en PT3. `409 ConsistencyPromptNotIssued` (no había
- * aviso que acusar, p. ej. el índice volvió a `Normal`) no es un error para el paciente: se trata como hecho.
+ * Called once the "Something doesn't add up" card has **been drawn** on the home screen.
+ * `409 ConsistencyPromptNotIssued` (no prompt to acknowledge, e.g. the index went back to `Normal`) is not an error
+ * for the patient: it counts as done.
  */
 class AcknowledgeConsistencyPromptUseCase @Inject constructor(
     private val repository: PatientMonitoringRepository,

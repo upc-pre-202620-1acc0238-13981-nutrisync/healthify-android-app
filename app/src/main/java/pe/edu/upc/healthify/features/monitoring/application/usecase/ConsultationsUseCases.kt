@@ -9,7 +9,7 @@ import pe.edu.upc.healthify.features.monitoring.domain.repository.ConsultationsR
 import pe.edu.upc.healthify.features.monitoring.domain.valueobject.PatientId
 import javax.inject.Inject
 
-/** PT25 · Mis consultas: próxima, check-in y anteriores. */
+/** My visits: next, check-in and past ones. */
 class GetConsultationsOverviewUseCase @Inject constructor(
     private val repository: ConsultationsRepository,
 ) {
@@ -17,7 +17,7 @@ class GetConsultationsOverviewUseCase @Inject constructor(
         repository.getOverview(PatientId(patientUserId))
 }
 
-/** PT25.2 «Editar mi respuesta»: la respuesta guardada (`null` si todavía no hay). */
+/** "Edit my reply": the saved reply (`null` if there is none yet). */
 class GetCheckInUseCase @Inject constructor(
     private val repository: ConsultationsRepository,
 ) {
@@ -25,7 +25,7 @@ class GetCheckInUseCase @Inject constructor(
         repository.getCheckIn(FollowUpId(followUpId))
 }
 
-/** PT25.2 «Enviar a mi nutricionista»: crea o reemplaza la respuesta (MA-4). */
+/** "Send to my nutritionist": creates or replaces the reply. */
 class SubmitCheckInUseCase @Inject constructor(
     private val repository: ConsultationsRepository,
 ) {
@@ -33,7 +33,7 @@ class SubmitCheckInUseCase @Inject constructor(
         repository.submitCheckIn(FollowUpId(followUpId), answer)
 }
 
-/** PT25 «Prepara tu consulta» y PT25.2 «También podrías preguntar» (IA-4). */
+/** "Prepare for your visit" and "You could also ask". */
 class GetSuggestedQuestionsUseCase @Inject constructor(
     private val repository: ConsultationsRepository,
 ) {

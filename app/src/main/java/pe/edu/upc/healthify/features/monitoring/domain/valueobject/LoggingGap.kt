@@ -3,26 +3,26 @@ package pe.edu.upc.healthify.features.monitoring.domain.valueobject
 import java.time.LocalDate
 
 /**
- * Hueco de registro (F24, PT18 «Te extrañamos por acá»). El backend lo detecta en su reloj pero no lo expone por
- * REST (el recordatorio es local), así que el teléfono aplica la misma regla:
- * `today − último día registrado ≥ 3` (`Monitoring:LoggingGapThresholdDays`).
+ * Logging gap ("We miss you around here"). The backend detects it on its own clock but does not expose it over
+ * REST (the reminder is local), so the phone applies the same rule:
+ * `today − last logged day ≥ 3` (`Monitoring:LoggingGapThresholdDays`).
  *
- * DECISIÓN PT18: los días se leen de `daily-compliance?from=&to=` (los [THRESHOLD_DAYS] días hasta hoy, incluido);
- * solo hay hueco si el seguimiento ya llevaba ese tiempo (`window.From` no se expone: se usa desde cuándo rigen las
- * metas vigentes). Así un paciente recién vinculado no recibe un «hace unos días que no registras».
+ * The days are read from `daily-compliance?from=&to=` (the [THRESHOLD_DAYS] days up to and including today);
+ * there is only a gap if tracking had already run that long (`window.From` is not exposed, so the date the current
+ * goals took effect is used). That way a newly linked patient does not get a "you haven't logged in a few days".
  *
- * Un hueco nunca es una desviación ni escala: solo invita a registrar (*Gap Is Not A Deviation*).
+ * A gap is never a deviation and never escalates: it only invites logging (*Gap Is Not A Deviation*).
  */
 object LoggingGap {
 
     const val THRESHOLD_DAYS = 3L
 
-    /** Primer día del rango que se consulta: con hoy incluido, son [THRESHOLD_DAYS] días. */
+    /** First day of the queried range: including today, that makes [THRESHOLD_DAYS] days. */
     fun lookbackStart(today: LocalDate): LocalDate = today.minusDays(THRESHOLD_DAYS - 1)
 
     /**
-     * @param loggedDaysInLookback días con al menos una entrada entre [lookbackStart] y [today].
-     * @param trackingSince desde cuándo se le puede pedir registro al paciente.
+     * @param loggedDaysInLookback days with at least one entry between [lookbackStart] and [today].
+     * @param trackingSince since when the patient can be asked to log.
      */
     fun isGap(loggedDaysInLookback: Int, trackingSince: LocalDate, today: LocalDate): Boolean {
         require(loggedDaysInLookback >= 0) { "Day counts cannot be negative" }

@@ -2,7 +2,7 @@ package pe.edu.upc.healthify.features.monitoring.domain.entity
 
 import pe.edu.upc.healthify.features.monitoring.domain.valueobject.PatientId
 
-/** Especialidad de una derivación (`Specialty`, 1–120 caracteres, F25). */
+/** Referral specialty (`Specialty`, 1–120 characters). */
 @JvmInline
 value class ReferralSpecialty(val text: String) {
     init {
@@ -15,7 +15,7 @@ value class ReferralSpecialty(val text: String) {
     }
 }
 
-/** Motivo clínico de una derivación (`Reason`, 1–1000 caracteres, F25). Texto del profesional: nunca se traduce. */
+/** Clinical reason for a referral (`Reason`, 1–1000 characters). The practitioner's text: never translated. */
 @JvmInline
 value class ReferralReason(val text: String) {
     init {
@@ -28,13 +28,13 @@ value class ReferralReason(val text: String) {
     }
 }
 
-/** Una derivación nueva (`RecordReferralResource`). Registra que algo se decidió en una fecha; no tiene flujo. */
+/** A new referral (`RecordReferralResource`). Records that something was decided on a date; it has no workflow. */
 data class NewReferral(val patientId: PatientId, val specialty: ReferralSpecialty, val reason: ReferralReason)
 
-/** Campo de PR16 que falta (PR16.E). */
+/** Missing field of the referral form. */
 enum class ReferralField { SPECIALTY, REASON }
 
-/** Validación de PR16 antes de enviar (`400 SpecialtyAndReasonRequired` en el backend). */
+/** Referral form validation before sending (`400 SpecialtyAndReasonRequired` in the backend). */
 sealed interface ReferralValidation {
     data class Valid(val referral: NewReferral) : ReferralValidation
     data class Invalid(val missing: Set<ReferralField>) : ReferralValidation

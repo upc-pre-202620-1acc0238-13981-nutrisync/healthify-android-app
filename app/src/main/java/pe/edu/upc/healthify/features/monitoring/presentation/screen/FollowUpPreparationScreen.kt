@@ -49,7 +49,7 @@ import pe.edu.upc.healthify.features.monitoring.presentation.components.toUiText
 import pe.edu.upc.healthify.features.monitoring.presentation.state.FollowUpPreparationUiState
 import pe.edu.upc.healthify.features.monitoring.presentation.viewmodel.FollowUpPreparationViewModel
 
-/** PT25.1 · Tu consulta — cómo prepararte (+ PT25.1.V sin indicaciones). Se llega desde «Próxima consulta» de PT3. */
+/** Your visit - how to prepare (with the no-instructions state). Reached from the home "Next visit" row. */
 @Composable
 fun FollowUpPreparationScreen(
     onBack: () -> Unit,
@@ -136,7 +136,7 @@ fun FollowUpPreparationContent(
     }
 }
 
-/** «CÓMO PREPARARTE»: las indicaciones traducidas en la app; sin ninguna, PT25.1.V. */
+/** "HOW TO PREPARE": instructions translated in the app; with none, the empty state. */
 @Composable
 private fun PreparationSection(preparation: List<PreparationInstruction>) {
     val dimens = HealthifyTheme.dimens
@@ -189,7 +189,7 @@ private fun PreparationSection(preparation: List<PreparationInstruction>) {
     }
 }
 
-@Preview(name = "PT25.1 · Cómo prepararte", widthDp = 360, heightDp = 800)
+@Preview(name = "How to prepare", widthDp = 360, heightDp = 800)
 @Composable
 private fun FollowUpPreparationPreview() {
     HealthifyTheme {
@@ -212,7 +212,7 @@ private fun FollowUpPreparationPreview() {
     }
 }
 
-@Preview(name = "PT25.1.V · Sin indicaciones", widthDp = 360, heightDp = 800)
+@Preview(name = "No instructions", widthDp = 360, heightDp = 800)
 @Composable
 private fun FollowUpPreparationEmptyPreview() {
     HealthifyTheme {
@@ -226,7 +226,7 @@ private fun FollowUpPreparationEmptyPreview() {
     }
 }
 
-@Preview(name = "PT25.1 · Cargando", widthDp = 360, heightDp = 800)
+@Preview(name = "Loading", widthDp = 360, heightDp = 800)
 @Composable
 private fun FollowUpPreparationLoadingPreview() {
     HealthifyTheme {
@@ -240,7 +240,7 @@ private fun FollowUpPreparationLoadingPreview() {
     }
 }
 
-@Preview(name = "PT25.1 · Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun FollowUpPreparationOfflinePreview() {
     HealthifyTheme {

@@ -17,8 +17,8 @@ import java.time.Duration
 import java.time.Instant
 
 /**
- * Relee las próximas consultas del usuario con sesión y reprograma sus avisos. Sin sesión los quita; sin red reintenta
- * (WorkManager espera a que vuelva).
+ * Re-reads the signed-in user's upcoming visits and reschedules their reminders. Signed out, it removes them; offline
+ * it retries (WorkManager waits for the network).
  */
 @HiltWorker
 class ConsultationRemindersRefreshWorker @AssistedInject constructor(
@@ -41,8 +41,8 @@ class ConsultationRemindersRefreshWorker @AssistedInject constructor(
 }
 
 /**
- * Publica el aviso de una consulta si, al llegar la hora, sigue con sesión el mismo usuario para quien se programó
- * (si cerró sesión o entró otro, no se avisa).
+ * Posts a visit reminder if, when the time comes, the same user it was scheduled for is still signed in
+ * (if they signed out or someone else signed in, nothing is shown).
  */
 @HiltWorker
 class ConsultationReminderWorker @AssistedInject constructor(

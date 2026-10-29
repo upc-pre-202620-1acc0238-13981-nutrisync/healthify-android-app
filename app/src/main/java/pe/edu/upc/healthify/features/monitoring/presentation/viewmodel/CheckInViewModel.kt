@@ -40,17 +40,17 @@ import java.time.Instant
 import javax.inject.Inject
 
 sealed interface CheckInEvent {
-    /** Enviado: vuelve a PT25, que relee y muestra PT25.3. */
+    /** Sent: returns to My visits, which re-reads and shows the sent reply. */
     data object Submitted : CheckInEvent
 }
 
 /**
- * PT25.2 · Cuéntale cómo te fue (MA-4) con las sugerencias de IA (IA-4). Edita la respuesta guardada si existe y
- * bloquea el envío desde la hora de la consulta (también si el backend responde `409 CheckInLocked`).
+ * Tell them how it went, with AI suggestions. Edits the saved reply if there is one and blocks sending from the
+ * visit's time on (also if the backend answers `409 CheckInLocked`).
  *
- * DECISIÓN PT25.2: el check-in es solo de la próxima consulta agendada; si la de la ruta ya no lo es (movida o
- * cancelada) se avisa y se vuelve. Sin conexión no se encola (no hay cola para el check-in): enviar sin red muestra
- * PT25.2.E y lo escrito se conserva.
+ * The check-in only applies to the next scheduled visit; if the route's visit no longer is (moved or cancelled), the
+ * screen says so and goes back. Offline sends are not queued (there is no check-in queue): sending without network
+ * shows the send error and keeps what was written.
  */
 @HiltViewModel
 class CheckInViewModel @Inject constructor(
@@ -78,7 +78,7 @@ class CheckInViewModel @Inject constructor(
     private var patientId: Long? = null
     private var followUp: NextFollowUp? = null
 
-    /** Preguntas propias guardadas además de la primera (la pantalla edita una): se reenvían tal cual. */
+    /** Saved custom questions beyond the first (the screen edits one): resent as is. */
     private var keptOwnQuestions: List<CheckInQuestion> = emptyList()
     private var loadJob: Job? = null
 
@@ -176,13 +176,13 @@ class CheckInViewModel @Inject constructor(
         }
     }
 
-    /** PT25.2.E «Volver a intentarlo». */
+    /** Send error "Try again". */
     fun onRetrySubmit() {
         _state.update { it.copy(submitFailed = false) }
         onSubmit()
     }
 
-    /** Atrás desde PT25.2.E: vuelve al formulario con lo escrito. */
+    /** Back from the send error: returns to the form with what was written. */
     fun onDismissSubmitError() {
         _state.update { it.copy(submitFailed = false) }
     }
@@ -230,14 +230,14 @@ class CheckInViewModel @Inject constructor(
             feeling = saved.answer.feeling,
             difficulties = saved.answer.difficulties,
             ownQuestion = own.firstOrNull()?.text.orEmpty(),
-            // Las sugerencias que ya había aceptado vuelven marcadas, con el idioma con que se guardaron.
+            // Previously accepted suggestions come back selected, in the language they were saved in.
             suggestions = saved.answer.aiQuestions.map {
                 SuggestionOption(it.text, selected = true, aiGenerationId = it.aiGenerationId, language = it.language)
             },
         )
     }
 
-    /** IA-4 solo si el paciente tiene encendidas las preguntas sugeridas; si falla, la card no aparece. */
+    /** Only if the patient has suggested questions turned on; if it fails, the card does not appear. */
     private suspend fun loadSuggestions(pid: Long, saved: PreVisitCheckIn?) {
         if (!getAiPreferences(pid).canSuggestQuestions) return
         val availability = getSuggestedQuestions(pid, followUpId).getOrNull()

@@ -17,7 +17,7 @@ import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
-/** Una visita con un estado que esta versión no conoce, o sin fecha legible, no se lista (`null`). */
+/** A visit with a state this version does not know, or without a readable date, is not listed (`null`). */
 fun ScheduledFollowUpDto.toDomainOrNull(): AgendaVisit? {
     val moment = scheduledFor.toInstantOrNull() ?: return null
     val visitState = FollowUpState.fromCode(state) ?: return null
@@ -47,5 +47,5 @@ fun NewReferral.toDto(): RecordReferralRequestDto =
 
 private fun FollowUpPreparation.toCodes(): List<String> = orderedCodes.map { it.code }
 
-/** `DateTimeOffset` en UTC («2026-09-18T15:00:00Z»). */
+/** `DateTimeOffset` in UTC ("2026-09-18T15:00:00Z"). */
 internal fun Instant.toIsoOffset(): String = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(atOffset(ZoneOffset.UTC))
