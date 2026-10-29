@@ -28,11 +28,11 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
 
-/** «Hoy» de los tests: 2026-10-07 a las 13:00 UTC, en UTC. */
+/** "Today" in the tests: 2026-10-07 at 13:00 UTC, in UTC. */
 val TODAY: LocalDate = LocalDate.of(2026, 10, 7)
 val fixedClock: Clock = Clock.fixed(Instant.parse("2026-10-07T13:00:00Z"), ZoneOffset.UTC)
 
-/** Metas vigentes como las de PT4 del Figma (v3, 1 850 kcal, «Sin mariscos»). */
+/** Active targets like the ones in the Figma plan design (v3, 1 850 kcal, "Sin mariscos"). */
 fun activeTargets(
     planVersion: Int = 3,
     validFrom: Instant = Instant.parse("2026-09-04T15:00:00Z"),

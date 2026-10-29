@@ -5,7 +5,7 @@ import pe.edu.upc.healthify.features.iam.domain.valueobject.UserId
 import java.time.LocalDate
 import javax.inject.Inject
 
-/** Día en que se creó la cuenta: nada anterior a ese día pertenece a esta persona (diario PT14, «¿Cuándo comiste?»). */
+/** Day the account was created: nothing before that day belongs to this person (the diary's meal date picker). */
 class GetAccountCreatedOnUseCase @Inject constructor(
     private val accountRepository: AccountRepository,
 ) {

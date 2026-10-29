@@ -23,8 +23,8 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 /**
- * Backend primero; la copia de Room cubre la falta de red y los errores del servidor (*Cache Survives Offline*).
- * Un `404` es la única respuesta que dice «no hay metas»: borra la copia para no mostrar metas que ya no rigen.
+ * Backend first; the Room copy covers missing network and server errors (*Cache Survives Offline*).
+ * A `404` is the only answer that means "no targets": it deletes the copy so targets no longer in effect are not shown.
  */
 class ActiveTargetsRepositoryImpl @Inject constructor(
     private val service: ActiveTargetsService,
@@ -69,7 +69,7 @@ class ActiveTargetsRepositoryImpl @Inject constructor(
         )
     }
 
-    /** Un recurso que rompe las invariantes del dominio no se muestra ni se guarda. */
+    /** A resource that breaks the domain invariants is neither shown nor saved. */
     private fun ActiveTargetsDto.toDomainOrNull(): ActiveTargets? =
         try {
             toDomain()

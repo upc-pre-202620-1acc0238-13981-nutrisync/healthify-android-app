@@ -14,9 +14,9 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 /**
- * IN-8 · pide la sugerencia de «¿Estaba en tu plan?» de PT8 y PT10.1 cuando cambian el plato, la porción o el día,
- * con un respiro para no pedirla en cada tecla. Solo vale la última respuesta. Sin conexión o sin plan publicado no
- * hay sugerencia (`null`) y el paciente responde como siempre. Uno por ViewModel (no es singleton).
+ * Asks for the "Was it in your plan?" suggestion when the dish, the portion or the day change,
+ * with a short pause so it does not ask on every keystroke. Only the latest answer counts. Offline or with no
+ * published plan there is no suggestion (`null`) and the patient answers as usual. One per ViewModel (not a singleton).
  */
 class PlanFitSuggester @Inject constructor(
     private val checkPlanFit: CheckPlanFitUseCase,
@@ -25,8 +25,8 @@ class PlanFitSuggester @Inject constructor(
     private var job: Job? = null
 
     /**
-     * Sin plato no hay sugerencia ([onResult] con `null`); con una porción que todavía no es válida (el paciente está
-     * escribiendo) se conserva la que había.
+     * With no dish there is no suggestion ([onResult] with `null`); with a portion not valid yet (the patient is still
+     * typing) the previous one is kept.
      */
     fun request(
         scope: CoroutineScope,

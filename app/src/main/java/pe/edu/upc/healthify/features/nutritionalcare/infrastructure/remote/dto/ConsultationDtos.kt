@@ -3,11 +3,11 @@ package pe.edu.upc.healthify.features.nutritionalcare.infrastructure.remote.dto
 import kotlinx.serialization.Serializable
 
 /*
- * Recursos de NC-1 a NC-7 (`Healthify.Platform/NutritionalCare/Interfaces/REST/Resources`). Los pedidos no llevan
- * valores por defecto en sus campos obligatorios: con `encodeDefaults = false` un valor por defecto no se enviaría.
+ * Guided consultation resources (`Healthify.Platform/NutritionalCare/Interfaces/REST/Resources`). Requests carry no
+ * defaults on their required fields: with `encodeDefaults = false` a default value would not be sent.
  */
 
-/** `PatientBaselineResource` (NC-1). */
+/** `PatientBaselineResource`. */
 @Serializable
 data class PatientBaselineDto(
     val patientId: Long,
@@ -20,7 +20,7 @@ data class PatientBaselineDto(
     val birthDateEstimated: Boolean = false,
 )
 
-/** `RecordPatientBaselineResource` / `UpdatePatientBaselineResource` (mismo cuerpo). */
+/** `RecordPatientBaselineResource` / `UpdatePatientBaselineResource` (same body). */
 @Serializable
 data class PatientBaselineRequestDto(
     val birthDate: String,
@@ -29,7 +29,7 @@ data class PatientBaselineRequestDto(
     val conditions: List<String>,
 )
 
-/** `StartConsultationResource`. Sin cita = `{}`. */
+/** `StartConsultationResource`. No appointment = `{}`. */
 @Serializable
 data class StartConsultationRequestDto(val scheduledFollowUpId: Long? = null)
 
@@ -47,7 +47,7 @@ data class BiochemistryPanelDto(
     val triglyceridesMgDl: Double? = null,
 )
 
-/** `RecordConsultationMeasurementResource` (NC-3). */
+/** `RecordConsultationMeasurementResource`. */
 @Serializable
 data class MeasurementRequestDto(
     val weightKg: Double,
@@ -59,7 +59,7 @@ data class MeasurementRequestDto(
     val biochemistry: BiochemistryPanelDto? = null,
 )
 
-/** `IssueConsultationDiagnosisResource` (NC-4). */
+/** `IssueConsultationDiagnosisResource`. */
 @Serializable
 data class DiagnosisRequestDto(
     val code: String,
@@ -68,7 +68,7 @@ data class DiagnosisRequestDto(
     val rationale: String? = null,
 )
 
-/** `ConsultationTargetParametersResource`: lo que no se manda lo completa el backend con sus valores por defecto. */
+/** `ConsultationTargetParametersResource`: whatever is not sent the backend fills with its defaults. */
 @Serializable
 data class TargetParametersDto(
     val equation: String,
@@ -78,11 +78,11 @@ data class TargetParametersDto(
     val fatPercentOfEnergy: Double,
 )
 
-/** `ProposeConsultationTargetsResource`: `{}` usa los parámetros por defecto. */
+/** `ProposeConsultationTargetsResource`: `{}` uses the default parameters. */
 @Serializable
 data class TargetProposalRequestDto(val parameters: TargetParametersDto? = null)
 
-/** `PrescribeConsultationTargetsResource` (NC-5). */
+/** `PrescribeConsultationTargetsResource`. */
 @Serializable
 data class PrescribeTargetsRequestDto(
     val outcome: String,
@@ -93,7 +93,7 @@ data class PrescribeTargetsRequestDto(
     val overrideReason: String? = null,
 )
 
-/** `ConsultationPublicationResource` (borrador y publicación). */
+/** `ConsultationPublicationResource` (draft and publication). */
 @Serializable
 data class PublicationRequestDto(
     val restrictions: List<String>,
@@ -163,7 +163,7 @@ data class PublicationDraftDto(
 @Serializable
 data class CheckInQuestionDto(val text: String, val origin: String? = null)
 
-/** `ConsultationPatientCheckInResource` (MA-4): lo que el paciente contó antes de la consulta. */
+/** `ConsultationPatientCheckInResource`: what the patient shared before the consultation. */
 @Serializable
 data class ConsultationCheckInDto(
     val feeling: String,
@@ -172,7 +172,7 @@ data class ConsultationCheckInDto(
     val submittedAt: String,
 )
 
-/** `ConsultationResource` (NC-2). */
+/** `ConsultationResource`. */
 @Serializable
 data class ConsultationDto(
     val consultationId: Long,
@@ -189,7 +189,7 @@ data class ConsultationDto(
     val publishedPlanVersion: Int? = null,
 )
 
-/** `DiagnosisSuggestionResource` (IA-6). */
+/** `DiagnosisSuggestionResource`. */
 @Serializable
 data class DiagnosisSuggestionDto(
     val aiGenerationId: Long? = null,
@@ -199,7 +199,7 @@ data class DiagnosisSuggestionDto(
     val disclaimer: String = "",
 )
 
-/** `GuidelineSuggestionsResource` (IA-7). */
+/** `GuidelineSuggestionsResource`. */
 @Serializable
 data class GuidelineSuggestionsDto(
     val suggested: List<String> = emptyList(),
@@ -215,7 +215,7 @@ data class TargetInputsDto(
     val activityLevel: String? = null,
 )
 
-/** `ConsultationTargetProposalResource` (NC-5). */
+/** `ConsultationTargetProposalResource`. */
 @Serializable
 data class TargetProposalDto(
     val calculationBasis: CalculationBasisDto,

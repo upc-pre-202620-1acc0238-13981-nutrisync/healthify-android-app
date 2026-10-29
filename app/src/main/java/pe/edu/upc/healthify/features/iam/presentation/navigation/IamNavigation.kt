@@ -10,43 +10,43 @@ import pe.edu.upc.healthify.features.iam.presentation.screen.SignInScreen
 import pe.edu.upc.healthify.features.iam.presentation.screen.SignUpScreen
 import pe.edu.upc.healthify.features.iam.presentation.state.ShellDestination
 
-/** S3 · Registro. */
+/** Sign-up. */
 @Serializable
 data object SignUpRoute
 
-/** S4 · Login único. */
+/** Single sign-in. */
 @Serializable
 data object SignInRoute
 
-/** IAM-2 · Recuperar contraseña (desde «¿Olvidaste tu contraseña?» de S4). */
+/** Password recovery (from "Forgot your password?" on sign-in). */
 @Serializable
 data object ForgotPasswordRoute
 
-/** S5 · Cargando (elige el shell). */
+/** Loading (picks the shell). */
 @Serializable
 data object ShellLoadingRoute
 
-/** S6 · Sesión expirada. */
+/** Session expired. */
 @Serializable
 data object SessionExpiredRoute
 
-/** Callbacks de navegación de S3–S6; el grafo raíz decide cómo se arma el back stack. */
+/** Navigation callbacks for the Iam screens; the root graph decides how the back stack is built. */
 data class IamNavigationCallbacks(
     val onSignedIn: () -> Unit,
     val onGoToSignIn: () -> Unit,
     val onGoToSignUp: () -> Unit,
-    /** S4 → IAM-2. */
+    /** Sign-in → password recovery. */
     val onGoToForgotPassword: () -> Unit,
-    /** IAM-2 → S4, al volver o con la contraseña ya cambiada. */
+    /** Password recovery → sign-in, on back or once the password has changed. */
     val onForgotPasswordDone: () -> Unit,
     val onShellSelected: (ShellDestination) -> Unit,
-    /** S6 → S4: la sesión anterior ya no sirve, así que S4 queda como única pantalla. */
+    /** Session expired → sign-in: the old session is no longer valid, so sign-in stays as the only screen. */
     val onExpiredSessionSignIn: () -> Unit,
     val onNoSession: () -> Unit,
     val onCloseApp: () -> Unit,
 )
 
-/** Destinos de Iam (S3–S6) dentro del grafo de entrada. */
+/** Iam destinations inside the entry graph. */
 fun NavGraphBuilder.iamDestinations(callbacks: IamNavigationCallbacks) {
     composable<SignUpRoute> {
         SignUpScreen(onSignedIn = callbacks.onSignedIn, onSignIn = callbacks.onGoToSignIn)

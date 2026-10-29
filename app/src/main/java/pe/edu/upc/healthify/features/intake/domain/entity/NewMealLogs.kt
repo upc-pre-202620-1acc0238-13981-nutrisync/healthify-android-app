@@ -6,7 +6,7 @@ import pe.edu.upc.healthify.features.intake.domain.valueobject.MealFood
 import pe.edu.upc.healthify.features.intake.domain.valueobject.PlanAdherence
 import pe.edu.upc.healthify.features.intake.domain.valueobject.PortionGrams
 
-/** PT10.1 · una comida escrita a mano: es una confirmación desde el principio (F17). */
+/** A meal written by hand: it is a confirmation from the start. */
 data class NewManualMeal(
     val food: MealFood,
     val portion: PortionGrams,
@@ -19,16 +19,16 @@ data class NewManualMeal(
     }
 }
 
-/** Qué hizo el paciente con la estimación de la foto en PT7/PT8 (IN-2). */
+/** What the patient did with the photo estimate. */
 sealed interface PhotoConfirmation {
-    /** «Sí, es correcto». */
+    /** "Yes, that's right". */
     data object AsProposed : PhotoConfirmation
 
-    /** Otro plato (una alternativa o uno del catálogo) y/u otros gramos. La propuesta se conserva al lado. */
+    /** Another dish (an alternative or one from the catalog) and/or other grams. The proposal is kept alongside. */
     data class Adjusted(val food: MealFood, val portion: PortionGrams) : PhotoConfirmation
 }
 
-/** PT7/PT8 · comida por foto ya confirmada (`photo-logs` con `analysisId`, IN-7). */
+/** A photo meal already confirmed (`photo-logs` with `analysisId`). */
 data class NewPhotoMeal(
     val analysis: MealPhotoAnalysis,
     val confirmation: PhotoConfirmation,
@@ -40,7 +40,7 @@ data class NewPhotoMeal(
         require(planAdherence.isAnswered) { "A confirmed photo meal needs the plan answer (PlanAdherenceRequired)" }
     }
 
-    /** Lo que queda registrado: el plato y los gramos confirmados. */
+    /** What gets logged: the confirmed dish and grams. */
     val loggedFood: MealFood
         get() = when (confirmation) {
             PhotoConfirmation.AsProposed -> analysis.food
@@ -54,10 +54,10 @@ data class NewPhotoMeal(
         }
 }
 
-/** Un alimento de una comida de varios (`manual-logs/batch`, IN-6). */
+/** One food of a multi-food meal (`manual-logs/batch`). */
 data class MealGroupItem(val food: MealFood, val portion: PortionGrams, val clientEntryId: ClientEntryId)
 
-/** PT14.5 «Registrar esta comida»: N entradas `Manual` con el mismo momento, en una sola transacción. */
+/** "Log this meal": N `Manual` entries with the same moment, in a single transaction. */
 data class NewMealGroup(
     val items: List<MealGroupItem>,
     val localTimestamp: LocalTimestamp,
@@ -76,18 +76,18 @@ data class NewMealGroup(
     }
 }
 
-/** Cómo terminó un registro. */
+/** How a log ended. */
 enum class MealLogOutcome {
-    /** El backend lo guardó. */
+    /** The backend saved it. */
     LOGGED,
 
-    /** Sin conexión: quedó en la cola del teléfono y se enviará solo («Pendiente de enviar»). */
+    /** Offline: it stayed in the phone's queue and will be sent on its own ("Pending to send"). */
     QUEUED,
 }
 
 /**
- * Aviso para el Snackbar de PT14 al volver al diario (PT14.1): «Comida registrada: Lomo saltado · 320 g» o
- * «Guardado. Se enviará cuando tengas conexión.».
+ * Message for the diary Snackbar when returning to the diary: "Meal logged: Lomo saltado · 320 g" or
+ * "Saved. It will be sent when you are online.".
  */
 data class LoggedMealNotice(
     val description: String,

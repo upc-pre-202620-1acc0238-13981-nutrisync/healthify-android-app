@@ -67,7 +67,7 @@ data class CheckInActions(
     val onDismissSubmitError: () -> Unit = {},
 )
 
-/** PT25.2 · Cuéntale cómo te fue (+ PT25.2.E). Al enviar vuelve a PT25 (PT25.3). */
+/** Tell them how it went (with the send-error state). On send it returns to My visits. */
 @Composable
 fun CheckInScreen(
     onBack: () -> Unit,
@@ -241,7 +241,7 @@ private fun ColumnScope.CheckInForm(state: CheckInUiState, actions: CheckInActio
     if (state.suggestions.isNotEmpty()) SuggestionsCard(state.suggestions, state.canSelectMoreSuggestions, enabled, actions)
 }
 
-/** «También podrías preguntar»: las sugerencias de IA van tal cual (en el idioma en que se generaron). */
+/** "You could also ask": AI suggestions go as is (in the language they were generated in). */
 @Composable
 private fun SuggestionsCard(
     suggestions: List<SuggestionOption>,
@@ -305,7 +305,7 @@ private fun CardTitle(text: String) {
     )
 }
 
-/** PT25.2.E · No se pudo enviar: lo escrito se conserva; «atrás» vuelve al formulario. */
+/** Could not send: what was written is kept; "back" returns to the form. */
 @Composable
 private fun SubmitErrorContent(state: CheckInUiState, actions: CheckInActions, modifier: Modifier) {
     val dimens = HealthifyTheme.dimens
@@ -342,13 +342,13 @@ private val PreviewForm = CheckInUiState(
     ),
 )
 
-@Preview(name = "PT25.2 · Cuéntale cómo te fue", widthDp = 360, heightDp = 800)
+@Preview(name = "Tell them how it went", widthDp = 360, heightDp = 800)
 @Composable
 private fun CheckInPreview() {
     HealthifyTheme { CheckInContent(state = PreviewForm, actions = CheckInActions(onBack = {})) }
 }
 
-@Preview(name = "PT25.2 · Falta cómo te sentiste", widthDp = 360, heightDp = 800)
+@Preview(name = "Feeling missing", widthDp = 360, heightDp = 800)
 @Composable
 private fun CheckInMissingFeelingPreview() {
     HealthifyTheme {
@@ -359,19 +359,19 @@ private fun CheckInMissingFeelingPreview() {
     }
 }
 
-@Preview(name = "PT25.2.E · No se pudo enviar", widthDp = 360, heightDp = 800)
+@Preview(name = "Could not send", widthDp = 360, heightDp = 800)
 @Composable
 private fun CheckInErrorPreview() {
     HealthifyTheme { CheckInContent(state = PreviewForm.copy(submitFailed = true), actions = CheckInActions(onBack = {})) }
 }
 
-@Preview(name = "PT25.2 · Cargando", widthDp = 360, heightDp = 800)
+@Preview(name = "Loading", widthDp = 360, heightDp = 800)
 @Composable
 private fun CheckInLoadingPreview() {
     HealthifyTheme { CheckInContent(state = CheckInUiState(), actions = CheckInActions(onBack = {})) }
 }
 
-@Preview(name = "PT25.2 · Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun CheckInOfflinePreview() {
     HealthifyTheme {

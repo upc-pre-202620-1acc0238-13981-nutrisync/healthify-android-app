@@ -28,7 +28,7 @@ class SelfWeighInDomainTest {
         assertTrue(WeightKg.parse("400") is WeightKg.Input.Valid)
         assertEquals(WeightKg.Input.OutOfRange, WeightKg.parse("19,99"))
         assertEquals(WeightKg.Input.OutOfRange, WeightKg.parse("400.01"))
-        // PT12.E: un cero de más o la coma olvidada.
+        // An extra zero or a forgotten decimal separator.
         assertEquals(WeightKg.Input.OutOfRange, WeightKg.parse("684"))
         assertEquals(WeightKg.Input.OutOfRange, WeightKg.parse("0"))
     }

@@ -1,19 +1,19 @@
 package pe.edu.upc.healthify.features.carerelationship.domain.valueobject
 
 /**
- * PR1 · por qué un paciente de la cartera requiere algo del nutricionista. El orden de declaración es la prioridad: si
- * cumple varios, cuenta el primero, y la tarjeta «Requieren acción» ordena las filas con este mismo criterio.
+ * Why a roster patient needs something from the nutritionist. Declaration order is the priority: if
+ * several apply, the first one counts, and the "Need action" card sorts its rows by the same rule.
  */
 enum class RosterAttention {
-    /** Hay una señal abierta en la bandeja de revisión (`hasOpenReviewItem`). */
+    /** There is an open signal in the review inbox (`hasOpenReviewItem`). */
     OPEN_REVIEW,
 
-    /** Quedó una consulta guiada a medias (`hasConsultationInProgress`). */
+    /** A guided consultation was left half done (`hasConsultationInProgress`). */
     CONSULTATION_IN_PROGRESS,
 
-    /** Todavía sin datos base (`!hasBaseline`). */
+    /** No baseline data yet (`!hasBaseline`). */
     MISSING_BASELINE,
 
-    /** Con datos base pero sin plan publicado (`isNew`). */
+    /** Has baseline data but no published plan (`isNew`). */
     PLAN_NOT_PUBLISHED,
 }

@@ -34,8 +34,8 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
- * Pila real de OkHttp (Accept-Language + AuthInterceptor + TokenRefreshAuthenticator) contra MockWebServer,
- * con el refresher real de `iam` (Retrofit anónimo).
+ * Real OkHttp stack (Accept-Language + AuthInterceptor + TokenRefreshAuthenticator) against MockWebServer,
+ * with the real `iam` refresher (anonymous Retrofit).
  */
 class TokenRefreshAuthenticatorTest {
 
@@ -48,13 +48,13 @@ class TokenRefreshAuthenticatorTest {
     private val refreshBodies = Collections.synchronizedList(mutableListOf<String>())
     private val protectedAuthHeaders = Collections.synchronizedList(mutableListOf<String?>())
 
-    /** Respuesta del endpoint de refresh; por defecto, el par nuevo. */
+    /** Refresh endpoint response; the new pair by default. */
     @Volatile
     private var refreshResponse: () -> MockResponse = {
         json(200, """{"token":"$NEW_ACCESS","refreshToken":"$NEW_REFRESH","expiresAt":"2026-10-08T10:00:00Z"}""")
     }
 
-    /** Bloquea los 401 hasta que lleguen N peticiones con el token viejo (para forzar concurrencia real). */
+    /** Holds the 401s until N requests with the old token arrive, to force real concurrency. */
     @Volatile
     private var staleTokenGate: CountDownLatch? = null
 

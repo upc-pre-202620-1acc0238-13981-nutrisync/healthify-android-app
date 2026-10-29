@@ -6,8 +6,8 @@ import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.Patient
 import javax.inject.Inject
 
 /**
- * PT3.M / PT4: si hay una versión del plan que el paciente todavía no revisó. Lee el vínculo activo
- * (`/care-links/active`) y su `targets-read-status`.
+ * Whether there is a plan version the patient has not reviewed yet. Reads the active care link
+ * (`/care-links/active`) and its `targets-read-status`.
  */
 class GetTargetsReadStatusUseCase @Inject constructor(
     private val careLinkRepository: CareLinkRepository,

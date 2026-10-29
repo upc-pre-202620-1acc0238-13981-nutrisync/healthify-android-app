@@ -9,8 +9,8 @@ import java.time.format.FormatStyle
 import java.util.Locale
 
 /*
- * Fechas y horas en el idioma de la app y la zona del teléfono (java.time + Locale actual, sin
- * concatenar). Solo formato: ninguna regla de negocio.
+ * Dates and times in the app language and the phone's time zone (java.time + current Locale, no
+ * concatenation). Formatting only: no business rules.
  */
 
 /** «4 sept 2026» / «Sep 4, 2026». */
@@ -25,7 +25,7 @@ fun Instant.mediumDateText(zone: ZoneId = ZoneId.systemDefault()): String =
 fun Instant.shortTimeText(zone: ZoneId = ZoneId.systemDefault()): String =
     DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(currentLocale()).format(atZone(zone))
 
-/** «Jue 18 sept.» / «Thu, Sep 18»: día de la semana abreviado, con mayúscula inicial. */
+/** «Jue 18 sept.» / «Thu, Sep 18»: abbreviated weekday, capitalized. */
 @Composable
 @ReadOnlyComposable
 fun Instant.weekdayDayMonthText(zone: ZoneId = ZoneId.systemDefault()): String {
@@ -35,6 +35,6 @@ fun Instant.weekdayDayMonthText(zone: ZoneId = ZoneId.systemDefault()): String {
     return text.replaceFirstChar { if (it.isLowerCase()) it.titlecase(locale) else it.toString() }
 }
 
-/** Si [this] cae hoy en la zona del teléfono. */
+/** Whether [this] falls on today in the phone's time zone. */
 fun Instant.isToday(zone: ZoneId = ZoneId.systemDefault(), now: Instant = Instant.now()): Boolean =
     atZone(zone).toLocalDate() == now.atZone(zone).toLocalDate()

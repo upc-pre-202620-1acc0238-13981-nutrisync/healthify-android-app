@@ -64,7 +64,7 @@ import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.TargetsU
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.viewmodel.ConsultationStepEvent
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.viewmodel.TargetsStepViewModel
 
-/** Acciones de EV-4. */
+/** Targets step actions. */
 data class TargetsActions(
     val onBack: () -> Unit = {},
     val onRetry: () -> Unit = {},
@@ -80,8 +80,8 @@ data class TargetsActions(
 )
 
 /**
- * EV-4 · Paso 3 Metas calculadas: «Calculado con…», la propuesta (energía y macros con su parte de la energía) y el
- * método; «Cambiar parámetros», «Aceptar metas» y «Escribir mis propios valores» (con razón obligatoria).
+ * Step 3, calculated targets: "Calculated with…", the proposal (energy and macros with their share of energy) and
+ * the method; "Change parameters", "Accept targets" and "Enter my own values" (reason required).
  */
 @Composable
 fun TargetsStepScreen(
@@ -173,7 +173,7 @@ fun TargetsStepContent(state: TargetsUiState, actions: TargetsActions, modifier:
     }
 }
 
-/** «Calculado con · Mujer · 31 años · 168 cm · 74.2 kg · actividad moderada». */
+/** "Calculated with · Woman · 31 years · 168 cm · 74.2 kg · moderate activity". */
 @Composable
 private fun InputsCard(inputs: TargetInputs) {
     val parts = listOfNotNull(
@@ -255,7 +255,7 @@ private fun MacroBox(grams: Double, label: String, percent: Int, modifier: Modif
     }
 }
 
-/** «Mifflin-St Jeor · déficit de 500 kcal · factor de actividad 1,55». */
+/** "Mifflin-St Jeor · 500 kcal deficit · activity factor 1.55". */
 @Composable
 private fun methodText(basis: CalculationBasis): String {
     val parts = listOfNotNull(
@@ -266,7 +266,7 @@ private fun methodText(basis: CalculationBasis): String {
     return parts.joinToString(stringResource(R.string.text_separator))
 }
 
-/** «Cambiar parámetros»: ecuación, déficit, proteína por kg y grasa (el backend recalcula el mismo borrador). */
+/** "Change parameters": equation, deficit, protein per kg and fat (the backend recalculates the same draft). */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ParametersSheet(form: ParametersForm, invalid: Boolean, actions: TargetsActions) {
@@ -342,7 +342,7 @@ private fun ParametersSheet(form: ParametersForm, invalid: Boolean, actions: Tar
     }
 }
 
-/** «Escribir mis propios valores»: energía y macros, y la razón (obligatoria, hasta 500 caracteres). */
+/** "Enter my own values": energy and macros, and the reason (required, up to 500 characters). */
 @Composable
 private fun OverrideSheet(form: OverrideForm, problems: Set<OverrideField>, isSaving: Boolean, actions: TargetsActions) {
     val dimens = HealthifyTheme.dimens
@@ -420,7 +420,7 @@ private val previewProposal = TargetProposal(
     inputs = TargetInputs(BiologicalSex.FEMALE, 31, 168.0, 74.2, ActivityLevel.MODERATE),
 )
 
-@Preview(name = "EV-4 · Metas calculadas", widthDp = 360, heightDp = 800)
+@Preview(name = "Calculated targets", widthDp = 360, heightDp = 800)
 @Composable
 private fun TargetsStepPreview() {
     HealthifyTheme {
@@ -431,8 +431,8 @@ private fun TargetsStepPreview() {
     }
 }
 
-/** Fuente al 200 %: el contenido se desplaza y las acciones quedan fijas abajo. */
-@Preview(name = "EV-4 · Metas calculadas — fuente 200 %", widthDp = 360, heightDp = 800, fontScale = 2f)
+/** 200 % font: the content scrolls and the actions stay pinned at the bottom. */
+@Preview(name = "Calculated targets - 200 % font", widthDp = 360, heightDp = 800, fontScale = 2f)
 @Composable
 private fun TargetsStepLargeFontPreview() {
     HealthifyTheme {
@@ -443,7 +443,7 @@ private fun TargetsStepLargeFontPreview() {
     }
 }
 
-@Preview(name = "EV-4 · Calculando", widthDp = 360, heightDp = 800)
+@Preview(name = "Calculated targets - calculating", widthDp = 360, heightDp = 800)
 @Composable
 private fun TargetsStepCalculatingPreview() {
     HealthifyTheme {
@@ -454,7 +454,7 @@ private fun TargetsStepCalculatingPreview() {
     }
 }
 
-@Preview(name = "EV-4 · Valores propios sin razón", widthDp = 360, heightDp = 800)
+@Preview(name = "Calculated targets - own values without reason", widthDp = 360, heightDp = 800)
 @Composable
 private fun TargetsOverridePreview() {
     HealthifyTheme {

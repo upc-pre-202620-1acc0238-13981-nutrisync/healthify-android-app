@@ -68,7 +68,7 @@ fun planProposal(
     status = status,
 )
 
-/** Respuestas programables de la bandeja; `proposalResults` se consume en orden (la última se repite). */
+/** Programmable inbox responses; `proposalResults` is consumed in order (the last one repeats). */
 class FakeReviewInboxRepository : ReviewInboxRepository {
     var itemsResult: Result<List<ReviewItem>> = Result.success(listOf(reviewItem()))
     var resolveResult: Result<ReviewItem>? = null

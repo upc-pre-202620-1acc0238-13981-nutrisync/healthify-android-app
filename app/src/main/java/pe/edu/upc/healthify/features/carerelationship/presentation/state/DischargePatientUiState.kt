@@ -1,19 +1,19 @@
 package pe.edu.upc.healthify.features.carerelationship.presentation.state
 
-/** Avisos de PR18. */
+/** Discharge screen notices. */
 enum class DischargeDialog {
-    /** PR18.M · «¿DAR DE ALTA?». */
+    /** Confirmation "DISCHARGE?". */
     CONFIRM,
 
-    /** `409 DischargedLinkCannotBeReactivated`: «Este paciente ya había sido dado de alta.» */
+    /** `409 DischargedLinkCannotBeReactivated`: "This patient had already been discharged." */
     ALREADY_DISCHARGED,
 
-    /** `403`/`404`: el vínculo no es de este profesional o ya no existe. */
+    /** `403`/`404`: the care link does not belong to this practitioner or no longer exists. */
     NO_ACTIVE_LINK,
     SERVER_ERROR,
 }
 
-/** PR18 · Alta clínica (+ PR18.M). */
+/** Clinical discharge (plus its confirmation). */
 data class DischargePatientUiState(
     val reason: String = "",
     val reasonMissing: Boolean = false,

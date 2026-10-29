@@ -63,10 +63,10 @@ import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.PlanChan
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.viewmodel.MyPlanViewModel
 import java.time.Instant
 
-// Medidas del frame «PT4 · Mi plan»: barras de macronutrientes de 6 dp.
+// Sizes from the "My plan" frame: 6 dp macronutrient bars.
 private val MacroBarHeight = 6.dp
 
-/** Acciones de PT4 que la pantalla con estado conecta con el ViewModel. */
+/** My plan actions that the stateful screen wires to the ViewModel. */
 data class MyPlanActions(
     val onBack: () -> Unit = {},
     val onOpenVersions: () -> Unit = {},
@@ -76,7 +76,7 @@ data class MyPlanActions(
     val onServerErrorDismiss: () -> Unit = {},
 )
 
-/** PT4 · Mi plan: metas, indicaciones, restricciones, «Qué cambió» y el mensaje de la versión vigente. */
+/** My plan: targets, guidelines, restrictions, "What changed" and the message of the current version. */
 @Composable
 fun MyPlanScreen(
     onBack: () -> Unit,
@@ -151,7 +151,7 @@ fun MyPlanContent(
                     .fillMaxWidth()
                     .weight(1f)
                 if (state.hasNoTargets || state.isOffline) {
-                    // Nota PT3 «Error cache → mismo copy que Vacío»; sin conexión y sin copia, igual.
+                    // Design note: a cache error uses the same copy as Empty; offline with no copy, the same.
                     EmptyState(
                         title = stringResource(R.string.home_empty_title),
                         text = stringResource(R.string.home_empty_body),
@@ -188,7 +188,7 @@ private fun PlanBody(
     ) {
         if (isOffline || cachedAt != null) CachedTargetsNotice(cachedAt = cachedAt)
 
-        // Card · Plan vigente
+        // Current plan card
         PlanCard(verticalSpacing = dimens.space4) {
             Text(
                 text = stringResource(R.string.my_plan_version_current, plan.planVersion),
@@ -236,7 +236,7 @@ private fun PlanBody(
                     style = MaterialTheme.typography.bodySmall,
                     color = scheme.onSurfaceVariant,
                 )
-                // DECISIÓN PT4: cada barra es la parte de la energía diaria que aporta ese macronutriente.
+                // Each bar is the share of daily energy that macronutrient provides.
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(dimens.space8),
@@ -272,7 +272,7 @@ private fun PlanBody(
             }
         }
 
-        // DECISIÓN PT4: el frame no dibuja el mensaje de NC-9; va como una sección más, con el texto tal cual.
+        // The frame does not draw the version message; it goes as one more section, with the text as is.
         plan.patientMessage?.let { message ->
             PlanSection(title = stringResource(R.string.my_plan_message)) {
                 PlanCard(verticalSpacing = dimens.space4) {
@@ -375,7 +375,7 @@ internal fun previewPlan() = PlanDetails(
     patientMessage = "Notamos que tus cenas son más ligeras. Probemos con estas ideas.",
 )
 
-@Preview(name = "PT4 · Mi plan", widthDp = 360, heightDp = 800)
+@Preview(name = "My plan", widthDp = 360, heightDp = 800)
 @Composable
 private fun MyPlanPreview() {
     HealthifyTheme {
@@ -383,13 +383,13 @@ private fun MyPlanPreview() {
     }
 }
 
-@Preview(name = "PT4 · Cargando", widthDp = 360, heightDp = 800)
+@Preview(name = "My plan - loading", widthDp = 360, heightDp = 800)
 @Composable
 private fun MyPlanLoadingPreview() {
     HealthifyTheme { MyPlanContent(state = MyPlanUiState(), actions = MyPlanActions()) }
 }
 
-@Preview(name = "PT4 · Sin conexión (copia del teléfono)", widthDp = 360, heightDp = 800)
+@Preview(name = "My plan - offline (phone copy)", widthDp = 360, heightDp = 800)
 @Composable
 private fun MyPlanOfflinePreview() {
     HealthifyTheme {
@@ -400,7 +400,7 @@ private fun MyPlanOfflinePreview() {
     }
 }
 
-@Preview(name = "PT4 · Sin metas", widthDp = 360, heightDp = 800)
+@Preview(name = "My plan - no targets", widthDp = 360, heightDp = 800)
 @Composable
 private fun MyPlanEmptyPreview() {
     HealthifyTheme {
@@ -408,7 +408,7 @@ private fun MyPlanEmptyPreview() {
     }
 }
 
-@Preview(name = "PT4 · Error", widthDp = 360, heightDp = 800)
+@Preview(name = "My plan - error", widthDp = 360, heightDp = 800)
 @Composable
 private fun MyPlanErrorPreview() {
     HealthifyTheme {

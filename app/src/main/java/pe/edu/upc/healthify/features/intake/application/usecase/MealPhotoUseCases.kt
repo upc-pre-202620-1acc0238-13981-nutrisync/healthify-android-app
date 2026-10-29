@@ -9,16 +9,16 @@ import pe.edu.upc.healthify.features.intake.domain.valueobject.PatientId
 import java.time.LocalDate
 import javax.inject.Inject
 
-/** PT6 «Usar esta foto» → PT6.1 «Viendo tu foto…» (IN-7: la estimación la hace el servidor). */
+/** "Use this photo" -> "Looking at your photo…" (the server makes the estimate). */
 class AnalyzeMealPhotoUseCase @Inject constructor(
     private val repository: MealPhotoRepository,
 ) {
-    /** @param mealDate el día de la comida, para que la sugerencia de plan (IN-8) pese lo que queda ese día. */
+    /** @param mealDate the day of the meal, so the plan suggestion weighs what is left that day. */
     suspend operator fun invoke(patientUserId: Long, photoPath: String, mealDate: LocalDate? = null): Result<MealPhotoAnalysis> =
         repository.analyze(PatientId(patientUserId), photoPath, mealDate)
 }
 
-/** Sin conexión: la foto queda guardada para analizarla al volver la red. */
+/** Offline: the photo is saved to be analyzed when the network returns. */
 class SavePendingMealPhotoUseCase @Inject constructor(
     private val repository: MealPhotoRepository,
 ) {
@@ -40,7 +40,7 @@ class GetPendingMealPhotoUseCase @Inject constructor(
         repository.getPendingPhoto(PatientId(patientUserId), id)
 }
 
-/** Borra la foto del teléfono (al registrar, al descartarla o al elegir registrar a mano). */
+/** Deletes the photo from the phone (on logging, on discarding it or on choosing to log by hand). */
 class DiscardMealPhotoUseCase @Inject constructor(
     private val repository: MealPhotoRepository,
 ) {

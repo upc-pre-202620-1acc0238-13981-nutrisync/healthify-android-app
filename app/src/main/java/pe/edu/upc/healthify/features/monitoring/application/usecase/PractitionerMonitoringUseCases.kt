@@ -8,7 +8,7 @@ import java.time.Clock
 import java.time.LocalDate
 import javax.inject.Inject
 
-/** PAC-2 · el panel de los últimos 7 días hasta hoy (el día del teléfono). */
+/** The panel for the last 7 days up to today (the phone's day). */
 class GetMonitoringPanelUseCase @Inject constructor(
     private val repository: PractitionerMonitoringRepository,
     private val clock: Clock,
@@ -21,7 +21,7 @@ class GetMonitoringPanelUseCase @Inject constructor(
     }
 }
 
-/** PAC-2 · el resumen con IA (se pide en paralelo al panel). */
+/** The AI summary (requested in parallel with the panel). */
 class GetMonitoringSummaryUseCase @Inject constructor(
     private val repository: PractitionerMonitoringRepository,
 ) {

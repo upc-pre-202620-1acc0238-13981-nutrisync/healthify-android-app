@@ -100,22 +100,21 @@ import pe.edu.upc.healthify.features.onboarding.presentation.navigation.WelcomeR
 import pe.edu.upc.healthify.features.onboarding.presentation.navigation.onboardingDestinations
 import pe.edu.upc.healthify.features.onboarding.presentation.state.SplashDestination
 
-/** Grafo de entrada: S1 Splash, S2 Bienvenida, S3 Registro, S4 Login, S5 Cargando y S6 Sesión expirada. */
+/** Entry graph: splash, welcome, sign-up, sign-in, loading and session expired. */
 @Serializable
 data object AuthNavGraphRoute
 
-/** Clave del `SavedStateHandle` del shell del paciente: pestaña que se pide abrir al volver a él. */
+/** `SavedStateHandle` key of the patient shell: the tab to open when returning to it. */
 private const val KEY_REQUESTED_PATIENT_TAB = "requested_patient_tab"
 
 /**
- * Grafo raíz: el grafo de entrada (onboarding + iam), CareRelationship del paciente (PT1, PT2, PT2.1, PT21.V, PT21.IA,
- * PT23, PT24), los dos shells y las pantallas completas que se abren desde las pestañas del paciente (PT4, PT4.1,
- * PT13.2, PT15, PT16, PT17, PT21.1, PT25, PT25.1, PT25.2 y, de Intake, PT5–PT8, PT9/PT10, PT12, PT14.4/PT14.5, PT19 y
- * PT22) y, del nutricionista, PR2, la ficha del paciente (PAC-0 a PAC-4), la consulta guiada (EV-1 a EV-5), PR14,
- * PR14.IA, PR14.IA-A, PR15, PR15.1, PR16, PR17, PR18 y PR20.1.
+ * Root graph: the entry graph (onboarding + iam), the patient's CareRelationship screens, the two shells and the
+ * full screens opened from the patient tabs (plan, monitoring, settings, consultations and, from Intake, meal
+ * logging, self weigh-in, AI ideas, pending sync and reminders) and, for the practitioner, the invitation, the
+ * patient file, the guided consultation, the inbox review, the agenda, referral, discharge and settings.
  *
- * Entrar a un shell, cerrar sesión o expirar la sesión **limpian todo el back stack** con este NavController: con
- * «atrás» nunca se vuelve a una pantalla de otra sesión ni al login desde dentro de la app.
+ * Entering a shell, signing out or the session expiring **clear the whole back stack** with this NavController:
+ * "back" never returns to a screen from another session or to sign-in from inside the app.
  */
 @Composable
 fun AppNavHost(
@@ -152,7 +151,7 @@ fun AppNavHost(
             iamDestinations(
                 IamNavigationCallbacks(
                     onSignedIn = { navController.navigateClearingBackStack(ShellLoadingRoute) },
-                    // S3 ↔ S4 se reemplazan entre sí: «atrás» vuelve a S2 sin acumular registro/login.
+                    // Sign-up and sign-in replace each other: "back" returns to welcome without stacking them.
                     onGoToSignIn = {
                         navController.navigate(SignInRoute) {
                             popUpTo<SignUpRoute> { inclusive = true }
@@ -166,7 +165,7 @@ fun AppNavHost(
                         }
                     },
                     onGoToForgotPassword = { navController.navigate(ForgotPasswordRoute) { launchSingleTop = true } },
-                    // IAM-2 → S4: la recuperación sale del back stack; S4 (si estaba debajo) se reutiliza.
+                    // Reset password → sign-in: the reset leaves the back stack; sign-in (if it was below) is reused.
                     onForgotPasswordDone = {
                         navController.navigate(SignInRoute) {
                             popUpTo<ForgotPasswordRoute> { inclusive = true }
@@ -210,7 +209,7 @@ fun AppNavHost(
                 onConsentWithdrawn = { navController.navigateClearingBackStack(ConsentWithdrawnRoute) },
                 onSignedOut = onSignedOut,
                 onExitApp = { activity?.finish() },
-                // PR18 → PR1 con el Snackbar del alta (la ficha del paciente sale del back stack).
+                // Discharge → patient list with the discharge Snackbar (the patient file leaves the back stack).
                 onPatientDischarged = { name ->
                     navController.returnToPractitionerShell(PractitionerShellMessage.PatientDischarged(name))
                 },
@@ -243,7 +242,7 @@ fun AppNavHost(
                 onRequestedTabHandled = { entry.savedStateHandle[KEY_REQUESTED_PATIENT_TAB] = null },
             )
         }
-        // PT21 · Ajustes: pantalla interna desde el menú; «Atrás» vuelve a la pestaña donde estaba el paciente.
+        // Settings: inner screen opened from the menu; "Back" returns to the tab the patient was on.
         composable<PatientSettingsRoute> {
             PatientSettingsScreen(
                 callbacks = PatientSettingsCallbacks(
@@ -266,10 +265,10 @@ fun AppNavHost(
         monitoringDestinations(
             MonitoringNavigationCallbacks(
                 onBack = { navController.popBackStack() },
-                // PT16 «Revisar mi diario»: vuelve al shell y abre la pestaña Diario.
+                // "Review my diary": returns to the shell and opens the Diary tab.
                 onReviewDiary = { navController.returnToPatientShell(PatientTab.Diary) },
                 onOpenEscalationInfo = { navController.navigateSingleTop(ConsistencyEscalationInfoRoute) },
-                // PT25.1 «Ver mis consultas»: si PT25 ya está debajo se vuelve a ella (no se apila otra copia).
+                // "See my consultations": if that screen is already below, go back to it (no second copy).
                 onOpenMyConsultations = {
                     if (!navController.popBackStack<MyConsultationsRoute>(inclusive = false)) {
                         navController.navigateSingleTop(MyConsultationsRoute)
@@ -334,7 +333,7 @@ fun AppNavHost(
                 onMessageHandled = { entry.savedStateHandle[KEY_PRACTITIONER_SHELL_MESSAGE] = null },
             )
         }
-        // PR20 · Ajustes: pantalla interna desde el menú; «Atrás» vuelve a la pestaña donde estaba el nutricionista.
+        // Settings: inner screen opened from the menu; "Back" returns to the tab the practitioner was on.
         composable<PractitionerSettingsRoute> {
             PractitionerSettingsScreen(
                 callbacks = PractitionerSettingsCallbacks(
@@ -369,7 +368,7 @@ fun AppNavHost(
         reviewDestinations(
             ReviewNavigationCallbacks(
                 onBack = { navController.popBackStack() },
-                // PR14 / PR14.IA / PR14.IA-A → PR13.1 «Señal resuelta» (cierra lo que se abrió encima de la bandeja).
+                // Review → "Signal resolved" Snackbar (closes what was opened on top of the inbox).
                 onResolved = { name ->
                     navController.returnToPractitionerShell(PractitionerShellMessage.SignalResolved(name))
                 },
@@ -384,7 +383,7 @@ fun AppNavHost(
             PractitionerAgendaNavigationCallbacks(
                 onBack = { navController.popBackStack() },
                 onScheduled = { scheduledFor, rescheduled ->
-                    // Desde PAC-1 vuelve a la ficha; desde la Agenda, a la pestaña Agenda (PR17.0-S).
+                    // From the patient file it returns to the file; from the Agenda, to the Agenda tab.
                     val fromPatient = navController.previousBackStackEntry?.destination
                         ?.hasRoute(PractitionerPatientRoute::class) == true
                     if (fromPatient) {
@@ -420,7 +419,7 @@ fun AppNavHost(
         consultationDestinations(
             ConsultationNavigationCallbacks(
                 onBack = { navController.popBackStack() },
-                // EV-1 «Guardar e iniciar consulta»: el paso reemplaza a EV-1 («‹» desde el paso 1 abre EV-2.S).
+                // "Save and start consultation": the step replaces the baseline ("‹" from step 1 opens the exit dialog).
                 onBaselineSavedStartConsultation = { route ->
                     navController.navigate(route) {
                         popUpTo<BaselineRoute> { inclusive = true }
@@ -429,7 +428,7 @@ fun AppNavHost(
                 },
                 onOpenStep = { navController.navigateSingleTop(it) },
                 onPreviousStep = { previous ->
-                    // Al reanudar en un paso avanzado, el anterior no está debajo: se pone en lugar del actual.
+                    // When resuming at a later step the previous one is not below: it replaces the current one.
                     if (!navController.popBackStack(previous, inclusive = false)) {
                         val current = navController.currentDestination?.id
                         navController.navigate(previous) {
@@ -446,13 +445,13 @@ fun AppNavHost(
     }
 }
 
-/** Clave del `SavedStateHandle` de la ficha del paciente: snackbar que se pide mostrar al volver (PAC-1-S1/S3). */
+/** `SavedStateHandle` key of the patient file: the snackbar to show when returning to it. */
 private const val KEY_PATIENT_SNACKBAR = "patient_snackbar"
 private const val SNACKBAR_PLAN_PUBLISHED = "PlanPublished"
 private const val SNACKBAR_REFERRAL_PREFIX = "ReferralRegistered:"
 private const val SNACKBAR_FOLLOW_UP_PREFIX = "FollowUpScheduled:"
 
-/** Clave del `SavedStateHandle` del shell del nutricionista: Snackbar que se pide al volver (PR13.1, PR17.0-S, alta). */
+/** `SavedStateHandle` key of the practitioner shell: the Snackbar to show when returning (resolved, scheduled, discharge). */
 private const val KEY_PRACTITIONER_SHELL_MESSAGE = "practitioner_shell_message"
 
 private fun patientSnackbarRequest(value: String): PatientSnackbarRequest? = when {
@@ -464,7 +463,7 @@ private fun patientSnackbarRequest(value: String): PatientSnackbarRequest? = whe
     else -> null
 }
 
-/** Vuelve al shell del nutricionista (cerrando lo que se abrió encima) y le pide mostrar [message]. */
+/** Returns to the practitioner shell (closing what was opened on top) and asks it to show [message]. */
 private fun NavHostController.returnToPractitionerShell(message: PractitionerShellMessage?) {
     val shell = try {
         getBackStackEntry<PractitionerShellRoute>()
@@ -477,8 +476,8 @@ private fun NavHostController.returnToPractitionerShell(message: PractitionerShe
 }
 
 /**
- * Vuelve a la ficha del paciente cerrando lo que se abrió encima (la consulta EV-1 a EV-5, PR16 o PR17): se relee y
- * muestra PAC-1.C o el Snackbar pedido (PAC-1-S1, PAC-1-S3, consulta agendada).
+ * Returns to the patient file, closing what was opened on top (the guided consultation, referral or scheduling): the
+ * file reloads and shows the requested Snackbar (plan published, referral registered, consultation scheduled).
  */
 private fun NavHostController.returnToPractitionerPatient(snackbar: String?) {
     val patient = try {
@@ -495,12 +494,12 @@ private fun NavHostController.navigateSingleTop(route: Any) {
     navigate(route) { launchSingleTop = true }
 }
 
-/** Vuelve al shell del paciente (cerrando lo que se abrió encima) y le pide abrir [tab]. */
+/** Returns to the patient shell (closing what was opened on top) and asks it to open [tab]. */
 private fun NavHostController.returnToPatientShell(tab: PatientTab) {
     val shell = try {
         getBackStackEntry<PatientShellRoute>()
     } catch (_: IllegalArgumentException) {
-        // El shell ya no está debajo (no debería pasar desde PT16): solo se cierra la pantalla actual.
+        // The shell is no longer below (should not happen): just close the current screen.
         popBackStack()
         return
     }
@@ -508,7 +507,7 @@ private fun NavHostController.returnToPatientShell(tab: PatientTab) {
     popBackStack<PatientShellRoute>(inclusive = false)
 }
 
-/** Navega a [route] dejándola como única entrada del back stack. */
+/** Navigates to [route], leaving it as the only back stack entry. */
 private fun NavHostController.navigateClearingBackStack(route: Any) {
     navigate(route) {
         popUpTo(graph.id) { inclusive = true }

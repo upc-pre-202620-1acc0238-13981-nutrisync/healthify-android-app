@@ -1,8 +1,8 @@
 package pe.edu.upc.healthify.features.monitoring.domain.valueobject
 
 /**
- * Resultado de un día (F21, `DailyComplianceResource.outcome`). [UNLOGGED] está **al lado** de los otros tres, no
- * debajo: un día sin registro no es evidencia de nada, nunca es incumplimiento y nunca escala.
+ * A day's outcome (`DailyComplianceResource.outcome`). [UNLOGGED] sits **beside** the other three, not below
+ * them: a day without logs is evidence of nothing, never non-compliance and never escalates.
  */
 enum class ComplianceOutcome(val code: String) {
     MET("Met"),

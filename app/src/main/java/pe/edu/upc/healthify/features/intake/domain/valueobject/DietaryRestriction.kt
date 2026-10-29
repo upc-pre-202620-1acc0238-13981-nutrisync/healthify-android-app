@@ -1,8 +1,8 @@
 package pe.edu.upc.healthify.features.intake.domain.valueobject
 
 /**
- * Restricción del plan (NC-6): un código de la lista cerrada, que la app traduce, o un texto libre anterior a la
- * lista cerrada (`legacyRestrictions`), que se muestra tal cual.
+ * A plan restriction: a code from the closed list, which the app translates, or free text written before the
+ * closed list existed (`legacyRestrictions`), which is shown as is.
  */
 sealed interface DietaryRestriction {
 
@@ -15,7 +15,7 @@ sealed interface DietaryRestriction {
     }
 
     companion object {
-        /** Un código desconocido se muestra tal cual (X-2). `null` si viene vacío. */
+        /** An unknown code is shown as is. `null` if it is empty. */
         fun ofCode(code: String?): DietaryRestriction? {
             val known = RestrictionCode.fromCode(code)
             return when {
@@ -29,7 +29,7 @@ sealed interface DietaryRestriction {
     }
 }
 
-/** Lista cerrada de restricciones del backend (`DietaryRestriction`, NC-6). */
+/** The backend's closed list of restrictions (`DietaryRestriction`). */
 enum class RestrictionCode(val code: String) {
     LACTOSE_FREE("LactoseFree"),
     GLUTEN_FREE("GlutenFree"),

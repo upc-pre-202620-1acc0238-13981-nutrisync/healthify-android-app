@@ -1,9 +1,9 @@
 package pe.edu.upc.healthify.features.intake.domain.valueobject
 
 /**
- * Porción en gramos que el paciente confirma o escribe (PT8, PT10.1). El backend exige > 0; la app además pone un
- * techo de 2000 g, el mismo que acepta para una estimación por foto (IN-7): cubre un plato servido y caza un cero de
- * más. No juzga la porción (*ningún juicio sobre la porción*): solo descarta lo que no puede ser un dato.
+ * Portion in grams the patient confirms or types. The backend requires > 0; the app also sets a ceiling of
+ * 2000 g, the same one it accepts for a photo estimate: it covers a served plate and catches an extra zero.
+ * It does not judge the portion (*no judgement about the portion*): it only rejects what cannot be real data.
  */
 @JvmInline
 value class PortionGrams(val value: Double) {
@@ -17,7 +17,7 @@ value class PortionGrams(val value: Double) {
 
         private val NUMBER = Regex("^\\d{1,4}([.,]\\d{1,2})?$")
 
-        /** «150», «150,5» o «150.5». `null` si no es un número o está fuera de rango. */
+        /** "150", "150,5" or "150.5". `null` if it is not a number or is out of range. */
         fun parseOrNull(text: String): PortionGrams? {
             val trimmed = text.trim()
             if (!NUMBER.matches(trimmed)) return null
@@ -25,7 +25,7 @@ value class PortionGrams(val value: Double) {
             return if (value in MIN..MAX) PortionGrams(value) else null
         }
 
-        /** Una cifra del backend (propuesta de la IA, ingrediente de una idea) si cumple la regla. */
+        /** A figure from the backend (AI proposal, an idea's ingredient) if it meets the rule. */
         fun ofOrNull(value: Double?): PortionGrams? =
             value?.takeIf { it.isFinite() && it in MIN..MAX }?.let(::PortionGrams)
     }

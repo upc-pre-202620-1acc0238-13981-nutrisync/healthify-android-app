@@ -7,7 +7,7 @@ import pe.edu.upc.healthify.features.iam.domain.valueobject.PasswordResetCode
 import pe.edu.upc.healthify.features.iam.domain.valueobject.PasswordResetToken
 import javax.inject.Inject
 
-/** IAM-2 · «¿Olvidaste tu contraseña?»: pide que se envíe un código al correo. */
+/** "Forgot your password?": asks for a code to be sent to the email. */
 class RequestPasswordResetUseCase @Inject constructor(
     private val authenticationRepository: AuthenticationRepository,
 ) {
@@ -15,7 +15,7 @@ class RequestPasswordResetUseCase @Inject constructor(
         authenticationRepository.requestPasswordReset(email)
 }
 
-/** IAM-2 · Verifica el código recibido; si es correcto, devuelve el token que fija la contraseña. */
+/** Verifies the received code; if it is correct, returns the token that sets the password. */
 class VerifyPasswordResetCodeUseCase @Inject constructor(
     private val authenticationRepository: AuthenticationRepository,
 ) {
@@ -23,7 +23,7 @@ class VerifyPasswordResetCodeUseCase @Inject constructor(
         authenticationRepository.verifyPasswordResetCode(email, code)
 }
 
-/** IAM-2 · Fija la contraseña nueva con el token. No inicia sesión: la persona entra después con S4. */
+/** Sets the new password with the token. Does not sign in: the person signs in afterwards. */
 class ResetPasswordUseCase @Inject constructor(
     private val authenticationRepository: AuthenticationRepository,
 ) {

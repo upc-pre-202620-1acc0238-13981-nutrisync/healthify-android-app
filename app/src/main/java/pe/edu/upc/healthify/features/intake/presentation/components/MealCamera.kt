@@ -28,24 +28,24 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 
 /**
- * Carpeta de `cacheDir` donde PT5 deja la foto del plato. Debe coincidir con `AndroidMealPhotoEncoder.PHOTOS_DIR`
- * (infrastructure): solo los archivos de esta carpeta se borran al terminar el flujo.
+ * Folder in `cacheDir` where the camera leaves the dish photo. It must match `AndroidMealPhotoEncoder.PHOTOS_DIR`
+ * (infrastructure): only files in this folder are deleted when the flow ends.
  */
 private const val MEAL_PHOTOS_DIR = "meal_photos"
 
-/** La foto en el teléfono no necesita más: se sube a 1024 px y la vista previa no pide más de esto. */
+/** The photo on the phone needs no more: it is uploaded at 1024 px and the preview asks for no more than this. */
 private const val CAPTURE_MAX_SIDE_PX = 2048
 private const val CAPTURE_JPEG_QUALITY = 90
 
-/** Cámara de PT5: un `LifecycleCameraController` con captura de fotos y su ejecutor de guardado. */
+/** The meal camera: a `LifecycleCameraController` with photo capture and its save executor. */
 class MealCameraState internal constructor(
     internal val controller: LifecycleCameraController,
     private val executor: ExecutorService,
     private val context: Context,
 ) {
     /**
-     * Toma la foto, la endereza y la guarda como JPEG en `cacheDir/meal_photos` **sin EXIF** (se reencoda desde el
-     * bitmap: ni GPS, ni fecha, ni modelo del teléfono llegan al archivo). Los callbacks llegan en el hilo principal.
+     * Takes the photo, straightens it and saves it as JPEG in `cacheDir/meal_photos` **without EXIF** (it is re-encoded
+     * from the bitmap: no GPS, date or phone model reaches the file). Callbacks arrive on the main thread.
      */
     fun capture(onSaved: (path: String) -> Unit, onError: () -> Unit) {
         val mainExecutor = ContextCompat.getMainExecutor(context)
@@ -70,7 +70,7 @@ class MealCameraState internal constructor(
         )
     }
 
-    /** Al salir de la pantalla: el ejecutor de guardado termina lo que tenga en curso y se cierra. */
+    /** On leaving the screen: the save executor finishes whatever is in progress and shuts down. */
     internal fun release() = executor.shutdown()
 
     private fun saveWithoutMetadata(image: ImageProxy): String {
@@ -104,7 +104,7 @@ class MealCameraState internal constructor(
     }
 }
 
-/** La cámara ligada al ciclo de vida de la pantalla (requiere el permiso ya concedido). */
+/** The camera bound to the screen's lifecycle (requires the permission already granted). */
 @Composable
 fun rememberMealCameraState(): MealCameraState {
     val context = LocalContext.current
@@ -129,7 +129,7 @@ fun rememberMealCameraState(): MealCameraState {
     return state
 }
 
-/** Vista previa de la cámara (se recorta para llenar el visor cuadrado de PT5). */
+/** Camera preview (cropped to fill the square viewfinder). */
 @Composable
 fun MealCameraPreview(state: MealCameraState, modifier: Modifier = Modifier) {
     AndroidView(

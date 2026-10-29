@@ -50,17 +50,17 @@ import pe.edu.upc.healthify.features.iam.presentation.state.ShellLoadingEvent
 import pe.edu.upc.healthify.features.iam.presentation.state.ShellLoadingUiState
 import pe.edu.upc.healthify.features.iam.presentation.viewmodel.ShellLoadingViewModel
 
-// Medidas del frame «S5 · Cargando — Normal».
+// Measurements of the "Loading - Normal" frame.
 private val LogoSize = DpSize(72.dp, 63.dp)
 private val LoaderSize = 80.dp
 
-// «Grupo fijo»: tres arcos (`arcData` del Figma, radio interior 0.62), en grados desde las 3 en punto.
+// "Fixed group": three arcs (Figma `arcData`, inner radius 0.62), in degrees from 3 o'clock.
 private const val INNER_RADIUS_RATIO = 0.62f
 private val LoaderArcs = listOf(-90f to 34.4f, 51.6f to 149f, 166.2f to 263.6f)
 private const val LOADER_TURN_MS = 1_400
 private const val FULL_TURN = 360f
 
-/** S5 · Cargando (Normal / Error). Pa y Nu comparten el visual; el destino depende del shell y del vínculo. */
+/** Loading (Normal / Error). Both roles share the visual; the destination depends on the shell and the care link. */
 @Composable
 fun ShellLoadingScreen(
     onNavigate: (ShellDestination) -> Unit,
@@ -80,8 +80,8 @@ fun ShellLoadingScreen(
 }
 
 /**
- * @param onClose DECISIÓN S5: «Cerrar» del estado de error cierra la app (la sesión se conserva para el próximo
- *   intento); no cierra la sesión.
+ * @param onClose "Close" in the error state closes the app (the session is kept for the next
+ *   attempt); it does not sign out.
  */
 @Composable
 fun ShellLoadingContent(
@@ -128,8 +128,8 @@ fun ShellLoadingContent(
 }
 
 /**
- * Indicador de carga de la marca (tres arcos `secondary`, `tertiary`, `primary`).
- * DECISIÓN S5: el frame es estático; en la app gira para indicar que la carga sigue en curso.
+ * Brand loading indicator (three arcs: `secondary`, `tertiary`, `primary`).
+ * The frame is static; in the app it spins to show that loading is still in progress.
  */
 @Composable
 private fun BrandLoader(modifier: Modifier = Modifier) {
@@ -165,13 +165,13 @@ private fun BrandLoader(modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(name = "S5 · Cargando — Normal", widthDp = 360, heightDp = 800)
+@Preview(name = "Loading - normal", widthDp = 360, heightDp = 800)
 @Composable
 private fun ShellLoadingPreview() {
     HealthifyTheme { ShellLoadingContent(state = ShellLoadingUiState(), onRetry = {}, onClose = {}) }
 }
 
-@Preview(name = "S5 · Cargando — Error", widthDp = 360, heightDp = 800)
+@Preview(name = "Loading - error", widthDp = 360, heightDp = 800)
 @Composable
 private fun ShellLoadingErrorPreview() {
     HealthifyTheme { ShellLoadingContent(state = ShellLoadingUiState(isError = true), onRetry = {}, onClose = {}) }

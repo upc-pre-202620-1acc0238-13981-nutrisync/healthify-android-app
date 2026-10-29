@@ -62,13 +62,13 @@ import retrofit2.Response
 import java.io.IOException
 import java.time.Instant
 
-/** PT25 · Mis consultas (RM-5), check-in (MA-4) y preguntas sugeridas (IA-4): dominio, mappers y repositorio. */
+/** My consultations, check-in and suggested questions: domain, mappers and repository. */
 class ConsultationsTest {
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    // --- Value objects y entidades ---
+    // --- Value objects and entities ---
 
     @Test
     fun `an own question is trimmed and needs 3 to 300 characters`() {
@@ -154,7 +154,7 @@ class ConsultationsTest {
         assertEquals(2, next.preparation.size)
         assertEquals("Lucía Ramos", next.practitionerFullName)
         assertEquals(Instant.parse("2026-09-04T14:00:00Z"), next.scheduledAt)
-        // Un check-in ilegible queda vacío sin tumbar el resto.
+        // An unreadable check-in stays empty without breaking the rest.
         assertNull(overview.checkIn)
         assertEquals(listOf(3L, 1L), overview.past.map { it.id })
         assertEquals(ConsultationLabel.AssessmentAndNewPlan, overview.past.first().label)
@@ -201,7 +201,7 @@ class ConsultationsTest {
         assertEquals("es", dto.questions[1].language)
     }
 
-    // --- Repositorio ---
+    // --- Repository ---
 
     @Test
     fun `404 PreVisitCheckInNotFound means not answered yet but another 404 is an error`() = runTest {
@@ -242,7 +242,7 @@ class ConsultationsTest {
         assertEquals(DomainError.Conflict("CheckInLocked"), result.domainErrorOrNull())
     }
 
-    // --- PT25 ViewModel ---
+    // --- My consultations ViewModel ---
 
     @Test
     fun `PT25 shows the next consultation, the answer card and the AI questions only when turned on`() = runTest {
@@ -259,7 +259,7 @@ class ConsultationsTest {
         assertEquals(listOf("¿Cómo armo cenas?"), state.suggestedQuestions.map { it.text })
         assertEquals(listOf(FollowUpId(31)), consultations.suggestionRequests)
 
-        // Al volver de PT25.2 se relee, pero las preguntas no se vuelven a pedir si el check-in no cambió.
+        // Coming back from the check-in reloads, but questions are not requested again unless the check-in changed.
         viewModel.onResume()
         assertEquals(1, consultations.suggestionRequests.size)
 

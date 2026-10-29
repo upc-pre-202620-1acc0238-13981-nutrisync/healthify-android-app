@@ -10,16 +10,16 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 
 /**
- * Modos de la colección «Color» del Figma. Hoy solo existe [Light].
+ * Modes of the Figma "Color" collection. Only [Light] exists today.
  *
- * Para agregar el modo oscuro cuando el Figma lo defina: crear la entrada `Dark`, su [ColorScheme] y sus
- * [HealthifyExtendedColors], y resolverlos en [colorSchemeFor] / [extendedColorsFor]. Ninguna pantalla
- * cambia, porque todas leen los roles desde el tema.
+ * To add dark mode once the Figma defines it: create the `Dark` entry, its [ColorScheme] and its
+ * [HealthifyExtendedColors], and resolve them in [colorSchemeFor] / [extendedColorsFor]. No screen
+ * changes, because they all read the roles from the theme.
  */
 enum class HealthifyColorMode { Light }
 
-// Colección «Color» del Figma (modo Light): 25 roles M3 definidos en el Figma + 3 derivados
-// (background, onBackground y surfaceVariant) que Material 3 todavía lee en algunos componentes.
+// Figma "Color" collection (Light mode): 25 M3 roles defined in the Figma + 3 derived ones
+// (background, onBackground and surfaceVariant) that Material 3 still reads in some components.
 private val LightColorScheme = lightColorScheme(
     primary = Green700,
     onPrimary = Neutral0,
@@ -46,12 +46,12 @@ private val LightColorScheme = lightColorScheme(
     inverseOnSurface = Neutral50,
     inversePrimary = Lime200,
     scrim = Neutral1000,
-    // Derivados (mismo valor que su rol del Figma).
+    // Derived (same value as their Figma role).
     background = Neutral50,
     onBackground = Neutral900,
     surfaceVariant = Neutral100,
-    // DECISIÓN Sistema de diseño: roles M3 que el Figma no define. Se fijan a la paleta de Healthify para
-    // que ningún componente de Material muestre los morados por defecto del baseline.
+    // M3 roles the Figma does not define. They are pinned to the Healthify palette so
+    // no Material component shows the baseline's default purples.
     onTertiary = Neutral900,
     tertiaryContainer = Green50,
     onTertiaryContainer = Green900,
@@ -81,9 +81,9 @@ private val HealthifyShapes = Shapes(
 )
 
 /**
- * Tema de Healthify. El Figma solo define modo claro: no hay esquema oscuro ni color dinámico.
- * DECISIÓN Sistema de diseño: la app es siempre clara hasta que el Figma defina un modo oscuro
- * (ver [HealthifyColorMode]).
+ * Healthify theme. The Figma only defines light mode: no dark scheme or dynamic color.
+ * The app stays light until the Figma defines a dark mode
+ * (see [HealthifyColorMode]).
  */
 @Composable
 fun HealthifyTheme(
@@ -104,7 +104,7 @@ fun HealthifyTheme(
     }
 }
 
-/** Acceso a los tokens del Figma que no son de Material 3. */
+/** Access to the Figma tokens that are not part of Material 3. */
 object HealthifyTheme {
     val extendedColors: HealthifyExtendedColors
         @Composable @ReadOnlyComposable get() = LocalExtendedColors.current

@@ -17,9 +17,9 @@ import pe.edu.upc.healthify.R
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 
 /**
- * Variantes del logo de la sección «Marca — Healthify» del Figma (BR).
- * - [White]: sobre fondos de color o oscuros (S1, S2, S4, S6 normal).
- * - [Color]: a color, sobre fondos claros (S3, S5, S6 sin conexión).
+ * Logo variants from the Figma "Brand — Healthify" section.
+ * - [White]: on colored or dark backgrounds (splash, welcome, sign-in, session expired when online).
+ * - [Color]: in color, on light backgrounds (sign-up, loading, session expired when offline).
  */
 enum class HealthifyLogoVariant(@param:DrawableRes val drawableRes: Int) {
     White(R.drawable.healthify_logo_white),
@@ -27,10 +27,10 @@ enum class HealthifyLogoVariant(@param:DrawableRes val drawableRes: Int) {
 }
 
 /**
- * Isotipo de Healthify (corazón con hoja). Cada pantalla lo dibuja con el tamaño de su frame; la imagen se ajusta
- * sin deformarse.
+ * Healthify isotype (heart with a leaf). Each screen draws it at its frame's size; the image scales
+ * without distortion.
  *
- * @param decorative `true` si al lado ya hay un texto con el nombre (TalkBack no lo repite).
+ * @param decorative `true` if a text with the name is already next to it (TalkBack does not repeat it).
  */
 @Composable
 fun HealthifyLogo(
@@ -47,7 +47,7 @@ fun HealthifyLogo(
     )
 }
 
-@Preview(name = "Logo · variantes", widthDp = 360)
+@Preview(name = "Logo · variants", widthDp = 360)
 @Composable
 private fun HealthifyLogoPreview() {
     ComponentPreview {

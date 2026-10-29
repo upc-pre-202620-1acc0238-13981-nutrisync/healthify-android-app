@@ -18,11 +18,11 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Un trabajo diario de WorkManager por hora de aviso (sobrevive a reinicios, sin `AlarmManager` exacto).
+ * One daily WorkManager job per notification time (survives reboots, no exact `AlarmManager`).
  *
- * DECISIÓN PT22: el aviso llega aproximadamente a la hora indicada (WorkManager puede diferirlo unos minutos para
- * ahorrar batería); los avisos son del teléfono, no de la cuenta: [ReminderWorker] mira al llegar si el paciente con
- * sesión lo tiene encendido.
+ * The notification arrives roughly at the set time (WorkManager may delay it a few minutes to save battery);
+ * notifications belong to the phone, not the account: when it fires, [ReminderWorker] checks whether the signed-in
+ * patient has it on.
  */
 @Singleton
 class WorkManagerReminderScheduler @Inject constructor(

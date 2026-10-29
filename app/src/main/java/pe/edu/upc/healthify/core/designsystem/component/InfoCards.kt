@@ -32,10 +32,10 @@ import androidx.compose.ui.unit.dp
 import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 
-// Avatar de la ficha del paciente (48 dp del Figma).
+// Patient file avatar (48 dp in the Figma).
 private val AvatarSize = 48.dp
 
-/** Encabezado de sección del Figma («DESDE LA ÚLTIMA CONSULTA», «GESTIÓN»…): Overline/Section en `primary`. */
+/** Figma section header (e.g. "SINCE THE LAST CONSULTATION", "MANAGEMENT"): Overline/Section in `primary`. */
 @Composable
 fun SectionOverline(text: String, modifier: Modifier = Modifier) {
     Text(
@@ -47,8 +47,8 @@ fun SectionOverline(text: String, modifier: Modifier = Modifier) {
 }
 
 /**
- * Tarjeta de indicador del Figma (160 × 100 dp en las filas de dos): etiqueta Body/Small, valor Metric/Medium y una
- * línea de apoyo. [captionColor] `null` = `onSurfaceVariant` (el Figma usa `primary` en las que llevan a otra vista).
+ * Figma indicator card (160 × 100 dp in two-card rows): Body/Small label, Metric/Medium value and a supporting
+ * line. [captionColor] `null` = `onSurfaceVariant` (the Figma uses `primary` on cards that open another view).
  */
 @Composable
 fun MetricCard(
@@ -75,7 +75,7 @@ fun MetricCard(
     }
 }
 
-/** Contenedor «Card» de 24 dp de radio con 16 dp de padding (las tarjetas de la ficha del paciente y la consulta). */
+/** 24 dp radius "Card" container with 16 dp padding (the patient file and consultation cards). */
 @Composable
 fun SectionCard(
     modifier: Modifier = Modifier,
@@ -102,8 +102,8 @@ fun SectionCard(
 }
 
 /**
- * Fila con ícono del Figma: ícono 24 dp, título Title/Small y texto Body/Small, y a la derecha [trailing] (chevron,
- * botón «Editar», un valor…).
+ * Figma icon row: 24 dp icon, Title/Small title and Body/Small text, with [trailing] on the right (chevron,
+ * "Edit" button, a value…).
  */
 @Composable
 fun IconInfoRow(
@@ -131,7 +131,7 @@ fun IconInfoRow(
     }
 }
 
-/** Fila de acción de una lista («Agendar consulta ›»): ícono, texto Body/Large y chevron; área táctil de 48 dp. */
+/** List action row (e.g. "Schedule consultation ›"): icon, Body/Large text and chevron; 48 dp touch target. */
 @Composable
 fun ActionRow(
     icon: ImageVector,
@@ -161,7 +161,7 @@ fun ActionRow(
     }
 }
 
-/** Divisor de las listas dentro de una tarjeta (`outlineVariant`, 1 dp). */
+/** Divider for lists inside a card (`outlineVariant`, 1 dp). */
 @Composable
 fun CardDivider(modifier: Modifier = Modifier) {
     HorizontalDivider(
@@ -171,7 +171,7 @@ fun CardDivider(modifier: Modifier = Modifier) {
     )
 }
 
-/** Avatar con la inicial (círculo `primaryContainer`, Title/Large). */
+/** Avatar with the initial (`primaryContainer` circle, Title/Large). */
 @Composable
 fun InitialAvatar(initial: String, modifier: Modifier = Modifier) {
     val scheme = MaterialTheme.colorScheme
@@ -186,7 +186,7 @@ fun InitialAvatar(initial: String, modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(name = "Tarjetas de información", widthDp = 360, heightDp = 520)
+@Preview(name = "Info cards", widthDp = 360, heightDp = 520)
 @Composable
 private fun InfoCardsPreview() {
     ComponentPreview {

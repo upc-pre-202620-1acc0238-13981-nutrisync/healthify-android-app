@@ -9,9 +9,9 @@ import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.NumberIn
 import java.time.LocalDate
 
 /**
- * `PatientBaselineResource` (NC-1): los datos base que se registran una sola vez. Solo el profesional los ve.
+ * `PatientBaselineResource`: the baseline, recorded only once. Only the practitioner sees it.
  *
- * @param ageYears edad cumplida hoy según el backend («se actualiza sola»).
+ * @param ageYears age as of today according to the backend ("updates itself").
  */
 data class PatientBaseline(
     val birthDate: LocalDate,
@@ -26,7 +26,7 @@ data class PatientBaseline(
     }
 }
 
-/** EV-1 · lo que se envía en `POST`/`PUT /patients/{pid}/baseline`. Ningún antecedente marcado = sin antecedentes. */
+/** What `POST`/`PUT /patients/{pid}/baseline` sends. No condition checked = no medical history. */
 data class NewBaseline(
     val birthDate: BirthDate,
     val sex: BiologicalSex,
@@ -34,7 +34,7 @@ data class NewBaseline(
     val conditions: Set<MedicalCondition>,
 )
 
-/** Qué le falta a EV-1 para poder guardarse. */
+/** What the baseline form is missing before it can be saved. */
 enum class BaselineProblem { BIRTH_DATE_REQUIRED, BIRTH_DATE_IMPLAUSIBLE, SEX_REQUIRED, HEIGHT_REQUIRED, HEIGHT_OUT_OF_RANGE }
 
 sealed interface BaselineValidation {
@@ -42,7 +42,7 @@ sealed interface BaselineValidation {
     data class Invalid(val problems: Set<BaselineProblem>) : BaselineValidation
 }
 
-/** Valida EV-1 en el teléfono con las mismas reglas del backend (`InvalidBirthDate`, `InvalidHeight`). */
+/** Validates the baseline on the phone with the backend's rules (`InvalidBirthDate`, `InvalidHeight`). */
 fun validateBaseline(
     birthDate: LocalDate?,
     sex: BiologicalSex?,

@@ -4,12 +4,12 @@ import pe.edu.upc.healthify.features.intake.domain.valueobject.DietaryRestrictio
 import pe.edu.upc.healthify.features.intake.domain.valueobject.PlanAdherence
 
 /**
- * Sugerencia para «¿Esta comida estaba en tu plan?» (`PlanFitResource`, IN-8). La calcula el servidor con las
- * restricciones del plan y lo que queda hoy, sin enviar el plan a la IA. La app la **preselecciona** y el paciente la
- * puede cambiar: lo que se registra es siempre su respuesta.
+ * Suggestion for "Was this meal in your plan?" (`PlanFitResource`). The server computes it from the plan
+ * restrictions and what is left today, without sending the plan to the AI. The app **preselects** it and the patient
+ * can change it: what gets logged is always their answer.
  *
- * @param violatedRestrictions las restricciones del plan que el plato parece romper (vacía si ninguna).
- * @param remainingKcal lo que quedaba hoy antes de esta comida; `null` si no se mandó el día.
+ * @param violatedRestrictions the plan restrictions the dish seems to break (empty if none).
+ * @param remainingKcal what was left today before this meal; `null` if the day was not sent.
  */
 data class PlanFit(
     val suggested: PlanAdherence,
@@ -27,7 +27,7 @@ data class PlanFit(
     val breaksRestrictions: Boolean get() = violatedRestrictions.isNotEmpty()
 }
 
-/** Por qué se sugiere lo que se sugiere: cada uno con su propio texto. */
+/** Why the suggestion is what it is: each reason with its own text. */
 enum class PlanFitReason(val code: String) {
     FITS("Fits"),
     BREAKS_RESTRICTION("BreaksRestriction"),

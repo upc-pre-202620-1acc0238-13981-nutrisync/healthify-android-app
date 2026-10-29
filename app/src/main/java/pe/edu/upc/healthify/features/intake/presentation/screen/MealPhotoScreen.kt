@@ -100,13 +100,13 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 
-// Medidas de PT5: visor de 262 dp con esquinas, disparador de 84 dp (anillo de 3 dp) con círculo de 72 dp.
+// Camera sizes: 262 dp viewfinder with corners, 84 dp shutter (3 dp ring) with a 72 dp circle.
 private val ViewfinderSize = 262.dp
 private val ShutterSize = 84.dp
 private val ShutterInnerSize = 72.dp
 private val ShutterRingWidth = 3.dp
 
-// PT7: ícono del plato de 41 dp y anillo de confianza de 72 dp (8 dp de grosor).
+// Estimate: 41 dp dish icon and 72 dp confidence ring (8 dp thick).
 private val DishIconSize = 41.dp
 private val ConfidenceRingSize = 72.dp
 private val ConfidenceRingWidth = 8.dp
@@ -137,8 +137,8 @@ data class MealPhotoActions(
 )
 
 /**
- * Registro por foto: PT5 Cámara (+ PT5.M), PT6, PT6.1, PT7 (+ PT7.2, PT7.3) y PT8. La foto nunca se guarda en el
- * servidor; en el teléfono vive en `cacheDir` hasta terminar.
+ * Photo logging: camera (and its permission dialog), preview, analysis, estimate (and its errors) and adjustment.
+ * The photo is never stored on the server; on the phone it lives in `cacheDir` until done.
  */
 @Composable
 fun MealPhotoScreen(
@@ -206,7 +206,7 @@ fun MealPhotoScreen(
     )
 }
 
-/** Puente entre la vista de cámara (solo en el dispositivo) y el botón disparador. */
+/** Bridge between the camera view (on device only) and the shutter button. */
 class CameraHolder {
     var value: MealCameraState? = null
 }
@@ -287,7 +287,7 @@ fun MealPhotoContent(
     }
 }
 
-// ----- PT5 · Cámara (+ PT5.M) -----
+// ----- Camera (and permission dialog) -----
 
 @Composable
 private fun CameraStep(
@@ -386,7 +386,7 @@ private fun CameraStep(
             dismissLabel = null,
         )
     } else if (state.cameraPermission == CameraPermissionStatus.DENIED) {
-        // PT5.M · secundario «Registrar a mano» (PT9), principal «Abrir ajustes».
+        // Permission dialog: secondary "Log by hand", primary "Open settings".
         HealthifyDialog(
             title = stringResource(R.string.meal_photo_permission_title),
             text = stringResource(R.string.meal_photo_permission_body),
@@ -398,7 +398,7 @@ private fun CameraStep(
     }
 }
 
-/** Disparador: anillo `secondary` de 84 dp y círculo claro de 72 dp. */
+/** Shutter: 84 dp `secondary` ring and a 72 dp light circle. */
 @Composable
 private fun Shutter(enabled: Boolean, onClick: () -> Unit) {
     val scheme = MaterialTheme.colorScheme
@@ -421,7 +421,7 @@ private fun Shutter(enabled: Boolean, onClick: () -> Unit) {
     }
 }
 
-// ----- PT6 · Previsualización -----
+// ----- Preview -----
 
 @Composable
 private fun PreviewStep(state: MealPhotoUiState, actions: MealPhotoActions, modifier: Modifier) {
@@ -477,7 +477,7 @@ private fun PreviewStep(state: MealPhotoUiState, actions: MealPhotoActions, modi
     }
 }
 
-// ----- PT6.1 · Viendo tu foto… -----
+// ----- Looking at your photo… -----
 
 @Composable
 private fun AnalyzingBody() {
@@ -497,7 +497,7 @@ private fun AnalyzingBody() {
             textAlign = TextAlign.Center,
         )
         Text(
-            // DECISIÓN PT6.1 (IN-7): el frame dice «La estimación se hace en tu teléfono», pero la hace el servidor.
+            // The design says "The estimate is made on your phone", but the server makes it.
             text = stringResource(R.string.meal_photo_analyzing_body),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -506,7 +506,7 @@ private fun AnalyzingBody() {
     }
 }
 
-// ----- PT7 · Estimación propuesta -----
+// ----- Proposed estimate -----
 
 @Composable
 private fun ProposalBody(state: MealPhotoUiState, analysis: MealPhotoAnalysis, actions: MealPhotoActions) {
@@ -532,7 +532,7 @@ private fun ProposalBody(state: MealPhotoUiState, analysis: MealPhotoAnalysis, a
             )
             ConfidenceRing(confidence = analysis.confidence)
             Text(
-                // DECISIÓN PT7 (IN-7): «estimado a partir de tu foto» (no «en tu teléfono»: lo estima el servidor).
+                // "estimated from your photo" (not "on your phone": the server makes the estimate).
                 text = stringResource(R.string.meal_photo_confidence_caption),
                 style = MaterialTheme.typography.bodySmall,
                 color = scheme.onSurfaceVariant,
@@ -572,7 +572,7 @@ private fun ProposalBody(state: MealPhotoUiState, analysis: MealPhotoAnalysis, a
     )
 }
 
-/** Anillo de confianza (72 dp) con el porcentaje en Metric/Medium. Confianza siempre visible. */
+/** Confidence ring (72 dp) with the percentage in Metric/Medium. Confidence is always visible. */
 @Composable
 private fun ConfidenceRing(confidence: Double) {
     val scheme = MaterialTheme.colorScheme
@@ -601,7 +601,7 @@ private fun ConfidenceRing(confidence: Double) {
     }
 }
 
-/** «¿Es otro plato?»: las alternativas de la IA; las que no están en el catálogo se ven pero no se eligen. */
+/** "Another dish?": the AI alternatives; those not in the catalog are shown but cannot be picked. */
 @Composable
 private fun AlternativesCard(analysis: MealPhotoAnalysis, selected: Int?, onSelect: (Int?) -> Unit) {
     val dimens = HealthifyTheme.dimens
@@ -661,7 +661,7 @@ private fun AlternativeRow(alternative: MealPhotoAlternative, isSelected: Boolea
     }
 }
 
-// ----- PT7.3 · No pudimos estimar -----
+// ----- We could not estimate -----
 
 @Composable
 private fun NotRecognizedStep(actions: MealPhotoActions, modifier: Modifier) {
@@ -726,9 +726,9 @@ private fun AnalysisFailedBody(failure: AnalysisFailure?, actions: MealPhotoActi
     }
 }
 
-// ----- Estructura común -----
+// ----- Shared layout -----
 
-/** Pantalla clara con barra «atrás», contenido con scroll (16 dp, separación 24) y acciones fijas opcionales. */
+/** Light screen with a "back" bar, scrolling content (16 dp, 24 spacing) and optional pinned actions. */
 @Composable
 private fun LightScaffold(
     title: String,
@@ -767,7 +767,7 @@ private fun LightScaffold(
     }
 }
 
-/** PT7.2 / errores: sin barra superior, centrado. */
+/** Log failure and other errors: no top bar, centered. */
 @Composable
 private fun FailureScaffold(modifier: Modifier, content: @Composable () -> Unit) {
     SystemBarsAppearance(darkBackground = false)
@@ -841,13 +841,13 @@ private fun previewState(step: MealPhotoStep) = MealPhotoUiState(
     adjustFood = PreviewAnalysis.food,
 )
 
-@Preview(name = "PT5 · Cámara", widthDp = 360, heightDp = 800)
+@Preview(name = "Camera", widthDp = 360, heightDp = 800)
 @Composable
 private fun CameraPreview() {
     HealthifyTheme { MealPhotoContent(previewState(MealPhotoStep.CAMERA), MealPhotoActions()) }
 }
 
-@Preview(name = "PT5.M · Cámara — permiso denegado", widthDp = 360, heightDp = 800)
+@Preview(name = "Camera - permission denied", widthDp = 360, heightDp = 800)
 @Composable
 private fun CameraDeniedPreview() {
     HealthifyTheme {
@@ -855,49 +855,49 @@ private fun CameraDeniedPreview() {
     }
 }
 
-@Preview(name = "PT6 · Previsualización", widthDp = 360, heightDp = 800)
+@Preview(name = "Photo preview", widthDp = 360, heightDp = 800)
 @Composable
 private fun PreviewStepPreview() {
     HealthifyTheme { MealPhotoContent(previewState(MealPhotoStep.PREVIEW), MealPhotoActions()) }
 }
 
-@Preview(name = "PT6.1 · Viendo tu foto…", widthDp = 360, heightDp = 800)
+@Preview(name = "Looking at your photo…", widthDp = 360, heightDp = 800)
 @Composable
 private fun AnalyzingPreview() {
     HealthifyTheme { MealPhotoContent(previewState(MealPhotoStep.ANALYZING), MealPhotoActions()) }
 }
 
-@Preview(name = "PT6.1 · sin conexión (foto guardada)", widthDp = 360, heightDp = 800)
+@Preview(name = "Looking at your photo - offline (photo saved)", widthDp = 360, heightDp = 800)
 @Composable
 private fun SavedOfflinePreview() {
     HealthifyTheme { MealPhotoContent(previewState(MealPhotoStep.SAVED_OFFLINE), MealPhotoActions()) }
 }
 
-@Preview(name = "PT7 · Estimación propuesta", widthDp = 360, heightDp = 1000)
+@Preview(name = "Proposed estimate", widthDp = 360, heightDp = 1000)
 @Composable
 private fun ProposalPreview() {
     HealthifyTheme { MealPhotoContent(previewState(MealPhotoStep.PROPOSAL), MealPhotoActions()) }
 }
 
-@Preview(name = "PT7.2 · No se pudo registrar", widthDp = 360, heightDp = 800)
+@Preview(name = "Could not log", widthDp = 360, heightDp = 800)
 @Composable
 private fun SaveFailedPreview() {
     HealthifyTheme { MealPhotoContent(previewState(MealPhotoStep.SAVE_FAILED), MealPhotoActions()) }
 }
 
-@Preview(name = "PT7.3 · No pudimos estimar", widthDp = 360, heightDp = 800)
+@Preview(name = "We could not estimate", widthDp = 360, heightDp = 800)
 @Composable
 private fun NotRecognizedPreview() {
     HealthifyTheme { MealPhotoContent(previewState(MealPhotoStep.NOT_RECOGNIZED), MealPhotoActions()) }
 }
 
-@Preview(name = "PT8 · Confirmar o ajustar", widthDp = 360, heightDp = 800)
+@Preview(name = "Confirm or adjust", widthDp = 360, heightDp = 800)
 @Composable
 private fun AdjustPreview() {
     HealthifyTheme { MealPhotoContent(previewState(MealPhotoStep.ADJUST), MealPhotoActions()) }
 }
 
-@Preview(name = "Foto · error de la estimación", widthDp = 360, heightDp = 800)
+@Preview(name = "Photo - estimate error", widthDp = 360, heightDp = 800)
 @Composable
 private fun AnalysisFailedPreview() {
     HealthifyTheme {

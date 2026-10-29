@@ -2,7 +2,7 @@ package pe.edu.upc.healthify.features.intake.infrastructure.remote.dto
 
 import kotlinx.serialization.Serializable
 
-/** `RecordSelfWeighInResource` (IN-3: solo se pregunta `fastedState`; `sameTimeOfDay`/`sameScale` no se envían). */
+/** `RecordSelfWeighInResource` (only `fastedState` is asked; `sameTimeOfDay`/`sameScale` are not sent). */
 @Serializable
 data class RecordSelfWeighInRequestDto(
     val patientId: Long,
@@ -22,7 +22,7 @@ data class SelfWeighInDto(
     val followsProtocol: Boolean = false,
 )
 
-/** `PendingSelfWeighInResource` (IN-4). */
+/** `PendingSelfWeighInResource`. */
 @Serializable
 data class PendingSelfWeighInDto(
     val clientEntryId: String,
@@ -38,7 +38,7 @@ data class SyncSelfWeighInsRequestDto(
     val patientId: Long? = null,
 )
 
-/** `SyncedSelfWeighInOutcomeResource`: `Created`, `AlreadyPresent` o `Rejected` (con `reason`). */
+/** `SyncedSelfWeighInOutcomeResource`: `Created`, `AlreadyPresent` or `Rejected` (with `reason`). */
 @Serializable
 data class SyncedSelfWeighInOutcomeDto(
     val clientEntryId: String,
@@ -47,7 +47,7 @@ data class SyncedSelfWeighInOutcomeDto(
     val reason: String? = null,
 )
 
-/** `SelfWeighInSyncOutcomeResource`: cada lectura se reporta por separado; el lote nunca falla entero. */
+/** `SelfWeighInSyncOutcomeResource`: each reading is reported separately; the batch never fails as a whole. */
 @Serializable
 data class SelfWeighInSyncOutcomeDto(
     val patientId: Long? = null,
@@ -64,7 +64,7 @@ data class WeightTrendPointDto(
     val smoothedValueKg: Double,
 )
 
-/** `WeightTrendResource` (IN-5). Sin campo de «último peso» ni «peso de hoy», a propósito. */
+/** `WeightTrendResource`. No "latest weight" or "today's weight" field, on purpose. */
 @Serializable
 data class WeightTrendDto(
     val patientId: Long,

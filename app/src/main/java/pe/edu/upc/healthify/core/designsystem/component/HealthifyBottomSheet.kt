@@ -26,18 +26,18 @@ import androidx.compose.ui.unit.dp
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 import pe.edu.upc.healthify.core.designsystem.theme.elevation
 
-// Medidas del BottomSheet del Figma.
+// Figma BottomSheet measurements.
 private val HandleSize = DpSize(32.dp, 4.dp)
 private val HandleRadius = 2.dp
 private const val SHEET_SCRIM_ALPHA = 0.32f
 
 /**
- * BottomSheet modal del Figma: `surfaceContainerLowest`, radio superior 28 dp, asa de 32×4 dp.
- * El contenido estándar es [BottomSheetContent]. Se cierra con [onDismissRequest] (deslizar, tocar el
- * scrim o atrás); la pantalla lo oculta dejando de componerlo.
+ * Figma modal BottomSheet: `surfaceContainerLowest`, 28 dp top radius, 32×4 dp handle.
+ * The standard content is [BottomSheetContent]. It closes with [onDismissRequest] (swipe, tap the
+ * scrim or back); the screen hides it by no longer composing it.
  */
-// DECISIÓN DS-C: el SheetState (API experimental de M3) no se expone, para que las pantallas no tengan que
-// optar por APIs experimentales. La hoja siempre abre expandida.
+// The SheetState (experimental M3 API) is not exposed, so screens do not have to opt in to
+// experimental APIs. The sheet always opens expanded.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HealthifyBottomSheet(
@@ -61,7 +61,7 @@ fun HealthifyBottomSheet(
     )
 }
 
-/** Asa del BottomSheet del Figma. */
+/** Figma BottomSheet handle. */
 @Composable
 fun BottomSheetHandle(modifier: Modifier = Modifier) {
     Box(
@@ -73,8 +73,8 @@ fun BottomSheetHandle(modifier: Modifier = Modifier) {
 }
 
 /**
- * Contenido estándar del BottomSheet del Figma: título (Headline/Small), texto de apoyo, acción principal
- * Filled de ancho completo y acción secundaria Text opcional.
+ * Standard Figma BottomSheet content: title (Headline/Small), supporting text, full-width Filled main
+ * action and optional Text secondary action.
  */
 @Composable
 fun BottomSheetContent(
@@ -122,7 +122,7 @@ fun BottomSheetContent(
     }
 }
 
-/** Réplica estática de la hoja (sin ventana) para previews y el catálogo. */
+/** Static copy of the sheet (no window) for previews and the catalog. */
 @Composable
 internal fun BottomSheetStaticFrame(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
     val dimens = HealthifyTheme.dimens

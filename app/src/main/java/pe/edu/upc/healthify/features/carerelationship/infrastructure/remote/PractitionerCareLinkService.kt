@@ -10,17 +10,17 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
 
-/** Cartera e invitaciones del nutricionista (RM-1, F4). */
+/** The nutritionist's roster and invitations. */
 interface PractitionerCareLinkService {
 
     @GET("practitioners/{practitionerId}/patient-roster")
     suspend fun getRoster(@Path("practitionerId") practitionerId: Long): List<PatientRosterItemDto>
 
-    /** `201` con el token (la única vez que sale del servidor). */
+    /** `201` with the token (the only time it leaves the server). */
     @POST("invitations")
     suspend fun issueInvitation(@Body body: IssueInvitationRequestDto): InvitationDto
 
-    /** CR-4 · alta clínica: `200` con el `CareLinkResource` cerrado (cancela las citas y apaga la IA del vínculo). */
+    /** Clinical discharge: `200` with the closed `CareLinkResource` (cancels appointments and turns off the link's AI). */
     @POST("care-links/{careLinkId}/discharge")
     suspend fun discharge(@Path("careLinkId") careLinkId: Long, @Body body: DischargePatientRequestDto): CareLinkDto
 }

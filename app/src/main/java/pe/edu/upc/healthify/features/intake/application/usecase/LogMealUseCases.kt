@@ -14,7 +14,7 @@ import pe.edu.upc.healthify.features.intake.domain.valueobject.PlanAdherence
 import pe.edu.upc.healthify.features.intake.domain.valueobject.PortionGrams
 import javax.inject.Inject
 
-/** PT10.1 «Registrar» (F17). Sin conexión queda encolada («Pendiente de enviar»). */
+/** Logs a manual meal. When offline it is queued ("Pending to send"). */
 class LogManualMealUseCase @Inject constructor(
     private val repository: DiaryRepository,
 ) {
@@ -22,7 +22,7 @@ class LogManualMealUseCase @Inject constructor(
         repository.logManualMeal(PatientId(patientUserId), meal)
 }
 
-/** PT7 «Sí, es correcto» / PT8 «Confirmar» de una foto (F41 → `photo-logs` con `analysisId`). */
+/** Confirms a photo meal as is or adjusted (`photo-logs` with `analysisId`). */
 class LogPhotoMealUseCase @Inject constructor(
     private val repository: DiaryRepository,
 ) {
@@ -30,7 +30,7 @@ class LogPhotoMealUseCase @Inject constructor(
         repository.logPhotoMeal(PatientId(patientUserId), meal)
 }
 
-/** PT7 · salir sin confirmar: la comida queda «Por confirmar» y aún no suma a las metas. */
+/** Leaving without confirming: the meal stays "To confirm" and does not count towards the targets yet. */
 class KeepPhotoMealUnconfirmedUseCase @Inject constructor(
     private val repository: DiaryRepository,
 ) {
@@ -44,8 +44,8 @@ class KeepPhotoMealUnconfirmedUseCase @Inject constructor(
 }
 
 /**
- * PT14 «Confirmar porción» → PT8 de una entrada «Por confirmar» (F16). Si el paciente no cambió ni el plato ni los
- * gramos, confirma la propuesta; si cambió algo, la ajusta (la propuesta se conserva al lado).
+ * Confirms the portion of a "To confirm" entry. If the patient changed neither the dish nor the grams, it confirms
+ * the proposal; if anything changed, it adjusts it (the proposal is kept alongside).
  */
 class ConfirmDiaryEntryUseCase @Inject constructor(
     private val repository: DiaryRepository,

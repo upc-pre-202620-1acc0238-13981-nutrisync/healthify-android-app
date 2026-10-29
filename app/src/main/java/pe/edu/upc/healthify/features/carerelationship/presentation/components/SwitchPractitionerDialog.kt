@@ -9,9 +9,9 @@ import pe.edu.upc.healthify.core.designsystem.component.HealthifyDialogContent
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 
 /**
- * PT21.V · «¿Cambiar de nutricionista?». Es un destino `dialog` del grafo raíz sobre Ajustes: «Escanear invitación»
- * abre PT1 con `replaceActiveLink = true` (CR-1) y «Cancelar» vuelve a Ajustes. El vínculo anterior se cierra solo
- * cuando la nueva invitación se acepta.
+ * "Switch nutritionist?". A `dialog` destination of the root graph over Settings: "Scan invitation" opens the
+ * scan screen with `replaceActiveLink = true` and "Cancel" returns to Settings. The previous care link closes only
+ * once the new invitation is accepted.
  */
 @Composable
 fun SwitchPractitionerDialogContent(
@@ -29,7 +29,7 @@ fun SwitchPractitionerDialogContent(
     )
 }
 
-@Preview(name = "PT21.V · ¿Cambiar de nutricionista?", widthDp = 360, heightDp = 400)
+@Preview(name = "Switch nutritionist?", widthDp = 360, heightDp = 400)
 @Composable
 private fun SwitchPractitionerDialogPreview() {
     HealthifyTheme { SwitchPractitionerDialogContent(onScanInvitation = {}, onCancel = {}) }

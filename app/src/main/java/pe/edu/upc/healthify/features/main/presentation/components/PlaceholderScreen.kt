@@ -20,14 +20,14 @@ import pe.edu.upc.healthify.core.designsystem.component.HealthifyTopAppBar
 import pe.edu.upc.healthify.core.designsystem.component.SystemBarsAppearance
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 
-/** Acción extra de un marcador (accesos provisionales mientras no exista la pantalla real). */
+/** Extra action of a placeholder (temporary shortcuts while the real screen does not exist). */
 data class PlaceholderAction(val label: String, val onClick: () -> Unit)
 
 /**
- * Marcador de una ruta cuya pantalla aún no se implementa (pestañas de los shells).
+ * Placeholder for a route whose screen is not implemented yet (shell tabs).
  *
- * DECISIÓN shells: mientras no existan PT21/PR20 (Ajustes), los marcadores de Ajustes ofrecen «Cerrar sesión» para
- * poder salir de la cuenta, y el del paciente además PT21.V y PT23 ([extraActions]).
+ * While the Settings screens do not exist, the Settings placeholders offer "Sign out" so the person can
+ * leave the account, and the patient's one also offers more shortcuts ([extraActions]).
  */
 @Composable
 fun PlaceholderScreen(
@@ -68,7 +68,7 @@ fun PlaceholderScreen(
     }
 }
 
-@Preview(name = "Marcador de pantalla", widthDp = 360, heightDp = 800)
+@Preview(name = "Screen placeholder", widthDp = 360, heightDp = 800)
 @Composable
 private fun PlaceholderScreenPreview() {
     HealthifyTheme {

@@ -1,9 +1,9 @@
 package pe.edu.upc.healthify.features.iam.domain.valueobject
 
 /**
- * Nombres y apellidos (IAM-1). Los apellidos pueden venir vacíos: las cuentas anteriores a IAM-1 quedaron con la
- * parte local del correo como nombre y sin apellidos. Una cuenta nueva se valida con [forSignUp], que aplica
- * además las reglas del VO `PersonName` del backend.
+ * Given and family names. Family names may be empty: accounts created before names were required kept the
+ * local part of the email as the given name and no family names. A new account is validated with [forSignUp],
+ * which also applies the rules of the backend `PersonName` VO.
  */
 data class PersonName(val givenNames: String, val familyNames: String) {
 
@@ -13,15 +13,15 @@ data class PersonName(val givenNames: String, val familyNames: String) {
         require(givenNames.length <= MAX_LENGTH && familyNames.length <= MAX_LENGTH) { "Name too long" }
     }
 
-    /** «María José» → «María», para «Hola, María». */
+    /** «María José» → «María», for «Hola, María». */
     val firstGivenName: String get() = givenNames.split(' ').first()
 
     val fullName: String get() = if (familyNames.isEmpty()) givenNames else "$givenNames $familyNames"
 
-    /** Inicial del avatar. */
+    /** Avatar initial. */
     val initial: Char get() = givenNames.first().uppercaseChar()
 
-    /** Por qué una parte del nombre no sirve para una cuenta nueva. */
+    /** Why a name part does not work for a new account. */
     enum class Problem { REQUIRED, INVALID_CHARACTERS, TOO_LONG }
 
     companion object {
@@ -33,17 +33,17 @@ data class PersonName(val givenNames: String, val familyNames: String) {
             PersonName(givenNames.trim(), familyNames.trim())
 
         /**
-         * Nombre de una cuenta nueva (S3), con las reglas del backend: ambas partes obligatorias, espacios internos
-         * colapsados, hasta 80 caracteres y sin dígitos ni `<` `>`.
+         * Name of a new account, with the backend rules: both parts required, inner spaces
+         * collapsed, up to 80 characters and no digits or `<` `>`.
          *
-         * @throws IllegalArgumentException si alguna parte no cumple ([problemOf] dice por qué).
+         * @throws IllegalArgumentException if a part does not meet them ([problemOf] says why).
          */
         fun forSignUp(givenNames: String, familyNames: String): PersonName {
             require(problemOf(givenNames) == null && problemOf(familyNames) == null) { "Invalid name" }
             return PersonName(normalize(givenNames), normalize(familyNames))
         }
 
-        /** El problema de una parte del nombre de una cuenta nueva, o `null` si sirve. */
+        /** The problem with a name part of a new account, or `null` if it is fine. */
         fun problemOf(part: String): Problem? {
             val normalized = normalize(part)
             return when {

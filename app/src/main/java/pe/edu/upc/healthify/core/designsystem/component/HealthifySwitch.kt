@@ -27,18 +27,18 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 
-// Interruptor del Figma («switch» de PT2, PT21.IA y PT22): pista 40 × 24 dp, padding 4 dp, perilla 16 dp.
+// Figma switch: 40 × 24 dp track, 4 dp padding, 16 dp thumb.
 private val TrackWidth = 40.dp
 private val TrackHeight = 24.dp
 private val ThumbSize = 16.dp
 private val ThumbTravel = TrackWidth - ThumbSize - 8.dp
 
 /**
- * Interruptor visual. El Figma solo dibuja el estado encendido (pista `primary`, perilla `surfaceContainerLowest` a
- * la derecha). DECISIÓN Sistema de diseño: apagado = pista `surfaceContainerHigh` y perilla `outline` a la
- * izquierda; deshabilitado = colores de deshabilitado.
+ * Visual switch. The Figma only draws the on state (`primary` track, `surfaceContainerLowest` thumb on
+ * the right). Design system choice: off = `surfaceContainerHigh` track and `outline` thumb on the
+ * left; disabled = disabled colors.
  *
- * Se usa dentro de [HealthifySwitchRow], que hace tocable toda la fila (≥ 48 dp) y anuncia el estado a TalkBack.
+ * Used inside [HealthifySwitchRow], which makes the whole row tappable (≥ 48 dp) and announces the state to TalkBack.
  */
 @Composable
 fun HealthifySwitch(
@@ -79,10 +79,10 @@ fun HealthifySwitch(
 }
 
 /**
- * Fila «etiqueta + interruptor» del Figma (24 dp de separación); toda la fila es el área táctil.
+ * Figma "label + switch" row (24 dp gap); the whole row is the touch target.
  *
- * @param supportingText texto secundario bajo la etiqueta (p. ej. la hora de un recordatorio), Body/Small en
- *   `onSurfaceVariant`. Etiqueta y texto van juntos en una columna, centrada respecto al interruptor.
+ * @param supportingText secondary text under the label (e.g. a reminder's time), Body/Small in
+ *   `onSurfaceVariant`. Label and text sit together in a column, centered against the switch.
  */
 @Composable
 fun HealthifySwitchRow(
@@ -123,7 +123,7 @@ fun HealthifySwitchRow(
     }
 }
 
-@Preview(name = "Switch · encendido / apagado / deshabilitado", widthDp = 360)
+@Preview(name = "Switch · on / off / disabled", widthDp = 360)
 @Composable
 private fun SwitchPreview() {
     ComponentPreview {
@@ -133,7 +133,7 @@ private fun SwitchPreview() {
     }
 }
 
-@Preview(name = "Switch · con texto secundario", widthDp = 360)
+@Preview(name = "Switch · with supporting text", widthDp = 360)
 @Composable
 private fun SwitchSupportingPreview() {
     ComponentPreview {

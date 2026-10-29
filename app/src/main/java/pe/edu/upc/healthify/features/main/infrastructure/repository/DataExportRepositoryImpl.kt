@@ -17,7 +17,7 @@ class DataExportRepositoryImpl @Inject constructor(
 
     override suspend fun download(patientUserId: Long, destinationUri: String): Result<Unit> {
         val body = apiCall { service.download(patientUserId) }.getOrElse { return Result.failure(it) }
-        // El cuerpo se lee mientras se escribe (@Streaming): un corte a mitad de la descarga también termina aquí.
+        // The body is read while it is written (@Streaming): a drop halfway through the download also ends up here.
         return try {
             body.use { writer.write(destinationUri, it.byteStream()) }
             Result.success(Unit)

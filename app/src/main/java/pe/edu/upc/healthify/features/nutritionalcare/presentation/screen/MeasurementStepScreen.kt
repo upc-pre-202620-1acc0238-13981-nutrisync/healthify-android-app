@@ -63,7 +63,7 @@ import pe.edu.upc.healthify.features.nutritionalcare.presentation.viewmodel.Cons
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.viewmodel.MeasurementStepViewModel
 import java.time.Instant
 
-/** Acciones de EV-2 (agrupadas para no pasar veinte lambdas sueltas). */
+/** Measurement step actions (grouped to avoid passing twenty loose lambdas). */
 data class MeasurementActions(
     val onBack: () -> Unit = {},
     val onRetry: () -> Unit = {},
@@ -86,9 +86,9 @@ data class MeasurementActions(
 )
 
 /**
- * EV-2 · Paso 1 Medición de hoy (+ EV-2.S al tocar ‹). Muestra lo que el paciente contó antes de la consulta (MA-4), los
- * datos base (la talla no se vuelve a pedir), el IMC calculado en vivo, el protocolo con casillas y la actividad; hábitos
- * y bioquímicos son opcionales.
+ * Step 1, today's measurement (plus the exit dialog on ‹). Shows what the patient shared before the consultation,
+ * the baseline (height is not asked again), the live BMI, the protocol checkboxes and the activity; habits
+ * and biochemistry are optional.
  */
 @Composable
 fun MeasurementStepScreen(
@@ -137,7 +137,7 @@ fun MeasurementStepScreen(
         modifier = modifier,
     )
     if (state.showExitDialog) {
-        // EV-2.S · ¿Salir de la consulta?
+        // Exit the consultation?
         HealthifyIconDialog(
             icon = HealthifyIcons.Warning,
             title = stringResource(R.string.consultation_exit_title),
@@ -152,7 +152,7 @@ fun MeasurementStepScreen(
         ServerErrorDialog(onRetry = viewModel::onContinue, onDismiss = viewModel::onSaveFailureDismissed)
     }
     if (state.showDiscardDialog) {
-        // ¿Borrar esta consulta? (se abrió «Consulta de hoy» por error).
+        // Delete this consultation? (it was opened by mistake).
         HealthifyIconDialog(
             icon = HealthifyIcons.Delete,
             title = stringResource(R.string.consultation_discard_title),
@@ -184,7 +184,7 @@ fun MeasurementStepContent(
         onBack = actions.onBack,
         onRetry = actions.onRetry,
         subtitle = stringResource(R.string.measurement_subtitle),
-        // Solo con la consulta cargada y sin un borrado en curso.
+        // Only with the consultation loaded and no deletion in progress.
         onDiscard = actions.onDiscard.takeIf { !state.load.isLoading && !state.load.loadFailed && !state.isDiscarding },
         modifier = modifier,
         actions = {
@@ -248,7 +248,7 @@ fun MeasurementStepContent(
     }
 }
 
-/** «Antes de la consulta, Ana contó» (MA-4). Las preguntas son del paciente: se muestran tal cual. */
+/** "Before the consultation, Ana shared". The questions are the patient's: shown as is. */
 @Composable
 private fun CheckInCard(checkIn: PatientCheckIn, patientName: String) {
     val dimens = HealthifyTheme.dimens
@@ -278,7 +278,7 @@ private fun CheckInCard(checkIn: PatientCheckIn, patientName: String) {
     }
 }
 
-/** «Mujer · 31 años · 168 cm · Hipotiroidismo · de los datos base · Editar». */
+/** "Woman · 31 years · 168 cm · Hypothyroidism · from the baseline · Edit". */
 @Composable
 private fun BaselineRowCard(baseline: BaselineSummary, onEdit: () -> Unit, enabled: Boolean) {
     val conditions = baseline.conditionsInline()
@@ -350,7 +350,7 @@ private fun MeasuresCard(state: MeasurementUiState, actions: MeasurementActions)
     }
 }
 
-/** «IMC calculado · 26.3 kg/m²» (`surfaceContainer`, radio 12). Sin peso válido: «—». */
+/** "Calculated BMI · 26.3 kg/m²" (`surfaceContainer`, radius 12). Without a valid weight: "—". */
 @Composable
 private fun BmiResult(bmi: Double?) {
     val dimens = HealthifyTheme.dimens
@@ -379,7 +379,7 @@ private fun BmiResult(bmi: Double?) {
     }
 }
 
-/** «OPCIONAL»: hábitos alimentarios y datos bioquímicos se despliegan con «+». */
+/** "OPTIONAL": eating habits and biochemistry expand with "+". */
 @Composable
 private fun OptionalSection(state: MeasurementUiState, actions: MeasurementActions) {
     val dimens = HealthifyTheme.dimens
@@ -479,7 +479,7 @@ private fun ExpandableRow(title: String, supporting: String, expanded: Boolean, 
     }
 }
 
-/** Campo numérico con su unidad y el error de rango de las Notas. */
+/** Numeric field with its unit and the range error from the design notes. */
 @Composable
 internal fun NumberField(
     value: String,
@@ -516,7 +516,7 @@ private val previewCheckIn = PatientCheckIn(
     submittedAt = Instant.parse("2026-09-15T15:00:00Z"),
 )
 
-@Preview(name = "EV-2 · Medición de hoy", widthDp = 360, heightDp = 800)
+@Preview(name = "Today's measurement", widthDp = 360, heightDp = 800)
 @Composable
 private fun MeasurementStepPreview() {
     HealthifyTheme {
@@ -539,7 +539,7 @@ private fun MeasurementStepPreview() {
     }
 }
 
-@Preview(name = "EV-2 · Datos inválidos", widthDp = 360, heightDp = 800)
+@Preview(name = "Today's measurement - invalid data", widthDp = 360, heightDp = 800)
 @Composable
 private fun MeasurementStepErrorsPreview() {
     HealthifyTheme {
@@ -559,7 +559,7 @@ private fun MeasurementStepErrorsPreview() {
     }
 }
 
-@Preview(name = "EV-2 · Cargando", widthDp = 360, heightDp = 800)
+@Preview(name = "Today's measurement - loading", widthDp = 360, heightDp = 800)
 @Composable
 private fun MeasurementStepLoadingPreview() {
     HealthifyTheme {

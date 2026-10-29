@@ -9,7 +9,7 @@ import pe.edu.upc.healthify.features.intake.domain.repository.SelfWeighInReposit
 import pe.edu.upc.healthify.features.intake.domain.valueobject.PatientId
 import javax.inject.Inject
 
-/** PT12 · guarda el autopesaje (o lo encola sin conexión). */
+/** Saves the self weigh-in (or queues it when offline). */
 class RecordSelfWeighInUseCase @Inject constructor(
     private val repository: SelfWeighInRepository,
 ) {
@@ -17,7 +17,7 @@ class RecordSelfWeighInUseCase @Inject constructor(
         repository.record(PatientId(patientUserId), weighIn)
 }
 
-/** PT13 · la tendencia de las últimas [weeks] semanas (4 por defecto, como el backend). */
+/** The trend for the last [weeks] weeks (4 by default, like the backend). */
 class GetWeightTrendUseCase @Inject constructor(
     private val repository: SelfWeighInRepository,
 ) {
@@ -33,7 +33,7 @@ class GetWeightTrendUseCase @Inject constructor(
     }
 }
 
-/** PT19 · los autopesajes que esperan en la cola del teléfono. */
+/** The self weigh-ins waiting in the phone's queue. */
 class ObservePendingSelfWeighInsUseCase @Inject constructor(
     private val repository: SelfWeighInRepository,
 ) {
@@ -41,14 +41,14 @@ class ObservePendingSelfWeighInsUseCase @Inject constructor(
         repository.observePending(PatientId(patientUserId))
 }
 
-/** PT13 · el backend aceptó autopesajes de la cola: hay que volver a leer la tendencia. */
+/** The backend accepted queued self weigh-ins: the trend has to be read again. */
 class ObserveSyncedSelfWeighInsUseCase @Inject constructor(
     private val repository: SelfWeighInRepository,
 ) {
     operator fun invoke(): Flow<Unit> = repository.syncedWeighIns
 }
 
-/** PT13.1 · el Snackbar del último autopesaje. */
+/** The Snackbar for the latest self weigh-in. */
 class ObserveSelfWeighInSavedNoticeUseCase @Inject constructor(
     private val repository: SelfWeighInRepository,
 ) {

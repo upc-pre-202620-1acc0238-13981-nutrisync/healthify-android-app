@@ -12,7 +12,7 @@ import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.GenerateMe
 import java.time.LocalDate
 import javax.inject.Inject
 
-/** IA-3 · sin caché en el teléfono: las ideas dependen de lo que queda hoy y solo se generan con conexión (PT14.4.O). */
+/** No cache on the phone: ideas depend on what is left today and are only generated online. */
 class MealIdeasRepositoryImpl @Inject constructor(
     private val service: MealIdeasService,
 ) : MealIdeasRepository {

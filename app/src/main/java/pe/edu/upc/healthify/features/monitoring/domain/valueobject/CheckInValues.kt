@@ -1,6 +1,6 @@
 package pe.edu.upc.healthify.features.monitoring.domain.valueobject
 
-/** «¿Cómo te sentiste con tu plan?» (`PlanFeeling`, MA-4). */
+/** "How did you feel about your plan?" (`PlanFeeling`). */
 enum class PlanFeeling(val code: String) {
     GOOD("Good"),
     FAIR("Fair"),
@@ -13,7 +13,7 @@ enum class PlanFeeling(val code: String) {
     }
 }
 
-/** «¿Qué te costó más?» (`CheckInDifficulty`, MA-4): lista cerrada, se pueden elegir varias. */
+/** "What was hardest?" (`CheckInDifficulty`): a closed list, several can be picked. */
 enum class CheckInDifficulty(val code: String) {
     DINNERS("Dinners"),
     WEEKENDS("Weekends"),
@@ -28,23 +28,23 @@ enum class CheckInDifficulty(val code: String) {
     }
 }
 
-/** De quién es una pregunta del check-in (`QuestionOrigin`): escrita por el paciente o una sugerencia de IA aceptada. */
+/** Who a check-in question comes from (`QuestionOrigin`): written by the patient or an accepted AI suggestion. */
 enum class QuestionOrigin(val code: String) {
     PATIENT("Patient"),
     AI_SUGGESTED("AiSuggested"),
     ;
 
     companion object {
-        /** Sin valor = del paciente (como el backend). */
+        /** No value = the patient's (as in the backend). */
         fun fromCode(code: String?): QuestionOrigin =
             entries.firstOrNull { it.code.equals(code?.trim(), ignoreCase = true) } ?: PATIENT
     }
 }
 
 /**
- * Una pregunta para la consulta (`PatientQuestion`, MA-4): 3 a 300 caracteres sin espacios sobrantes. La del paciente
- * se guarda y se muestra **tal cual** (nunca se traduce); la de IA lleva el idioma en que se generó (X-2, `es`/`en`) y
- * la generación de la que salió.
+ * A question for the visit (`PatientQuestion`): 3 to 300 characters without extra spaces. The patient's is saved
+ * and shown **as is** (never translated); the AI one carries the language it was generated in (`es`/`en`) and the
+ * generation it came from.
  */
 data class CheckInQuestion(
     val text: String,
@@ -66,7 +66,7 @@ data class CheckInQuestion(
         const val MAX_LENGTH = 300
         private val LANGUAGES = setOf("es", "en")
 
-        /** La pregunta libre del paciente: vacía = no hay pregunta; corta o larga = inválida. */
+        /** The patient's free question: empty = no question; too short or too long = invalid. */
         fun ownQuestion(raw: String): OwnQuestion {
             val trimmed = raw.trim()
             return when {
@@ -77,7 +77,7 @@ data class CheckInQuestion(
             }
         }
 
-        /** Una sugerencia de IA aceptada, con su idioma (si no es `es`/`en`, se manda sin idioma). */
+        /** An accepted AI suggestion, with its language (if not `es`/`en`, it is sent without one). */
         fun aiSuggestion(text: String, aiGenerationId: Long?, language: String?): CheckInQuestion? {
             val trimmed = text.trim()
             if (trimmed.length !in MIN_LENGTH..MAX_LENGTH) return null

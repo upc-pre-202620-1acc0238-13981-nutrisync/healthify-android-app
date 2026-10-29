@@ -2,7 +2,7 @@ package pe.edu.upc.healthify.core.sync
 
 import pe.edu.upc.healthify.core.database.pending.PendingOperationEntity
 
-/** Lo que ve una feature de una operación encolada (nunca la entity de Room). */
+/** What a feature sees of a queued operation (never the Room entity). */
 data class PendingOperation(
     val clientEntryId: String,
     val type: String,

@@ -22,8 +22,8 @@ import pe.edu.upc.healthify.features.iam.presentation.state.SignInUiState
 import javax.inject.Inject
 
 /**
- * S4 · Login único. Decide por `extensions.code` (X-3), nunca por el texto: `InvalidCredentials` → S4.1,
- * `AccountLocked` → S4.2 (ambos 401). Un 401 sin código se trata como credenciales incorrectas.
+ * Single sign-in. Decides by `extensions.code`, never by the text: `InvalidCredentials` → wrong credentials,
+ * `AccountLocked` → account locked (both 401). A 401 without a code is treated as wrong credentials.
  */
 @HiltViewModel
 class SignInViewModel @Inject constructor(
@@ -65,8 +65,8 @@ class SignInViewModel @Inject constructor(
     fun onSubmit() {
         val current = _state.value
         if (current.isSubmitting || current.isOffline) return
-        // Un correo sin forma de correo o una contraseña vacía no pueden entrar: mismo mensaje que el backend
-        // (F2 caso 1, divulgación mínima), sin gastar un intento.
+        // An email not shaped like an email or an empty password cannot sign in: same message as the backend
+        // (minimal disclosure), without using up an attempt.
         val credentials = Credentials.parse(current.email, current.password)
         if (credentials == null) {
             _state.update { it.copy(error = SignInError.InvalidCredentials) }
@@ -96,7 +96,7 @@ class SignInViewModel @Inject constructor(
         }
     }
 
-    /** Al editar se quita el error de credenciales (S4.1); el aviso de bloqueo (S4.2) sigue hasta el próximo intento. */
+    /** Editing clears the wrong credentials error; the account locked notice stays until the next attempt. */
     private fun SignInError?.keepLock(): SignInError? = takeIf { it == SignInError.AccountLocked }
 
     private companion object {

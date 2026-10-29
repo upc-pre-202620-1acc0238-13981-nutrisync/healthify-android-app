@@ -27,7 +27,7 @@ import pe.edu.upc.healthify.testing.aiPreferences
 import pe.edu.upc.healthify.testing.careLink
 import pe.edu.upc.healthify.testing.failureOf
 
-/** PT21.IA · Funciones con IA: sin consentimiento de IA se ofrece activarlo antes de encender una función (CR-2, IA-1). */
+/** AI features: without AI consent, the screen offers to grant it before a feature is turned on. */
 class AiFeaturesViewModelTest {
 
     @get:Rule
@@ -69,7 +69,7 @@ class AiFeaturesViewModelTest {
     @Test
     fun `accepting the offer grants the AI consent on the active link and then turns the feature on`() = runTest {
         viewModel.onToggle(AiFeature.SUGGESTED_QUESTIONS, true)
-        // El backend ya devuelve el consentimiento otorgado al releer.
+        // The backend already returns the granted consent on reload.
         preferences.preferences = AiPreferences.NoneGranted.copy(consentGranted = true)
 
         viewModel.onConfirmConsent()

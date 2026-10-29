@@ -14,12 +14,12 @@ import java.time.Clock
 import java.time.Instant
 import java.time.ZoneOffset
 
-/** «Ahora» de los tests de consultas: 15 sept. 2026, 10:00 (Lima, UTC−5). */
+/** "Now" for the consultation tests: Sept 15, 2026, 10:00 (Lima, UTC−5). */
 val CONSULTATIONS_NOW: Instant = Instant.parse("2026-09-15T15:00:00Z")
 
 fun fixedClock(now: Instant = CONSULTATIONS_NOW): Clock = Clock.fixed(now, ZoneOffset.ofHours(-5))
 
-/** La consulta del 18 sept. a las 10:00 (después de [CONSULTATIONS_NOW]). */
+/** The consultation on Sept 18 at 10:00 (after [CONSULTATIONS_NOW]). */
 fun nextFollowUp(id: Long = 31, scheduledFor: Instant = Instant.parse("2026-09-18T15:00:00Z")) =
     NextFollowUp(id = FollowUpId(id), scheduledFor = scheduledFor)
 
@@ -29,13 +29,13 @@ fun suggestions(vararg texts: String, generation: Long = 77, language: String? =
     language = language,
 )
 
-/** Respuestas programables; registra cada envío y cada pedido de sugerencias. */
+/** Programmable responses; records every submission and every suggestion request. */
 class FakeConsultationsRepository : ConsultationsRepository {
     var overviewResult: Result<ConsultationsOverview> =
         Result.success(ConsultationsOverview(next = null, checkIn = null, past = emptyList()))
     var checkInResult: Result<PreVisitCheckIn?> = Result.success(null)
 
-    /** `null` = acepta y devuelve lo enviado. */
+    /** `null` = accepts and returns what was sent. */
     var submitResults: List<Result<PreVisitCheckIn>>? = null
     var suggestionsResult: Result<SuggestedQuestionsAvailability> = Result.success(SuggestedQuestionsAvailability.NotYet)
 

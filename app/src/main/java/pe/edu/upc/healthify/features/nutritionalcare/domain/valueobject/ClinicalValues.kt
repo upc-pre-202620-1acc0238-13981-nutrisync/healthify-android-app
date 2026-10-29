@@ -5,7 +5,7 @@ import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.Period
 
-/** Id de la consulta guiada (NC-2). */
+/** Guided consultation id. */
 @JvmInline
 value class ConsultationId(val value: Long) {
     init {
@@ -13,7 +13,7 @@ value class ConsultationId(val value: Long) {
     }
 }
 
-/** Lee un número escrito por el profesional: acepta coma o punto decimal («74,2» o «74.2»). `null` si no es número. */
+/** Parses a number typed by the practitioner: decimal comma or point ("74,2" or "74.2"). `null` if not a number. */
 object DecimalText {
     fun parse(text: String): Double? {
         val normalized = text.trim().replace(',', '.')
@@ -26,7 +26,7 @@ object DecimalText {
         BigDecimal.valueOf(value).setScale(decimals, RoundingMode.HALF_UP).toDouble()
 }
 
-/** Resultado de leer un campo numérico con rango del backend. */
+/** Result of reading a numeric field with a backend range. */
 sealed interface NumberInput {
     data class Valid(val value: Double) : NumberInput
     data object Empty : NumberInput
@@ -34,8 +34,8 @@ sealed interface NumberInput {
 }
 
 /**
- * Rangos de plausibilidad del backend: talla (`HeightCm`, NC-1), medición (`ImplausibleMeasurement`, NC-3), hábitos
- * (`EatingHabits`) y bioquímicos (`BiochemistryPanel`). El teléfono los aplica antes de enviar (fail fast).
+ * Backend plausibility ranges: height (`HeightCm`), measurement (`ImplausibleMeasurement`), habits
+ * (`EatingHabits`) and biochemistry (`BiochemistryPanel`). The phone applies them before sending (fail fast).
  */
 enum class ClinicalRange(val minimum: Double, val maximum: Double, val decimals: Int) {
     HEIGHT_CM(50.0, 250.0, 1),
@@ -52,7 +52,7 @@ enum class ClinicalRange(val minimum: Double, val maximum: Double, val decimals:
 
     fun contains(value: Double): Boolean = value in minimum..maximum
 
-    /** Un texto vacío es [NumberInput.Empty]; uno que no es número o queda fuera del rango, [NumberInput.OutOfRange]. */
+    /** Empty text is [NumberInput.Empty]; text that is not a number or is out of range is [NumberInput.OutOfRange]. */
     fun parse(text: String): NumberInput {
         if (text.isBlank()) return NumberInput.Empty
         val value = DecimalText.parse(text) ?: return NumberInput.OutOfRange
@@ -61,7 +61,7 @@ enum class ClinicalRange(val minimum: Double, val maximum: Double, val decimals:
     }
 }
 
-/** Talla fija de los datos base (NC-1): 50–250 cm con 1 decimal. No se vuelve a pedir en cada consulta. */
+/** Fixed baseline height: 50–250 cm with 1 decimal. It is not asked again at each consultation. */
 @JvmInline
 value class HeightCm(val value: Double) {
     init {
@@ -70,8 +70,8 @@ value class HeightCm(val value: Double) {
 }
 
 /**
- * Fecha de nacimiento de los datos base (NC-1): entre 1 y 120 años antes de [today]. La edad se calcula sola (cumpleaños
- * exacto), nunca se guarda.
+ * Baseline birth date: between 1 and 120 years before [today]. Age is calculated on the fly (exact birthday),
+ * never stored.
  */
 data class BirthDate(val value: LocalDate, val today: LocalDate) {
     init {
@@ -88,7 +88,7 @@ data class BirthDate(val value: LocalDate, val today: LocalDate) {
     }
 }
 
-/** IMC calculado en vivo en EV-2 (NC-3): peso / talla², 1 decimal (redondeo «away from zero» como el backend). */
+/** BMI calculated live on the measurement step: weight / height², 1 decimal (rounded away from zero like the backend). */
 data class BodyMassIndex(val value: Double) {
     init {
         require(value > 0) { "BMI must be positive" }
@@ -105,7 +105,7 @@ data class BodyMassIndex(val value: Double) {
     }
 }
 
-/** Razón obligatoria al escribir valores propios en EV-4 (`OverrideReasonRequired`): 1–500 caracteres. */
+/** Required reason when entering own values on the targets step (`OverrideReasonRequired`): 1–500 characters. */
 @JvmInline
 value class OverrideReason(val value: String) {
     init {
@@ -118,7 +118,7 @@ value class OverrideReason(val value: String) {
     }
 }
 
-/** «Otra indicación» (NC-6): texto del profesional de 3 a 140 caracteres; se muestra tal cual, nunca se traduce. */
+/** "Other guideline": practitioner text of 3 to 140 characters; shown as is, never translated. */
 @JvmInline
 value class CustomGuideline(val text: String) {
     init {
@@ -129,12 +129,12 @@ value class CustomGuideline(val text: String) {
         const val MIN_LENGTH = 3
         const val MAX_LENGTH = 140
 
-        /** Máximo de indicaciones propias por versión del plan. */
+        /** Maximum custom guidelines per plan version. */
         const val MAX_PER_VERSION = 5
     }
 }
 
-/** Mensaje para el paciente de la versión (NC-9): hasta 500 caracteres; vacío = sin mensaje. */
+/** The version's message to the patient: up to 500 characters; empty = no message. */
 @JvmInline
 value class PatientMessage(val text: String) {
     init {
@@ -150,8 +150,8 @@ value class PatientMessage(val text: String) {
 }
 
 /**
- * `Idempotency-Key` de la publicación (NC-2): ASCII visible, 1–64 caracteres. Se genera una vez por consulta y se
- * reusa en cada reintento, así un timeout seguido de «Volver a intentarlo» nunca publica dos versiones.
+ * Publication `Idempotency-Key`: visible ASCII, 1–64 characters. Generated once per consultation and
+ * reused on every retry, so a timeout followed by "Try again" never publishes two versions.
  */
 @JvmInline
 value class IdempotencyKey(val value: String) {

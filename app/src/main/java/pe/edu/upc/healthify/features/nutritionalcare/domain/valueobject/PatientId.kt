@@ -1,6 +1,6 @@
 package pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject
 
-/** Id del paciente en NutritionalCare: es el `userId` de su cuenta (el backend lo compara con el token). */
+/** Patient id in NutritionalCare: the `userId` of their account (the backend compares it with the token). */
 @JvmInline
 value class PatientId(val value: Long) {
     init {

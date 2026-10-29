@@ -7,8 +7,8 @@ import pe.edu.upc.healthify.core.network.auth.AuthHeaders.isAnonymousEndpoint
 import javax.inject.Inject
 
 /**
- * Agrega `Authorization: Bearer <access token>` si hay sesión, salvo en los endpoints anónimos.
- * Cuando el backend responde 401, [TokenRefreshAuthenticator] renueva el par (IAM-4) y reintenta.
+ * Adds `Authorization: Bearer <access token>` when there is a session, except on the anonymous endpoints.
+ * When the backend answers 401, [TokenRefreshAuthenticator] renews the token pair and retries.
  */
 class AuthInterceptor @Inject constructor(
     private val tokenStore: SessionTokenStore,
@@ -17,7 +17,7 @@ class AuthInterceptor @Inject constructor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val original = chain.request()
         if (original.isAnonymousEndpoint()) return chain.proceed(original)
-        // OkHttp corre los interceptores en sus hilos de red, nunca en el main thread.
+        // OkHttp runs interceptors on its network threads, never on the main thread.
         val token = runBlocking { tokenStore.accessToken() }
         val request = if (token.isNullOrBlank()) {
             original

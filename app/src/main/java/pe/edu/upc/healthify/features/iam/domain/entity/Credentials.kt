@@ -3,8 +3,8 @@ package pe.edu.upc.healthify.features.iam.domain.entity
 import pe.edu.upc.healthify.features.iam.domain.valueobject.EmailAddress
 
 /**
- * Datos del login único (S4, IAM-5). La contraseña no se valida contra las reglas de registro: el backend responde
- * `InvalidCredentials` igual exista o no la cuenta (divulgación mínima).
+ * Single sign-in data. The password is not checked against the sign-up rules: the backend answers
+ * `InvalidCredentials` whether or not the account exists (minimal disclosure).
  */
 class Credentials private constructor(val email: EmailAddress, val password: String) {
 
@@ -16,8 +16,8 @@ class Credentials private constructor(val email: EmailAddress, val password: Str
 
     companion object {
         /**
-         * Las credenciales, o `null` si el correo no tiene forma de correo o falta la contraseña. Un correo mal
-         * formado se trata como credenciales incorrectas, igual que el backend (F2, caso 1).
+         * The credentials, or `null` if the email is not shaped like an email or the password is missing. A malformed
+         * email is treated as wrong credentials, the same as the backend does.
          */
         fun parse(email: String, password: String): Credentials? {
             val address = EmailAddress.parse(email) ?: return null

@@ -26,8 +26,8 @@ import pe.edu.upc.healthify.features.monitoring.infrastructure.remote.dto.Sugges
 import pe.edu.upc.healthify.features.monitoring.infrastructure.remote.dto.UpcomingConsultationDto
 
 /**
- * El read model es tolerante (una sección que falla queda vacía): una próxima consulta, un check-in o una
- * consulta anterior que no se puede leer se omite en vez de tumbar toda la pantalla.
+ * The read model is tolerant (a failing section stays empty): a next visit, check-in or past visit that cannot be
+ * read is skipped instead of taking down the whole screen.
  */
 fun ConsultationsOverviewDto.toDomain(): ConsultationsOverview = ConsultationsOverview(
     next = next?.toDomainOrNull(),
@@ -64,7 +64,7 @@ fun PastConsultationDto.toDomainOrNull(): PastConsultation? {
     )
 }
 
-/** `null` si el recurso no se puede leer (sentimiento desconocido, fecha ilegible). Una pregunta inválida se omite. */
+/** `null` if the resource cannot be read (unknown feeling, unreadable date). An invalid question is skipped. */
 fun PreVisitCheckInDto.toDomainOrNull(): PreVisitCheckIn? {
     val feeling = PlanFeeling.fromCode(feeling) ?: return null
     val submitted = submittedAt.toInstantOrNull() ?: return null
@@ -85,7 +85,7 @@ fun PreVisitCheckInDto.toDomainOrNull(): PreVisitCheckIn? {
     }
 }
 
-/** El recurso de lectura no trae `aiGenerationId`: una sugerencia aceptada vuelve solo con su texto e idioma. */
+/** The read resource has no `aiGenerationId`: an accepted suggestion comes back with only its text and language. */
 fun CheckInQuestionDto.toDomainOrNull(): CheckInQuestion? = when (QuestionOrigin.fromCode(origin)) {
     QuestionOrigin.AI_SUGGESTED -> CheckInQuestion.aiSuggestion(text, aiGenerationId = null, language = language)
     QuestionOrigin.PATIENT -> (CheckInQuestion.ownQuestion(text) as? OwnQuestion.Valid)?.question

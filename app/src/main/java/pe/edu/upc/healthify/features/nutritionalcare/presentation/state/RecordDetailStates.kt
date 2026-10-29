@@ -5,14 +5,14 @@ import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.RecordReferra
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.ReferralSummary
 import java.time.Instant
 
-/** PAC-3 · hoja con el detalle de una evaluación tocada en «EVALUACIONES». */
+/** Sheet with the detail of an assessment tapped in "ASSESSMENTS". */
 sealed interface EvaluationSheetState {
     data object Loading : EvaluationSheetState
     data object Failed : EvaluationSheetState
     data class Loaded(val detail: EvaluationDetail) : EvaluationSheetState
 }
 
-/** Una derivación lista para su hoja de detalle (PT20 del paciente y PAC-3 del nutricionista). */
+/** A referral ready for its detail sheet (patient's and nutritionist's record). */
 data class ReferralDetailItem(
     val specialty: String,
     val issuedAt: Instant,

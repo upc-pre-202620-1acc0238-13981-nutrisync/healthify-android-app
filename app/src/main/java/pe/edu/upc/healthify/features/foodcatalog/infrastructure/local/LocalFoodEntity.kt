@@ -5,11 +5,11 @@ import androidx.room3.Entity
 import androidx.room3.PrimaryKey
 
 /**
- * Copia del catálogo en el teléfono (`local-food-catalog`, ≤ 500 alimentos) para buscar sin conexión (PT9). Es
- * un catálogo de referencia público, no datos del paciente.
+ * The phone's copy of the catalog (`local-food-catalog`, ≤ 500 foods) for offline search. It is
+ * a public reference catalog, not patient data.
  *
- * @param normalizedName nombre en minúsculas y sin tildes, para buscar «quinua» con «Quínua».
- * @param position orden en que llegó del servidor (los locales del nutricionista primero).
+ * @param normalizedName lowercase name without accents, so "quinua" finds "Quínua".
+ * @param position order in which it came from the server (the nutritionist's local foods first).
  */
 @Entity(tableName = "local_food_catalog")
 data class LocalFoodEntity(

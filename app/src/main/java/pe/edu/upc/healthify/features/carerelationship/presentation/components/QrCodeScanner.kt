@@ -24,12 +24,12 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 
 /**
- * Vista de cámara de PT1 que lee **solo** códigos QR con ML Kit Barcode Scanning (en el dispositivo; la imagen no
- * sale del teléfono ni se guarda). Requiere el permiso de cámara ya concedido.
+ * Camera view of the scan screen that reads **only** QR codes with ML Kit Barcode Scanning (on device; the image
+ * never leaves the phone and is not stored). Requires camera permission already granted.
  *
- * @param enabled `false` pausa la lectura (canje en curso, sin conexión, diálogo abierto); la vista sigue viva.
- * @param onQrCode contenido crudo del QR. Llega muchas veces por segundo mientras el código esté a la vista: quien
- *   lo recibe decide qué ignorar.
+ * @param enabled `false` pauses scanning (redeem in progress, offline, dialog open); the view stays alive.
+ * @param onQrCode raw QR content. Arrives many times per second while the code is in view: the receiver
+ *   decides what to ignore.
  */
 @Composable
 fun QrCodeScanner(
@@ -75,7 +75,7 @@ fun QrCodeScanner(
     )
 }
 
-/** Pasa cada cuadro a ML Kit y entrega el primer QR con contenido; siempre cierra el cuadro. */
+/** Passes each frame to ML Kit and delivers the first QR code with content; always closes the frame. */
 private class QrAnalyzer(
     private val scanner: BarcodeScanner,
     private val onQrCode: (String) -> Unit,

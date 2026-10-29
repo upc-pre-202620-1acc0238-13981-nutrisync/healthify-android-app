@@ -50,10 +50,10 @@ import pe.edu.upc.healthify.features.foodcatalog.presentation.state.FoodRow
 import pe.edu.upc.healthify.features.foodcatalog.presentation.viewmodel.FoodCatalogViewModel
 
 /**
- * PR15 · Catálogo de alimentos (desde PR20). Soporte técnico del registro del paciente: «Agregar alimento local» abre
- * PR15.1. La gestión no funciona sin conexión.
+ * Food catalog (from Settings). Technical support for patient logging: "Add local food" opens
+ * the add screen. Management does not work offline.
  *
- * @param addedFoodName el alimento que PR15.1 acaba de crear: se busca y se muestra el Snackbar.
+ * @param addedFoodName the food the add screen just created: it is searched for and the Snackbar shows.
  */
 @Composable
 fun FoodCatalogScreen(
@@ -113,7 +113,7 @@ fun FoodCatalogContent(
                 verticalArrangement = Arrangement.spacedBy(dimens.space12),
             ) {
                 if (state.isOffline) item(key = "offline") { OfflineBanner(type = OfflineBannerType.RequiresNetwork) }
-                // «Agregar alimento local» va arriba del buscador; sin resultados lo ofrece el estado vacío.
+                // "Add local food" sits above the search field; with no results the empty state offers it.
                 if (!state.isEmpty) {
                     item(key = "add") {
                         HealthifyButton(
@@ -185,7 +185,7 @@ private fun FoodCard(food: FoodRow) {
             modifier = Modifier.padding(dimens.space16),
             verticalArrangement = Arrangement.spacedBy(dimens.space4),
         ) {
-            // El nombre local está sembrado en español (X-2 pendiente del backend): se muestra tal cual.
+            // The local name is seeded in Spanish (the backend does not localize it yet): shown as is.
             Text(
                 text = if (food.isLocal) stringResource(R.string.food_catalog_local_name, food.name) else food.name,
                 style = MaterialTheme.typography.titleMedium,
@@ -207,7 +207,7 @@ private val previewFoods = listOf(
     FoodRow(2, "Cuy al horno", 176.0, isLocal = true),
 )
 
-@Preview(name = "PR15 · Catálogo", widthDp = 360, heightDp = 800)
+@Preview(name = "Food catalog", widthDp = 360, heightDp = 800)
 @Composable
 private fun FoodCatalogPreview() {
     HealthifyTheme {
@@ -221,7 +221,7 @@ private fun FoodCatalogPreview() {
     }
 }
 
-@Preview(name = "PR15 · Sin resultados", widthDp = 360, heightDp = 800)
+@Preview(name = "Food catalog - no results", widthDp = 360, heightDp = 800)
 @Composable
 private fun FoodCatalogEmptyPreview() {
     HealthifyTheme {
@@ -235,7 +235,7 @@ private fun FoodCatalogEmptyPreview() {
     }
 }
 
-@Preview(name = "PR15 · Cargando", widthDp = 360, heightDp = 800)
+@Preview(name = "Food catalog - loading", widthDp = 360, heightDp = 800)
 @Composable
 private fun FoodCatalogLoadingPreview() {
     HealthifyTheme {
@@ -243,7 +243,7 @@ private fun FoodCatalogLoadingPreview() {
     }
 }
 
-@Preview(name = "PR15 · Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Food catalog - offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun FoodCatalogOfflinePreview() {
     HealthifyTheme {
@@ -257,7 +257,7 @@ private fun FoodCatalogOfflinePreview() {
     }
 }
 
-@Preview(name = "PR15 · Error", widthDp = 360, heightDp = 800)
+@Preview(name = "Food catalog - error", widthDp = 360, heightDp = 800)
 @Composable
 private fun FoodCatalogErrorPreview() {
     HealthifyTheme {

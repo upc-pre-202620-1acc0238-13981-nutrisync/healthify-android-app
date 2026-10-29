@@ -53,7 +53,7 @@ class ForgotPasswordViewModelTest {
         viewModel.onSubmitNewPassword()
     }
 
-    // Paso 1 · correo
+    // Step 1 · email
 
     @Test
     fun `a malformed email is not sent`() {
@@ -84,7 +84,7 @@ class ForgotPasswordViewModelTest {
         assertTrue(auth.passwordResetRequests.isEmpty())
     }
 
-    // Paso 2 · código
+    // Step 2 · code
 
     @Test
     fun `resend waits for the countdown`() = runTest {
@@ -143,7 +143,7 @@ class ForgotPasswordViewModelTest {
         assertFalse(viewModel.state.value.showErrorDialog)
     }
 
-    // Paso 3 · contraseña nueva
+    // Step 3 · new password
 
     @Test
     fun `a weak password never reaches the backend`() {
@@ -210,7 +210,7 @@ class ForgotPasswordViewModelTest {
         assertEquals("", viewModel.state.value.newPassword)
     }
 
-    // Errores y navegación
+    // Errors and navigation
 
     @Test
     fun `an unexpected error opens the dialog and retry repeats the failed call`() {
@@ -252,7 +252,7 @@ class ForgotPasswordViewModelTest {
         toNewPasswordStep()
         viewModel.onBack()
 
-        // Sin token, «Cambiar contraseña» no llega al backend: vuelve al paso del código.
+        // Without a token, "Change password" never reaches the backend: it goes back to the code step.
         viewModel.onSubmitNewPassword()
 
         assertTrue(auth.passwordResets.isEmpty())

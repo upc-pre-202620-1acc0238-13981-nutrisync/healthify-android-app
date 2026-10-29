@@ -64,7 +64,7 @@ data class AdjustProposalActions(
     val onDialogDismissed: () -> Unit = {},
 )
 
-/** PR14.IA-A · Ajustar el plan propuesto por IA (todo prellenado; «Asignar plan ajustado»). */
+/** Adjust the AI-proposed plan (all prefilled; "Assign adjusted plan"). */
 @Composable
 fun AdjustProposalScreen(
     onBack: () -> Unit,
@@ -289,13 +289,13 @@ private val previewState = AdjustProposalUiState(
     message = "Notamos que tus cenas son más ligeras. Probemos con estas ideas.",
 )
 
-@Preview(name = "PR14.IA-A · Ajustar plan", widthDp = 360, heightDp = 1100)
+@Preview(name = "Adjust plan", widthDp = 360, heightDp = 1100)
 @Composable
 private fun AdjustProposalPreview() {
     HealthifyTheme { AdjustProposalContent(state = previewState, actions = AdjustProposalActions()) }
 }
 
-@Preview(name = "PR14.IA-A · Bajo el piso calórico", widthDp = 360, heightDp = 800)
+@Preview(name = "Adjust plan - below calorie floor", widthDp = 360, heightDp = 800)
 @Composable
 private fun AdjustProposalFloorPreview() {
     HealthifyTheme {
@@ -303,13 +303,13 @@ private fun AdjustProposalFloorPreview() {
     }
 }
 
-@Preview(name = "PR14.IA-A · Cargando", widthDp = 360, heightDp = 800)
+@Preview(name = "Adjust plan - loading", widthDp = 360, heightDp = 800)
 @Composable
 private fun AdjustProposalLoadingPreview() {
     HealthifyTheme { AdjustProposalContent(state = AdjustProposalUiState(), actions = AdjustProposalActions()) }
 }
 
-@Preview(name = "PR14.IA-A · Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Adjust plan - offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun AdjustProposalOfflinePreview() {
     HealthifyTheme {

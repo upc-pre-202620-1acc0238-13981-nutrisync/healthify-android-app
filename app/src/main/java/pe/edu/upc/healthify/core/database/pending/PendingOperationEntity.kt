@@ -6,11 +6,11 @@ import androidx.room3.Index
 import androidx.room3.PrimaryKey
 
 /**
- * Operación registrada sin conexión y pendiente de enviar (diario, autopesajes…). Genérica: [type] dice qué
- * `PendingOperationSender` la envía y [payload] es el JSON que esa feature serializó.
+ * Operation recorded offline and waiting to be sent (diary, self weigh-ins…). Generic: [type] says which
+ * `PendingOperationSender` sends it and [payload] is the JSON that feature serialized.
  *
- * [clientEntryId] es el UUID generado en el dispositivo al registrar: se reenvía siempre el mismo, así que el
- * backend reconoce el reenvío y no duplica (F20, IN-4).
+ * [clientEntryId] is the UUID generated on the device when recording: the same one is always resent, so the
+ * backend recognizes the retry and does not create a duplicate.
  */
 @Entity(
     tableName = "pending_operations",
@@ -21,17 +21,17 @@ data class PendingOperationEntity(
     @ColumnInfo(name = "client_entry_id")
     val clientEntryId: String,
     val type: String,
-    /** El usuario que la registró: solo se envía con su sesión (el backend responde 403 a otro paciente). */
+    /** The user who recorded it: it is only sent with their session (the backend answers 403 for another patient). */
     @ColumnInfo(name = "owner_user_id")
     val ownerUserId: Long,
     val payload: String,
-    /** Momento que el paciente declaró (ISO-8601 con offset). El backend nunca lo reescribe. */
+    /** The time the patient declared (ISO-8601 with offset). The backend never rewrites it. */
     @ColumnInfo(name = "local_timestamp")
     val localTimestamp: String,
     @ColumnInfo(name = "created_at_epoch_ms")
     val createdAtEpochMs: Long,
     val attempts: Int = 0,
-    /** `PENDING` o `REJECTED` (el backend no la aceptó; se conserva para mostrarla, no se reintenta). */
+    /** `PENDING` or `REJECTED` (the backend did not accept it; kept so it can be shown, never retried). */
     val status: String = STATUS_PENDING,
     @ColumnInfo(name = "rejection_code")
     val rejectionCode: String? = null,

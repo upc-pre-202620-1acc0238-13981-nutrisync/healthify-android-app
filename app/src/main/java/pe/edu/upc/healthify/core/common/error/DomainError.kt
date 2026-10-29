@@ -1,10 +1,10 @@
 package pe.edu.upc.healthify.core.common.error
 
 /**
- * Shared kernel de errores. Kotlin puro: lo usan domain, application y presentation de todos los contextos.
+ * Shared error kernel. Pure Kotlin: domain, application and presentation of every context use it.
  *
- * `code` es el nombre del valor del enum de error del backend (`InvalidCredentials`, `ConsentAlreadyGranted`…)
- * cuando el backend lo envía; la UI elige el texto del mockup según ese código.
+ * `code` is the name of the backend error enum value (`InvalidCredentials`, `ConsentAlreadyGranted`…)
+ * when the backend sends it; the UI picks the mockup text from that code.
  */
 sealed interface DomainError {
     data object Network : DomainError
@@ -14,14 +14,14 @@ sealed interface DomainError {
     data class Conflict(val code: String? = null) : DomainError
     data class Validation(val code: String) : DomainError
 
-    /** 5xx, 429 o una respuesta que no se pudo interpretar. `code` lleva el status si no hay otro (`HTTP_503`). */
+    /** 5xx, 429 or a response that could not be parsed. `code` carries the status if there is no other (`HTTP_503`). */
     data class Unexpected(val code: String? = null) : DomainError
 }
 
-/** Permite transportar un [DomainError] dentro de `Result.failure`. */
+/** Carries a [DomainError] inside `Result.failure`. */
 class DomainException(val error: DomainError) : Exception(error.toString())
 
-/** El [DomainError] de un `Result` fallido; cualquier otra excepción se lee como [DomainError.Unexpected]. */
+/** The [DomainError] of a failed `Result`; any other exception reads as [DomainError.Unexpected]. */
 fun Result<*>.domainErrorOrNull(): DomainError? = exceptionOrNull()?.let { throwable ->
     (throwable as? DomainException)?.error ?: DomainError.Unexpected()
 }

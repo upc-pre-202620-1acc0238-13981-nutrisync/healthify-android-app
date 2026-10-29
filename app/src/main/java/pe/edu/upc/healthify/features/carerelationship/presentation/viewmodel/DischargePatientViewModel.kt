@@ -27,8 +27,8 @@ sealed interface DischargePatientEvent {
 }
 
 /**
- * PR18 · Alta clínica (+ PR18.M confirmación). El motivo clínico es **obligatorio** (asimetría deliberada con PT23) y un
- * vínculo dado de alta nunca se reactiva, por eso se confirma antes de enviar.
+ * Clinical discharge (plus confirmation). The clinical reason is **required** (a deliberate asymmetry with withdrawing
+ * consent) and a discharged care link is never reactivated, so it is confirmed before sending.
  */
 @HiltViewModel
 class DischargePatientViewModel @Inject constructor(
@@ -54,7 +54,7 @@ class DischargePatientViewModel @Inject constructor(
 
     fun onReasonChange(value: String) = _state.update { it.copy(reason = value, reasonMissing = false) }
 
-    /** «Dar de alta»: sin motivo no se abre la confirmación («Escribe el motivo clínico del alta»). */
+    /** "Discharge": without a reason the confirmation does not open ("Write the clinical reason for the discharge"). */
     fun onDischargeRequested() {
         if (ClinicalReason.of(_state.value.reason) == null) {
             _state.update { it.copy(reasonMissing = true) }
@@ -63,7 +63,7 @@ class DischargePatientViewModel @Inject constructor(
         _state.update { it.copy(dialog = DischargeDialog.CONFIRM) }
     }
 
-    /** PR18.M «Sí, dar de alta» (o «Reintentar» tras un fallo de red/servidor). */
+    /** "Yes, discharge" on the confirmation (or "Retry" after a network/server failure). */
     fun onConfirmed() {
         val reason = ClinicalReason.of(_state.value.reason)
         if (reason == null) {
@@ -91,7 +91,7 @@ class DischargePatientViewModel @Inject constructor(
         }
     }
 
-    /** «Este paciente ya había sido dado de alta.» → vuelve a PR1 igual que un alta. */
+    /** "This patient had already been discharged." → returns to the roster just like a discharge. */
     fun onAlreadyDischargedConfirmed() {
         _state.update { it.copy(dialog = null) }
         viewModelScope.launch { _events.send(DischargePatientEvent.Discharged(patientName)) }

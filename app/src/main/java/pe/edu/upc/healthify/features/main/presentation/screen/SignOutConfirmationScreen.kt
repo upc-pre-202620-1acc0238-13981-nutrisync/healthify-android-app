@@ -43,15 +43,15 @@ import pe.edu.upc.healthify.features.main.presentation.viewmodel.SignOutEvent
 import pe.edu.upc.healthify.features.main.presentation.viewmodel.SignOutUiState
 import pe.edu.upc.healthify.features.main.presentation.viewmodel.SignOutViewModel
 
-// Medidas del frame PT21.1.
+// Measurements of the sign-out frame.
 private val LogoSize = DpSize(64.dp, 57.dp)
 private val BadgeSize = 80.dp
 private val BadgeIconSize = 36.dp
 
 /**
- * PT21.1 / PR20.1 · Cerrar sesión: confirmación a pantalla completa con el estilo de S6 ([bodyRes]: el texto de cada
- * rol; el nutricionista lee que sus pacientes y sus datos quedan guardados). Funciona igual sin conexión; los
- * registros pendientes se conservan y se envían al volver a entrar (F3).
+ * Sign out: full-screen confirmation in the session expired style ([bodyRes]: each role's text; the
+ * practitioner reads that their patients and data stay saved). Works the same offline; pending
+ * logs are kept and sent on the next sign-in.
  */
 @Composable
 fun SignOutConfirmationScreen(
@@ -154,19 +154,19 @@ fun SignOutConfirmationContent(
     }
 }
 
-@Preview(name = "PT21.1 · Cerrar sesión", widthDp = 360, heightDp = 800)
+@Preview(name = "Sign out", widthDp = 360, heightDp = 800)
 @Composable
 private fun SignOutConfirmationPreview() {
     HealthifyTheme { SignOutConfirmationContent(state = SignOutUiState(), onConfirm = {}, onCancel = {}) }
 }
 
-@Preview(name = "PT21.1 · Cerrando sesión", widthDp = 360, heightDp = 800)
+@Preview(name = "Signing out", widthDp = 360, heightDp = 800)
 @Composable
 private fun SignOutConfirmationLoadingPreview() {
     HealthifyTheme { SignOutConfirmationContent(state = SignOutUiState(isSigningOut = true), onConfirm = {}, onCancel = {}) }
 }
 
-@Preview(name = "PR20.1 · Cerrar sesión (nutricionista)", widthDp = 360, heightDp = 800)
+@Preview(name = "Sign out (practitioner)", widthDp = 360, heightDp = 800)
 @Composable
 private fun PractitionerSignOutConfirmationPreview() {
     HealthifyTheme {

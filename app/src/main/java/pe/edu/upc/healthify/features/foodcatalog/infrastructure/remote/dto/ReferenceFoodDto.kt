@@ -2,7 +2,7 @@ package pe.edu.upc.healthify.features.foodcatalog.infrastructure.remote.dto
 
 import kotlinx.serialization.Serializable
 
-/** `ReferenceFoodResource` (§5.4). */
+/** `ReferenceFoodResource`. */
 @Serializable
 data class ReferenceFoodDto(
     val referenceFoodId: Long,
@@ -14,7 +14,7 @@ data class ReferenceFoodDto(
     val isLocalOverride: Boolean = false,
 )
 
-/** `CreateLocalOverrideResource` (F14c). */
+/** `CreateLocalOverrideResource`. */
 @Serializable
 data class CreateLocalOverrideRequestDto(
     val localName: String,

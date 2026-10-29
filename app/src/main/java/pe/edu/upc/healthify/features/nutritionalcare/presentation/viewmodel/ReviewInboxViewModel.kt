@@ -18,8 +18,8 @@ import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.ReviewIn
 import javax.inject.Inject
 
 /**
- * PR13 · Bandeja de revisión (+ PR13.V, PR13.1). Lista los ítems abiertos (`?state=Open`); se relee al volver a la
- * pestaña (PR13.1: el ítem resuelto ya no aparece) y al volver la conexión. Revisar un ítem no ajusta nada por sí solo.
+ * Review inbox. Lists the open items (`?state=Open`); reread on returning to the tab (a resolved item no longer
+ * appears) and when the connection returns. Reviewing an item adjusts nothing by itself.
  */
 @HiltViewModel
 class ReviewInboxViewModel @Inject constructor(

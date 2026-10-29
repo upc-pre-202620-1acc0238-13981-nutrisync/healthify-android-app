@@ -20,77 +20,77 @@ import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.Idempote
 import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.PatientId
 
 /*
- * Lado del nutricionista de NutritionalCare. Nada de esto se guarda en el teléfono: la cartera y los datos de los
- * pacientes no están disponibles sin conexión (PR1.O).
+ * Nutritionist side of NutritionalCare. None of this is stored on the phone: the caseload and patient data are
+ * not available offline.
  */
 
-/** NC-1 · `/patients/{pid}/baseline`. */
+/** `/patients/{pid}/baseline`. */
 interface PatientBaselineRepository {
 
-    /** `null` si el paciente aún no tiene datos base (`404 BaselineNotFound`, PAC-0). */
+    /** `null` if the patient has no baseline yet (`404 BaselineNotFound`). */
     suspend fun get(patientId: PatientId): Result<PatientBaseline?>
 
-    /** `POST` (primera vez) · `409 BaselineAlreadyRecorded` si ya existían. */
+    /** `POST` (first time) · `409 BaselineAlreadyRecorded` if it already existed. */
     suspend fun record(patientId: PatientId, baseline: NewBaseline): Result<PatientBaseline>
 
-    /** `PUT` (editar desde Resumen o EV-2). */
+    /** `PUT` (edit from the Summary tab or the measurement step). */
     suspend fun update(patientId: PatientId, baseline: NewBaseline): Result<PatientBaseline>
 }
 
-/** RM-2 · `GET /patients/{pid}/summary` (PAC-0, PAC-1, PAC-1.C). */
+/** `GET /patients/{pid}/summary`. */
 interface PatientSummaryRepository {
     suspend fun getSummary(patientId: PatientId): Result<PatientSummary>
 }
 
-/** RM-4 · `GET /patients/{pid}/record?days=30` con el token del profesional (PAC-3). */
+/** `GET /patients/{pid}/record?days=30` with the practitioner's token. */
 interface PractitionerRecordRepository {
     suspend fun getRecord(patientId: PatientId): Result<PractitionerPatientRecord>
 
-    /** PAC-3 · detalle de una evaluación (`GET /nutritional-assessments/{id}`). */
+    /** Detail of an assessment (`GET /nutritional-assessments/{id}`). */
     suspend fun getEvaluation(assessmentId: Long): Result<EvaluationDetail>
 }
 
-/** PAC-4 · `GET /patients/{pid}/nutrition-plans` (solo versiones publicadas). */
+/** `GET /patients/{pid}/nutrition-plans` (published versions only). */
 interface NutritionPlanRepository {
     suspend fun getHistory(patientId: PatientId): Result<PlanHistory>
 }
 
-/** NC-2 a NC-7 · la consulta guiada de 4 pasos (EV-2 a EV-5). Cada paso guardado devuelve la consulta al día. */
+/** The 4-step guided consultation. Each saved step returns the up-to-date consultation. */
 interface ConsultationRepository {
 
     /**
-     * `POST /patients/{pid}/consultations`. `409 ConsultationAlreadyInProgress` si ya hay una (se reanuda) y
-     * `422 BaselineRequired` sin datos base.
+     * `POST /patients/{pid}/consultations`. `409 ConsultationAlreadyInProgress` if one exists (it is resumed) and
+     * `422 BaselineRequired` without a baseline.
      */
     suspend fun start(patientId: PatientId, scheduledFollowUpId: Long?): Result<Consultation>
 
-    /** `GET /patients/{pid}/consultations/in-progress`; `null` si no hay ninguna (404). */
+    /** `GET /patients/{pid}/consultations/in-progress`; `null` if there is none (404). */
     suspend fun getInProgress(patientId: PatientId): Result<Consultation?>
 
-    /** Paso 1 · `PUT /consultations/{id}/measurement`. */
+    /** Step 1 · `PUT /consultations/{id}/measurement`. */
     suspend fun recordMeasurement(id: ConsultationId, measurement: NewMeasurement): Result<Consultation>
 
-    /** Paso 2 · `POST /consultations/{id}/diagnosis-suggestion` (IA-6; nunca vacío: si no hay IA, la regla del IMC). */
+    /** Step 2 · `POST /consultations/{id}/diagnosis-suggestion` (never empty: without AI, the BMI rule). */
     suspend fun suggestDiagnosis(id: ConsultationId): Result<DiagnosisSuggestion>
 
-    /** Paso 2 · `PUT /consultations/{id}/diagnosis`. */
+    /** Step 2 · `PUT /consultations/{id}/diagnosis`. */
     suspend fun issueDiagnosis(id: ConsultationId, choice: DiagnosisChoice): Result<Consultation>
 
-    /** Paso 3 · `POST /consultations/{id}/target-proposal`: [parameters] `null` = los parámetros por defecto. */
+    /** Step 3 · `POST /consultations/{id}/target-proposal`: [parameters] `null` = the default parameters. */
     suspend fun proposeTargets(id: ConsultationId, parameters: TargetParameters?): Result<TargetProposal>
 
-    /** Paso 3 · `PUT /consultations/{id}/targets`. */
+    /** Step 3 · `PUT /consultations/{id}/targets`. */
     suspend fun prescribeTargets(id: ConsultationId, prescription: TargetPrescription): Result<Consultation>
 
-    /** Paso 4 · `POST /consultations/{id}/guideline-suggestions` (IA-7, o la tabla fija). */
+    /** Step 4 · `POST /consultations/{id}/guideline-suggestions` (AI, or the fixed table). */
     suspend fun suggestGuidelines(id: ConsultationId): Result<GuidelineSuggestions>
 
-    /** Paso 4 · `PUT /consultations/{id}/publication-draft`. */
+    /** Step 4 · `PUT /consultations/{id}/publication-draft`. */
     suspend fun saveDraft(id: ConsultationId, publication: Publication): Result<Consultation>
 
     /**
-     * Paso 4 · `POST /consultations/{id}/publication` con `Idempotency-Key`: repetirlo con la misma clave después de
-     * un timeout devuelve el mismo resultado y no publica una segunda versión (EV-5.E «Volver a intentarlo»).
+     * Step 4 · `POST /consultations/{id}/publication` with `Idempotency-Key`: repeating it with the same key after
+     * a timeout returns the same result and never publishes a second version ("Try again").
      */
     suspend fun publish(
         id: ConsultationId,
@@ -99,8 +99,8 @@ interface ConsultationRepository {
     ): Result<Consultation>
 
     /**
-     * `DELETE /consultations/{id}`: descarta la consulta en curso. Lo ya guardado (la medición) queda como historial;
-     * el diagnóstico y el plan vigentes no cambian.
+     * `DELETE /consultations/{id}`: discards the in-progress consultation. What was already saved (the measurement)
+     * stays as history; the current diagnosis and plan do not change.
      */
     suspend fun discard(id: ConsultationId): Result<Unit>
 }

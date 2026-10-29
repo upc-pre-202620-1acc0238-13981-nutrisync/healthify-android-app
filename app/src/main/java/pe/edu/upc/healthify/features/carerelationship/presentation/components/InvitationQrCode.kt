@@ -23,13 +23,13 @@ import com.google.zxing.qrcode.QRCodeWriter
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 
-// QR del frame de PR2 (163 dp).
+// QR size from the invite screen design (163 dp).
 private val QrSize = 163.dp
 
 /**
- * PR2 · QR de la invitación, generado en el teléfono con ZXing core a partir del token. Contiene **solo el token**
- * (DECISIÓN PT1/PR2): PT1 lo lee con ML Kit y lo canjea. Módulos `onSurface` sobre `surfaceContainerLowest`, con la
- * zona de silencio como padding.
+ * Invitation QR code, generated on the phone with ZXing core from the token. It holds **only the token**: the
+ * scan screen reads it with ML Kit and redeems it. `onSurface` modules on `surfaceContainerLowest`, with the
+ * quiet zone as padding.
  */
 @Composable
 fun InvitationQrCode(

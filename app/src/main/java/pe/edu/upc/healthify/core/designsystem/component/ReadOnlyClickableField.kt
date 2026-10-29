@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 
-/** Un TextField de solo lectura que actúa como botón (Alimento de PT8, «¿Cuándo comiste?», fecha de nacimiento de EV-1). */
+/** A read-only TextField that acts as a button (the food field, the meal time, the consultation birth date). */
 @Composable
 fun ReadOnlyClickableField(
     value: String,
@@ -37,7 +37,7 @@ fun ReadOnlyClickableField(
             },
             modifier = Modifier.fillMaxWidth(),
         )
-        // Capa que recibe el toque: el campo no abre el teclado.
+        // Layer that receives the tap: the field does not open the keyboard.
         Box(
             modifier = Modifier
                 .matchParentSize()

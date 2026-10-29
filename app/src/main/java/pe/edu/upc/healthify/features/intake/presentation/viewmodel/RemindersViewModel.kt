@@ -17,8 +17,8 @@ import pe.edu.upc.healthify.features.intake.presentation.state.RemindersUiState
 import javax.inject.Inject
 
 /**
- * PT22: los cambios se guardan al vuelo. El permiso de notificaciones lo pide la pantalla antes de encender uno; si se
- * niega, el recordatorio queda apagado y se muestra PT22.M (DECISIÓN PT22: no se guarda encendido algo que no avisaría).
+ * Changes are saved right away. The screen asks for the notification permission before turning one on; if it is
+ * denied, the reminder stays off and the permission dialog shows (nothing is saved on that would never notify).
  */
 @HiltViewModel
 class RemindersViewModel @Inject constructor(
@@ -42,7 +42,7 @@ class RemindersViewModel @Inject constructor(
         }
     }
 
-    /** Llamar solo con el permiso ya concedido cuando [enabled] es `true`. */
+    /** Call only with the permission already granted when [enabled] is `true`. */
     fun onToggle(kind: ReminderKind, enabled: Boolean) {
         val pid = patientId ?: return
         _state.update { it.copy(settings = it.settings.with(kind, enabled)) }

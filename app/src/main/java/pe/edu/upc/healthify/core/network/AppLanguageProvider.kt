@@ -7,14 +7,14 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.Locale
 import javax.inject.Inject
 
-/** Idioma en que la app muestra sus textos, como lo entiende el backend: `es` o `en`. */
+/** Language the app shows its texts in, as the backend understands it: `es` or `en`. */
 fun interface AppLanguageProvider {
     fun currentLanguage(): String
 }
 
 /**
- * Idioma actual de la app: el elegido por app (per-app language, PT21.I/PR20.I) y, si no hay, el de la
- * configuración. Solo hay recursos en español (base) y en inglés, así que cualquier otro idioma se ve en español.
+ * Current app language: the per-app language choice and, if there is none, the configuration's.
+ * Resources exist only in Spanish (base) and English, so any other language shows Spanish.
  */
 class AndroidAppLanguageProvider @Inject constructor(
     @ApplicationContext private val context: Context,

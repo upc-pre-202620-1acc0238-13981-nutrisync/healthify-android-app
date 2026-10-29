@@ -23,14 +23,14 @@ import androidx.compose.ui.unit.dp
 import pe.edu.upc.healthify.R
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 
-// Medidas del estado de error del Figma (S5 · Cargando — Error).
+// Figma error state measurements (the loading screen's error state).
 private val BadgeSize = 88.dp
 private const val BADGE_ALPHA = 0.15f
 
 /**
- * Estado de error genérico (patrón de S5 «Cargando — Error»): insignia «!», título, texto y «Reintentar»
- * (Filled, ancho completo) con una acción secundaria Outlined opcional. Los textos por defecto son los
- * genéricos; cada pantalla pasa los de su frame «Notas» cuando los tenga.
+ * Generic error state (same pattern as the loading screen's error): "!" badge, title, text and "Retry"
+ * (Filled, full width) with an optional Outlined secondary action. The default texts are the
+ * generic ones; each screen passes the ones from its "Notes" frame when it has them.
  */
 @Composable
 fun ErrorState(

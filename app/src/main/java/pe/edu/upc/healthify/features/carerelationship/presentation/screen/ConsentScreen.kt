@@ -51,13 +51,13 @@ import pe.edu.upc.healthify.features.carerelationship.presentation.state.Consent
 import pe.edu.upc.healthify.features.carerelationship.presentation.state.ConsentUiState
 import pe.edu.upc.healthify.features.carerelationship.presentation.viewmodel.ConsentViewModel
 
-// Medidas del frame «PT2 · Consentimiento y alcance».
+// Measurements from the consent and scope frame.
 private val BadgeSize = 40.dp
 private val BadgeIconSize = 18.dp
 private val BulletSize = 8.dp
 private val BulletTopOffset = 6.dp
 
-/** Acciones de PT2 que la pantalla con estado conecta con el ViewModel. */
+/** Consent screen actions that the stateful screen wires to the ViewModel. */
 data class ConsentActions(
     val onBack: () -> Unit = {},
     val onAiProcessingChange: (Boolean) -> Unit = {},
@@ -69,7 +69,7 @@ data class ConsentActions(
     val onServerErrorDismiss: () -> Unit = {},
 )
 
-/** PT2 · Consentimiento y alcance (con la sección «Inteligencia artificial», CR-2). */
+/** Consent and scope (with the "Artificial intelligence" section). */
 @Composable
 fun ConsentScreen(
     onBack: () -> Unit,
@@ -80,7 +80,7 @@ fun ConsentScreen(
     viewModel: ConsentViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    // Recién canjeado, PT2 es la primera pantalla: atrás deja el vínculo pendiente (PT2.1) en vez de cerrar la app.
+    // Right after redeeming this is the first screen: back leaves the care link pending instead of closing the app.
     BackHandler(onBack = onBack)
     ObserveEvents(viewModel.events) { event ->
         when (event) {
@@ -156,7 +156,7 @@ fun ConsentContent(
                 text = stringResource(if (state.isSubmitting) R.string.consent_granting else R.string.consent_grant),
                 onClick = actions.onGrantConsent,
                 loading = state.isSubmitting,
-                // Nota PT2 «Sin conexión: botón deshabilitado».
+                // Design note: offline, the button is disabled.
                 enabled = !state.isOffline,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -195,7 +195,7 @@ private fun ShieldBadge(modifier: Modifier = Modifier) {
     }
 }
 
-/** «Card · Qué compartes y tus derechos»: el texto que el paciente acepta (versión de `ConsentScope.CURRENT`). */
+/** "What you share and your rights" card: the text the patient accepts (version from `ConsentScope.CURRENT`). */
 @Composable
 private fun ConsentTermsCard(
     aiProcessingGranted: Boolean,
@@ -281,31 +281,31 @@ private fun ConsentErrorDialog(error: ConsentError, actions: ConsentActions) {
     )
 }
 
-@Preview(name = "PT2 · Consentimiento y alcance", widthDp = 360, heightDp = 800)
+@Preview(name = "Consent and scope", widthDp = 360, heightDp = 800)
 @Composable
 private fun ConsentPreview() {
     HealthifyTheme { ConsentContent(state = ConsentUiState(), actions = ConsentActions()) }
 }
 
-@Preview(name = "PT2 · Con IA aceptada", widthDp = 360, heightDp = 1600)
+@Preview(name = "Consent - AI accepted", widthDp = 360, heightDp = 1600)
 @Composable
 private fun ConsentAiPreview() {
     HealthifyTheme { ConsentContent(state = ConsentUiState(aiProcessingGranted = true), actions = ConsentActions()) }
 }
 
-@Preview(name = "PT2 · Confirmando… (carga)", widthDp = 360, heightDp = 800)
+@Preview(name = "Consent - confirming (loading)", widthDp = 360, heightDp = 800)
 @Composable
 private fun ConsentLoadingPreview() {
     HealthifyTheme { ConsentContent(state = ConsentUiState(isSubmitting = true), actions = ConsentActions()) }
 }
 
-@Preview(name = "PT2 · Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Consent - offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun ConsentOfflinePreview() {
     HealthifyTheme { ConsentContent(state = ConsentUiState(isOffline = true), actions = ConsentActions()) }
 }
 
-@Preview(name = "PT2 · Vínculo dado de alta (error)", widthDp = 360, heightDp = 800)
+@Preview(name = "Consent - discharged link (error)", widthDp = 360, heightDp = 800)
 @Composable
 private fun ConsentErrorPreview() {
     HealthifyTheme {

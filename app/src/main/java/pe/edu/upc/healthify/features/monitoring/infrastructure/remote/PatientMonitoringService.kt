@@ -9,17 +9,17 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-/** MonitoringAdherence del lado del paciente (§5.6). Las fechas van como `yyyy-MM-dd` (día clínico). */
+/** Patient side of MonitoringAdherence. Dates go as `yyyy-MM-dd` (clinical day). */
 interface PatientMonitoringService {
 
-    /** Forma de lista (sin rango): los días evaluados de esa fecha, de cada ventana del paciente. */
+    /** List form (no range): the evaluated days for that date, one per patient window. */
     @GET("patients/{patientId}/daily-compliance")
     suspend fun getDailyCompliance(
         @Path("patientId") patientId: Long,
         @Query("date") date: String,
     ): List<DailyComplianceDto>
 
-    /** MA-6 · `400 InvalidComplianceRange` si el rango está invertido o pasa de 31 días. */
+    /** `400 InvalidComplianceRange` if the range is inverted or longer than 31 days. */
     @GET("patients/{patientId}/daily-compliance")
     suspend fun getDailyComplianceRange(
         @Path("patientId") patientId: Long,
@@ -27,15 +27,15 @@ interface PatientMonitoringService {
         @Query("to") to: String,
     ): DailyComplianceRangeDto
 
-    /** `422 BothSeriesRequired` mientras no haya índice. */
+    /** `422 BothSeriesRequired` while there is no index. */
     @GET("patients/{patientId}/consistency-index")
     suspend fun getConsistencyIndex(@Path("patientId") patientId: Long): ConsistencyIndexDto
 
-    /** MA-7 · `204` · `409 ConsistencyPromptNotIssued` si no había aviso. */
+    /** `204` · `409 ConsistencyPromptNotIssued` if there was no prompt. */
     @POST("patients/{patientId}/consistency-index/prompt-acknowledgement")
     suspend fun acknowledgeConsistencyPrompt(@Path("patientId") patientId: Long)
 
-    /** MA-3 · `404 ScheduledFollowUpNotFound` si no hay ninguna agendada. */
+    /** `404 ScheduledFollowUpNotFound` if none is scheduled. */
     @GET("patients/{patientId}/scheduled-follow-ups/next")
     suspend fun getNextFollowUp(@Path("patientId") patientId: Long): PatientFollowUpDto
 }

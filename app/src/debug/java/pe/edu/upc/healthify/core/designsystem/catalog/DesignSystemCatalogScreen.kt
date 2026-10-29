@@ -210,7 +210,7 @@ private fun Section(@StringRes title: Int, padded: Boolean = true, content: @Com
 private fun ColorRoles() {
     val c = MaterialTheme.colorScheme
     val e = HealthifyTheme.extendedColors
-    // Nombres de las variables de la colección «Color» del Figma.
+    // Names of the variables in the Figma "Color" collection.
     val roles = listOf(
         "primary" to c.primary, "onPrimary" to c.onPrimary, "primaryContainer" to c.primaryContainer,
         "onPrimaryContainer" to c.onPrimaryContainer, "secondary" to c.secondary, "onSecondary" to c.onSecondary,
@@ -256,7 +256,7 @@ private val SwatchWidth = 100.dp
 private fun TypeScale() {
     val t = MaterialTheme.typography
     val x = HealthifyTheme.extendedTypography
-    // Nombres de los 16 estilos de texto del Figma.
+    // Names of the 16 Figma text styles.
     val styles: List<Pair<String, TextStyle>> = listOf(
         "Display/Small" to t.displaySmall, "Headline/Medium" to t.headlineMedium, "Headline/Small" to t.headlineSmall,
         "Title/Large" to t.titleLarge, "Title/Medium" to t.titleMedium, "Title/Small" to t.titleSmall,
@@ -365,7 +365,7 @@ private fun TextFieldSamples() {
     val help = stringResource(R.string.catalog_sample_help)
     val full = Modifier.fillMaxWidth()
 
-    // Interactivos: el teclado cambia según el tipo.
+    // Interactive: the keyboard changes with the type.
     HealthifyTextField(
         value = email,
         onValueChange = { email = it },
@@ -403,7 +403,7 @@ private fun TextFieldSamples() {
         modifier = full,
     )
 
-    // Estados del Figma.
+    // Figma states.
     HealthifyTextFieldImpl("", {}, label, placeholder = placeholder, supportingText = help, modifier = full)
     HealthifyTextFieldImpl(placeholder, {}, label, supportingText = help, forceFocused = true, modifier = full)
     HealthifyTextFieldImpl(placeholder, {}, label, supportingText = help, modifier = full)

@@ -5,8 +5,8 @@ import java.time.Duration
 import java.time.Instant
 
 /**
- * PR2 · la invitación recién emitida (F4). El token llega **una sola vez**, en esta respuesta: no se guarda en el
- * teléfono ni se vuelve a pedir (regla ética de PR2: no se promete «podrás verlo después»).
+ * The newly issued invitation. The token arrives **only once**, in this response: it is not stored on the
+ * phone or requested again (ethical rule of the invite screen: never promise "you can see it later").
  */
 data class IssuedInvitation(
     val invitationId: Long,
@@ -17,7 +17,7 @@ data class IssuedInvitation(
         require(invitationId > 0) { "InvitationId must be positive" }
     }
 
-    /** Lo que le queda de vigencia en [now] (nunca negativo). */
+    /** Remaining validity at [now] (never negative). */
     fun remaining(now: Instant): Duration =
         Duration.between(now, expiresAt).takeIf { !it.isNegative } ?: Duration.ZERO
 

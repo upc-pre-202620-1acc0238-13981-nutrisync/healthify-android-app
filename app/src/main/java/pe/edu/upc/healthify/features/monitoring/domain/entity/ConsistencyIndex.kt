@@ -1,24 +1,24 @@
 package pe.edu.upc.healthify.features.monitoring.domain.entity
 
 /**
- * Índice de consistencia (F23, `ConsistencyIndexResource`): compara la tendencia de peso con lo registrado. Solo lo
- * lee el paciente, y siempre lo ve **antes** que cualquier escalación (*Patient Prompt Required Before Escalation*).
+ * Consistency index (`ConsistencyIndexResource`): compares the weight trend with what was logged. Only the patient
+ * reads it, and always sees it **before** any escalation (*Patient Prompt Required Before Escalation*).
  *
- * @param patientPromptPending MA-7: hay un aviso que el paciente todavía no vio; la app lo acusa al pintar la
- *   tarjeta de PT3 (`prompt-acknowledgement`).
+ * @param patientPromptPending there is a prompt the patient has not seen yet; the app acknowledges it when it draws
+ *   the home card (`prompt-acknowledgement`).
  */
 data class ConsistencyIndex(
     val state: ConsistencyState,
     val patientPromptPending: Boolean,
 ) {
     /**
-     * PT3 muestra «Algo no cuadra» mientras haya alerta activa o un aviso sin ver. `Watch` no se muestra: aún no
-     * hay nada que preguntarle al paciente.
+     * The home screen shows "Something doesn't add up" while there is an active alert or an unseen prompt. `Watch`
+     * is not shown: there is nothing to ask the patient yet.
      */
     val invitesPatientToReview: Boolean get() = patientPromptPending || state == ConsistencyState.ALERT
 }
 
-/** `Normal` · `Watch` · `Alert` (F23 paso 7). Un estado desconocido se lee como [NORMAL]: no se avisa de más. */
+/** `Normal` · `Watch` · `Alert`. An unknown state reads as [NORMAL]: no needless warnings. */
 enum class ConsistencyState(val code: String) {
     NORMAL("Normal"),
     WATCH("Watch"),

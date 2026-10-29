@@ -10,8 +10,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Colecta los eventos one-shot de un ViewModel (`Channel(BUFFERED).receiveAsFlow()`) mientras la pantalla está al
- * menos en STARTED: un evento que llega en segundo plano espera en el canal y no se pierde.
+ * Collects a ViewModel's one-shot events (`Channel(BUFFERED).receiveAsFlow()`) while the screen is at
+ * least STARTED: an event that arrives in the background waits in the channel and is not lost.
  */
 @Composable
 fun <T> ObserveEvents(events: Flow<T>, onEvent: (T) -> Unit) {

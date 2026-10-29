@@ -71,7 +71,7 @@ class PractitionerAgendaTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    /** 2026-09-15 10:00 en Lima (UTC-5). */
+    /** 2026-09-15 10:00 in Lima (UTC-5). */
     private val clock = fixedClock(CONSULTATIONS_NOW)
     private val zone = ZoneOffset.ofHours(-5)
     private val today = LocalDate.of(2026, 9, 15)
@@ -81,7 +81,7 @@ class PractitionerAgendaTest {
     private val connectivity = FakeConnectivityObserver()
     private val session = FakeSessionRepository(sessionUser(role = UserRole.PRACTITIONER, id = 3))
 
-    // ----- Validación de la fecha (MA-5: debe ser futura) -----
+    // ----- Date validation (must be in the future) -----
 
     @Test
     fun `a moment that already passed or is right now is not in the future`() {
@@ -119,7 +119,7 @@ class PractitionerAgendaTest {
         assertTrue(agenda.rescheduled.isEmpty())
     }
 
-    // ----- PR17 -----
+    // ----- Schedule follow-up -----
 
     private fun scheduleViewModel(args: Map<String, Any> = mapOf(
         ScheduleFollowUpRoute.ARG_PATIENT_ID to PATIENT_ID,
@@ -238,7 +238,7 @@ class PractitionerAgendaTest {
         assertTrue(agenda.scheduled.isEmpty())
     }
 
-    // ----- PR17.0 -----
+    // ----- Agenda -----
 
     private fun agendaViewModel() = PractitionerAgendaViewModel(
         observeCurrentUser = ObserveCurrentUserUseCase(session),
@@ -296,7 +296,7 @@ class PractitionerAgendaTest {
         assertEquals(30, CancellationReason.ofOptional("x".repeat(40))!!.text.length)
     }
 
-    // ----- PR16 -----
+    // ----- Referral -----
 
     @Test
     fun `PR16 E both fields are required`() {

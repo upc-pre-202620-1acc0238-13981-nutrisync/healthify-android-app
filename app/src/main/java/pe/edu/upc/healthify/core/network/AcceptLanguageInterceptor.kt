@@ -5,8 +5,8 @@ import okhttp3.Response
 import javax.inject.Inject
 
 /**
- * Envía el idioma actual de la app en `Accept-Language` en cada request. El backend localiza los ProblemDetails
- * y genera los textos de IA en ese idioma (es/en).
+ * Sends the current app language in `Accept-Language` on every request. The backend localizes ProblemDetails
+ * and generates AI texts in that language (es/en).
  */
 class AcceptLanguageInterceptor @Inject constructor(
     private val languageProvider: AppLanguageProvider,

@@ -12,7 +12,7 @@ class MyApplication : Application(), Configuration.Provider {
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
-    // WorkManager (sincronización offline y recordatorios) con workers @HiltWorker.
+    // WorkManager (offline sync and reminders) with @HiltWorker workers.
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
             .setWorkerFactory(workerFactory)

@@ -1,8 +1,8 @@
 package pe.edu.upc.healthify.features.intake.domain.valueobject
 
 /**
- * Metas diarias publicadas por el nutricionista (`ActiveTargetsResource`): energía en kcal y macronutrientes en
- * gramos. Es el contrato reducido: nunca trae diagnóstico ni base de cálculo (*Published Contract Only*).
+ * Daily targets published by the nutritionist (`ActiveTargetsResource`): energy in kcal and macronutrients in
+ * grams. It is the reduced contract: it never carries a diagnosis or the calculation basis (*Published Contract Only*).
  */
 data class DailyTargets(
     val energyKcal: Double,
@@ -11,12 +11,12 @@ data class DailyTargets(
     val fatG: Double,
 ) {
     init {
-        // PublishedContractOnly del backend: una versión publicada siempre trae energía positiva.
+        // The backend's PublishedContractOnly: a published version always has positive energy.
         require(energyKcal > 0) { "Energy target must be positive" }
         require(proteinG >= 0 && carbG >= 0 && fatG >= 0) { "Macro targets cannot be negative" }
     }
 
-    /** Parte de la energía diaria que aporta cada macronutriente (4/4/9 kcal por gramo), entre 0 y 1. */
+    /** Share of the daily energy each macronutrient provides (4/4/9 kcal per gram), between 0 and 1. */
     fun energyShareOf(macro: Macronutrient): Double {
         val kcal = when (macro) {
             Macronutrient.PROTEIN -> proteinG * KCAL_PER_G_PROTEIN
@@ -33,7 +33,7 @@ data class DailyTargets(
     }
 }
 
-/** Macronutrientes del plan (`Protein`, `Carb`, `Fat` en `MacroChanged`). */
+/** The plan's macronutrients (`Protein`, `Carb`, `Fat` in `MacroChanged`). */
 enum class Macronutrient(val code: String) {
     PROTEIN("Protein"),
     CARB("Carb"),

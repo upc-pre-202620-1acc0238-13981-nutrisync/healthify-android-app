@@ -19,10 +19,10 @@ import pe.edu.upc.healthify.features.monitoring.presentation.state.FollowUpPrepa
 import javax.inject.Inject
 
 /**
- * `GET …/scheduled-follow-ups/next` (MA-3): la preparación y la modalidad de la próxima consulta.
+ * `GET …/scheduled-follow-ups/next`: the preparation and modality of the next visit.
  *
- * DECISIÓN PT25.1: si la próxima consulta ya no es la de la tarjeta de PT3 (la movieron), se muestra la que está
- * agendada ahora; sin ninguna, el aviso «Sin consulta agendada».
+ * If the next visit is no longer the one on the home card (it was moved), the one scheduled now is shown; with none,
+ * the "No visit scheduled" notice.
  */
 @HiltViewModel
 class FollowUpPreparationViewModel @Inject constructor(

@@ -5,11 +5,12 @@ import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.RosterA
 import java.time.Instant
 
 /**
- * Un paciente de la cartera del nutricionista (`PatientRosterItemResource`, RM-1, PR1).
+ * A patient in the nutritionist's roster (`PatientRosterItemResource`).
  *
- * @param isNew sin datos base o sin plan publicado: la ficha abre en PAC-0 o PAC-1 según [hasBaseline].
- * @param nextFollowUpAt la próxima consulta agendada, si hay.
- * @param hasOpenReviewItem hay una señal abierta en la bandeja de revisión.
+ * @param isNew no baseline data or no published plan; [hasBaseline] decides whether the patient file opens on the
+ *   baseline form or the overview.
+ * @param nextFollowUpAt the next scheduled consultation, if any.
+ * @param hasOpenReviewItem there is an open signal in the review inbox.
  */
 data class RosterPatient(
     val patientId: Long,
@@ -29,7 +30,7 @@ data class RosterPatient(
         require(fullName.isNotBlank()) { "A roster patient needs a name" }
     }
 
-    /** PR1 · el primer motivo, por prioridad ([RosterAttention]), por el que requiere acción; `null` = al día. */
+    /** The first reason, by priority ([RosterAttention]), why the patient needs action; `null` = up to date. */
     val attention: RosterAttention?
         get() = when {
             hasOpenReviewItem -> RosterAttention.OPEN_REVIEW
@@ -40,7 +41,7 @@ data class RosterPatient(
         }
 }
 
-/** PR1 · la cartera, en el orden del backend. Vacía = PR1.V (primera vez). */
+/** The roster, in backend order. Empty = the first-time empty state. */
 data class PatientRoster(val patients: List<RosterPatient>) {
     val isEmpty: Boolean get() = patients.isEmpty()
 }

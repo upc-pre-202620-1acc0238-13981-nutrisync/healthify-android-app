@@ -31,7 +31,7 @@ import java.util.Locale
 import kotlin.math.ceil
 import kotlin.math.floor
 
-// «Gráfico · tendencia» de PT13: 156 dp de alto, columna de etiquetas kg de 28 dp + 16 de separación, línea de 3 dp.
+// The trend chart: 156 dp tall, 28 dp kg label column + 16 of spacing, 3 dp line.
 private val ChartHeight = 156.dp
 private val AxisLabelWidth = 28.dp
 private val AxisGap = 16.dp
@@ -40,8 +40,8 @@ private const val Y_LABELS = 3
 private const val X_LABELS = 4
 
 /**
- * Eje Y redondeado a kilos enteros con un tramo par (tres etiquetas enteras: 67 · 68 · 69 kg). Es solo la escala del
- * eje: el gráfico nunca destaca un valor de un día.
+ * Y axis rounded to whole kilos with an even span (three whole labels: 67 · 68 · 69 kg). It is only the axis
+ * scale: the chart never highlights a single day's value.
  */
 internal data class WeightAxis(val lowKg: Double, val highKg: Double) {
     val labels: List<Double> get() = List(Y_LABELS) { index -> highKg - index * (highKg - lowKg) / (Y_LABELS - 1) }
@@ -57,17 +57,17 @@ internal data class WeightAxis(val lowKg: Double, val highKg: Double) {
     }
 }
 
-/** «15 ago» / «Aug 15». */
+/** "15 ago" / "Aug 15". */
 internal fun shortDayMonthText(date: LocalDate, locale: Locale): String {
     val pattern = if (locale.language == Locale.ENGLISH.language) "MMM d" else "d MMM"
     return DateTimeFormatter.ofPattern(pattern, locale).format(date).removeSuffix(".")
 }
 
 /**
- * Línea de la tendencia de PT13: el promedio móvil (primary) sobre líneas guía (outlineVariant), eje en kg y 4
- * fechas del rango. Dibuja solo la serie suavizada; no marca ni rotula ningún punto («nunca el peso de hoy»).
+ * Trend line: the moving average (primary) over guide lines (outlineVariant), a kg axis and 4
+ * dates from the range. It draws only the smoothed series; it never marks or labels a point ("never today's weight").
  *
- * @param from primer día del eje (inicio del rango pedido); [to] el último (hoy).
+ * @param from first day on the axis (start of the requested range); [to] the last one (today).
  */
 @Composable
 fun WeightTrendChart(
@@ -109,20 +109,20 @@ fun WeightTrendChart(
         fun xOf(date: LocalDate): Float =
             left + (right - left) * ChronoUnit.DAYS.between(from, date).toFloat() / spanDays.toFloat()
 
-        // Líneas guía y etiquetas kg.
+        // Guide lines and kg labels.
         axis.labels.forEachIndexed { index, kg ->
             val y = yOf(kg)
             drawLine(scheme.outlineVariant, Offset(left, y), Offset(right, y), strokeWidth = guideWidth.toPx())
             val layout = measurer.measure(kgLabels[index], labelStyle)
             drawText(layout, topLeft = Offset(0f, y - layout.size.height / 2f))
         }
-        // Fechas: centradas bajo su día, sin salirse del gráfico.
+        // Dates: centered under their day, without going past the chart.
         dateLabels.forEach { (date, text) ->
             val layout = measurer.measure(text, labelStyle)
             val x = (xOf(date) - layout.size.width / 2f).coerceIn(left, right - layout.size.width)
             drawText(layout, topLeft = Offset(x, size.height - layout.size.height))
         }
-        // Promedio móvil: curva suave entre puntos (tangentes horizontales, sin rebasar los valores).
+        // Moving average: smooth curve between points (horizontal tangents, no overshoot past the values).
         val offsets = points.map { Offset(xOf(it.date), yOf(it.smoothedKg)) }
         val path = Path().apply {
             moveTo(offsets.first().x, offsets.first().y)
@@ -139,7 +139,7 @@ fun WeightTrendChart(
     }
 }
 
-@Preview(name = "PT13 · Gráfico de tendencia", widthDp = 296)
+@Preview(name = "Trend chart", widthDp = 296)
 @Composable
 private fun WeightTrendChartPreview() {
     val from = LocalDate.parse("2026-08-15")

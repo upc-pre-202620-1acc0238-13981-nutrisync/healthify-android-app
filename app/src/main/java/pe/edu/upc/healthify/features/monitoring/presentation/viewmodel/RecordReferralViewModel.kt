@@ -30,8 +30,8 @@ sealed interface RecordReferralEvent {
 }
 
 /**
- * PR16 · Registrar derivación (+ PR16.E campos obligatorios, PR16.2 error). Una derivación registra que algo se decidió
- * en una fecha; no tiene flujo. Al registrar vuelve a la ficha con PAC-1-S3.
+ * Record a referral (with required-field and error states). A referral records that something was decided on a
+ * date; it has no workflow. On success it returns to the patient profile with a Snackbar.
  */
 @HiltViewModel
 class RecordReferralViewModel @Inject constructor(
@@ -62,12 +62,12 @@ class RecordReferralViewModel @Inject constructor(
         it.copy(reason = value.take(ReferralReason.MAX_LENGTH), missing = it.missing - ReferralField.REASON)
     }
 
-    /** PR16.2 «Volver a intentarlo»: vuelve al formulario con lo escrito. */
+    /** Error "Try again": returns to the form with what was written. */
     fun onBackToForm() = _state.update { it.copy(failed = false) }
 
     fun onNoActiveLinkDismissed() = _state.update { it.copy(noActiveLink = false) }
 
-    /** «Registrar». */
+    /** "Record". */
     fun onSubmit() {
         val current = _state.value
         if (current.isSaving) return

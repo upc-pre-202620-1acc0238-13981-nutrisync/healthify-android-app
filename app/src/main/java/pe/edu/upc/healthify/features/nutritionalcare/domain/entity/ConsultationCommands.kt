@@ -15,7 +15,7 @@ import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.PlanGuid
 import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.PlanRestrictionCode
 import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.ProtocolCheck
 
-/** Paso 1 · `PUT /consultations/{id}/measurement` (NC-3). Al menos una casilla del protocolo y la actividad. */
+/** Step 1 · `PUT /consultations/{id}/measurement`. At least one protocol checkbox and the activity. */
 data class NewMeasurement(
     val weightKg: Double,
     val waistCm: Double?,
@@ -34,22 +34,22 @@ data class NewMeasurement(
         require(protocolChecks.isNotEmpty()) { "At least one protocol check must be ticked" }
     }
 
-    /** `true` si es lo mismo que ya guardó el paso 1: no se vuelve a enviar (repetirlo obliga a rehacer el paso 2). */
+    /** `true` if it matches what step 1 already saved: not resent (repeating it forces redoing step 2). */
     fun sameAs(saved: ConsultationMeasurement): Boolean =
         weightKg == saved.weightKg && waistCm == saved.waistCm && bodyFatPercentage == saved.bodyFatPercentage &&
             protocolChecks == saved.protocolChecks && activityLevel == saved.activityLevel && habits == saved.habits &&
             biochemistry == saved.biochemistry
 }
 
-/** Campos de EV-2 que el teléfono valida. */
+/** Measurement step fields the phone validates. */
 enum class MeasurementField {
     WEIGHT, WAIST, BODY_FAT, PROTOCOL, ACTIVITY, MEALS_PER_DAY, WATER, MEALS_OUT, GLUCOSE, CHOLESTEROL, TRIGLYCERIDES
 }
 
-/** Por qué un campo de EV-2 no sirve: vacío siendo obligatorio o fuera del rango del backend. */
+/** Why a measurement field is invalid: empty while required, or outside the backend range. */
 enum class FieldProblem { REQUIRED, OUT_OF_RANGE }
 
-/** El texto de cada campo de EV-2 tal como lo escribió el profesional. */
+/** The text of each measurement field exactly as the practitioner typed it. */
 data class MeasurementForm(
     val weight: String = "",
     val waist: String = "",
@@ -69,7 +69,7 @@ sealed interface MeasurementValidation {
     data class Invalid(val problems: Map<MeasurementField, FieldProblem>) : MeasurementValidation
 }
 
-/** Valida EV-2 con los rangos del backend (`ImplausibleMeasurement`, `ProtocolChecklistEmpty`, `InvalidEatingHabits`…). */
+/** Checks the backend ranges (`ImplausibleMeasurement`, `ProtocolChecklistEmpty`, `InvalidEatingHabits`…). */
 fun MeasurementForm.validate(): MeasurementValidation {
     val problems = mutableMapOf<MeasurementField, FieldProblem>()
 
@@ -108,26 +108,26 @@ fun MeasurementForm.validate(): MeasurementValidation {
     )
 }
 
-/** Paso 2 · `PUT /consultations/{id}/diagnosis` (NC-4). */
+/** Step 2 · `PUT /consultations/{id}/diagnosis`. */
 sealed interface DiagnosisChoice {
     val code: DiagnosisCode
 
-    /** Con qué origen lo guarda el backend. */
+    /** The source the backend stores it with. */
     val source: DiagnosisSource
 
-    /** «Usar sugerencia» de la IA: se guarda la generación y su fundamento (trazabilidad IA-0). */
+    /** "Use suggestion" from AI: the generation and its rationale are stored (AI traceability). */
     data class AcceptAiSuggestion(override val code: DiagnosisCode, val aiGenerationId: Long, val rationale: String) :
         DiagnosisChoice {
         override val source: DiagnosisSource get() = DiagnosisSource.AI_SUGGESTION_ACCEPTED
     }
 
-    /** «Elegir otro», o la sugerencia por regla: el backend arma el fundamento con la medición si no hay uno. */
+    /** "Choose another", or the rule suggestion: the backend builds the rationale from the measurement if missing. */
     data class Selected(override val code: DiagnosisCode, val rationale: String? = null) : DiagnosisChoice {
         override val source: DiagnosisSource get() = DiagnosisSource.PRACTITIONER_SELECTED
     }
 
     companion object {
-        /** Aceptar la sugerencia: solo una generación real de IA cuenta como «aceptada»; la de regla es una elección. */
+        /** Accepting the suggestion: only a real AI generation counts as "accepted"; a rule one is a choice. */
         fun accepting(suggestion: DiagnosisSuggestion): DiagnosisChoice {
             val generation = suggestion.aiGenerationId
             return if (suggestion.isFromAi && generation != null) {
@@ -139,7 +139,7 @@ sealed interface DiagnosisChoice {
     }
 }
 
-/** «Cambiar parámetros» de EV-4 (NC-5). El peso de referencia y el factor de actividad los pone el backend. */
+/** "Change parameters" on the targets step. The backend sets the reference weight and activity factor. */
 data class TargetParameters(
     val equation: EnergyEquation,
     val deficitKind: DeficitKind,
@@ -154,22 +154,22 @@ data class TargetParameters(
     }
 
     companion object {
-        /** Rangos que el teléfono acepta antes de pedir el cálculo; el backend vuelve a validar todo junto. */
+        /** Ranges the phone accepts before requesting the calculation; the backend revalidates everything together. */
         val PROTEIN_RANGE = 0.5..3.0
         val FAT_RANGE = 15.0..45.0
     }
 }
 
-/** Paso 3 · `PUT /consultations/{id}/targets` (NC-5). */
+/** Step 3 · `PUT /consultations/{id}/targets`. */
 sealed interface TargetPrescription {
-    /** «Aceptar metas». */
+    /** "Accept targets". */
     data object AcceptedAsProposed : TargetPrescription
 
-    /** «Escribir mis propios valores»: la razón es obligatoria (`OverrideReasonRequired`). */
+    /** "Enter my own values": the reason is required (`OverrideReasonRequired`). */
     data class Overridden(val targets: Targets, val reason: OverrideReason) : TargetPrescription
 }
 
-/** EV-4 · valores propios: qué falta para poder guardarlos. */
+/** Own values: what is missing before they can be saved. */
 enum class OverrideField { ENERGY, PROTEIN, CARB, FAT, REASON }
 
 sealed interface OverrideValidation {
@@ -177,7 +177,7 @@ sealed interface OverrideValidation {
     data class Invalid(val problems: Set<OverrideField>) : OverrideValidation
 }
 
-/** Valida «Escribir mis propios valores»: energía > 0, macros ≥ 0 y la razón (1–500 caracteres) obligatoria. */
+/** Validates "Enter my own values": energy > 0, macros ≥ 0 and a required reason (1–500 characters). */
 fun validateOverride(energy: String, protein: String, carb: String, fat: String, reason: String): OverrideValidation {
     val problems = mutableSetOf<OverrideField>()
     fun read(text: String, field: OverrideField, positive: Boolean): Double? {
@@ -200,8 +200,8 @@ fun validateOverride(energy: String, protein: String, carb: String, fat: String,
 private const val MAX_OVERRIDE_VALUE = 10_000.0
 
 /**
- * Paso 4 · lo que se publica (NC-6, NC-7, NC-9) y el borrador (`publication-draft`). Hasta 5 indicaciones propias de
- * 3–140 caracteres cada una; el mensaje es opcional (≤ 500).
+ * Step 4 · what gets published and the draft (`publication-draft`). Up to 5 custom guidelines of
+ * 3–140 characters each; the message is optional (≤ 500).
  */
 data class Publication(
     val restrictions: Set<PlanRestrictionCode>,

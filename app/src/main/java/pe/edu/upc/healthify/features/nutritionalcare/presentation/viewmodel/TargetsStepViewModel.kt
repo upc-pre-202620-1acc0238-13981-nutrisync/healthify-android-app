@@ -37,10 +37,10 @@ import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.TargetsU
 import javax.inject.Inject
 
 /**
- * EV-4 · Paso 3 Metas calculadas. Se calculan solas con los datos base y la medición (parámetros por defecto, NC-5).
- * «Cambiar parámetros» recalcula el mismo borrador; «Aceptar metas» las prescribe tal cual; «Escribir mis propios
- * valores» exige una razón (`OverrideReasonRequired`; DECISIÓN NC-5 §12: el campo de razón se agrega a la pantalla).
- * Al reanudar con metas ya calculadas no se recalcula.
+ * Step 3, calculated targets. Calculated automatically from the baseline and the measurement (default parameters).
+ * "Change parameters" recalculates the same draft; "Accept targets" prescribes them as is; "Enter my own
+ * values" requires a reason (`OverrideReasonRequired`; the reason field was added to the screen).
+ * On resume with targets already calculated, nothing is recalculated.
  */
 @HiltViewModel
 class TargetsStepViewModel @Inject constructor(
@@ -62,7 +62,7 @@ class TargetsStepViewModel @Inject constructor(
 
     private var consultation: Consultation? = null
 
-    /** Lo último que falló (recalcular o prescribir), para «Reintentar». */
+    /** The last failure (recalculate or prescribe), for "Retry". */
     private var lastAttempt: (() -> Unit)? = null
 
     init {
@@ -78,7 +78,7 @@ class TargetsStepViewModel @Inject constructor(
         if (consultation == null) load() else calculate(parameters = null)
     }
 
-    // ----- «Cambiar parámetros» -----
+    // ----- "Change parameters" -----
 
     fun onChangeParameters() {
         val basis = _state.value.proposal?.basis
@@ -111,7 +111,7 @@ class TargetsStepViewModel @Inject constructor(
         calculate(parameters)
     }
 
-    // ----- «Aceptar metas» -----
+    // ----- "Accept targets" -----
 
     fun onAccept() {
         val current = consultation ?: return
@@ -123,7 +123,7 @@ class TargetsStepViewModel @Inject constructor(
         prescribe(TargetPrescription.AcceptedAsProposed)
     }
 
-    // ----- «Escribir mis propios valores» -----
+    // ----- "Enter my own values" -----
 
     fun onWriteOwnValues() {
         val proposal = _state.value.proposal?.proposal
@@ -246,7 +246,7 @@ class TargetsStepViewModel @Inject constructor(
             val saved = inProgress.targets
             _state.update { it.copy(load = it.load.copy(isLoading = false, loadFailed = false)) }
             if (saved != null) {
-                // Reanudar: se muestran las metas ya calculadas (el borrador prescrito no se puede recalcular).
+                // Resume: shows the targets already calculated (the prescribed draft cannot be recalculated).
                 val inputs = TargetInputs(
                     measurement.sex,
                     measurement.ageYears,
@@ -284,7 +284,7 @@ class TargetsStepViewModel @Inject constructor(
         const val OVERRIDE_REASON_REQUIRED = "OverrideReasonRequired"
         const val STEP_OUT_OF_ORDER = "ConsultationStepOutOfOrder"
 
-        /** `NutritionalCare:DefaultTargetParameters` del backend (NC-5). */
+        /** The backend's `NutritionalCare:DefaultTargetParameters`. */
         const val DEFAULT_DEFICIT = "500"
         const val DEFAULT_PROTEIN_PER_KG = "1.6"
         const val DEFAULT_FAT_PERCENT = "30"

@@ -8,8 +8,8 @@ import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.Patient
 import javax.inject.Inject
 
 /**
- * PT2 · «Doy mi consentimiento» (F6). El alcance es el texto fijo y versionado de PT2 ([ConsentScope.CURRENT]); la IA
- * se decide por separado con el interruptor «Usar funciones con IA» (CR-2).
+ * "I give my consent". The scope is the fixed, versioned text of the consent screen ([ConsentScope.CURRENT]); AI
+ * is decided separately with the "Use AI features" switch.
  */
 class GrantConsentUseCase @Inject constructor(
     private val careLinkRepository: CareLinkRepository,

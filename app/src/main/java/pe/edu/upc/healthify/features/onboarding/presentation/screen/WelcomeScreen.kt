@@ -48,7 +48,7 @@ import pe.edu.upc.healthify.features.onboarding.presentation.state.WelcomeEvent
 import pe.edu.upc.healthify.features.onboarding.presentation.state.WelcomeUiState
 import pe.edu.upc.healthify.features.onboarding.presentation.viewmodel.WelcomeViewModel
 
-// Medidas del frame «S2 · Bienvenida — Normal», relativas al borde inferior de la status bar.
+// Measurements from the normal welcome frame, relative to the bottom edge of the status bar.
 private val HeroHeight = 406.dp
 private val LogoSize = DpSize(48.dp, 43.dp)
 private val LogoPosition = DpOffset(20.dp, 10.dp)
@@ -66,7 +66,7 @@ private const val PRACTITIONER_CHIP_ROTATION = -3f
 private data class DpOffset(val x: Dp, val y: Dp)
 private data class DecorSpec(val position: DpOffset, val size: Dp)
 
-/** S2 · Bienvenida (Normal / Sin conexión). */
+/** Welcome (normal / offline). */
 @Composable
 fun WelcomeScreen(
     onCreateAccount: () -> Unit,
@@ -163,7 +163,7 @@ fun WelcomeContent(
     }
 }
 
-/** Logo, círculos decorativos y las tres tarjetas ilustrativas (sin datos reales). */
+/** Logo, decorative circles and the three illustrative cards (no real data). */
 @Composable
 private fun WelcomeHero(modifier: Modifier = Modifier) {
     val scheme = MaterialTheme.colorScheme
@@ -221,13 +221,13 @@ private fun DecorCircle(spec: DecorSpec, color: Color) {
     )
 }
 
-@Preview(name = "S2 · Bienvenida — Normal", widthDp = 360, heightDp = 800)
+@Preview(name = "Welcome - normal", widthDp = 360, heightDp = 800)
 @Composable
 private fun WelcomeContentPreview() {
     HealthifyTheme { WelcomeContent(state = WelcomeUiState(), onCreateAccount = {}, onHaveAccount = {}) }
 }
 
-@Preview(name = "S2 · Bienvenida — Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Welcome - offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun WelcomeContentOfflinePreview() {
     HealthifyTheme {

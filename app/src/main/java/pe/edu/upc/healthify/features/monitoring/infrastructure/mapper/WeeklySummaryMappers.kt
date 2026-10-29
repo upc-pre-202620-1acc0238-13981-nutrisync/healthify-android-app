@@ -6,7 +6,7 @@ import pe.edu.upc.healthify.features.monitoring.domain.entity.WeeklySummary
 import pe.edu.upc.healthify.features.monitoring.domain.entity.WeeklySummaryFacts
 import pe.edu.upc.healthify.features.monitoring.infrastructure.remote.dto.WeeklySummaryDto
 
-/** `null` si el recurso rompe una invariante (fechas ilegibles, titular vacío, cifras imposibles). */
+/** `null` if the resource breaks an invariant (unreadable dates, empty headline, impossible figures). */
 fun WeeklySummaryDto.toDomainOrNull(): WeeklySummary? {
     val start = weekStart.toLocalDateOrNull() ?: return null
     val end = weekEnd.toLocalDateOrNull() ?: return null

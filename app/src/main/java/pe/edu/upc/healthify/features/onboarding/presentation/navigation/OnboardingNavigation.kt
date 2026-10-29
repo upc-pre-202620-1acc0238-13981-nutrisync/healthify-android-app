@@ -7,15 +7,15 @@ import pe.edu.upc.healthify.features.onboarding.presentation.screen.SplashScreen
 import pe.edu.upc.healthify.features.onboarding.presentation.screen.WelcomeScreen
 import pe.edu.upc.healthify.features.onboarding.presentation.state.SplashDestination
 
-/** S1 · Splash. */
+/** Splash. */
 @Serializable
 data object SplashRoute
 
-/** S2 · Bienvenida. */
+/** Welcome. */
 @Serializable
 data object WelcomeRoute
 
-/** Destinos de onboarding (S1, S2) dentro del grafo de entrada. */
+/** Onboarding destinations (splash, welcome) inside the entry graph. */
 fun NavGraphBuilder.onboardingDestinations(
     onSplashResolved: (SplashDestination) -> Unit,
     onCreateAccount: () -> Unit,

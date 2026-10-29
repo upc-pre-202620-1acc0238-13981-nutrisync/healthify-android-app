@@ -9,7 +9,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 
-/** Estado de una consulta agendada (`ScheduledFollowUpResource.state`, MA-2). Una no acudida no cierra el vínculo. */
+/** State of a scheduled visit (`ScheduledFollowUpResource.state`). A missed visit does not close the care link. */
 enum class FollowUpState(val code: String) {
     SCHEDULED("Scheduled"),
     COMPLETED("Completed"),
@@ -22,7 +22,7 @@ enum class FollowUpState(val code: String) {
     }
 }
 
-/** Una consulta de la agenda del nutricionista (read model *Practitioner Agenda*, MA-2). */
+/** A visit on the nutritionist's agenda (read model *Practitioner Agenda*). */
 data class AgendaVisit(
     val id: Long,
     val patientId: PatientId,
@@ -36,18 +36,18 @@ data class AgendaVisit(
         require(id > 0) { "A follow up id is positive" }
     }
 
-    /** Solo una consulta agendada se cancela o reprograma (MA-5). */
+    /** Only a scheduled visit can be cancelled or rescheduled. */
     val canBeChanged: Boolean get() = state == FollowUpState.SCHEDULED
 }
 
-/** Indicaciones de «¿Cómo debe prepararse?» (PR17): lista cerrada, varias a la vez. */
+/** "How should they prepare?" instructions: a closed list, several at once. */
 @JvmInline
 value class FollowUpPreparation(val codes: Set<PreparationCode>) {
-    /** En el orden del catálogo, como las espera el backend. */
+    /** In catalog order, as the backend expects them. */
     val orderedCodes: List<PreparationCode> get() = PreparationCode.entries.filter { it in codes }
 }
 
-/** Una consulta nueva (`ScheduleFollowUpResource`): el momento ya pasó por [FollowUpMoment.of]. */
+/** A new visit (`ScheduleFollowUpResource`): the moment already went through [FollowUpMoment.of]. */
 data class NewFollowUp(
     val patientId: PatientId,
     val scheduledFor: Instant,
@@ -56,17 +56,17 @@ data class NewFollowUp(
 )
 
 /**
- * Fecha y hora de PR17 → el momento de la consulta. **Debe estar en el futuro** (MA-5:
- * `400 ScheduledForMustBeInFuture`): se valida en el teléfono antes de enviar (PR17.E «Elige una fecha y hora
- * futuras»), y el backend lo vuelve a validar.
+ * Date and time from the schedule form -> the visit moment. **Must be in the future**
+ * (`400 ScheduledForMustBeInFuture`): checked on the phone before sending ("Pick a future date and time"), and the
+ * backend checks it again.
  */
 sealed interface FollowUpMoment {
     data class Valid(val instant: Instant) : FollowUpMoment
 
-    /** Falta la fecha o la hora. */
+    /** Date or time missing. */
     data object Incomplete : FollowUpMoment
 
-    /** La fecha y hora elegidas ya pasaron (o son ahora mismo). */
+    /** The chosen date and time already passed (or are right now). */
     data object NotInFuture : FollowUpMoment
 
     companion object {
@@ -78,13 +78,13 @@ sealed interface FollowUpMoment {
     }
 }
 
-/** Motivo opcional de una cancelación (`CancelFollowUpResource.reason`, ≤ 30 caracteres, MA-5). */
+/** Optional cancellation reason (`CancelFollowUpResource.reason`, ≤ 30 characters). */
 @JvmInline
 value class CancellationReason private constructor(val text: String) {
     companion object {
         const val MAX_LENGTH = 30
 
-        /** `null` si viene vacío; recorta a [MAX_LENGTH] (el backend responde `400` si se pasa). */
+        /** `null` if empty; trims to [MAX_LENGTH] (the backend answers `400` if it is longer). */
         fun ofOptional(text: String?): CancellationReason? =
             text?.trim()?.takeIf(String::isNotEmpty)?.take(MAX_LENGTH)?.let(::CancellationReason)
     }

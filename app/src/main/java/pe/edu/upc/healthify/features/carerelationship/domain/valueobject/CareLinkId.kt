@@ -1,6 +1,6 @@
 package pe.edu.upc.healthify.features.carerelationship.domain.valueobject
 
-/** Id de un care link (`CareLinkResource.careLinkId`). */
+/** Id of a care link (`CareLinkResource.careLinkId`). */
 @JvmInline
 value class CareLinkId(val value: Long) {
     init {

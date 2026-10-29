@@ -7,13 +7,13 @@ import retrofit2.http.GET
 import retrofit2.http.PUT
 import retrofit2.http.Path
 
-/** IA-1 · consentimiento de IA y preferencias por función del paciente dueño. */
+/** The owning patient's AI consent and per-feature preferences. */
 interface AiPreferencesService {
 
     @GET("patients/{patientId}/ai-preferences")
     suspend fun getAiPreferences(@Path("patientId") patientId: Long): AiPreferencesDto
 
-    /** `200` con las preferencias como quedaron · `409 AiConsentRequiredToEnableFeature`. */
+    /** `200` with the preferences as they ended up · `409 AiConsentRequiredToEnableFeature`. */
     @PUT("patients/{patientId}/ai-preferences")
     suspend fun updateAiPreferences(
         @Path("patientId") patientId: Long,

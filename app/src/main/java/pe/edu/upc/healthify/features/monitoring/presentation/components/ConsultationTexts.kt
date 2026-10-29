@@ -15,8 +15,7 @@ import java.time.temporal.TemporalAccessor
 import java.util.Locale
 
 /*
- * Códigos de las consultas (MA-2, MA-4, RM-5) → textos de strings.xml en el idioma del lector. Un
- * código desconocido se muestra tal cual (UiText.Raw).
+ * Visit codes -> strings.xml texts in the reader's language. An unknown code is shown as is (UiText.Raw).
  */
 
 fun PreparationInstruction.toUiText(): UiText = when (this) {
@@ -38,7 +37,7 @@ val ConsultationModality.labelRes: Int
         ConsultationModality.REMOTE -> R.string.modality_remote
     }
 
-/** «Primera consulta» · «Evaluación y nuevo plan (versión 3)». */
+/** "First visit" · "Assessment and new plan (version 3)". */
 fun ConsultationLabel.toUiText(planVersion: Int?): UiText = when (this) {
     ConsultationLabel.FirstConsultation -> UiText.of(R.string.consultation_label_first)
     ConsultationLabel.AssessmentAndNewPlan ->
@@ -66,7 +65,7 @@ val CheckInDifficulty.labelRes: Int
         CheckInDifficulty.CRAVINGS -> R.string.check_in_difficulty_cravings
     }
 
-/** «SEPT» / «SEP»: mes abreviado en mayúsculas y sin punto (cuadro de la fecha). */
+/** «SEPT» / «SEP»: abbreviated month in uppercase without a period (date box). */
 internal fun shortMonthText(date: TemporalAccessor, locale: Locale): String =
     DateTimeFormatter.ofPattern("MMM", locale).format(date).replace(".", "").uppercase(locale)
 

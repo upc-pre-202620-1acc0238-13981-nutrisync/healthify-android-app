@@ -26,9 +26,9 @@ import java.time.Instant
 import javax.inject.Inject
 
 /**
- * PT25 · Mis consultas: compone MonitoringAdherence (consultas, check-in, preguntas sugeridas) y CareRelationship (si
- * el paciente tiene encendidas las preguntas sugeridas). Al volver a la pantalla (después de PT25.2) y al volver la
- * conexión se vuelve a pedir.
+ * My visits: combines MonitoringAdherence (visits, check-in, suggested questions) and CareRelationship (whether the
+ * patient has suggested questions turned on). Requested again on returning to the screen (after the check-in) and
+ * when the connection returns.
  */
 @HiltViewModel
 class MyConsultationsViewModel @Inject constructor(
@@ -47,8 +47,8 @@ class MyConsultationsViewModel @Inject constructor(
     private var loadJob: Job? = null
 
     /**
-     * Las preguntas de IA se piden una vez por consulta y por versión del check-in (el backend las regenera cuando el
-     * check-in cambia; cada pedido cuenta para la cuota diaria).
+     * AI questions are requested once per visit and per check-in version (the backend regenerates them when the
+     * check-in changes; each request counts toward the daily quota).
      */
     private var suggestionsRequestedFor: String? = null
 
@@ -69,7 +69,7 @@ class MyConsultationsViewModel @Inject constructor(
 
     fun onRetry() = load()
 
-    /** Al volver de PT25.2 la respuesta pudo cambiar: se relee sin mostrar la carga. */
+    /** Back from the check-in the reply may have changed: re-read without showing loading. */
     fun onResume() {
         if (_state.value.hasLoaded) load()
     }

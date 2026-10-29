@@ -16,8 +16,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * [ConnectivityObserver] sobre `ConnectivityManager`: hay conexión si alguna red tiene internet validado.
- * Lleva el conjunto de redes vivas porque al cambiar de Wi-Fi a datos llega `onLost` de una y `onAvailable` de otra.
+ * [ConnectivityObserver] over `ConnectivityManager`: connected if any network has validated internet.
+ * Tracks the live networks because switching from Wi-Fi to mobile data fires `onLost` for one and `onAvailable` for
+ * the other.
  */
 @Singleton
 class AndroidConnectivityObserver @Inject constructor(

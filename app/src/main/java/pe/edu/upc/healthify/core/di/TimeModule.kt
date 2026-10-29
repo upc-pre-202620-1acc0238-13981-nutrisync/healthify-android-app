@@ -7,8 +7,8 @@ import dagger.hilt.components.SingletonComponent
 import java.time.Clock
 
 /**
- * Reloj del dispositivo. El «día clínico» del paciente es el de su teléfono (F21): los use cases y ViewModels
- * calculan «hoy» con este [Clock] (en tests se fija).
+ * Device clock. The patient's "clinical day" is their phone's: use cases and ViewModels
+ * compute "today" with this [Clock] (fixed in tests).
  */
 @Module
 @InstallIn(SingletonComponent::class)

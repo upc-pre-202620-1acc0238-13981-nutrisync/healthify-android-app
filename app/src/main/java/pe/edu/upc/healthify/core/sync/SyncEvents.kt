@@ -9,16 +9,16 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Avisa que el backend aceptó operaciones de la cola. Lo que se envió ya está en el servidor, pero las pantallas que
- * lo muestran leyeron antes (al volver la conexión, la lectura suele llegar antes que el envío): con este aviso
- * vuelven a leer. Solo lo usan los repositorios de las features, filtrado por su tipo.
+ * Signals that the backend accepted operations from the queue. What was sent is already on the server, but the
+ * screens that show it read earlier (when the connection comes back, the read usually lands before the send): this
+ * signal makes them read again. Only the feature repositories use it, filtered by their type.
  */
 @Singleton
 class SyncEvents @Inject constructor() {
 
     private val delivered = MutableSharedFlow<String>(extraBufferCapacity = BUFFER)
 
-    /** Una emisión por lote con al menos una operación aceptada de [type]. */
+    /** One emission per batch with at least one accepted operation of [type]. */
     fun deliveredOf(type: String): Flow<Unit> = delivered.asSharedFlow().filter { it == type }.map { }
 
     fun notifyDelivered(type: String) {

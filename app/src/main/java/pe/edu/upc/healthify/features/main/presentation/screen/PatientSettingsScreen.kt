@@ -44,16 +44,16 @@ import pe.edu.upc.healthify.features.main.presentation.state.PatientSettingsUiSt
 import pe.edu.upc.healthify.features.main.presentation.viewmodel.PatientSettingsEvent
 import pe.edu.upc.healthify.features.main.presentation.viewmodel.PatientSettingsViewModel
 
-/** Destinos de PT21 (pantallas del grafo raíz). */
+/** Patient settings destinations (root graph screens). */
 data class PatientSettingsCallbacks(
-    /** «Atrás»: vuelve a donde estaba el paciente (Ajustes se abre desde el menú principal). */
+    /** "Back": returns to where the patient was (Settings opens from the main menu). */
     val onBack: () -> Unit,
     val onOpenReminders: () -> Unit,
     val onOpenAiFeatures: () -> Unit,
     val onOpenPendingSync: () -> Unit,
     val onWithdrawConsent: () -> Unit,
     val onSwitchPractitioner: () -> Unit,
-    /** PT21.1 · confirmación de cierre de sesión. */
+    /** Sign-out confirmation. */
     val onSignOut: () -> Unit,
 )
 
@@ -66,7 +66,7 @@ data class PatientSettingsActions(
     val onDismissDataExport: () -> Unit = {},
 )
 
-/** PT21 · Ajustes del paciente (+ PT21.I idioma), pantalla interna que se abre desde el menú principal. */
+/** Patient settings (+ language), an inner screen opened from the main menu. */
 @Composable
 fun PatientSettingsScreen(
     callbacks: PatientSettingsCallbacks,
@@ -75,13 +75,13 @@ fun PatientSettingsScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val activity = LocalActivity.current
-    // Storage Access Framework: la persona elige dónde guardar el ZIP; no hace falta permiso de almacenamiento.
+    // Storage Access Framework: the person picks where to save the ZIP; no storage permission is needed.
     val exportDestination = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument(DataExportFileName.MIME_TYPE),
     ) { uri -> viewModel.onDataExportDestinationPicked(uri?.toString()) }
     ObserveEvents(viewModel.events) { event ->
         when (event) {
-            // Desde Android 13 el sistema (LocaleManager) recrea la pantalla solo; antes, se recrea aquí.
+            // Since Android 13 the system (LocaleManager) recreates the screen itself; before that, it is recreated here.
             PatientSettingsEvent.LanguageApplied ->
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) activity?.recreate()
             is PatientSettingsEvent.PickDataExportDestination -> exportDestination.launch(event.fileName.value)
@@ -113,7 +113,7 @@ fun PatientSettingsContent(
 ) {
     val dimens = HealthifyTheme.dimens
     val callbacks = actions.callbacks
-    // Sin conexión: los ítems que necesitan red se ven deshabilitados (nota de PT21).
+    // Offline: items that need the network show as disabled.
     val online = !state.isOffline
     SystemBarsAppearance(darkBackground = false)
     Column(
@@ -131,7 +131,7 @@ fun PatientSettingsContent(
             verticalArrangement = Arrangement.spacedBy(dimens.space12),
         ) {
             if (state.isOffline) OfflineBanner(type = OfflineBannerType.RequiresNetwork)
-            // DECISIÓN PT21: «Mi cuenta» no tiene pantalla en el Figma; se muestra sin chevron ni destino.
+            // "My account" has no screen in the Figma; it shows without a chevron or destination.
             ListCard(
                 title = stringResource(R.string.settings_account),
                 supportingText = listOf(state.fullName, state.email).filter(String::isNotEmpty).joinToString(" · "),
@@ -189,7 +189,7 @@ fun PatientSettingsContent(
                 enabled = online && !exporting,
                 onClick = actions.onDataExport,
             )
-            // PT21.1: cerrar sesión funciona igual sin conexión (los pendientes se conservan).
+            // Sign out works the same offline (pending items are kept).
             ListCard(
                 title = stringResource(R.string.sign_out_dialog_confirm),
                 leadingIcon = HealthifyIcons.Logout,
@@ -209,7 +209,7 @@ fun PatientSettingsContent(
     DataExportResultDialog(status = state.dataExport, onDismiss = actions.onDismissDataExport)
 }
 
-/** Resultado de «Descargar una copia de mis datos»: guardada, o por qué no se pudo. */
+/** Result of "Download a copy of my data": saved, or why it could not be. */
 @Composable
 private fun DataExportResultDialog(status: DataExportStatus, onDismiss: () -> Unit) {
     val (title, text) = when (status) {
@@ -230,7 +230,7 @@ private fun DataExportResultDialog(status: DataExportStatus, onDismiss: () -> Un
     )
 }
 
-/** Ítem que necesita conexión: sin red se ve deshabilitado y no responde. */
+/** Item that needs a connection: offline it shows as disabled and does not respond. */
 @Composable
 private fun SettingsItem(
     title: String,
@@ -259,13 +259,13 @@ private val PreviewState = PatientSettingsUiState(
     aiFeaturesActive = true,
 )
 
-@Preview(name = "PT21 · Ajustes", widthDp = 360, heightDp = 800)
+@Preview(name = "Settings", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientSettingsPreview() {
     HealthifyTheme { PatientSettingsContent(state = PreviewState, actions = PatientSettingsActions(PreviewCallbacks)) }
 }
 
-@Preview(name = "PT21 · Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Settings - offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientSettingsOfflinePreview() {
     HealthifyTheme {
@@ -273,7 +273,7 @@ private fun PatientSettingsOfflinePreview() {
     }
 }
 
-@Preview(name = "PT21 · Copia de mis datos (descargando)", widthDp = 360, heightDp = 800)
+@Preview(name = "Settings - data copy (downloading)", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientSettingsDataExportInProgressPreview() {
     HealthifyTheme {
@@ -284,7 +284,7 @@ private fun PatientSettingsDataExportInProgressPreview() {
     }
 }
 
-@Preview(name = "PT21 · Copia de mis datos (guardada)", widthDp = 360, heightDp = 800)
+@Preview(name = "Settings - data copy (saved)", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientSettingsDataExportSavedPreview() {
     HealthifyTheme {
@@ -295,7 +295,7 @@ private fun PatientSettingsDataExportSavedPreview() {
     }
 }
 
-@Preview(name = "PT21.I · Idioma", widthDp = 360, heightDp = 400)
+@Preview(name = "Settings - language", widthDp = 360, heightDp = 400)
 @Composable
 private fun LanguageSheetPreview() {
     HealthifyTheme {

@@ -43,43 +43,43 @@ import pe.edu.upc.healthify.features.nutritionalcare.presentation.screen.Patient
 import java.time.LocalDate
 
 /**
- * Navegación del shell del paciente hacia el grafo raíz. PT4, PT12, PT13.2, PT15, PT16, PT21.1, PT21.IA, PT22 y
- * PT25–PT25.2 son pantallas completas sobre el shell (sin barra inferior).
+ * Patient shell navigation into the root graph. These destinations are full screens over the shell (no bottom
+ * bar).
  */
 data class PatientShellCallbacks(
-    /** PT21.1 (pantalla completa del grafo raíz); al cerrar sesión limpia todo el back stack. */
+    /** Sign out (full screen in the root graph); signing out clears the whole back stack. */
     val onSignOut: () -> Unit,
-    /** Menú «Ajustes» → PT21 (pantalla completa del grafo raíz, con «Atrás»). */
+    /** "Settings" menu item → patient settings (full screen in the root graph, with "Back"). */
     val onOpenSettings: () -> Unit,
     val onOpenMyPlan: () -> Unit,
     val onOpenHowAmIToday: () -> Unit,
     val onOpenConsistencyNotice: () -> Unit,
     val onOpenFollowUp: (followUpId: Long) -> Unit,
-    /** Botón cámara de la barra y «Registrar comida» (Diario) → PT5 (o PT9 si la foto con IA no está disponible). */
+    /** Bar camera button and "Log meal" (Diary) → meal photo (or manual logging without AI photo recognition). */
     val onRegisterMeal: () -> Unit,
-    /** PT14 «Confirmar porción» → PT8 de esa entrada. */
+    /** Diary "Confirm portion" → that entry's portion screen. */
     val onConfirmPortion: (diaryEntryId: Long, date: LocalDate) -> Unit,
     val onOpenMealIdeas: () -> Unit,
     val onOpenPendingSync: () -> Unit,
     val onAnalyzePendingPhoto: (photoId: String) -> Unit,
     val onRegisterManually: () -> Unit,
-    /** PT13 «Registrar autopesaje» → PT12. */
+    /** Progress "Log self weigh-in" → weigh-in screen. */
     val onRegisterSelfWeighIn: () -> Unit,
-    /** PT13 card «Tu semana» → PT13.2. */
+    /** Progress "Your week" card → weekly summary. */
     val onOpenWeeklySummary: () -> Unit,
-    /** PT20 y menú «Mis consultas» → PT25. */
+    /** Appointment card and the "My appointments" menu item → appointments. */
     val onOpenMyConsultations: () -> Unit,
-    /** Campana de Inicio → PT22 Recordatorios. */
+    /** Home bell → Reminders. */
     val onOpenReminders: () -> Unit,
 )
 
 /**
- * Shell del paciente con vínculo activo: NavigationBar Inicio · Diario · [cámara] · Progreso · Expediente, un NavHost
- * propio por pestaña (conserva el estado de cada una al cambiar) y el menú principal (☰ de las pestañas) que abre
- * desde la derecha.
+ * Patient shell with an active care link: NavigationBar Home · Diary · [camera] · Progress · Record, one NavHost
+ * per tab (keeps each tab's state when switching) and the main menu (☰ on the tabs) that opens
+ * from the right.
  *
- * @param requestedTab pestaña que pidió abrir una pantalla del grafo raíz al volver (PT16 «Revisar mi diario»);
- *   se abre una vez y se avisa con [onRequestedTabHandled].
+ * @param requestedTab tab that a root graph screen asked to open on return (the "Review my diary" action);
+ *   it opens once and is reported with [onRequestedTabHandled].
  */
 @Composable
 fun PatientShellScreen(
@@ -103,7 +103,7 @@ fun PatientShellScreen(
         backStackEntry?.destination?.hierarchy?.any { it.hasRoute(tab.route()::class) } == true
     } ?: PatientTab.Home
 
-    // Cada destino del menú es una pantalla del grafo raíz: el menú se cierra antes de abrirla.
+    // Every menu destination is a root graph screen: the menu closes before opening it.
     val fromMenu = { action: () -> Unit ->
         viewModel.onCloseMenu()
         action()
@@ -193,7 +193,7 @@ fun PatientShellContent(
             PatientMenuContent(
                 fullName = state.fullName,
                 avatarInitial = state.avatarInitial,
-                // El menú solo se abre desde las pestañas, que no son ítems del menú.
+                // The menu only opens from the tabs, which are not menu items.
                 selected = null,
                 onSelect = actions.onMenuItem,
                 onSignOut = actions.onSignOut,
@@ -218,7 +218,7 @@ fun PatientShellContent(
     }
 }
 
-/** Cambio de pestaña: una sola copia de cada destino y su estado guardado/restaurado. */
+/** Tab switch: a single copy of each destination, with its state saved and restored. */
 internal fun NavHostController.navigateToTab(route: Any) {
     navigate(route) {
         popUpTo(graph.findStartDestination().id) { saveState = true }
@@ -227,7 +227,7 @@ internal fun NavHostController.navigateToTab(route: Any) {
     }
 }
 
-@Preview(name = "Shell paciente", widthDp = 360, heightDp = 800)
+@Preview(name = "Patient shell", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientShellContentPreview() {
     HealthifyTheme {
@@ -237,7 +237,7 @@ private fun PatientShellContentPreview() {
     }
 }
 
-@Preview(name = "Shell paciente · menú abierto", widthDp = 360, heightDp = 800)
+@Preview(name = "Patient shell - menu open", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientShellMenuPreview() {
     HealthifyTheme {

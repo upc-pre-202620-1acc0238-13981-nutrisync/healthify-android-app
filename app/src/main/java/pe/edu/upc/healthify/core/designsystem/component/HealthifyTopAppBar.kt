@@ -33,19 +33,19 @@ import pe.edu.upc.healthify.R
 import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 
-// Medidas del TopAppBar del Figma.
+// Figma TopAppBar measurements.
 private val TopAppBarHeight = 64.dp
 private val AvatarSize = 40.dp
 
 /**
- * TopAppBar pequeña del Figma (64 dp), título en Anton.
- * - «Atrás»: [onBack] no nulo → IconButton 48 dp con arrow-back (llama a `popBackStack` desde la pantalla;
- *   el gesto/botón atrás del sistema hace lo mismo).
- * - «Raíz»: [onBack] nulo → destinos de la NavigationBar, sin atrás.
+ * Figma small TopAppBar (64 dp), title in Anton.
+ * - "Back": [onBack] not null → 48 dp IconButton with arrow-back (call `popBackStack` from the screen;
+ *   the system back gesture/button does the same).
+ * - "Root": [onBack] null → NavigationBar destinations, no back.
  *
- * @param actions IconButtons de acción a la derecha (p. ej. Icon/bell).
- * @param containerColor fondo de la barra; las pantallas oscuras del Figma (PT1) usan `inverseSurface`.
- * @param contentColor título e ícono de atrás sobre [containerColor].
+ * @param actions action IconButtons on the right (e.g. Icon/bell).
+ * @param containerColor bar background; the dark Figma screens (e.g. the QR scanner) use `inverseSurface`.
+ * @param contentColor title and back icon on [containerColor].
  */
 @Composable
 fun HealthifyTopAppBar(
@@ -87,9 +87,9 @@ fun HealthifyTopAppBar(
 }
 
 /**
- * TopAppBar «Saludo» del Figma (Inicio del paciente): avatar con la inicial, saludo y título.
+ * Figma "Greeting" TopAppBar (patient Home): avatar with the initial, greeting and title.
  *
- * @param avatarInitial inicial del nombre (decorativa: se oculta a TalkBack porque [greeting] ya nombra).
+ * @param avatarInitial initial of the name (decorative: hidden from TalkBack because [greeting] already has the name).
  */
 @Composable
 fun GreetingTopAppBar(
@@ -160,7 +160,7 @@ private fun TopAppBarContainer(
     )
 }
 
-@Preview(name = "TopAppBar · Atrás / Raíz / Saludo", widthDp = 360)
+@Preview(name = "TopAppBar · Back / Root / Greeting", widthDp = 360)
 @Composable
 private fun TopAppBarPreview() {
     ComponentPreview {

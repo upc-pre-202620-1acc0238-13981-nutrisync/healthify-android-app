@@ -32,7 +32,7 @@ class IntakeLoggingDomainTest {
     private val now: Instant = Instant.parse("2026-10-07T18:00:00Z")
     private val lima: OffsetDateTime = OffsetDateTime.parse("2026-10-07T13:00:00-05:00") // = now
 
-    // ----- LocalTimestamp: ventana retroactiva de 48 h -----
+    // ----- LocalTimestamp: 48 h backdating window -----
 
     @Test
     fun `a meal up to exactly 48 h ago is valid`() {
@@ -57,7 +57,7 @@ class IntakeLoggingDomainTest {
 
     @Test
     fun `the window is measured on the instant, whatever the offset`() {
-        // 47 h antes, escrito en UTC: sigue dentro de la ventana.
+        // 47 h earlier, written in UTC: still inside the window.
         val utc = OffsetDateTime.parse("2026-10-05T19:00:00Z")
         assertEquals(LocalTimestamp.Validity.VALID, LocalTimestamp.validate(utc, now))
     }
@@ -110,7 +110,7 @@ class IntakeLoggingDomainTest {
         assertThrows(IllegalArgumentException::class.java) { ClientEntryId("id-1") }
     }
 
-    // ----- Registros nuevos -----
+    // ----- New entries -----
 
     @Test
     fun `a manual meal needs the plan answer`() {
@@ -174,7 +174,7 @@ class IntakeLoggingDomainTest {
         assertTrue(idea.canBeLogged)
     }
 
-    // ----- Diario -----
+    // ----- Diary -----
 
     @Test
     fun `a photo entry without confirmation is pending and shows its proposal`() {

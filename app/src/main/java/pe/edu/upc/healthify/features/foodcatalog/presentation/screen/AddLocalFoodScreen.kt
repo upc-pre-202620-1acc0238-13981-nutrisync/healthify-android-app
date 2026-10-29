@@ -49,7 +49,7 @@ data class AddLocalFoodActions(
     val onServerErrorDismissed: () -> Unit = {},
 )
 
-/** PR15.1 · Agregar alimento local. */
+/** Add local food. */
 @Composable
 fun AddLocalFoodScreen(
     onBack: () -> Unit,
@@ -178,13 +178,13 @@ private fun NutrientField(
     )
 }
 
-@Preview(name = "PR15.1 · Agregar alimento local", widthDp = 360, heightDp = 800)
+@Preview(name = "Add local food", widthDp = 360, heightDp = 800)
 @Composable
 private fun AddLocalFoodPreview() {
     HealthifyTheme { AddLocalFoodContent(state = AddLocalFoodUiState(), actions = AddLocalFoodActions()) }
 }
 
-@Preview(name = "PR15.1 · Faltan valores", widthDp = 360, heightDp = 800)
+@Preview(name = "Add local food - missing values", widthDp = 360, heightDp = 800)
 @Composable
 private fun AddLocalFoodInvalidPreview() {
     HealthifyTheme {
@@ -195,7 +195,7 @@ private fun AddLocalFoodInvalidPreview() {
     }
 }
 
-@Preview(name = "PR15.1 · Nombre duplicado", widthDp = 360, heightDp = 800)
+@Preview(name = "Add local food - duplicate name", widthDp = 360, heightDp = 800)
 @Composable
 private fun AddLocalFoodDuplicatedPreview() {
     HealthifyTheme {
@@ -206,7 +206,7 @@ private fun AddLocalFoodDuplicatedPreview() {
     }
 }
 
-@Preview(name = "PR15.1 · Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Add local food - offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun AddLocalFoodOfflinePreview() {
     HealthifyTheme { AddLocalFoodContent(state = AddLocalFoodUiState(isOffline = true), actions = AddLocalFoodActions()) }

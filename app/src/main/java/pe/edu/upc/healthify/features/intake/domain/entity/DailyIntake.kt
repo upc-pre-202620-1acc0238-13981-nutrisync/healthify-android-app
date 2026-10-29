@@ -3,10 +3,10 @@ package pe.edu.upc.healthify.features.intake.domain.entity
 import java.time.LocalDate
 
 /**
- * Lo registrado por el paciente en su día y lo que le queda de cada meta (`DailyIntakeResource`, IN-9), para el
- * medidor de PT3. Solo cuentan las entradas confirmadas. Describe el día, nunca lo califica.
+ * What the patient logged on their day and what is left of each target (`DailyIntakeResource`), for the daily
+ * gauge. Only confirmed entries count. It describes the day, never grades it.
  *
- * @param remainingEnergyKcal lo que queda de cada meta, nunca menos de 0 (lo calcula el backend).
+ * @param remainingEnergyKcal what is left of each target, never below 0 (the backend computes it).
  */
 data class DailyIntake(
     val date: LocalDate,

@@ -17,13 +17,13 @@ import pe.edu.upc.healthify.features.monitoring.domain.valueobject.ComplianceOut
 import pe.edu.upc.healthify.features.monitoring.infrastructure.remote.dto.MonitoringSummaryDto
 import pe.edu.upc.healthify.features.monitoring.infrastructure.remote.dto.PatientMonitoringPanelDto
 
-/** Cada sección se lee por separado: una ilegible queda vacía y el resto del panel se muestra. */
+/** Each section is read separately: an unreadable one stays empty and the rest of the panel is shown. */
 fun PatientMonitoringPanelDto.toDomain(): PatientMonitoringPanel = PatientMonitoringPanel(
     date = date.toLocalDateOrNull() ?: throw SerializationException("Unreadable panel date"),
     week = week?.let { w ->
         val days = w.days.mapNotNull { day ->
             val d = day.date.toLocalDateOrNull() ?: return@mapNotNull null
-            // Un resultado desconocido nunca se pinta como falla: se lee como «Sin registro».
+            // An unknown outcome is never drawn as a failure: it reads as "No log".
             PanelDay(d, ComplianceOutcome.fromCode(day.outcome) ?: ComplianceOutcome.UNLOGGED)
         }.sortedBy { it.date }
         if (w.metDays in 0..w.totalDays) PanelWeek(days, w.metDays, w.totalDays) else null

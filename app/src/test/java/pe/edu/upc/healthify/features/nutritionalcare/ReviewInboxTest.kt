@@ -67,7 +67,7 @@ class ReviewInboxTest {
 
     private fun decodeItem(text: String) = json.decodeFromString(ReviewItemDto.serializer(), text).toDomain()
 
-    // ----- Evidencia armada desde evidenceData (X-2) -----
+    // ----- Evidence built from evidenceData -----
 
     @Test
     fun `a sustained deviation is built from evidenceData, never from the english sentence`() {
@@ -205,7 +205,7 @@ class ReviewInboxTest {
         assertEquals(ResolutionNote.Custom("Se conversó en consulta"), custom.resolutionNote)
     }
 
-    // ----- Reglas de dominio -----
+    // ----- Domain rules -----
 
     @Test
     fun `saying whether the plan was adjusted is required and an empty note is not sent`() {
@@ -265,7 +265,7 @@ class ReviewInboxTest {
         )
     }
 
-    // ----- Repositorio: 200 / 202 + Retry-After / 404 -----
+    // ----- Repository: 200 / 202 + Retry-After / 404 -----
 
     private class FakeReviewItemService : ReviewItemService {
         var proposalResponse: Response<JsonElement>? = null
@@ -362,7 +362,7 @@ class ReviewInboxTest {
         assertEquals(listOf(ReviewItemState.OPEN.code, ReviewItemState.OPEN.code), service.states)
     }
 
-    // ----- Use case: espera de la propuesta (202 → 200) -----
+    // ----- Use case: waiting for the proposal (202 → 200) -----
 
     @Test
     fun `awaiting the proposal retries after Retry-After until it is ready`() = runTest {

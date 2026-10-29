@@ -63,7 +63,7 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-// Insignia de fecha de cada consulta (frame PR17.0).
+// Date badge of each visit (Agenda frame).
 private val DateBadgeSize = 44.dp
 
 data class AgendaActions(
@@ -75,16 +75,16 @@ data class AgendaActions(
     val onCancelRequested: () -> Unit = {},
     val onCancelConfirmed: () -> Unit = {},
     val onDialogDismissed: () -> Unit = {},
-    /** ☰ · menú principal del shell (PR1.D). */
+    /** ☰ · the shell's main menu. */
     val onOpenMenu: () -> Unit = {},
 )
 
 /**
- * PR17.0 · Agenda (pestaña «Agenda» del shell del nutricionista). «Agendar consulta» abre PR17; el Snackbar PR17.0-S lo
- * muestra el shell al volver.
+ * Agenda (the "Agenda" tab of the nutritionist's shell). "Schedule visit" opens the schedule form; the shell shows the
+ * confirmation Snackbar on return.
  *
- * @param onCancelled el shell muestra «Consulta cancelada».
- * @param onOpenMenu ☰ · menú principal del shell (PR1.D).
+ * @param onCancelled the shell shows "Visit cancelled".
+ * @param onOpenMenu ☰ · the shell's main menu.
  */
 @Composable
 fun PractitionerAgendaScreen(
@@ -191,7 +191,7 @@ fun PractitionerAgendaContent(state: AgendaUiState, actions: AgendaActions, modi
                         state.isLoading -> repeat(SKELETON_ROWS) { SkeletonListItem(modifier = Modifier.fillMaxWidth()) }
                         state.isEmpty -> {
                             if (state.isOffline) OfflineBanner(type = OfflineBannerType.RequiresNetwork)
-                            // El CTA del vacío es el mismo «Agendar consulta» fijo de abajo.
+                            // The empty state's CTA is the same fixed "Schedule visit" below.
                             EmptyState(
                                 title = stringResource(R.string.agenda_empty_title),
                                 text = stringResource(R.string.agenda_empty_body),
@@ -203,7 +203,7 @@ fun PractitionerAgendaContent(state: AgendaUiState, actions: AgendaActions, modi
                 }
             }
         }
-        // «Agendar consulta» fijo abajo (sobre la NavigationBar); sin conexión no se puede agendar.
+        // "Schedule visit" fixed at the bottom (above the NavigationBar); offline it cannot schedule.
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -275,7 +275,7 @@ private fun AgendaCard(row: AgendaRow, onClick: () -> Unit, enabled: Boolean) {
     }
 }
 
-/** «18 / SEPT»: día y mes abreviado (sin punto) en mayúsculas. */
+/** «18 / SEPT»: day and abbreviated month (no period) in uppercase. */
 @Composable
 private fun DateBadge(moment: Instant) {
     val scheme = MaterialTheme.colorScheme
@@ -304,7 +304,7 @@ private fun DateBadge(moment: Instant) {
     }
 }
 
-/** «Jueves», con mayúscula inicial. */
+/** «Jueves», capitalized. */
 @Composable
 @ReadOnlyComposable
 private fun Instant.weekdayText(): String {
@@ -357,7 +357,7 @@ private val previewVisits = listOf(
     AgendaRow(3, 13, "Luz Ramírez", Instant.parse("2026-10-01T14:00:00Z"), emptySet()),
 )
 
-@Preview(name = "PR17.0 · Agenda", widthDp = 360, heightDp = 800)
+@Preview(name = "Agenda", widthDp = 360, heightDp = 800)
 @Composable
 private fun AgendaPreview() {
     HealthifyTheme {
@@ -365,7 +365,7 @@ private fun AgendaPreview() {
     }
 }
 
-@Preview(name = "PR17.0 · Vacía", widthDp = 360, heightDp = 800)
+@Preview(name = "Empty", widthDp = 360, heightDp = 800)
 @Composable
 private fun AgendaEmptyPreview() {
     HealthifyTheme {
@@ -373,13 +373,13 @@ private fun AgendaEmptyPreview() {
     }
 }
 
-@Preview(name = "PR17.0 · Cargando", widthDp = 360, heightDp = 800)
+@Preview(name = "Loading", widthDp = 360, heightDp = 800)
 @Composable
 private fun AgendaLoadingPreview() {
     HealthifyTheme { PractitionerAgendaContent(state = AgendaUiState(), actions = AgendaActions()) }
 }
 
-@Preview(name = "PR17.0 · Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun AgendaOfflinePreview() {
     HealthifyTheme {
@@ -390,7 +390,7 @@ private fun AgendaOfflinePreview() {
     }
 }
 
-@Preview(name = "PR17.0 · Error", widthDp = 360, heightDp = 800)
+@Preview(name = "Error", widthDp = 360, heightDp = 800)
 @Composable
 private fun AgendaErrorPreview() {
     HealthifyTheme {
@@ -398,7 +398,7 @@ private fun AgendaErrorPreview() {
     }
 }
 
-@Preview(name = "PR17.0 · Consulta elegida", widthDp = 360, heightDp = 320)
+@Preview(name = "Visit selected", widthDp = 360, heightDp = 320)
 @Composable
 private fun AgendaSheetPreview() {
     HealthifyTheme {

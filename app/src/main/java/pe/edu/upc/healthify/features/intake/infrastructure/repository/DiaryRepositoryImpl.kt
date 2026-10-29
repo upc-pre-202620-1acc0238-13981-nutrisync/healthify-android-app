@@ -49,12 +49,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Backend primero. **Solo sin conexión** (`DomainError.Network`) la comida se encola en la cola offline genérica con
- * su `clientEntryId` y su hora local exacta; el `PendingSyncWorker` la envía a `…/synchronization` cuando hay red.
- * Un 5xx no encola: la pantalla muestra «No se pudo registrar» y el paciente reintenta con el **mismo**
- * `clientEntryId` (el backend devuelve la misma entrada si la primera llegó).
+ * Backend first. **Only when offline** (`DomainError.Network`) is the meal queued in the generic offline queue with
+ * its `clientEntryId` and exact local time; `PendingSyncWorker` sends it to `…/synchronization` once online.
+ * A 5xx does not queue: the screen shows "Could not log" and the patient retries with the **same**
+ * `clientEntryId` (the backend returns the same entry if the first one arrived).
  *
- * `@Singleton`: guarda el aviso del último registro hasta que el diario lo muestra.
+ * `@Singleton`: keeps the latest log's message until the diary shows it.
  */
 @Singleton
 class DiaryRepositoryImpl @Inject constructor(
@@ -136,7 +136,7 @@ class DiaryRepositoryImpl @Inject constructor(
             patientId = patientId,
             send = { service.logPhotoMeal(analysis.toUnconfirmedRequestDto(patientId.value, localTimestamp, clientEntryId)) },
             queued = { listOf(analysis.toUnconfirmedQueuedPayload(localTimestamp, clientEntryId)) },
-            // Sin Snackbar: la comida queda «Por confirmar», no registrada.
+            // No Snackbar: the meal stays "To confirm", not logged.
             notice = { null },
         )
 
@@ -176,7 +176,7 @@ class DiaryRepositoryImpl @Inject constructor(
             result.isSuccess -> MealLogOutcome.LOGGED
             result.domainErrorOrNull() == DomainError.Network -> {
                 queued().forEach { payload ->
-                    // Encolar dos veces el mismo clientEntryId no lo duplica (la cola lo ignora).
+                    // Queuing the same clientEntryId twice does not duplicate it (the queue ignores it).
                     queue.enqueue(
                         type = QueuedDiaryEntryPayload.TYPE,
                         ownerUserId = patientId.value,
@@ -221,7 +221,7 @@ class DiaryRepositoryImpl @Inject constructor(
     private companion object {
         val ENTRIES_SERIALIZER = ListSerializer(DiaryEntryDto.serializer())
 
-        /** Días del diario que se guardan para verlos sin conexión (el selector va hacia atrás). */
+        /** Diary days kept for offline viewing (the picker goes backwards). */
         const val CACHED_DAYS = 14L
         const val CODE_UNKNOWN_REJECTION = "UnexpectedError"
     }

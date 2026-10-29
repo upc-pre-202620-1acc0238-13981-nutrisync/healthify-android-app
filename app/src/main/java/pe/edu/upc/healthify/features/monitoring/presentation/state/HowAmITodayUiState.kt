@@ -3,9 +3,9 @@ package pe.edu.upc.healthify.features.monitoring.presentation.state
 import pe.edu.upc.healthify.features.monitoring.domain.valueobject.ComplianceOutcome
 
 /**
- * PT15 · Cómo voy hoy. El indicador vive en Monitoring y no está disponible sin conexión (PT15.O).
+ * How am I doing today. The indicator lives in Monitoring and is not available offline.
  *
- * @param outcome `null` mientras carga, sin conexión o con error.
+ * @param outcome `null` while loading, offline or on error.
  */
 data class HowAmITodayUiState(
     val isLoading: Boolean = true,

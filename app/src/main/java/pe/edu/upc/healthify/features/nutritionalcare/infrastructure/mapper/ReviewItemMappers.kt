@@ -24,8 +24,8 @@ import pe.edu.upc.healthify.features.nutritionalcare.infrastructure.remote.dto.R
 import kotlin.math.abs
 
 /**
- * `ReviewItemResource` → [ReviewItem]. La evidencia se arma desde `evidenceData` según el `signalType`; si le falta un
- * campo obligatorio (o es un ítem anterior a X-2) queda `null` y la UI muestra la frase legada `evidence`.
+ * `ReviewItemResource` → [ReviewItem]. The evidence is built from `evidenceData` per `signalType`; if a required
+ * field is missing (or the item predates structured evidence) it stays `null` and the UI shows the legacy `evidence`.
  */
 fun ReviewItemDto.toDomain(): ReviewItem {
     val type = SignalType.of(signalType)
@@ -45,14 +45,14 @@ fun ReviewItemDto.toDomain(): ReviewItem {
     )
 }
 
-/** La evidencia de [type]; `null` si faltan sus campos (se cae a la frase legada, nunca a una frase incompleta). */
+/** The evidence for [type]; `null` if its fields are missing (falls back to the legacy sentence, never a partial one). */
 internal fun ReviewItemEvidenceDto.toEvidence(type: SignalType): ReviewEvidence? = try {
     when (type) {
         SignalType.SustainedDeviation -> {
             val percent = averagePercentFromTarget
             val deviated = deviatedDays
             val logged = loggedDaysConsidered
-            // El sentido viene en `direction`; si falta, lo da el signo del porcentaje.
+            // The direction comes in `direction`; if missing, the sign of the percentage gives it.
             val sense = DeviationDirection.fromCode(direction)
                 ?: percent?.let { if (it < 0) DeviationDirection.BELOW else DeviationDirection.ABOVE }
             if (percent == null || deviated == null || logged == null || sense == null) {
@@ -93,7 +93,7 @@ internal fun ReviewItemEvidenceDto.toEvidence(type: SignalType): ReviewEvidence?
         is SignalType.Custom -> null
     }
 } catch (_: IllegalArgumentException) {
-    // Números que rompen una invariante (p. ej. más días desviados que registrados): mejor la frase legada.
+    // Numbers that break an invariant (e.g. more deviated days than logged ones): the legacy sentence is better.
     null
 }
 
@@ -104,14 +104,14 @@ private fun ReviewItemDto.resolutionNote(): ResolutionNote? {
         "PlanAssignedAsIs" -> version?.let(ResolutionNote::PlanAssignedAsIs) ?: text?.let(ResolutionNote::Custom)
         "PlanAssignedWithEdits" -> version?.let(ResolutionNote::PlanAssignedWithEdits) ?: text?.let(ResolutionNote::Custom)
         "ProposalDiscarded" -> ResolutionNote.ProposalDiscarded
-        // `Custom`, un código desconocido o ninguno: el texto tal cual (X-2).
+        // `Custom`, an unknown code or none: the text as is.
         else -> text?.let(ResolutionNote::Custom)
     }
 }
 
 fun ReviewResolution.toDto(): ResolveReviewItemRequestDto = ResolveReviewItemRequestDto(resolvedWithAdjustment, note)
 
-/** Una indicación que esta versión no conoce se omite (la IA solo puede devolver códigos del catálogo). */
+/** A guideline this version does not know is left out (the AI can only return catalog codes). */
 fun PlanAdjustmentProposalDto.toDomain(): PlanAdjustmentProposal = PlanAdjustmentProposal(
     reviewItemId = ReviewItemId(reviewItemId),
     title = title.trim(),

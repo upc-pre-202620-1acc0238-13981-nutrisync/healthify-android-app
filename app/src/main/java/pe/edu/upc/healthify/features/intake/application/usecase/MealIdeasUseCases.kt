@@ -17,7 +17,7 @@ import pe.edu.upc.healthify.features.intake.domain.valueobject.PortionGrams
 import java.time.LocalDate
 import javax.inject.Inject
 
-/** PT14.4 · Ideas para hoy (IA-3). */
+/** Ideas for today. */
 class GetMealIdeasUseCase @Inject constructor(
     private val repository: MealIdeasRepository,
 ) {
@@ -28,15 +28,15 @@ class GetMealIdeasUseCase @Inject constructor(
     ): Result<MealIdeas> = repository.generate(PatientId(patientUserId), localDate, excludeIdeaIds)
 }
 
-/** Resultado de registrar una idea: cómo terminó y qué ingredientes quedaron fuera por no estar en el catálogo. */
+/** Result of logging an idea: how it ended and which ingredients were left out because the catalog lacks them. */
 data class MealIdeaLogResult(val outcome: MealLogOutcome, val excluded: List<MealIdeaIngredient>)
 
 /**
- * PT14.5 «Registrar esta comida» (IN-6): `manual-logs/batch` con los ingredientes **resueltos** (FC-2), `InPlan` y
- * `origin = MealIdea`. Los ingredientes con `resolved = false` se excluyen del registro y se devuelven para avisar.
+ * "Log this meal": `manual-logs/batch` with the **resolved** ingredients, `InPlan` and `origin = MealIdea`.
+ * Ingredients with `resolved = false` are left out of the log and returned so the screen can warn about them.
  *
- * [clientEntryIds] se reusan en cada reintento (uno por ingrediente registrable, en orden): así reenviar la misma
- * comida nunca la duplica.
+ * [clientEntryIds] are reused on every retry (one per loggable ingredient, in order), so resending the same meal
+ * never duplicates it.
  */
 class LogMealIdeaUseCase @Inject constructor(
     private val repository: DiaryRepository,
@@ -63,7 +63,7 @@ class LogMealIdeaUseCase @Inject constructor(
     }
 
     companion object {
-        /** Ningún ingrediente de la idea está en el catálogo: no hay nada que registrar. */
+        /** None of the idea's ingredients is in the catalog: there is nothing to log. */
         const val CODE_NOTHING_TO_LOG = "NoResolvedIngredients"
     }
 }

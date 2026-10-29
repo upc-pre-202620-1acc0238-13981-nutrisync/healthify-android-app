@@ -23,7 +23,7 @@ import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
-/** PT22 · recordatorios locales: horas del frame, guardado al vuelo y programación del aviso. */
+/** Local reminders: the design's preset hours, saving on every change and scheduling the notification. */
 class ReminderTest {
 
     @get:Rule
@@ -56,7 +56,7 @@ class ReminderTest {
 
         assertEquals(ZonedDateTime.of(2026, 10, 7, 7, 30, 0, 0, lima), ReminderSettings.nextOccurrence(weighIn, morning))
         assertEquals(ZonedDateTime.of(2026, 10, 8, 7, 30, 0, 0, lima), ReminderSettings.nextOccurrence(weighIn, afternoon))
-        // Justo a la hora ya cuenta como pasada.
+        // Exactly on the hour already counts as past.
         val exactly = ZonedDateTime.of(2026, 10, 7, 7, 30, 0, 0, lima)
         assertEquals(exactly.plusDays(1), ReminderSettings.nextOccurrence(weighIn, exactly))
     }

@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import pe.edu.upc.healthify.features.iam.application.usecase.SignOutUseCase
 import javax.inject.Inject
 
-/** «Cerrar sesión» de los shells: el estado indica si está en curso; al terminar, el grafo raíz limpia el back stack. */
+/** The shells' "Sign out": the state says whether it is in progress; when done, the root graph clears the back stack. */
 data class SignOutUiState(val isSigningOut: Boolean = false)
 
 sealed interface SignOutEvent {

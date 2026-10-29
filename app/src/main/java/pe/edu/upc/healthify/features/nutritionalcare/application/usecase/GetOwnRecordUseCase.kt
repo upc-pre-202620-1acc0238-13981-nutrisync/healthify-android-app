@@ -5,7 +5,7 @@ import pe.edu.upc.healthify.features.nutritionalcare.domain.repository.PatientRe
 import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.PatientId
 import javax.inject.Inject
 
-/** PT20 · Mi expediente. */
+/** The patient's own record. */
 class GetOwnRecordUseCase @Inject constructor(
     private val repository: PatientRecordRepository,
 ) {

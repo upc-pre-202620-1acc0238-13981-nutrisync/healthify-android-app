@@ -8,29 +8,29 @@ import pe.edu.upc.healthify.features.intake.domain.entity.WeightTrend
 import pe.edu.upc.healthify.features.intake.domain.valueobject.PatientId
 
 /**
- * Autopesajes y tendencia de peso (F19, IN-3, IN-4, IN-5).
+ * Self weigh-ins and weight trend.
  *
- * [record] intenta el backend y, **sin conexión**, encola el autopesaje con su `clientEntryId` y su hora local
- * (→ `POST /self-weigh-ins/synchronization`); el resultado es entonces [SelfWeighInOutcome.QUEUED]. Cualquier otro
- * fallo vuelve como error para que PT12 lo muestre.
+ * [record] tries the backend and, **when offline**, queues the self weigh-in with its `clientEntryId` and its local
+ * time (→ `POST /self-weigh-ins/synchronization`); the result is then [SelfWeighInOutcome.QUEUED]. Any other
+ * failure comes back as an error so the screen can show it.
  */
 interface SelfWeighInRepository {
 
     suspend fun record(patientId: PatientId, weighIn: NewSelfWeighIn): Result<SelfWeighInOutcome>
 
-    /** Autopesajes encolados del paciente (pendientes y rechazados), en el orden en que se registraron. */
+    /** The patient's queued self weigh-ins (pending and rejected), in the order they were logged. */
     fun observePending(patientId: PatientId): Flow<List<PendingSelfWeighIn>>
 
-    /** Emite cuando el backend aceptó autopesajes de la cola: la tendencia leída antes hay que volver a leerla. */
+    /** Emits when the backend accepted queued self weigh-ins: the trend read before has to be read again. */
     val syncedWeighIns: Flow<Unit>
 
     /**
-     * `GET /patients/{pid}/weight-trend?weeks=`. `null` = todavía no hay tendencia (`404 WeightTrendNotFound`).
-     * Sin conexión (o 5xx) devuelve la última copia del teléfono, si hay.
+     * `GET /patients/{pid}/weight-trend?weeks=`. `null` = there is no trend yet (`404 WeightTrendNotFound`).
+     * Offline (or on 5xx) it returns the phone's latest copy, if any.
      */
     suspend fun getWeightTrend(patientId: PatientId, weeks: Int): Result<WeightTrend?>
 
-    /** El último autopesaje guardado, para el Snackbar de PT13.1; `null` si ya se mostró. */
+    /** The latest saved self weigh-in, for the Snackbar; `null` if it was already shown. */
     val savedNotice: Flow<SelfWeighInOutcome?>
 
     fun consumeSavedNotice()

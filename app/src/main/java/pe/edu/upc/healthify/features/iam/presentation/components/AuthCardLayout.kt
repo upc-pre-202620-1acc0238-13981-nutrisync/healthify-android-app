@@ -43,7 +43,7 @@ import pe.edu.upc.healthify.core.designsystem.component.SystemBarsAppearance
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 import pe.edu.upc.healthify.core.designsystem.theme.elevation
 
-// Decoración de fondo de S3/S4 («Decoración · forma»).
+// Background decoration of the sign-up and sign-in screens (the "Decoration · shape" layer).
 private val LimeShapeSize = 200.dp
 private val LimeShapeOffsetX = 230.dp
 private val LimeShapeOffsetY = (-85).dp
@@ -53,14 +53,14 @@ private const val LIME_SHAPE_ALPHA = 0.28f
 private const val GREEN_SHAPE_ALPHA = 0.25f
 
 /**
- * Patrón de S3 y S4: fondo de color con dos formas decorativas, un encabezado opcional (logo de S4) y una tarjeta
- * blanca con esquinas superiores de 28 dp que llega al borde inferior.
+ * Sign-up and sign-in pattern: colored background with two decorative shapes, an optional header (the sign-in
+ * logo) and a white card with 28 dp top corners that reaches the bottom edge.
  *
- * Teclado (S3.K / S4.3): el contenido se desplaza con `imePadding` y, mientras el teclado está abierto, la acción
- * principal [keyboardAction] queda fija sobre él («Acción sobre el teclado», Elevation/2). Con el teclado cerrado
- * la acción va dentro de la tarjeta; [content] recibe `true` cuando debe omitirla.
+ * Keyboard: the content moves with `imePadding` and, while the keyboard is open, the main action
+ * [keyboardAction] stays pinned above it ("Action above the keyboard", Elevation/2). With the keyboard closed
+ * the action goes inside the card; [content] receives `true` when it must leave it out.
  *
- * @param greenShapeOffsetY S3 la ubica en y = 9 y S4 en y = 75 (relativo al frame).
+ * @param greenShapeOffsetY sign-up places it at y = 9 and sign-in at y = 75 (relative to the frame).
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -109,8 +109,8 @@ fun AuthCardLayout(
                     .weight(1f)
                     .fillMaxWidth(),
             ) {
-                // La tarjeta llega al borde inferior aunque su contenido sea corto, y crece con scroll si es largo
-                // (errores, fuente al 200 %): su alto mínimo es lo que queda bajo el encabezado.
+                // The card reaches the bottom edge even when its content is short, and scrolls when it is long
+                // (errors, 200 % font): its minimum height is whatever is left below the header.
                 val headerSpace = if (header != null) headerHeight + dimens.space24 else dimens.space0
                 val cardMinHeight = (maxHeight - statusBarTop - dimens.space24 - headerSpace).coerceAtLeast(dimens.space0)
                 Column(

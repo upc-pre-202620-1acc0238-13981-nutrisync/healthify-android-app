@@ -24,7 +24,7 @@ class JpegMetadataStripperTest {
     private val huffman = segment(0xC4, ByteArray(20) { 1 })
     private val scanHeader = segment(0xDA, byteArrayOf(1, 1, 0, 0, 0x3F, 0))
 
-    /** Datos de imagen con un marcador de reinicio y un 0xFF escapado (FF 00): se copian tal cual. */
+    /** Image data with a restart marker and an escaped 0xFF (FF 00): copied as is. */
     private val entropy = byteArrayOf(0x12, 0x34, 0xFF.toByte(), 0x00, 0x56, 0xFF.toByte(), 0xD0.toByte(), 0x78)
     private val eoi = byteArrayOf(0xFF.toByte(), 0xD9.toByte())
     private val soi = byteArrayOf(0xFF.toByte(), 0xD8.toByte())

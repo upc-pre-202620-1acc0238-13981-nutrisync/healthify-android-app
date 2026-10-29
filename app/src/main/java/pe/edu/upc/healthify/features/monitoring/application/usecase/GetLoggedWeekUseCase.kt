@@ -7,7 +7,7 @@ import java.time.Clock
 import java.time.LocalDate
 import javax.inject.Inject
 
-/** PT3 «Tu semana»: qué días de los últimos 7 (hasta hoy en el teléfono) tienen registro. */
+/** Home "Your week": which of the last 7 days (up to today on the phone) have logs. */
 class GetLoggedWeekUseCase @Inject constructor(
     private val repository: PatientMonitoringRepository,
     private val clock: Clock,

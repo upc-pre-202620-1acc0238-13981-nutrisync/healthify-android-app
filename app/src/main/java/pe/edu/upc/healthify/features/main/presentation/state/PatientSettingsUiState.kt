@@ -2,29 +2,29 @@ package pe.edu.upc.healthify.features.main.presentation.state
 
 import pe.edu.upc.healthify.features.iam.domain.valueobject.PreferredLanguage
 
-/** PT21 · Ajustes del paciente (+ PT21.I hoja de idioma y la descarga de la copia de datos). */
+/** Patient settings (+ the language sheet and the data copy download). */
 data class PatientSettingsUiState(
     val fullName: String = "",
     val email: String = "",
     val language: PreferredLanguage = PreferredLanguage.DEFAULT,
-    /** «Funciones con IA · Activadas/Desactivadas»; `null` mientras no se sabe. */
+    /** "AI features · On/Off"; `null` while unknown. */
     val aiFeaturesActive: Boolean? = null,
     val isOffline: Boolean = false,
     val showLanguageSheet: Boolean = false,
-    /** «Descargar una copia de mis datos». */
+    /** "Download a copy of my data". */
     val dataExport: DataExportStatus = DataExportStatus.Idle,
 )
 
-/** Estado de la descarga de la copia de datos (ZIP de CSV). */
+/** State of the data copy download (ZIP of CSV files). */
 sealed interface DataExportStatus {
     data object Idle : DataExportStatus
 
-    /** Descargando y guardando en el archivo elegido: el ítem se deshabilita. */
+    /** Downloading and saving to the chosen file: the item is disabled. */
     data object InProgress : DataExportStatus
 
-    /** «Listo, guardamos tu copia». */
+    /** "Done, we saved your copy". */
     data object Saved : DataExportStatus
 
-    /** No se pudo; [offline] si fue por falta de conexión. */
+    /** It failed; [offline] if it was for lack of connection. */
     data class Failed(val offline: Boolean) : DataExportStatus
 }

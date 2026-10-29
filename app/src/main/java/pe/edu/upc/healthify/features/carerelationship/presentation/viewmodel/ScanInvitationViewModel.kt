@@ -27,10 +27,10 @@ import pe.edu.upc.healthify.features.iam.application.usecase.SignOutUseCase
 import javax.inject.Inject
 
 /**
- * PT1 · Escanear invitación. Compone Iam (paciente con sesión, cerrar sesión) y CareRelationship (canje, F5).
+ * Scan invitation. Combines Iam (signed-in patient, sign out) and CareRelationship (redeem).
  *
- * La cámara entrega el mismo QR muchas veces por segundo: se canjea uno a la vez y un código ya rechazado no se
- * vuelve a enviar hasta leer otro distinto (el token es de un solo uso y cada intento cuenta en el servidor).
+ * The camera delivers the same QR code many times per second: one is redeemed at a time and a code already rejected
+ * is not sent again until a different one is read (the token is single-use and every attempt counts on the server).
  */
 @HiltViewModel
 class ScanInvitationViewModel @Inject constructor(
@@ -51,7 +51,7 @@ class ScanInvitationViewModel @Inject constructor(
     private val _events = Channel<ScanInvitationEvent>(Channel.BUFFERED)
     val events: Flow<ScanInvitationEvent> = _events.receiveAsFlow()
 
-    /** Último contenido rechazado. Nunca va al UiState: puede ser un token (secreto). */
+    /** Last rejected content. Never goes into the UiState: it may be a token (a secret). */
     private var lastRejectedContent: String? = null
 
     init {
@@ -71,7 +71,7 @@ class ScanInvitationViewModel @Inject constructor(
         viewModelScope.launch {
             val user = observeCurrentUser().first()
             if (user == null) {
-                // La sesión terminó mientras se leía: el grafo raíz ya lleva a S6/S2.
+                // The session ended while scanning: the root graph already routes to session expired or welcome.
                 _state.update { it.copy(isRedeeming = false) }
                 return@launch
             }
@@ -83,7 +83,7 @@ class ScanInvitationViewModel @Inject constructor(
                 _events.send(ScanInvitationEvent.NavigateToConsent(link.id.value))
             } else {
                 val error = result.domainErrorOrNull().toScanInvitationError()
-                // Sin red o con un error del servidor el mismo código puede volver a intentarse.
+                // Offline or after a server error the same code can be retried.
                 lastRejectedContent = content.takeUnless { error.isRetryable }
                 _state.update { it.copy(isRedeeming = false, error = error) }
             }
@@ -94,7 +94,7 @@ class ScanInvitationViewModel @Inject constructor(
 
     fun onNoCameraDismiss() = _state.update { it.copy(showNoCameraDialog = false) }
 
-    /** «Atrás» cuando PT1 es la primera pantalla: PT21.1 «¿Cerrar sesión?». */
+    /** "Back" when this is the first screen: the "Sign out?" dialog. */
     fun onBackAtRoot() = _state.update { it.copy(showSignOutDialog = true) }
 
     fun onSignOutDismiss() = _state.update { it.copy(showSignOutDialog = false) }
@@ -113,9 +113,9 @@ class ScanInvitationViewModel @Inject constructor(
         get() = this == ScanInvitationError.Network || this == ScanInvitationError.Unexpected
 }
 
-/** Validaciones de la nota de PT1 por `extensions.code` (X-3); sin código decide el status. */
+/** Scan note validations by `extensions.code`; without a code, the status decides. */
 internal fun DomainError?.toScanInvitationError(): ScanInvitationError = when (this) {
-    // `InvitationNotValid` (también el rechazo local del formato) y el 400 de model binding: «no es válido».
+    // `InvitationNotValid` (also the local format rejection) and the model binding 400: "not valid".
     is DomainError.Validation ->
         if (code == CODE_INVITATION_EXPIRED) ScanInvitationError.Expired else ScanInvitationError.InvalidFormat
     is DomainError.NotFound -> ScanInvitationError.NotFound

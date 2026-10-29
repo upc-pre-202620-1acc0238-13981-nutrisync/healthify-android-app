@@ -81,7 +81,7 @@ class ScanInvitationViewModelTest {
                 (ScanInvitationError.SamePractitioner to R.string.scan_invitation_error_same_practitioner),
             DomainError.Network to (ScanInvitationError.Network to R.string.error_network),
             DomainError.Unexpected("HTTP_500") to (ScanInvitationError.Unexpected to R.string.ds_error_state_body),
-            // 403 de rol sin cuerpo: no es auto-vínculo.
+            // Role 403 without a body: not a self-link.
             DomainError.Forbidden(null) to (ScanInvitationError.Unexpected to R.string.ds_error_state_body),
         )
         expected.forEach { (error, pair) ->

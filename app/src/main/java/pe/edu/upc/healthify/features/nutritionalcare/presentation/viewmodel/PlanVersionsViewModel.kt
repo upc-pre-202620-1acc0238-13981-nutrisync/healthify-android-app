@@ -25,8 +25,8 @@ import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.PlanVers
 import javax.inject.Inject
 
 /**
- * PT4.1 · Versiones del plan (`GET /patients/{pid}/plan-versions`, NC-8). Desde una consulta anterior (PT25) llega con
- * la versión cuyo detalle se abre al cargar.
+ * Plan versions (`GET /patients/{pid}/plan-versions`). From a past consultation it arrives with
+ * the version whose detail opens on load.
  */
 @HiltViewModel
 class PlanVersionsViewModel @Inject constructor(
@@ -68,7 +68,7 @@ class PlanVersionsViewModel @Inject constructor(
                 it.copy(
                     isLoading = false,
                     versions = versions?.map(PlanVersion::toItem) ?: it.versions,
-                    // Sin red se muestra el estado «Sin conexión», no un error.
+                    // Offline shows the "No connection" state, not an error.
                     loadFailed = versions == null && result.domainErrorOrNull() != DomainError.Network,
                     isOffline = it.isOffline || result.domainErrorOrNull() == DomainError.Network,
                 )

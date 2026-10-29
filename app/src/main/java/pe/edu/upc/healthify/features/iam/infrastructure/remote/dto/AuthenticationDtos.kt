@@ -2,7 +2,7 @@ package pe.edu.upc.healthify.features.iam.infrastructure.remote.dto
 
 import kotlinx.serialization.Serializable
 
-/** `SignInResource(Email, Password)` — sin `role` (login único, IAM-5). */
+/** `SignInResource(Email, Password)`, without `role` (single sign-in). */
 @Serializable
 data class SignInRequestDto(
     val email: String,
@@ -11,7 +11,7 @@ data class SignInRequestDto(
 
 /**
  * `SignInResponseResource(UserId, Email, Role, SessionId, Token, GivenNames, FamilyNames, PreferredLanguage,
- * RefreshToken, ExpiresAt)` (F2, IAM-1/3/4).
+ * RefreshToken, ExpiresAt)`.
  */
 @Serializable
 data class SignInResponseDto(
@@ -27,13 +27,13 @@ data class SignInResponseDto(
     val expiresAt: String? = null,
 )
 
-/** Cuerpo de `POST /authentication/token-refreshes` (IAM-4). */
+/** Body of `POST /authentication/token-refreshes`. */
 @Serializable
 data class TokenRefreshRequestDto(
     val refreshToken: String,
 )
 
-/** `200` de `POST /authentication/token-refreshes`: `{ token, refreshToken, expiresAt }`. */
+/** `200` from `POST /authentication/token-refreshes`: `{ token, refreshToken, expiresAt }`. */
 @Serializable
 data class TokenRefreshResponseDto(
     val token: String,
@@ -41,34 +41,34 @@ data class TokenRefreshResponseDto(
     val expiresAt: String? = null,
 )
 
-/** `PasswordResetRequestResource(Email)` (IAM-2). */
+/** `PasswordResetRequestResource(Email)`. */
 @Serializable
 data class PasswordResetRequestDto(
     val email: String,
 )
 
-/** `PasswordResetVerificationResource(Email, Code)` (IAM-2). */
+/** `PasswordResetVerificationResource(Email, Code)`. */
 @Serializable
 data class PasswordResetVerificationRequestDto(
     val email: String,
     val code: String,
 )
 
-/** `200` de `POST /authentication/password-reset-verifications`: `{ resetToken, expiresAt }`. */
+/** `200` from `POST /authentication/password-reset-verifications`: `{ resetToken, expiresAt }`. */
 @Serializable
 data class PasswordResetVerificationResponseDto(
     val resetToken: String,
     val expiresAt: String? = null,
 )
 
-/** `PasswordResetResource(ResetToken, NewPassword)` (IAM-2). */
+/** `PasswordResetResource(ResetToken, NewPassword)`. */
 @Serializable
 data class PasswordResetDto(
     val resetToken: String,
     val newPassword: String,
 )
 
-/** `SignUpResource(Email, Password, Role, GivenNames, FamilyNames)` (F1, IAM-1). */
+/** `SignUpResource(Email, Password, Role, GivenNames, FamilyNames)`. */
 @Serializable
 data class SignUpRequestDto(
     val email: String,

@@ -19,7 +19,7 @@ import javax.inject.Singleton
 
 private val Context.reminderDataStore: DataStore<Preferences> by preferencesDataStore(name = "reminders")
 
-/** PT22 · recordatorios locales. */
+/** Local reminders. */
 @Module
 @InstallIn(SingletonComponent::class)
 object ReminderProvidesModule {

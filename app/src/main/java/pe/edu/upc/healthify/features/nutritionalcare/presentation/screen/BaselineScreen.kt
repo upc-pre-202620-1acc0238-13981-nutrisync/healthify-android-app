@@ -63,8 +63,8 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
 /**
- * EV-1 · Datos base (solo la primera vez; luego se editan desde Resumen o EV-2). ‹ y «Guardar y salir» vuelven a la
- * pantalla desde donde se abrió.
+ * Baseline (only the first time; afterwards it is edited from Summary or the measurement step). ‹ and "Save and
+ * exit" go back to the screen it was opened from.
  */
 @Composable
 fun BaselineScreen(
@@ -274,7 +274,7 @@ internal fun ErrorLine(text: String) {
     Text(text = text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
 }
 
-/** Selector de fecha (Material 3): solo fechas pasadas. */
+/** Date picker (Material 3): past dates only. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun BirthDatePicker(initial: LocalDate?, onConfirm: (LocalDate) -> Unit, onDismiss: () -> Unit) {
@@ -306,7 +306,7 @@ private fun BirthDatePicker(initial: LocalDate?, onConfirm: (LocalDate) -> Unit,
     }
 }
 
-@Preview(name = "EV-1 · Datos base", widthDp = 360, heightDp = 800)
+@Preview(name = "Baseline", widthDp = 360, heightDp = 800)
 @Composable
 private fun BaselinePreview() {
     HealthifyTheme {
@@ -329,7 +329,7 @@ private fun BaselinePreview() {
     }
 }
 
-@Preview(name = "EV-1 · Faltan datos", widthDp = 360, heightDp = 800)
+@Preview(name = "Baseline - missing data", widthDp = 360, heightDp = 800)
 @Composable
 private fun BaselineErrorsPreview() {
     HealthifyTheme {
@@ -353,7 +353,7 @@ private fun BaselineErrorsPreview() {
     }
 }
 
-@Preview(name = "EV-1 · Editar (cargando)", widthDp = 360, heightDp = 800)
+@Preview(name = "Baseline - edit (loading)", widthDp = 360, heightDp = 800)
 @Composable
 private fun BaselineEditingPreview() {
     HealthifyTheme {

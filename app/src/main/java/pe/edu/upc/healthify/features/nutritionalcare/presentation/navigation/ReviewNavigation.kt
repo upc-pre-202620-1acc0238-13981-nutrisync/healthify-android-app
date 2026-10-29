@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.screen.AdjustProposalScreen
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.screen.ReviewItemScreen
 
-/** PR14 / PR14.IA · un ítem de la bandeja (abre PR14.IA si la señal trae plan propuesto por IA). */
+/** An inbox item (opens the AI proposal view if the signal carries an AI-proposed plan). */
 @Serializable
 data class ReviewItemRoute(val reviewItemId: Long) {
     companion object {
@@ -14,7 +14,7 @@ data class ReviewItemRoute(val reviewItemId: Long) {
     }
 }
 
-/** PR14.IA-A · Ajustar el plan propuesto por IA. */
+/** Adjust the AI-proposed plan. */
 @Serializable
 data class AdjustProposalRoute(val reviewItemId: Long) {
     companion object {
@@ -24,16 +24,16 @@ data class AdjustProposalRoute(val reviewItemId: Long) {
 
 data class ReviewNavigationCallbacks(
     val onBack: () -> Unit,
-    /** Resuelto (PR14, PR14.IA o PR14.IA-A): vuelve a la bandeja y muestra PR13.1 «Señal resuelta». */
+    /** Resolved (with or without a plan): back to the inbox, which shows the "Signal resolved" snackbar. */
     val onResolved: (patientName: String?) -> Unit,
-    /** El ítem ya no está: vuelve a la bandeja (que se relee). */
+    /** The item is gone: back to the inbox (which is reloaded). */
     val onClose: () -> Unit,
     val onOpenAdjust: (reviewItemId: Long) -> Unit,
-    /** PR14 «Ajustar el plan ahora» → ficha del paciente. */
+    /** "Adjust the plan now" → patient profile. */
     val onOpenPatient: (patientId: Long, careLinkId: Long, patientName: String) -> Unit,
 )
 
-/** PR14, PR14.IA y PR14.IA-A en el grafo raíz (pantallas completas sobre el shell del nutricionista). */
+/** Review item and AI proposal adjustment in the root graph (full screens over the nutritionist shell). */
 fun NavGraphBuilder.reviewDestinations(callbacks: ReviewNavigationCallbacks) {
     composable<ReviewItemRoute> {
         ReviewItemScreen(

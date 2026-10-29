@@ -31,8 +31,8 @@ import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
 /**
- * PT14.4 Ideas para hoy → PT14.5 Detalle → «Registrar esta comida» (IA-3 + IN-6). Las ideas solo existen con
- * conexión (PT14.4.O); registrarlas sin conexión deja cada alimento en la cola.
+ * Ideas for today → idea detail → "Log this meal". Ideas only exist online; logging them
+ * offline leaves each food in the queue.
  */
 @HiltViewModel
 class MealIdeasViewModel @Inject constructor(
@@ -49,10 +49,10 @@ class MealIdeasViewModel @Inject constructor(
     private val _events = Channel<MealIdeasEvent>(Channel.BUFFERED)
     val events: Flow<MealIdeasEvent> = _events.receiveAsFlow()
 
-    /** Las ideas ya vistas: «Ver otras ideas» las excluye. */
+    /** Ideas already seen: "See other ideas" excludes them. */
     private val seenIdeaIds = linkedSetOf<String>()
 
-    /** Un `clientEntryId` por ingrediente y por idea: reintentar la misma idea nunca la duplica. */
+    /** One `clientEntryId` per ingredient and per idea: retrying the same idea never duplicates it. */
     private val clientEntryIds = mutableMapOf<String, List<ClientEntryId>>()
 
     init {
@@ -70,14 +70,14 @@ class MealIdeasViewModel @Inject constructor(
         viewModelScope.launch { load(more = false) }
     }
 
-    /** «Ver otras ideas». */
+    /** "See other ideas". */
     fun onMoreIdeas() {
         viewModelScope.launch { load(more = true) }
     }
 
     fun onIdeaSelected(ideaId: String) = _state.update { it.copy(selectedIdeaId = ideaId) }
 
-    /** Atrás desde el detalle vuelve a la lista. `false` si ya está en la lista (la pantalla se cierra). */
+    /** Back from the detail returns to the list. `false` if it is already on the list (the screen closes). */
     fun onBack(): Boolean {
         if (_state.value.selectedIdeaId == null) return false
         _state.update { it.copy(selectedIdeaId = null) }
@@ -108,7 +108,7 @@ class MealIdeasViewModel @Inject constructor(
         }
     }
 
-    /** PT14.5 «Registrar esta comida». */
+    /** "Log this meal". */
     fun onRegisterIdea() {
         val current = _state.value
         val idea = current.selectedIdea ?: return
@@ -130,7 +130,7 @@ class MealIdeasViewModel @Inject constructor(
         }
     }
 
-    /** Cada error del backend (`extensions.code`, X-3) a su propio mensaje. */
+    /** Each backend error (`extensions.code`) to its own message. */
     private fun DomainError?.toFailure(): MealIdeasFailure = when (this) {
         is DomainError.Validation -> if (code == CODE_NOT_ENOUGH) MealIdeasFailure.NOT_ENOUGH_REMAINING else MealIdeasFailure.GENERIC
         is DomainError.NotFound -> MealIdeasFailure.NO_TARGETS

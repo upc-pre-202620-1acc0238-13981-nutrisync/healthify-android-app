@@ -31,16 +31,16 @@ import pe.edu.upc.healthify.core.designsystem.component.HealthifyButton
 import pe.edu.upc.healthify.core.designsystem.component.SystemBarsAppearance
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 
-// Medidas del frame «PT24 · Consentimiento retirado».
+// Measurements from the consent withdrawn frame.
 private val CheckBadgeSize = 84.dp
 
 /**
- * PT24 · Consentimiento retirado. Estático y disponible sin conexión (la acción ya terminó). Tono de decisión legítima
- * y cerrada, sin pérdida ni culpa, con la puerta abierta a vincularse con alguien más.
+ * Consent withdrawn. Static and available offline (the action already finished). The tone is of a legitimate,
+ * settled decision, with no loss or blame, leaving the door open to link with someone else.
  */
 @Composable
 fun ConsentWithdrawnScreen(onDone: () -> Unit, modifier: Modifier = Modifier) {
-    // Atrás no vuelve a PT23: el vínculo ya se cerró.
+    // Back does not return to the withdraw screen: the care link is already closed.
     BackHandler(onBack = onDone)
     ConsentWithdrawnContent(onDone = onDone, modifier = modifier)
 }
@@ -128,7 +128,7 @@ fun ConsentWithdrawnContent(onDone: () -> Unit, modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(name = "PT24 · Consentimiento retirado", widthDp = 360, heightDp = 800)
+@Preview(name = "Consent withdrawn", widthDp = 360, heightDp = 800)
 @Composable
 private fun ConsentWithdrawnPreview() {
     HealthifyTheme { ConsentWithdrawnContent(onDone = {}) }

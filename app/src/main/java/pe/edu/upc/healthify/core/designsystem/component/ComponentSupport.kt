@@ -14,9 +14,9 @@ import androidx.compose.ui.Modifier
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 
 /**
- * Estado «Pressed» de los componentes del Figma. Los componentes pintan el color sólido de presionado del
- * Figma (p. ej. `secondaryPressed`) en lugar del ripple de M3. [forced] solo lo usan las previews y el catálogo
- * para mostrar la variante «Pressed» sin tocar la pantalla.
+ * "Pressed" state of the Figma components. Components paint the Figma's solid pressed color
+ * (e.g. `secondaryPressed`) instead of the M3 ripple. [forced] is only used by previews and the catalog
+ * to show the "Pressed" variant without touching the screen.
  */
 @Composable
 internal fun InteractionSource.isPressed(forced: Boolean): Boolean {
@@ -24,7 +24,7 @@ internal fun InteractionSource.isPressed(forced: Boolean): Boolean {
     return forced || pressed
 }
 
-/** Fondo `surface` y margen de pantalla para las previews de componentes. */
+/** `surface` background and screen margin for component previews. */
 @Composable
 internal fun ComponentPreview(content: @Composable ColumnScope.() -> Unit) {
     HealthifyTheme {

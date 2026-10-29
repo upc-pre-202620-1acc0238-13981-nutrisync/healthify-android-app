@@ -73,7 +73,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import kotlin.math.abs
 
-// Gráfico «Esta semana» del Figma: barras de 4 dp de radio; alto según el resultado del día (no es una cantidad).
+// Figma "This week" chart: bars with 4 dp radius; height by the day's outcome (not a quantity).
 private val BarMaxHeight = 72.dp
 private val BarMetHeight = 64.dp
 private val BarShortHeight = 40.dp
@@ -81,13 +81,12 @@ private val BarUnloggedHeight = 8.dp
 private val LegendDotSize = 8.dp
 
 /**
- * PAC-2 · pestaña Seguimiento: semana L–D, tendencia del autopesaje, días con registro, resumen generado con IA
- * («Revísalo antes de usarlo en consulta»), diario de hoy de **solo lectura** y la última medición clínica (serie aparte
- * del autopesaje).
+ * Follow-up tab: Mon–Sun week, self-weighing trend, days with logs, AI-generated summary ("Review it before using it
+ * in a visit"), today's **read-only** diary and the last clinical measurement (a series separate from self-weighing).
  *
- * DECISIÓN PAC-2: el frame solo dibuja «Dentro de metas» y «Por debajo». «Por encima» usa `tertiary` y «Sin registro» es
- * una marca baja con borde, sin relleno: un día sin registro no es incumplimiento (regla ética 3) y nunca se pinta como
- * «Por debajo» ni en rojo. La leyenda muestra solo los resultados de la semana.
+ * The frame only draws "Within goals" and "Below". "Above" uses `tertiary` and "No log" is a low outlined mark with no
+ * fill: a day without logs is not non-compliance and is never drawn as "Below" or in red. The legend shows only the
+ * week's outcomes.
  */
 @Composable
 fun PatientFollowUpTab(
@@ -266,7 +265,7 @@ private fun ComplianceOutcome.legendRes(): Int = when (this) {
     ComplianceOutcome.UNLOGGED -> R.string.follow_up_legend_unlogged
 }
 
-/** «Tendencia de peso · −0,3 kg/sem · Autopesaje · 4 semanas». */
+/** "Weight trend · −0.3 kg/wk · Self-weighing · 4 weeks". */
 @Composable
 private fun TrendCard(trend: PanelWeightTrend?, modifier: Modifier) {
     val slope = trend?.slopeKgPerWeek
@@ -279,7 +278,7 @@ private fun TrendCard(trend: PanelWeightTrend?, modifier: Modifier) {
     )
 }
 
-/** «Registro · 6 de 7 días · Comidas registradas». */
+/** "Logging · 6 of 7 days · Meals logged". */
 @Composable
 private fun LoggedDaysCard(ratio: DaysRatio?, modifier: Modifier) {
     MetricCard(
@@ -290,7 +289,7 @@ private fun LoggedDaysCard(ratio: DaysRatio?, modifier: Modifier) {
     )
 }
 
-/** IA-5 · borde `tertiary`; el texto de la IA ya llega en el idioma del lector. */
+/** AI summary · `tertiary` border; the AI text already arrives in the reader's language. */
 @Composable
 private fun AiSummaryCard(text: String) {
     val scheme = MaterialTheme.colorScheme
@@ -305,7 +304,7 @@ private fun AiSummaryCard(text: String) {
     }
 }
 
-/** «Diario de hoy» (solo lectura: el profesional no escribe ni corrige entradas). */
+/** "Today's diary" (read-only: the practitioner never writes or corrects entries). */
 @Composable
 private fun DiaryCard(entries: List<PanelDiaryEntry>) {
     val dimens = HealthifyTheme.dimens
@@ -355,7 +354,7 @@ private fun PanelEntryProvenance.labelRes(): Int = when (this) {
     PanelEntryProvenance.OFF_PLAN -> R.string.follow_up_provenance_off_plan
 }
 
-/** «Última medición clínica · 3 sept. · en ayunas, sin zapatos · 74.2 kg». */
+/** "Last clinical measurement · Sep 3 · fasting, no shoes · 74.2 kg". */
 @Composable
 private fun ClinicalMeasurementCard(measurement: PanelClinicalMeasurement) {
     val dimens = HealthifyTheme.dimens
@@ -439,7 +438,7 @@ private val previewPanel = PatientMonitoringPanel(
     ),
 )
 
-@Preview(name = "PAC-2 · Seguimiento", widthDp = 360, heightDp = 800)
+@Preview(name = "Follow-up", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientFollowUpPreview() {
     HealthifyTheme {
@@ -454,7 +453,7 @@ private fun PatientFollowUpPreview() {
     }
 }
 
-@Preview(name = "PAC-2 · Sin resumen de IA ni registros hoy", widthDp = 360, heightDp = 800)
+@Preview(name = "No AI summary or logs today", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientFollowUpNoAiPreview() {
     HealthifyTheme {
@@ -465,13 +464,13 @@ private fun PatientFollowUpNoAiPreview() {
     }
 }
 
-@Preview(name = "PAC-2 · Cargando", widthDp = 360, heightDp = 800)
+@Preview(name = "Loading", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientFollowUpLoadingPreview() {
     HealthifyTheme { PatientFollowUpContent(state = PatientFollowUpUiState(), onRetry = {}) }
 }
 
-@Preview(name = "PAC-2 · Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientFollowUpOfflinePreview() {
     HealthifyTheme {

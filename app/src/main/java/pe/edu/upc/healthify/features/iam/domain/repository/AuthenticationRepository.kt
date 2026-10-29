@@ -10,39 +10,39 @@ import pe.edu.upc.healthify.features.iam.domain.valueobject.PasswordResetCode
 import pe.edu.upc.healthify.features.iam.domain.valueobject.PasswordResetToken
 import pe.edu.upc.healthify.features.iam.domain.valueobject.SessionId
 
-/** Cuentas y sesiones contra el backend (§5.1 Iam). Los errores llegan como `DomainError` con el `code` de X-3. */
+/** Accounts and sessions against the backend. Errors arrive as `DomainError` with the backend error `code`. */
 interface AuthenticationRepository {
 
-    /** `POST /authentication/sign-up` (F1). No inicia sesión. */
+    /** `POST /authentication/sign-up`. Does not sign in. */
     suspend fun signUp(account: NewAccount): Result<Unit>
 
-    /** `POST /authentication/sign-in` (F2). Si responde, la sesión queda guardada en el dispositivo. */
+    /** `POST /authentication/sign-in`. On success, the session is stored on the device. */
     suspend fun signIn(credentials: Credentials): Result<SessionUser>
 
     /**
-     * `POST /authentication/password-reset-requests` (IAM-2). Siempre `202`, exista o no la cuenta: el éxito no dice
-     * si se envió un correo.
+     * `POST /authentication/password-reset-requests`. Always `202`, whether or not the account exists: success does
+     * not tell whether an email was sent.
      */
     suspend fun requestPasswordReset(email: EmailAddress): Result<Unit>
 
     /**
-     * `POST /authentication/password-reset-verifications` (IAM-2). Un código correcto se cambia por el token que fija
-     * la contraseña; uno incorrecto responde `PasswordResetCodeInvalid` y gasta un intento.
+     * `POST /authentication/password-reset-verifications`. A correct code is exchanged for the token that sets the
+     * password; a wrong one returns `PasswordResetCodeInvalid` and uses up an attempt.
      */
     suspend fun verifyPasswordResetCode(email: EmailAddress, code: PasswordResetCode): Result<PasswordResetToken>
 
     /**
-     * `POST /authentication/password-resets` (IAM-2), con el token de la verificación. Si responde, todas las sesiones
-     * de la cuenta terminaron; no inicia sesión.
+     * `POST /authentication/password-resets`, with the verification token. On success, every session of the account
+     * has ended; it does not sign in.
      */
     suspend fun resetPassword(reset: PasswordReset): Result<Unit>
 
-    /** `POST /authentication/sign-out` (F3): termina la sesión en el backend y borra su refresh token. */
+    /** `POST /authentication/sign-out`: ends the session on the backend and deletes its refresh token. */
     suspend fun signOutRemotely(): Result<Unit>
 
     /**
-     * `GET /sessions/{sessionId}/navigation-shell`. `null` si la sesión no tiene shell (la política de F2 falló) o
-     * ya está terminada.
+     * `GET /sessions/{sessionId}/navigation-shell`. `null` if the session has no shell (the shell policy failed) or
+     * has already ended.
      */
     suspend fun getNavigationShell(sessionId: SessionId): Result<NavigationShell?>
 }

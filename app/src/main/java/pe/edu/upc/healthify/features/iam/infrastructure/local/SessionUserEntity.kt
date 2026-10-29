@@ -4,7 +4,7 @@ import androidx.room3.ColumnInfo
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
 
-/** El usuario con sesión en el dispositivo. Una sola fila ([slot] fijo): hay a lo sumo una sesión. */
+/** The user signed in on the device. A single row (fixed [slot]): there is at most one session. */
 @Entity(tableName = "session_user")
 data class SessionUserEntity(
     @PrimaryKey
@@ -16,13 +16,13 @@ data class SessionUserEntity(
     val givenNames: String,
     @ColumnInfo(name = "family_names")
     val familyNames: String,
-    /** `Patient` o `Practitioner`, como en el backend. */
+    /** `Patient` or `Practitioner`, as on the backend. */
     val role: String,
     @ColumnInfo(name = "preferred_language")
     val preferredLanguage: String,
     @ColumnInfo(name = "session_id")
     val sessionId: Long,
-    /** `UserResource.CreatedAt` (ISO-8601), leído una vez con `GET /users/{id}`; `null` hasta entonces. */
+    /** `UserResource.CreatedAt` (ISO-8601), read once with `GET /users/{id}`; `null` until then. */
     @ColumnInfo(name = "created_at")
     val createdAt: String? = null,
 ) {

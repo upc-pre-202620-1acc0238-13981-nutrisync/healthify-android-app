@@ -3,8 +3,8 @@ package pe.edu.upc.healthify.features.intake.presentation.navigation
 import kotlinx.serialization.Serializable
 
 /**
- * PT5 → PT6 → PT6.1 → PT7 / PT7.2 / PT7.3 → PT8: registro por foto en una sola ruta (los pasos son estados de un
- * mismo ViewModel). Con [pendingPhotoId] arranca analizando una foto tomada sin conexión.
+ * Photo logging in a single route, from camera to confirmation (the steps are states of one
+ * ViewModel). With [pendingPhotoId] it starts by analyzing a photo taken offline.
  */
 @Serializable
 data class MealPhotoRoute(val pendingPhotoId: String? = null) {
@@ -14,8 +14,8 @@ data class MealPhotoRoute(val pendingPhotoId: String? = null) {
 }
 
 /**
- * PT9 / PT9.K / PT10 / PT10.1 / PT10.3 · registrar a mano. Con [pickFoodOnly] solo se elige un alimento y se
- * devuelve a la pantalla anterior (PT8 «¿No es este plato? Toca para cambiarlo.»).
+ * Logging by hand. With [pickFoodOnly] it only picks a food and returns it
+ * to the previous screen ("Not this dish? Tap to change it.").
  */
 @Serializable
 data class ManualMealRoute(val pickFoodOnly: Boolean = false) {
@@ -24,7 +24,7 @@ data class ManualMealRoute(val pickFoodOnly: Boolean = false) {
     }
 }
 
-/** PT8 de una entrada «Por confirmar» del diario: la entrada se relee del día [date] (`2026-09-09`). */
+/** Confirming a diary entry left "To confirm": the entry is read again from day [date] (`2026-09-09`). */
 @Serializable
 data class ConfirmEntryRoute(val diaryEntryId: Long, val date: String) {
     companion object {
@@ -33,24 +33,24 @@ data class ConfirmEntryRoute(val diaryEntryId: Long, val date: String) {
     }
 }
 
-/** PT14.4 Ideas para hoy → PT14.5 Detalle (dos estados de la misma ruta). */
+/** Ideas for today → idea detail (two states of the same route). */
 @Serializable
 data object MealIdeasRoute
 
-/** PT12 · Autopesaje (se abre desde PT13 «Registrar autopesaje»). */
+/** Self weigh-in (opened from "Log self weigh-in" on the trend screen). */
 @Serializable
 data object SelfWeighInRoute
 
-/** PT19 · Pendientes por sincronizar. */
+/** Pending to sync. */
 @Serializable
 data object PendingSyncRoute
 
-/** Resultado de [ManualMealRoute] con `pickFoodOnly`: se deja en el `SavedStateHandle` de la pantalla anterior. */
+/** Result of [ManualMealRoute] with `pickFoodOnly`: left in the previous screen's `SavedStateHandle`. */
 object PickedFoodResult {
     const val KEY_ID = "picked_food_id"
     const val KEY_NAME = "picked_food_name"
 }
 
-/** PT22 · Recordatorios (+ PT22.M), desde PT21. */
+/** Reminders (and the permission dialog), opened from the menu. */
 @Serializable
 data object RemindersRoute

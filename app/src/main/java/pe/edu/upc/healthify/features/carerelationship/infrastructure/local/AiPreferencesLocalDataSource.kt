@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/** La última lectura de `ai-preferences` de cada paciente (JSON del recurso; solo banderas, nada clínico). */
+/** Each patient's last `ai-preferences` read (the resource's JSON; flags only, nothing clinical). */
 interface AiPreferencesLocalDataSource {
     suspend fun lastKnown(patientId: Long): String?
     suspend fun save(patientId: Long, json: String)

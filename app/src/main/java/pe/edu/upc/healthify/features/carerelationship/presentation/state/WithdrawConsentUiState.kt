@@ -1,10 +1,11 @@
 package pe.edu.upc.healthify.features.carerelationship.presentation.state
 
 /**
- * PT23 · Retirar consentimiento.
+ * Withdraw consent.
  *
- * @param showConfirmDialog PT23.M · confirmación final; sigue abierto mientras se retira («Retirando…»).
- * @param showNoActiveConsent «Tu consentimiento ya no está vigente.» (`NoActiveConsent`); al cerrarlo sigue a PT24.
+ * @param showConfirmDialog final confirmation; stays open while withdrawing ("Withdrawing…").
+ * @param showNoActiveConsent "Your consent is no longer current." (`NoActiveConsent`); closing it moves on to the
+ *   withdrawn screen.
  */
 data class WithdrawConsentUiState(
     val showConfirmDialog: Boolean = false,

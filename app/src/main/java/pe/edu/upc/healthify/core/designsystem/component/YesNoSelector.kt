@@ -20,12 +20,12 @@ import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 
 /**
- * «SelectorSiNo» del Figma: pregunta binaria **sin valor por defecto**. Reemplaza a los switches, que no
- * pueden representar «sin responder» (PT12 protocolo, PR14 ¿ajustaste el plan?).
+ * Figma yes/no selector ("SelectorSiNo"): binary question **with no default value**. Replaces switches,
+ * which cannot represent "unanswered" (e.g. the weigh-in protocol, "did you adjust the plan?").
  *
- * @param answer `null` = «SinResponder»; `true` = Sí; `false` = No.
- * @param isError muestra «Responde Sí o No» (estado «Error» del Figma, p. ej. al enviar sin responder).
- * @param errorText el texto del error si la pantalla tiene uno propio (PT12 «Responde si te pesaste en ayunas»).
+ * @param answer `null` = unanswered; `true` = Yes; `false` = No.
+ * @param isError shows "Answer Yes or No" (the Figma "Error" state, e.g. on submit without an answer).
+ * @param errorText the error text if the screen has its own (e.g. the weigh-in's fasting question).
  */
 @Composable
 fun YesNoSelector(
@@ -71,7 +71,7 @@ fun YesNoSelector(
     }
 }
 
-@Preview(name = "SelectorSiNo · SinResponder/Sí/No/Error", widthDp = 360, heightDp = 520)
+@Preview(name = "YesNoSelector · Unanswered/Yes/No/Error", widthDp = 360, heightDp = 520)
 @Composable
 private fun YesNoSelectorPreview() {
     ComponentPreview {

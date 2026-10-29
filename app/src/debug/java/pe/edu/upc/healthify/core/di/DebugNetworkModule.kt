@@ -9,8 +9,8 @@ import okhttp3.Interceptor
 import okhttp3.logging.HttpLoggingInterceptor
 
 /**
- * Solo en debug (la dependencia de logging es `debugImplementation`). Nivel HEADERS y con
- * `Authorization` redactado: los cuerpos de sign-in/token-refreshes llevan tokens y nunca se imprimen.
+ * Debug only (the logging dependency is `debugImplementation`). HEADERS level with
+ * `Authorization` redacted: sign-in/token-refreshes bodies carry tokens and are never printed.
  */
 @Module
 @InstallIn(SingletonComponent::class)

@@ -7,7 +7,7 @@ import java.time.Clock
 import java.time.LocalDate
 import javax.inject.Inject
 
-/** PT3 / PT15: cómo va **hoy** (el día del teléfono del paciente, F21). */
+/** How **today** is going (the day on the patient's phone). */
 class GetTodayProgressUseCase @Inject constructor(
     private val repository: PatientMonitoringRepository,
     private val clock: Clock,

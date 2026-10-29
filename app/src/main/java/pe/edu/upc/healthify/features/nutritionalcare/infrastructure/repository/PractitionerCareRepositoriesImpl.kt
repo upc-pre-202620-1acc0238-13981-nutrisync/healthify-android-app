@@ -39,8 +39,8 @@ import pe.edu.upc.healthify.features.nutritionalcare.infrastructure.remote.dto.T
 import javax.inject.Inject
 
 /**
- * Pasa el recurso por su mapper: un recurso que rompe una invariante del dominio (p. ej. metas en 0) se lee como
- * respuesta ilegible, igual que un JSON roto, en vez de tumbar la app.
+ * Runs the resource through its mapper: a resource that breaks a domain invariant (e.g. targets at 0) reads as an
+ * unreadable response, same as broken JSON, instead of crashing the app.
  */
 internal inline fun <T, R> Result<T>.mapResource(transform: (T) -> R): Result<R> = fold(
     onSuccess = { resource ->
@@ -57,7 +57,7 @@ internal inline fun <T, R> Result<T>.mapResource(transform: (T) -> R): Result<R>
 
 internal const val MALFORMED_RESPONSE = "MALFORMED_RESPONSE"
 
-/** Un 404 con [code] significa «todavía no hay» (`null`), no un error. */
+/** A 404 with [code] means "nothing yet" (`null`), not an error. */
 private fun <T> Result<T?>.notFoundAsNull(code: String): Result<T?> =
     if (domainErrorOrNull() == DomainError.NotFound(code)) Result.success(null) else this
 

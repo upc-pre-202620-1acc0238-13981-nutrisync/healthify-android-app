@@ -3,8 +3,8 @@ package pe.edu.upc.healthify.features.monitoring.presentation.state
 import pe.edu.upc.healthify.features.monitoring.domain.entity.PatientMonitoringPanel
 
 /**
- * PAC-2 · Seguimiento del paciente (solo lectura). [aiSummary] es el texto de IA-5 o `null` (la tarjeta no se muestra).
- * No se guarda en el teléfono.
+ * Patient follow-up (read-only). [aiSummary] is the AI summary text or `null` (the card is hidden).
+ * Not stored on the phone.
  */
 data class PatientFollowUpUiState(
     val isLoading: Boolean = true,

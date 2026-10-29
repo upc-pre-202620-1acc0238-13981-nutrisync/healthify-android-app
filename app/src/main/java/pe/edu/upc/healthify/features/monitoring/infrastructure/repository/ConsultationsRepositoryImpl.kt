@@ -31,7 +31,7 @@ class ConsultationsRepositoryImpl @Inject constructor(
                 ?: domainFailure(DomainError.Unexpected(CODE_INVALID_CHECK_IN))
         }
         val error = result.domainErrorOrNull() ?: DomainError.Unexpected()
-        // 404 PreVisitCheckInNotFound: todavía sin responder. Cualquier otro 404 (la consulta no existe) es error.
+        // 404 PreVisitCheckInNotFound: not answered yet. Any other 404 (the visit does not exist) is an error.
         return if (error is DomainError.NotFound && error.code == CODE_CHECK_IN_NOT_FOUND) {
             Result.success(null)
         } else {
@@ -63,9 +63,9 @@ class ConsultationsRepositoryImpl @Inject constructor(
         }
         val error = result.domainErrorOrNull() ?: DomainError.Unexpected()
         return when {
-            // 404 NotEnoughData (menos de 3 días registrados): todavía no hay preguntas.
+            // 404 NotEnoughData (fewer than 3 days logged): no questions yet.
             error is DomainError.NotFound -> Result.success(SuggestedQuestionsAvailability.NotYet)
-            // 403: función apagada o sin consentimiento de IA (con código o el Forbid() vacío).
+            // 403: feature off or no AI consent (with a code or the empty Forbid()).
             error is DomainError.Forbidden -> Result.success(SuggestedQuestionsAvailability.Off)
             error is DomainError.Unexpected && error.code == CODE_AI_FEATURE_DISABLED ->
                 Result.success(SuggestedQuestionsAvailability.Off)

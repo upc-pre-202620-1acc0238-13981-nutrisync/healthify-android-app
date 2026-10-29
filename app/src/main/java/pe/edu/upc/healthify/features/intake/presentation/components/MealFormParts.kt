@@ -58,13 +58,13 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.OffsetDateTime
 
-// Ancho máximo del Dialog del Figma (312 dp).
+// Max width of the design's Dialog (312 dp).
 private val DialogMaxWidth = 312.dp
 
 /**
- * Card «¿Estaba en tu plan?» de PT7, PT8 y PT10.1 (IN-1): SelectorSiNo + aclaración. Sin [suggestion] no tiene valor
- * por defecto; con ella (IN-8) llega preseleccionada, dice por qué y avisa si el plato parece romper una restricción
- * del plan. El paciente siempre puede cambiarla.
+ * The "Was it in your plan?" card: yes/no selector + a note. Without [suggestion] it has no default value;
+ * with it, it arrives preselected, says why and warns if the dish seems to break a plan restriction.
+ * The patient can always change it.
  */
 @Composable
 fun PlanAdherenceCard(
@@ -111,7 +111,7 @@ fun PlanAdherenceCard(
     }
 }
 
-/** «Sugerimos «Sí»: parece encajar en tu plan.» y sus variantes. */
+/** "We suggest Yes: it seems to fit your plan." and its variants. */
 @Composable
 private fun planSuggestionText(suggestion: PlanFit): String {
     val remaining = suggestion.remainingKcal
@@ -126,7 +126,7 @@ private fun planSuggestionText(suggestion: PlanFit): String {
     }
 }
 
-/** Aviso de restricción (IN-8): invita a revisar, nunca acusa. */
+/** Restriction warning: it invites a review, never accuses. */
 @Composable
 private fun RestrictionWarning(suggestion: PlanFit) {
     val dimens = HealthifyTheme.dimens
@@ -152,10 +152,10 @@ private fun RestrictionWarning(suggestion: PlanFit) {
 }
 
 /**
- * Campo «¿Cuándo comiste?» (Filled): muestra «Hoy · 1:15 p. m.» y abre el selector al tocarlo. Solo lectura si
- * [enabled] es `false` (una entrada ya registrada: su momento no se reescribe).
+ * The "When did you eat?" field (Filled): shows "Today · 1:15 p.m." and opens the picker on tap. Read-only if
+ * [enabled] is `false` (an entry already logged: its moment is not rewritten).
  *
- * @param errorText «Este registro es de hace más de 48 h…» o «Elige un momento que ya pasó.».
+ * @param errorText "This log is more than 48 h old…" or "Pick a moment that has already passed.".
  */
 @Composable
 fun MealTimeField(
@@ -182,11 +182,11 @@ fun MealTimeField(
 
 
 /**
- * Selector de «¿Cuándo comiste?» (y «¿Cuándo te pesaste?» de PT12): día (Hoy / Ayer / Anteayer, dentro de la ventana
- * de 48 h) y hora. Devuelve la fecha y hora del teléfono; el ViewModel le pone el offset y valida la regla de 48 h con
+ * Picker for "When did you eat?" (and "When did you weigh yourself?"): day (Today / Yesterday / Day before, within the
+ * 48 h window) and time. Returns the phone's date and time; the ViewModel adds the offset and checks the 48 h rule with
  * `LocalTimestamp`.
  *
- * @param earliestDay día en que se creó la cuenta: no se ofrecen días anteriores (con solo «Hoy» no hay selector).
+ * @param earliestDay the day the account was created: no earlier days are offered (only "Today" means no picker).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -275,12 +275,12 @@ fun MealTimePickerDialog(
     }
 }
 
-/** Hoy, ayer y anteayer (ventana de 48 h), sin los días anteriores a la cuenta. */
+/** Today, yesterday and the day before (48 h window), without days before the account existed. */
 internal fun pickableDays(today: LocalDate, earliestDay: LocalDate?): List<LocalDate> =
     listOf(today, today.minusDays(1), today.minusDays(2))
         .filter { earliestDay == null || !it.isBefore(minOf(earliestDay, today)) }
 
-@Preview(name = "Partes del formulario · plan y hora", widthDp = 360, heightDp = 520)
+@Preview(name = "Form parts - plan and time", widthDp = 360, heightDp = 520)
 @Composable
 private fun MealFormPartsPreview() {
     HealthifyTheme {

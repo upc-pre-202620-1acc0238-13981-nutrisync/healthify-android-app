@@ -8,7 +8,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 
-/** Una fila de PR17.0 «Próximas consultas». */
+/** A row of "Upcoming visits". */
 data class AgendaRow(
     val followUpId: Long,
     val patientId: Long,
@@ -27,25 +27,25 @@ data class AgendaRow(
     }
 }
 
-/** Avisos de PR17.0 al cancelar. */
+/** Agenda notices when cancelling. */
 enum class AgendaDialog {
     CONFIRM_CANCEL,
 
-    /** `404`/`409`: ya no está agendada (pasó, se completó o ya se canceló). */
+    /** `404`/`409`: no longer scheduled (past, completed or already cancelled). */
     NOT_CANCELLABLE,
     SERVER_ERROR,
 }
 
 /**
- * PR17.0 · Agenda (+ PR17.0-S, que muestra el shell). `visits = null` = todavía no se leyó. La agenda no se guarda en
- * el teléfono: sin conexión y sin lectura previa → estado offline.
+ * Agenda (its Snackbar is shown by the shell). `visits = null` = not read yet. The agenda is not stored on the
+ * phone: offline with no previous read -> offline state.
  */
 data class AgendaUiState(
     val isLoading: Boolean = true,
     val isOffline: Boolean = false,
     val loadFailed: Boolean = false,
     val visits: List<AgendaRow>? = null,
-    /** Consulta tocada: hoja con «Reprogramar» y «Cancelar consulta». */
+    /** Tapped visit: sheet with "Reschedule" and "Cancel visit". */
     val selected: AgendaRow? = null,
     val dialog: AgendaDialog? = null,
     val isCancelling: Boolean = false,
@@ -54,31 +54,31 @@ data class AgendaUiState(
     val needsConnection: Boolean get() = visits == null && loadFailed && isOffline
 }
 
-/** Paciente elegible en «Paciente» de PR17 (de la cartera, con vínculo activo). */
+/** Patient selectable in the schedule form's "Patient" field (from the roster, with an active care link). */
 data class PatientOption(val patientId: Long, val fullName: String)
 
-/** Por qué no sirve el paciente de PR17. */
+/** Why the schedule form's patient is not valid. */
 enum class SchedulePatientError {
     MISSING,
 
-    /** `409 PatientAlreadyHasActiveScheduledFollowUp`: «Este paciente ya tiene una consulta en agenda.» */
+    /** `409 PatientAlreadyHasActiveScheduledFollowUp`: "This patient already has a visit on the agenda." */
     ALREADY_SCHEDULED,
 
-    /** `403 ActiveCareLinkRequired`: «No tienes un vínculo activo con este paciente». */
+    /** `403 ActiveCareLinkRequired`: "You don't have an active care link with this patient". */
     NO_ACTIVE_LINK,
 }
 
-/** Por qué no sirve la fecha/hora de PR17. */
+/** Why the schedule form's date/time is not valid. */
 enum class ScheduleMomentError {
     MISSING,
 
-    /** PR17.E · «Elige una fecha y hora futuras» (`400 ScheduledForMustBeInFuture`). */
+    /** "Pick a future date and time" (`400 ScheduledForMustBeInFuture`). */
     NOT_IN_FUTURE,
 }
 
 /**
- * PR17 · Agendar consulta (+ PR17.E y PR17.2). Con [rescheduleId] es la misma pantalla para reprogramar una consulta
- * de la agenda (paciente fijo). [failed] = PR17.2 «No se pudo agendar» (lo escrito no se pierde).
+ * Schedule a visit (with validation and error states). With [rescheduleId] it is the same screen to reschedule an
+ * agenda visit (fixed patient). [failed] = "Could not schedule" (what was written is kept).
  */
 data class ScheduleFollowUpUiState(
     val patient: PatientOption? = null,
@@ -101,7 +101,7 @@ data class ScheduleFollowUpUiState(
     val isRescheduling: Boolean get() = rescheduleId != null
 }
 
-/** PR16 · Registrar derivación (+ PR16.E y PR16.2). [failed] = PR16.2 «Hubo un error» (lo escrito no se pierde). */
+/** Record a referral (with validation and error states). [failed] = "There was an error" (what was written is kept). */
 data class RecordReferralUiState(
     val specialty: String = "",
     val reason: String = "",

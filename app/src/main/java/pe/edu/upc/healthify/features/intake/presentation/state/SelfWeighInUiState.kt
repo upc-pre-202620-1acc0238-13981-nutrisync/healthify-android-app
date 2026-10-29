@@ -6,15 +6,15 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 
 /**
- * PT12 · Autopesaje (+ PT12.E fuera de rango, PT12.2 error). Los errores solo se muestran después de intentar guardar
- * (o si el backend rechaza el valor).
+ * Self weigh-in (with its out-of-range and error states). Errors only show after trying to save
+ * (or if the backend rejects the value).
  *
- * @param fasted «¿Te pesaste en ayunas?» **sin valor por defecto** (`null` = sin responder).
- * @param saveFailed PT12.2: la pantalla de error con «Volver a intentarlo» (lo escrito se conserva).
+ * @param fasted "Did you weigh yourself fasting?" **with no default value** (`null` = not answered).
+ * @param saveFailed the error screen with "Try again" (what was typed is kept).
  */
 data class SelfWeighInUiState(
     val today: LocalDate,
-    /** Día en que se creó la cuenta: el selector del día no ofrece días anteriores. */
+    /** The day the account was created: the day picker does not offer earlier days. */
     val earliestDay: LocalDate? = null,
     val weightText: String = "",
     val weighedAt: OffsetDateTime,
@@ -31,6 +31,6 @@ data class SelfWeighInUiState(
 }
 
 sealed interface SelfWeighInEvent {
-    /** Guardado o encolado: vuelve a PT13, que muestra el Snackbar (PT13.1). */
+    /** Saved or queued: back to the trend screen, which shows the Snackbar. */
     data class Saved(val outcome: SelfWeighInOutcome) : SelfWeighInEvent
 }

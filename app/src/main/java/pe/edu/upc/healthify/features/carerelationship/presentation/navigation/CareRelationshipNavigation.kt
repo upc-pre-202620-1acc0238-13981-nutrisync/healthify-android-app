@@ -17,36 +17,36 @@ import pe.edu.upc.healthify.features.carerelationship.presentation.screen.ScanIn
 import pe.edu.upc.healthify.features.carerelationship.presentation.screen.WithdrawConsentScreen
 
 /**
- * Callbacks de navegación de PT1, PT2, PT2.1, PT21.V, PT23 y PT24; el grafo raíz decide cómo se arma el back stack.
- * Cada paso que cambia el estado del vínculo (canjear, consentir, retirar) **limpia el back stack**: con «atrás»
- * nunca se vuelve a una pantalla que ya no corresponde al vínculo.
+ * Navigation callbacks for the scan, consent, pending consent, switch nutritionist, withdraw and withdrawn screens;
+ * the root graph decides how to build the back stack. Every step that changes the care link state (redeem, consent,
+ * withdraw) **clears the back stack**: "back" never returns to a screen that no longer matches the care link.
  */
 data class CareRelationshipNavigationCallbacks(
     val onBack: () -> Unit,
-    /** PT1 → PT2 tras canjear (limpia). */
+    /** Scan → consent after redeeming (clears). */
     val onInvitationRedeemed: (careLinkId: Long) -> Unit,
-    /** PT2.1 → PT2 (se apila). */
+    /** Pending consent → consent (pushed). */
     val onReviewConsent: (careLinkId: Long) -> Unit,
-    /** PT2 «Ahora no» → PT2.1 (limpia). */
+    /** Consent "Not now" → pending consent (clears). */
     val onConsentPostponed: () -> Unit,
-    /** PT2 → PT3, el shell del paciente (limpia). */
+    /** Consent → home, the patient shell (clears). */
     val onConsentGranted: () -> Unit,
-    /** → PT1 sin vínculo (limpia): vínculo cerrado en PT2, PT2.1 sin vínculo recordado, PT24 «Listo». */
+    /** → Scan with no care link (clears): link closed at consent, none remembered while pending, or withdrawal "Done". */
     val onScanNewInvitation: () -> Unit,
-    /** PT21.V «Escanear invitación» → PT1 con `replaceActiveLink = true`, en lugar del diálogo. */
+    /** Switch nutritionist "Scan invitation" → scan with `replaceActiveLink = true`, replacing the dialog. */
     val onSwitchPractitionerConfirmed: () -> Unit,
-    /** PT23 → PT24 (limpia). */
+    /** Withdraw → withdrawn (clears). */
     val onConsentWithdrawn: () -> Unit,
     val onSignedOut: () -> Unit,
     val onExitApp: () -> Unit,
-    /** PR18 «Sí, dar de alta» → PR1 con el Snackbar del alta (limpia la ficha del paciente). */
+    /** "Yes, discharge" → roster with the discharge Snackbar (clears the patient file). */
     val onPatientDischarged: (patientName: String) -> Unit = {},
 )
 
-/** Destinos de CareRelationship en el grafo raíz (paciente, y PR2 y PR18 del nutricionista). */
+/** CareRelationship destinations in the root graph (patient, plus the nutritionist's invite and discharge screens). */
 fun NavGraphBuilder.careRelationshipDestinations(callbacks: CareRelationshipNavigationCallbacks) {
     composable<ScanInvitationRoute> { entry ->
-        // Desde PT21.V se apila sobre el shell; desde S5 o PT24 es la primera pantalla.
+        // From the switch dialog it is pushed over the shell; from entry routing or after withdrawal it is the first screen.
         val replaceActiveLink = entry.toRoute<ScanInvitationRoute>().replaceActiveLink
         ScanInvitationScreen(
             onConsentRequired = callbacks.onInvitationRedeemed,

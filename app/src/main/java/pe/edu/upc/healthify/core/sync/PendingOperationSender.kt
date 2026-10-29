@@ -1,14 +1,14 @@
 package pe.edu.upc.healthify.core.sync
 
 /**
- * Envía un lote de operaciones de un [type] a su endpoint de sincronización (p. ej.
- * `POST /diary-entries/synchronization`, `POST /self-weigh-ins/synchronization`). Cada feature aporta el suyo
- * desde `infrastructure/di` con `@Binds @IntoSet`.
+ * Sends a batch of operations of one [type] to its sync endpoint (e.g.
+ * `POST /diary-entries/synchronization`, `POST /self-weigh-ins/synchronization`). Each feature contributes its own
+ * from `infrastructure/di` with `@Binds @IntoSet`.
  *
- * Debe usar `apiCall` (nunca lanzar salvo `CancellationException`) y reenviar siempre el `clientEntryId` guardado.
+ * It must use `apiCall` (never throw except `CancellationException`) and always resend the stored `clientEntryId`.
  */
 interface PendingOperationSender {
-    /** Igual al `type` con que la feature encola (p. ej. `"intake.diary-entry"`). */
+    /** Same as the `type` the feature queues with (e.g. `"intake.diary-entry"`). */
     val type: String
 
     val maxBatchSize: Int get() = DEFAULT_BATCH_SIZE
@@ -22,16 +22,16 @@ interface PendingOperationSender {
 
 sealed interface SendBatchResult {
     /**
-     * El backend procesó el lote y reportó cada ítem (F20: «cada ítem se reconcilia por separado»).
-     * [accepted]: creadas, ya presentes o conflicto resuelto → se borran de la cola.
-     * [rejected]: `clientEntryId` → motivo (`LocalTimestampCannotBeRewritten`…) → quedan como rechazadas.
-     * Un ítem que no aparezca en ninguno sigue pendiente y se reintenta.
+     * The backend processed the batch and reported each item (each item is reconciled separately).
+     * [accepted]: created, already present or conflict resolved → removed from the queue.
+     * [rejected]: `clientEntryId` → reason (`LocalTimestampCannotBeRewritten`…) → kept as rejected.
+     * An item that appears in neither stays pending and is retried.
      */
     data class Delivered(
         val accepted: Set<String>,
         val rejected: Map<String, String> = emptyMap(),
     ) : SendBatchResult
 
-    /** Sin red, 5xx o sesión no disponible: se reintenta todo el lote más tarde con backoff exponencial. */
+    /** No network, 5xx or no session available: the whole batch is retried later with exponential backoff. */
     data object RetryLater : SendBatchResult
 }

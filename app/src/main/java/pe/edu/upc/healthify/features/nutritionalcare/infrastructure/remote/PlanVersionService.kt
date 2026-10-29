@@ -4,10 +4,10 @@ import pe.edu.upc.healthify.features.nutritionalcare.infrastructure.remote.dto.P
 import retrofit2.http.GET
 import retrofit2.http.Path
 
-/** NutritionalCare del lado del paciente (§5.3, NC-8). */
+/** The patient side of NutritionalCare. */
 interface PlanVersionService {
 
-    /** `Patient` dueño · `200` (vacía sin plan) · `403` sin cuerpo si es de otro paciente. */
+    /** Owning `Patient` · `200` (empty without a plan) · `403` with no body if it belongs to another patient. */
     @GET("patients/{patientId}/plan-versions")
     suspend fun getPlanVersions(@Path("patientId") patientId: Long): List<PlanVersionDto>
 }

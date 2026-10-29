@@ -19,8 +19,8 @@ import pe.edu.upc.healthify.features.foodcatalog.presentation.state.FoodRow
 import javax.inject.Inject
 
 /**
- * PR15 · Catálogo de alimentos del nutricionista (desde PR20). Sin texto lista el catálogo del servidor (los alimentos
- * locales primero); al escribir busca con una pausa breve. Se relee al volver de PR15.1 y al volver la conexión.
+ * The nutritionist's food catalog (from Settings). Without text it lists the server catalog (local foods
+ * first); while typing it searches after a short pause. Reloads on returning from the add screen and on reconnect.
  */
 @HiltViewModel
 class FoodCatalogViewModel @Inject constructor(
@@ -51,7 +51,7 @@ class FoodCatalogViewModel @Inject constructor(
 
     fun onRetry() = search(debounce = false)
 
-    /** Al volver de PR15.1: muestra el alimento recién creado. */
+    /** On returning from the add screen: shows the newly created food. */
     fun onFoodAdded(name: String) {
         _state.update { it.copy(query = name) }
         search(debounce = false)

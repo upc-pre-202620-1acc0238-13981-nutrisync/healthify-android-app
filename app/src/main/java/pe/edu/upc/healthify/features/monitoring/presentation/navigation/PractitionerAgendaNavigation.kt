@@ -8,9 +8,9 @@ import pe.edu.upc.healthify.features.monitoring.presentation.screen.ScheduleFoll
 import java.time.Instant
 
 /**
- * PR17 · Agendar consulta. Desde la ficha del paciente (PAC-1) llega con el paciente fijo ([patientId] > 0); desde la
- * Agenda sin paciente (se elige de la cartera). Con [followUpId] > 0 reprograma esa consulta (paciente fijo, fecha y
- * preparación prellenadas: [scheduledForEpochSecond] y [preparation] con los códigos separados por coma).
+ * Schedule a visit. From the patient profile it arrives with a fixed patient ([patientId] > 0); from the Agenda
+ * without one (picked from the roster). With [followUpId] > 0 it reschedules that visit (fixed patient, date and
+ * preparation prefilled: [scheduledForEpochSecond] and [preparation] as comma-separated codes).
  */
 @Serializable
 data class ScheduleFollowUpRoute(
@@ -29,7 +29,7 @@ data class ScheduleFollowUpRoute(
     }
 }
 
-/** PR16 · Registrar derivación (desde PAC-1 «Registrar derivación»). */
+/** Record a referral (from the patient profile's "Record referral"). */
 @Serializable
 data class RecordReferralRoute(val patientId: Long, val patientName: String) {
     companion object {
@@ -39,13 +39,13 @@ data class RecordReferralRoute(val patientId: Long, val patientName: String) {
 
 data class PractitionerAgendaNavigationCallbacks(
     val onBack: () -> Unit,
-    /** PR17 agendado o reprogramado: vuelve a donde se abrió con el Snackbar (PR17.0-S o la ficha). */
+    /** Scheduled or rescheduled: returns to where it was opened, with the Snackbar (Agenda or patient profile). */
     val onScheduled: (scheduledFor: Instant, rescheduled: Boolean) -> Unit,
-    /** PR16 registrado: vuelve a la ficha con PAC-1-S3 «Derivación … registrada». */
+    /** Referral recorded: returns to the patient profile with the "Referral … recorded" Snackbar. */
     val onReferralRecorded: (specialty: String) -> Unit,
 )
 
-/** PR16 y PR17 en el grafo raíz. */
+/** Schedule visit and record referral in the root graph. */
 fun NavGraphBuilder.practitionerAgendaDestinations(callbacks: PractitionerAgendaNavigationCallbacks) {
     composable<ScheduleFollowUpRoute> {
         ScheduleFollowUpScreen(onBack = callbacks.onBack, onScheduled = callbacks.onScheduled)

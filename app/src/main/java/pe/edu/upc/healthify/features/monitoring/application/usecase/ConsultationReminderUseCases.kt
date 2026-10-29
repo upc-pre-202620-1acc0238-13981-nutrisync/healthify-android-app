@@ -10,8 +10,8 @@ import java.time.Clock
 import javax.inject.Inject
 
 /**
- * Relee las próximas consultas del usuario y reprograma sus avisos: la próxima del paciente (MA-3) o las agendadas del
- * nutricionista desde ahora (PR17.0). Si la lectura falla, los avisos que había siguen como estaban.
+ * Re-reads the user's upcoming visits and reschedules their reminders: the patient's next visit or the nutritionist's
+ * visits scheduled from now on. If the read fails, the existing reminders stay as they were.
  */
 class RefreshConsultationRemindersUseCase @Inject constructor(
     private val patientRepository: PatientMonitoringRepository,
@@ -33,7 +33,7 @@ class RefreshConsultationRemindersUseCase @Inject constructor(
     }
 }
 
-/** Al entrar a la app o tras cambiar la agenda: pide reprogramar los avisos en segundo plano. */
+/** On app start or after the agenda changes: asks to reschedule the reminders in the background. */
 class RequestConsultationRemindersUseCase @Inject constructor(
     private val scheduler: ConsultationReminderScheduler,
 ) {

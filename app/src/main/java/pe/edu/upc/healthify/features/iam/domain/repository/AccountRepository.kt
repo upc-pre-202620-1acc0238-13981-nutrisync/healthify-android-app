@@ -3,12 +3,12 @@ package pe.edu.upc.healthify.features.iam.domain.repository
 import pe.edu.upc.healthify.features.iam.domain.valueobject.UserId
 import java.time.LocalDate
 
-/** Datos de la cuenta del usuario con sesión que no llegan con el inicio de sesión. */
+/** Data about the signed-in user's account that does not come with sign-in. */
 interface AccountRepository {
 
     /**
-     * Día (en la zona del teléfono) en que se creó la cuenta: `GET /users/{userId}` → `CreatedAt`. Se lee una vez y
-     * queda guardado con la sesión; sin conexión y sin lectura previa falla con `DomainError.Network`.
+     * Day (in the phone's time zone) the account was created: `GET /users/{userId}` → `CreatedAt`. Read once and
+     * stored with the session; offline and with no previous read it fails with `DomainError.Network`.
      */
     suspend fun getCreatedOn(userId: UserId): Result<LocalDate>
 }

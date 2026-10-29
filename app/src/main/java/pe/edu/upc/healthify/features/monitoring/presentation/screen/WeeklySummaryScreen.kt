@@ -47,7 +47,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-/** PT13.2 · Tu semana — resumen con IA (+ PT13.2.V aún sin resumen). Se abre desde la card de PT13. */
+/** Your week - AI summary (with the no-summary-yet state). Opened from the "Your week" card. */
 @Composable
 fun WeeklySummaryScreen(
     onBack: () -> Unit,
@@ -123,7 +123,7 @@ fun WeeklySummaryContent(
     }
 }
 
-/** «Card · Resumen de la semana (IA)»: los textos de la IA van tal cual (ya llegan en el idioma del lector). */
+/** "Weekly summary (AI)" card: the AI texts go as is (they already arrive in the reader's language). */
 @Composable
 private fun SummaryCard(summary: WeeklySummary) {
     val dimens = HealthifyTheme.dimens
@@ -220,7 +220,7 @@ private val PreviewSummary = WeeklySummary(
     generatedAt = Instant.parse("2026-09-15T11:00:00Z"),
 )
 
-@Preview(name = "PT13.2 · Tu semana", widthDp = 360, heightDp = 800)
+@Preview(name = "Your week", widthDp = 360, heightDp = 800)
 @Composable
 private fun WeeklySummaryPreview() {
     HealthifyTheme {
@@ -228,19 +228,19 @@ private fun WeeklySummaryPreview() {
     }
 }
 
-@Preview(name = "PT13.2.V · Aún sin resumen", widthDp = 360, heightDp = 800)
+@Preview(name = "No summary yet", widthDp = 360, heightDp = 800)
 @Composable
 private fun WeeklySummaryEmptyPreview() {
     HealthifyTheme { WeeklySummaryContent(WeeklySummaryUiState(isLoading = false, notYet = true), onBack = {}, onRetry = {}) }
 }
 
-@Preview(name = "PT13.2 · Cargando", widthDp = 360, heightDp = 800)
+@Preview(name = "Loading", widthDp = 360, heightDp = 800)
 @Composable
 private fun WeeklySummaryLoadingPreview() {
     HealthifyTheme { WeeklySummaryContent(WeeklySummaryUiState(), onBack = {}, onRetry = {}) }
 }
 
-@Preview(name = "PT13.2 · Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun WeeklySummaryOfflinePreview() {
     HealthifyTheme {
@@ -252,7 +252,7 @@ private fun WeeklySummaryOfflinePreview() {
     }
 }
 
-@Preview(name = "PT13.2 · Error", widthDp = 360, heightDp = 800)
+@Preview(name = "Error", widthDp = 360, heightDp = 800)
 @Composable
 private fun WeeklySummaryErrorPreview() {
     HealthifyTheme { WeeklySummaryContent(WeeklySummaryUiState(isLoading = false, loadFailed = true), onBack = {}, onRetry = {}) }

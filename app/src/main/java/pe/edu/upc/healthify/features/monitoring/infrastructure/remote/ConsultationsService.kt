@@ -10,14 +10,14 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-/** PT25: consultas del paciente (RM-5), check-in previo (MA-4) y preguntas sugeridas (IA-4). */
+/** The patient's visits, pre-visit check-in and suggested questions. */
 interface ConsultationsService {
 
-    /** `403 AccessNotAllowed` si no es el propio paciente. */
+    /** `403 AccessNotAllowed` if it is not the patient themselves. */
     @GET("patients/{patientId}/consultations-overview")
     suspend fun getOverview(@Path("patientId") patientId: Long): ConsultationsOverviewDto
 
-    /** `404 PreVisitCheckInNotFound` mientras no hay respuesta · `404 ScheduledFollowUpNotFound`. */
+    /** `404 PreVisitCheckInNotFound` while there is no reply · `404 ScheduledFollowUpNotFound`. */
     @GET("scheduled-follow-ups/{followUpId}/check-in")
     suspend fun getCheckIn(@Path("followUpId") followUpId: Long): PreVisitCheckInDto
 
@@ -28,7 +28,7 @@ interface ConsultationsService {
         @Body body: SubmitCheckInRequestDto,
     ): PreVisitCheckInDto
 
-    /** `403` función apagada · `404 NotEnoughData` · `429` · `502` · `503 AiFeatureDisabled`/`AiProviderUnavailable`. */
+    /** `403` feature off · `404 NotEnoughData` · `429` · `502` · `503 AiFeatureDisabled`/`AiProviderUnavailable`. */
     @GET("patients/{patientId}/suggested-questions")
     suspend fun getSuggestedQuestions(
         @Path("patientId") patientId: Long,

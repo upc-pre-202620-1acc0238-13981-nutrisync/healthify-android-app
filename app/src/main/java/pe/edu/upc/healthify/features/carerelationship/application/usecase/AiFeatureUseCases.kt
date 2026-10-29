@@ -11,9 +11,9 @@ import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.Patient
 import javax.inject.Inject
 
 /**
- * PT21.IA: enciende o apaga una función con IA (IA-1). Encender una sin el consentimiento de IA no se pide al backend
- * (respondería `409 AiConsentRequiredToEnableFeature`): falla igual en el teléfono y la UI ofrece activarlo.
- * Apagarla siempre se puede y no cambia el plan ni los registros.
+ * Turns an AI feature on or off. Turning one on without AI consent never reaches the backend (it would answer
+ * `409 AiConsentRequiredToEnableFeature`): it fails the same way on the phone and the UI offers to grant consent.
+ * Turning one off is always allowed and changes neither the plan nor the logs.
  */
 class ChangeAiFeatureUseCase @Inject constructor(
     private val repository: AiPreferencesRepository,
@@ -35,8 +35,8 @@ class ChangeAiFeatureUseCase @Inject constructor(
 }
 
 /**
- * PT21.IA «Activar funciones con IA»: otorga el consentimiento de IA (CR-2) sobre el vínculo activo y devuelve las
- * preferencias como quedaron. Sin vínculo activo → `NotFound`.
+ * "Turn on AI features": grants AI consent on the active care link and returns the preferences as they ended up.
+ * No active care link → `NotFound`.
  */
 class GrantAiProcessingConsentUseCase @Inject constructor(
     private val careLinkRepository: CareLinkRepository,
@@ -48,7 +48,7 @@ class GrantAiProcessingConsentUseCase @Inject constructor(
         val careLink = link.getOrNull() ?: return domainFailure(link.domainErrorOrNull() ?: DomainError.Unexpected())
         val granted = careLinkRepository.changeAiProcessingConsent(careLink.id, granted = true)
         granted.domainErrorOrNull()?.let { return domainFailure(it) }
-        // La lectura puede caer en la copia del teléfono (sin red justo después): el consentimiento ya se otorgó.
+        // The read may fall back to the phone's copy (no network right after): consent was already granted.
         return Result.success(aiPreferencesRepository.getAiPreferences(patientId).copy(consentGranted = true))
     }
 }

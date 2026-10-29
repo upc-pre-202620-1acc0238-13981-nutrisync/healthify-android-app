@@ -43,11 +43,11 @@ import pe.edu.upc.healthify.features.iam.presentation.state.ForgotPasswordStep
 import pe.edu.upc.healthify.features.iam.presentation.state.ForgotPasswordUiState
 import pe.edu.upc.healthify.features.iam.presentation.viewmodel.ForgotPasswordViewModel
 
-// DECISIÓN IAM-2: el Figma no tiene frame de recuperación; se usa el mismo marco que S4 (logo blanco sobre verde).
+// The Figma has no recovery frame; it reuses the sign-in frame (white logo on green).
 private val LogoSize = DpSize(56.dp, 50.dp)
 private val GreenShapeOffsetY = 75.dp
 
-/** Acciones de la recuperación de contraseña que la pantalla con estado conecta con el ViewModel. */
+/** Password recovery actions that the stateful screen wires to the ViewModel. */
 data class ForgotPasswordActions(
     val onEmailChange: (String) -> Unit = {},
     val onCodeChange: (String) -> Unit = {},
@@ -63,7 +63,7 @@ data class ForgotPasswordActions(
     val onErrorDialogDismiss: () -> Unit = {},
 )
 
-/** IAM-2 · Recuperar contraseña (correo → código → contraseña nueva → listo). */
+/** Password recovery (email → code → new password → done). */
 @Composable
 fun ForgotPasswordScreen(
     onGoToSignIn: () -> Unit,
@@ -334,7 +334,7 @@ private fun StepHeader(title: String, body: String) {
     )
 }
 
-/** Aviso en el estilo de «cuenta bloqueada» de S4.2: se acabó el tiempo para cambiar la contraseña. */
+/** Notice in the style of the sign-in "account locked" notice: the time to change the password ran out. */
 @Composable
 private fun Notice(text: String, modifier: Modifier = Modifier) {
     val dimens = HealthifyTheme.dimens
@@ -351,13 +351,13 @@ private fun Notice(text: String, modifier: Modifier = Modifier) {
     )
 }
 
-@Preview(name = "IAM-2 · Recuperar contraseña — correo", widthDp = 360, heightDp = 800)
+@Preview(name = "Forgot password - email", widthDp = 360, heightDp = 800)
 @Composable
 private fun ForgotPasswordEmailPreview() {
     HealthifyTheme { ForgotPasswordContent(state = ForgotPasswordUiState(), actions = ForgotPasswordActions()) }
 }
 
-@Preview(name = "IAM-2 · Recuperar contraseña — código", widthDp = 360, heightDp = 800)
+@Preview(name = "Forgot password - code", widthDp = 360, heightDp = 800)
 @Composable
 private fun ForgotPasswordCodePreview() {
     HealthifyTheme {
@@ -374,7 +374,7 @@ private fun ForgotPasswordCodePreview() {
     }
 }
 
-@Preview(name = "IAM-2 · Recuperar contraseña — tiempo agotado", widthDp = 360, heightDp = 800)
+@Preview(name = "Forgot password - time expired", widthDp = 360, heightDp = 800)
 @Composable
 private fun ForgotPasswordTokenExpiredPreview() {
     HealthifyTheme {
@@ -389,7 +389,7 @@ private fun ForgotPasswordTokenExpiredPreview() {
     }
 }
 
-@Preview(name = "IAM-2 · Recuperar contraseña — contraseña nueva", widthDp = 360, heightDp = 800)
+@Preview(name = "Forgot password - new password", widthDp = 360, heightDp = 800)
 @Composable
 private fun ForgotPasswordNewPasswordPreview() {
     HealthifyTheme {
@@ -404,7 +404,7 @@ private fun ForgotPasswordNewPasswordPreview() {
     }
 }
 
-@Preview(name = "IAM-2 · Recuperar contraseña — listo", widthDp = 360, heightDp = 800)
+@Preview(name = "Forgot password - done", widthDp = 360, heightDp = 800)
 @Composable
 private fun ForgotPasswordDonePreview() {
     HealthifyTheme {

@@ -14,8 +14,8 @@ import pe.edu.upc.healthify.features.monitoring.application.usecase.RequestConsu
 import javax.inject.Inject
 
 /**
- * Shell del nutricionista: el menú principal (PR1.D, ☰ de las pestañas) con el nombre del usuario de la sesión, el
- * mismo que usa Ajustes.
+ * Practitioner shell: the main menu (☰ on the tabs) with the session user's name, the same one
+ * Settings uses.
  */
 @HiltViewModel
 class PractitionerShellViewModel @Inject constructor(
@@ -27,7 +27,7 @@ class PractitionerShellViewModel @Inject constructor(
     val state: StateFlow<PractitionerShellUiState> = _state.asStateFlow()
 
     init {
-        // Al entrar al shell se reprograman los avisos de las próximas consultas (también cambian desde otro teléfono).
+        // On entering the shell, upcoming appointment reminders are rescheduled (they can also change from another phone).
         requestConsultationReminders()
         viewModelScope.launch {
             observeCurrentUser().collect { user ->

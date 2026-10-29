@@ -35,12 +35,13 @@ import pe.edu.upc.healthify.features.monitoring.domain.entity.NextFollowUp
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 
-// Ancho mínimo del cuadro de la fecha del Figma (52 dp con «SEPT»).
+// Minimum width of the Figma date box (52 dp with "SEPT").
 private val DateBoxMinWidth = 52.dp
 
 /**
- * «Card · Próxima consulta» de PT25, PT25.1 y PT25.3: fecha, día y hora, con quién y modalidad, cuándo se agendó,
- * «Agregar a mi calendario» y el recordatorio de avisar si no puede asistir. Solo lectura (lo agenda el nutricionista).
+ * The "Next visit" card of My visits, the preparation screen and the sent reply: date, day and time, with whom and
+ * how, when it was scheduled, "Add to my calendar" and the reminder to say so if they can't make it. Read-only (the
+ * nutritionist schedules it).
  */
 @Composable
 fun NextConsultationCard(
@@ -125,10 +126,10 @@ fun NextConsultationCard(
 }
 
 /**
- * «Agregar a mi calendario»: abre la app de calendario del teléfono con el evento ya armado (el paciente decide si lo
- * guarda; la app no escribe en el calendario). Devuelve `false` si no hay ninguna app de calendario.
+ * "Add to my calendar": opens the phone's calendar app with the event filled in (the patient decides whether to save
+ * it; the app never writes to the calendar). Returns `false` if there is no calendar app.
  *
- * DECISIÓN PT25: el backend no informa la duración de la consulta; el evento dura una hora.
+ * The backend does not report the visit's length, so the event lasts one hour.
  */
 fun Context.openAddToCalendar(next: NextFollowUp, title: String, description: String): Boolean {
     val begin = next.scheduledFor.toEpochMilli()

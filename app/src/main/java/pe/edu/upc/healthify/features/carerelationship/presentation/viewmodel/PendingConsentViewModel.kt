@@ -19,7 +19,7 @@ import pe.edu.upc.healthify.features.iam.application.usecase.ObserveCurrentUserU
 import pe.edu.upc.healthify.features.iam.application.usecase.SignOutUseCase
 import javax.inject.Inject
 
-/** PT2.1 · Vínculo pendiente: «Revisar y dar mi consentimiento» (→ PT2) o «Cerrar sesión». */
+/** Pending care link: "Review and give my consent" (→ consent) or "Sign out". */
 @HiltViewModel
 class PendingConsentViewModel @Inject constructor(
     private val observeCurrentUser: ObserveCurrentUserUseCase,

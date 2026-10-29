@@ -49,19 +49,19 @@ import pe.edu.upc.healthify.R
 import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 
-// Medidas del menú principal (panel lateral derecho).
+// Main menu (right side panel) measurements.
 private val DrawerWidth = 296.dp
 private val DrawerItemHeight = 56.dp
 private val DrawerAvatarSize = 48.dp
 private const val DRAWER_SCRIM_ALPHA = 0.4f
 
 /**
- * Panel lateral que entra desde el borde final (derecha), sobre un velo negro al 40 %. Cubre toda la pantalla,
- * barra inferior incluida; se cierra con [onDismissRequest] (tocar el velo o atrás). [content] es el contenido del
- * shell que queda debajo.
+ * Side panel that slides in from the end edge (right), over a 40 % black scrim. It covers the whole screen,
+ * bottom bar included; it closes with [onDismissRequest] (tap the scrim or back). [content] is the shell
+ * content underneath.
  */
-// DECISIÓN DS-D: ModalNavigationDrawer de M3 solo abre desde el inicio (izquierda); el menú del paciente abre desde
-// la derecha, así que el panel se dibuja aquí con las mismas animaciones de entrada y salida.
+// M3's ModalNavigationDrawer only opens from the start (left); the patient menu opens from the right, so
+// the panel is drawn here with the same enter and exit animations.
 @Composable
 fun HealthifyEndDrawer(
     open: Boolean,
@@ -107,7 +107,7 @@ fun HealthifyEndDrawer(
     }
 }
 
-/** Encabezado del menú: avatar con la inicial, nombre y rol. */
+/** Menu header: avatar with the initial, name and role. */
 @Composable
 fun DrawerHeader(name: String, role: String, avatarInitial: String, modifier: Modifier = Modifier) {
     val dimens = HealthifyTheme.dimens
@@ -142,7 +142,7 @@ fun DrawerHeader(name: String, role: String, avatarInitial: String, modifier: Mo
     }
 }
 
-/** Ítem del menú (56 dp): el de la pantalla actual va en una píldora `primaryContainer` con el texto `primary`. */
+/** Menu item (56 dp): the current screen's item sits in a `primaryContainer` pill with `primary` text. */
 @Composable
 fun DrawerItem(
     icon: ImageVector,
@@ -180,7 +180,7 @@ fun DrawerItem(
     }
 }
 
-/** Divisor entre grupos de ítems del menú. */
+/** Divider between groups of menu items. */
 @Composable
 fun DrawerDivider(modifier: Modifier = Modifier) {
     HorizontalDivider(
@@ -190,7 +190,7 @@ fun DrawerDivider(modifier: Modifier = Modifier) {
     )
 }
 
-@Preview(name = "Menú lateral · abierto", widthDp = 360, heightDp = 640)
+@Preview(name = "Side menu · open", widthDp = 360, heightDp = 640)
 @Composable
 private fun HealthifyEndDrawerPreview() {
     HealthifyTheme {

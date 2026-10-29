@@ -78,16 +78,16 @@ import pe.edu.upc.healthify.features.nutritionalcare.infrastructure.remote.dto.T
 import java.time.Instant
 
 /*
- * ACL de la consulta guiada y de las vistas del profesional. Un dato obligatorio ilegible (fecha, código de paso)
- * tumba la respuesta con `SerializationException` (→ `Unexpected("MALFORMED_RESPONSE")`); un código desconocido de
- * una lista cerrada se descarta.
+ * ACL for the guided consultation and the practitioner views. An unreadable required field (date, step code)
+ * fails the response with `SerializationException` (→ `Unexpected("MALFORMED_RESPONSE")`); an unknown code from
+ * a closed list is dropped.
  */
 
 private fun malformed(what: String): Nothing = throw SerializationException("Unreadable $what")
 
 private fun String.instantOrFail(what: String): Instant = toInstantOrNull() ?: malformed(what)
 
-// ----- Datos base (NC-1) -----
+// ----- Baseline -----
 
 fun PatientBaselineDto.toDomain(): PatientBaseline = PatientBaseline(
     birthDate = birthDate.toLocalDateOrNull() ?: malformed("birthDate"),
@@ -104,7 +104,7 @@ fun NewBaseline.toDto(): PatientBaselineRequestDto = PatientBaselineRequestDto(
     conditions = MedicalCondition.entries.filter { it in conditions }.map { it.code },
 )
 
-// ----- Consulta (NC-2 a NC-7) -----
+// ----- Consultation -----
 
 fun ConsultationDto.toDomain(): Consultation = Consultation(
     id = ConsultationId(consultationId),
@@ -166,7 +166,7 @@ fun ConsultationDto.toDomain(): Consultation = Consultation(
     publishedPlanVersion = publishedPlanVersion,
 )
 
-/** La medición más reciente de la evaluación; sin medición el recurso no se puede mostrar. */
+/** The assessment's latest measurement; without a measurement the resource cannot be shown. */
 fun NutritionalAssessmentDto.toDomain(): EvaluationDetail {
     val latest = anthropometry.maxByOrNull { it.takenAt.toInstantOrNull() ?: Instant.MIN } ?: malformed("anthropometry")
     return EvaluationDetail(
@@ -291,7 +291,7 @@ fun Publication.toDto(): PublicationRequestDto = PublicationRequestDto(
     patientMessage = patientMessage?.text?.trim(),
 )
 
-// ----- Vistas del profesional (RM-2, RM-4, PAC-4) -----
+// ----- Practitioner views -----
 
 fun PatientSummaryDto.toDomain(): PatientSummary = PatientSummary(
     patientId = patientId,
@@ -367,7 +367,7 @@ fun PractitionerRecordDto.toDomain(): PractitionerPatientRecord = PractitionerPa
     }.sortedByDescending { it.takenAt },
 )
 
-/** Solo las versiones publicadas: un borrador de la consulta en curso no es historial. */
+/** Published versions only: a draft from the in-progress consultation is not history. */
 fun List<NutritionPlanDto>.toPlanHistory(): PlanHistory = PlanHistory.of(
     mapNotNull { dto -> dto.publishedAt?.toInstantOrNull()?.let { dto.toDomain(it) } },
 )

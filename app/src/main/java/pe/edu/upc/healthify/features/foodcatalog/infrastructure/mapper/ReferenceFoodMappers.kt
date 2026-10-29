@@ -9,7 +9,7 @@ import pe.edu.upc.healthify.features.foodcatalog.infrastructure.remote.dto.Refer
 import java.text.Normalizer
 import java.util.Locale
 
-/** @throws IllegalArgumentException si el recurso rompe una invariante (id ≤ 0, nombre vacío, nutriente < 0). */
+/** @throws IllegalArgumentException if the resource breaks an invariant (id ≤ 0, blank name, nutrient < 0). */
 fun ReferenceFoodDto.toDomain(): ReferenceFood = ReferenceFood(
     id = ReferenceFoodId(referenceFoodId),
     name = localName.trim(),
@@ -20,7 +20,7 @@ fun ReferenceFoodDto.toDomain(): ReferenceFood = ReferenceFood(
     isLocalOverride = isLocalOverride,
 )
 
-/** Los recursos inválidos se descartan: un alimento roto no impide mostrar el resto. */
+/** Invalid resources are dropped: one broken food does not stop the rest from showing. */
 fun List<ReferenceFoodDto>.toDomainSkippingInvalid(): List<ReferenceFood> = mapNotNull {
     try {
         it.toDomain()
@@ -52,7 +52,7 @@ fun LocalFoodEntity.toDomain(): ReferenceFood = ReferenceFood(
     isLocalOverride = isLocalOverride,
 )
 
-/** Minúsculas, sin tildes y con espacios simples: «Quínua  Cocida» → «quinua cocida». */
+/** Lowercase, no accents and single spaces: "Quínua  Cocida" → "quinua cocida". */
 fun normalizeFoodName(text: String): String =
     Normalizer.normalize(text, Normalizer.Form.NFD)
         .replace(DIACRITICS, "")

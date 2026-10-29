@@ -26,8 +26,8 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 /**
- * PAC-0 / PAC-1 / PAC-1.C · Resumen (RM-2). El botón fijo cambia según el estado: «Registrar datos base» (PAC-0),
- * «Iniciar consulta» (PAC-1) o «Continuar consulta» (PAC-1.C). Se relee al volver de la consulta o de EV-1.
+ * Summary. The pinned button changes with the state: "Record baseline",
+ * "Start consultation" or "Continue consultation". Reread on returning from the consultation or the baseline.
  */
 @HiltViewModel
 class PatientSummaryViewModel @Inject constructor(
@@ -65,7 +65,7 @@ class PatientSummaryViewModel @Inject constructor(
         if (_state.value.summary != null) load()
     }
 
-    /** El botón fijo: PAC-0 → EV-1; PAC-1.C → el paso en curso; PAC-1 → inicia la consulta. */
+    /** The pinned button: no baseline → baseline form; consultation in progress → its step; otherwise starts one. */
     fun onPrimaryAction() {
         val summary = _state.value.summary ?: return
         val inProgress = summary.consultationInProgress
@@ -90,7 +90,7 @@ class PatientSummaryViewModel @Inject constructor(
     private fun startConsultation() {
         if (_state.value.isStartingConsultation) return
         val summary = _state.value.summary ?: return
-        // DECISIÓN PAC-1: la consulta se asocia a la cita solo si es hoy (así la cita queda «hecha» al publicar).
+        // The consultation is linked to the appointment only if it is today (so the appointment is "done" on publish).
         val today = LocalDate.now(clock)
         val followUpId = summary.nextFollowUp
             ?.takeIf { it.scheduledFor.atZone(clock.zone).toLocalDate() == today }

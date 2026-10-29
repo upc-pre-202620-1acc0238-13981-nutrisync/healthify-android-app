@@ -12,11 +12,11 @@ import java.time.OffsetDateTime
 import java.time.temporal.ChronoUnit
 
 /**
- * Los campos comunes de PT8 y PT10.1: porción, «¿Cuándo comiste?» y «¿Estaba en tu plan?». Los errores solo se
- * muestran después de intentar confirmar (o si el backend rechaza el momento).
+ * The fields shared by the photo confirmation and manual logging: portion, "When did you eat?" and "Was it in your
+ * plan?". Errors only show after trying to confirm (or if the backend rejects the moment).
  *
- * @param planSuggestion la sugerencia del servidor para «¿Estaba en tu plan?» (IN-8), que se preselecciona.
- * @param planAnsweredByPatient el paciente ya tocó Sí/No: una sugerencia nueva ya no cambia su respuesta.
+ * @param planSuggestion the server's suggestion for "Was it in your plan?", which is preselected.
+ * @param planAnsweredByPatient the patient already tapped Yes/No: a new suggestion no longer changes their answer.
  */
 data class MealFormState(
     val portionText: String = "",
@@ -29,26 +29,26 @@ data class MealFormState(
     val planSuggestion: PlanFit? = null,
     val planAnsweredByPatient: Boolean = false,
 ) {
-    /** El paciente eligió Sí/No (aunque coincida con la sugerencia): desde ahora manda su respuesta. */
+    /** The patient picked Yes/No (even if it matches the suggestion): from now on their answer wins. */
     fun answerPlan(inPlan: Boolean): MealFormState =
         copy(inPlan = inPlan, planAnsweredByPatient = true, showPlanError = false)
 
     /**
-     * IN-8 · llega una sugerencia (o deja de haberla). Mientras el paciente no haya respondido, la respuesta sigue a la
-     * sugerencia: se preselecciona, y sin sugerencia vuelve a quedar sin responder.
+     * A suggestion arrives (or goes away). While the patient has not answered, the answer follows the
+     * suggestion: it is preselected, and with no suggestion it goes back to unanswered.
      */
     fun withPlanSuggestion(fit: PlanFit?): MealFormState {
         if (planAnsweredByPatient) return copy(planSuggestion = fit)
         return copy(planSuggestion = fit, inPlan = fit?.suggestsInPlan, showPlanError = showPlanError && fit == null)
     }
 
-    /** El paciente eligió lo contrario de lo sugerido. */
+    /** The patient picked the opposite of the suggestion. */
     val planSuggestionOverridden: Boolean
         get() = planSuggestion != null && inPlan != null && inPlan != planSuggestion.suggestsInPlan
 
     /**
-     * Aplica las reglas de los value objects (porción 1–2000 g, ventana de 48 h, respuesta Sí/No) y deja visibles los
-     * errores. Con [checkTime] en `false` el momento se respeta tal cual (una entrada ya registrada no se reescribe).
+     * Applies the value object rules (portion 1–2000 g, 48 h window, Yes/No answer) and makes the errors
+     * visible. With [checkTime] `false` the moment is kept as is (an entry already logged is not rewritten).
      */
     fun validate(now: Instant, checkTime: Boolean = true): MealFormValidation {
         val portion = PortionGrams.parseOrNull(portionText)
@@ -75,14 +75,14 @@ data class MealFormState(
         fun now(clock: Clock, portionText: String = ""): MealFormState =
             MealFormState(portionText = portionText, mealTime = OffsetDateTime.now(clock).truncatedTo(ChronoUnit.MINUTES))
 
-        /** La fecha y hora que eligió el paciente con el offset que tenía el teléfono en ese momento. */
+        /** The date and time the patient picked, with the offset the phone had at that moment. */
         fun offsetOf(dateTime: LocalDateTime, clock: Clock): OffsetDateTime = dateTime.atZone(clock.zone).toOffsetDateTime()
 
         fun today(clock: Clock): LocalDate = LocalDate.now(clock)
     }
 }
 
-/** Resultado de [MealFormState.validate]: los valores ya construidos (o `null` si su regla falló). */
+/** Result of [MealFormState.validate]: the values already built (or `null` if their rule failed). */
 data class MealFormValidation(
     val form: MealFormState,
     val portion: PortionGrams?,

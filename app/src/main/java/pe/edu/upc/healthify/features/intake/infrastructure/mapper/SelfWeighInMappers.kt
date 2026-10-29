@@ -30,7 +30,7 @@ fun NewSelfWeighIn.toQueuedPayload() = QueuedSelfWeighInPayload(
     fastedState = fasted,
 )
 
-/** El momento se reenvía con el texto exacto que se guardó (nunca se reescribe). */
+/** The moment is resent with the exact text that was saved (it is never rewritten). */
 fun QueuedSelfWeighInPayload.toPendingDto() = PendingSelfWeighInDto(
     clientEntryId = clientEntryId,
     valueKg = valueKg,
@@ -38,7 +38,7 @@ fun QueuedSelfWeighInPayload.toPendingDto() = PendingSelfWeighInDto(
     fastedState = fastedState,
 )
 
-/** `null` si la copia guardada ya no se puede leer (la fila se ignora en PT19, no rompe la lista). */
+/** `null` if the saved copy can no longer be read (the row is skipped in the pending list, it does not break it). */
 fun QueuedSelfWeighInPayload.toDomainOrNull(rejectionCode: String?): PendingSelfWeighIn? {
     val timestamp = localTimestamp.toOffsetDateTimeOrNull() ?: return null
     val weight = WeightKg.ofOrNull(valueKg) ?: return null
@@ -56,8 +56,8 @@ fun QueuedSelfWeighInPayload.toDomainOrNull(rejectionCode: String?): PendingSelf
 }
 
 /**
- * `null` si el recurso rompe una invariante (fechas ilegibles, puntos desordenados…). Los puntos con fecha ilegible
- * invalidan toda la serie: dibujar una línea con huecos inventados sería peor que no dibujarla.
+ * `null` if the resource breaks an invariant (unreadable dates, unordered points…). Points with an unreadable date
+ * invalidate the whole series: drawing a line with made-up gaps would be worse than not drawing it.
  */
 fun WeightTrendDto.toDomainOrNull(fromCache: Boolean = false, savedAt: Instant? = null): WeightTrend? {
     val recalculatedAt = lastRecalculatedAt.toInstantOrNull() ?: return null

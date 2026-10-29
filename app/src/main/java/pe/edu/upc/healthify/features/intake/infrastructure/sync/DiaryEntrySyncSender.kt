@@ -14,9 +14,9 @@ import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.SyncPendin
 import javax.inject.Inject
 
 /**
- * Envía las comidas encoladas a `POST /diary-entries/synchronization` (F20). Es idempotente por `clientEntryId`:
- * `Created`, `AlreadyPresent` y `ConflictResolved` salen de la cola; `Rejected` queda con su motivo a la vista
- * (PT19) y no se reintenta. Sin red, 5xx o sesión por renovar → se reintenta el lote más tarde.
+ * Sends the queued meals to `POST /diary-entries/synchronization`. It is idempotent by `clientEntryId`:
+ * `Created`, `AlreadyPresent` and `ConflictResolved` leave the queue; `Rejected` stays visible with its reason
+ * and is not retried. No network, 5xx or a session to renew → the batch is retried later.
  */
 class DiaryEntrySyncSender @Inject constructor(
     private val service: DiaryService,
@@ -51,7 +51,7 @@ class DiaryEntrySyncSender @Inject constructor(
             return SendBatchResult.Delivered(accepted = accepted, rejected = rejected)
         }
         return when (val error = result.domainErrorOrNull()) {
-            // Un 400/403 de todo el lote no se arregla reintentando: quedan rechazadas con el código, a la vista.
+            // A 400/403 for the whole batch is not fixed by retrying: they stay rejected with the code, visible.
             is DomainError.Validation -> rejectAll(operations, error.code, unreadable)
             is DomainError.Forbidden -> rejectAll(operations, error.code ?: CODE_FORBIDDEN, unreadable)
             else -> SendBatchResult.RetryLater

@@ -10,8 +10,8 @@ import pe.edu.upc.healthify.features.intake.domain.valueobject.PlanGuideline
 import pe.edu.upc.healthify.features.intake.domain.valueobject.RestrictionCode
 
 /*
- * Códigos del plan (NC-6/NC-8) → textos de strings.xml en el idioma del lector. Los textos escritos por el
- * nutricionista (indicación propia, restricción legada) se devuelven tal cual con UiText.Raw: nunca se traducen.
+ * Plan codes → strings.xml texts in the reader's language. Texts written by the
+ * nutritionist (custom guideline, legacy restriction) are returned as is with UiText.Raw: never translated.
  */
 
 fun PlanGuideline.toUiText(): UiText = when (this) {
@@ -34,7 +34,7 @@ fun PlanChange.toUiText(): UiText = when (this) {
     PlanChange.NoTargetChanges -> UiText.of(R.string.plan_change_no_target_changes)
 }
 
-/** «Las metas … no cambiaron» va en texto secundario, como en el frame de PT4. */
+/** "The targets … did not change" goes in secondary text, as in the My plan frame. */
 val PlanChange.isSecondary: Boolean get() = this == PlanChange.NoTargetChanges
 
 val GuidelineCode.labelRes: Int
@@ -60,7 +60,7 @@ val RestrictionCode.labelRes: Int
         RestrictionCode.HALAL -> R.string.restriction_halal
     }
 
-/** Nombre del macronutriente dentro de una frase («Tu meta de proteína pasó de…»). */
+/** Macronutrient name inside a sentence ("Your protein target went from…"). */
 val Macronutrient.inlineRes: Int
     get() = when (this) {
         Macronutrient.PROTEIN -> R.string.macro_protein_inline

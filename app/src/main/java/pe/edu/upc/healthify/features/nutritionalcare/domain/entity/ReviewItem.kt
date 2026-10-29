@@ -8,12 +8,12 @@ import java.time.Instant
 import java.time.LocalDate
 
 /**
- * Un ítem de la bandeja de revisión (F27, NC-11): una señal que Monitoring levantó y que **espera una decisión humana**.
- * Nada de lo que hay aquí cambió un plan (*Signal Notifies Never Modifies The Plan*).
+ * A review inbox item: a signal Monitoring raised that **awaits a human decision**.
+ * Nothing here has changed a plan (*Signal Notifies Never Modifies The Plan*).
  *
- * @param legacyEvidence frase en inglés del backend (`evidence`): solo se muestra si no hay [evidence] estructurada.
- * @param evidence la evidencia en números (`evidenceData`), que la app arma en el idioma del lector (X-2).
- * @param hasPlanProposal la IA adjuntó (o está generando) un plan propuesto: el ítem abre PR14.IA en vez de PR14.
+ * @param legacyEvidence English sentence from the backend (`evidence`): shown only without structured [evidence].
+ * @param evidence the evidence as numbers (`evidenceData`), which the app builds in the reader's language.
+ * @param hasPlanProposal the AI attached (or is generating) a proposed plan: the item opens the AI proposal view.
  */
 data class ReviewItem(
     val id: ReviewItemId,
@@ -29,24 +29,24 @@ data class ReviewItem(
     val resolvedAt: Instant?,
     val hasPlanProposal: Boolean,
 ) {
-    /** Solo una desviación sostenida abierta puede tener un plan propuesto por IA (NC-10). */
+    /** Only an open sustained deviation can carry an AI-proposed plan. */
     val offersPlanProposal: Boolean get() = isOpen && hasPlanProposal && signalType == SignalType.SustainedDeviation
 }
 
 /**
- * Evidencia de un ítem (`ReviewItemResource.evidenceData`, X-2). Los días sin registro **nunca cuentan**: el
- * denominador son los días registrados.
+ * Evidence of an item (`ReviewItemResource.evidenceData`). Days without logs **never count**: the
+ * denominator is the logged days.
  */
 sealed interface ReviewEvidence {
 
-    /** «Registró en promedio 40 % menos de su meta de energía (≈ 718 kcal/día) en 5 de sus últimos 9 días registrados». */
+    /** "Logged on average 40 % below their energy target (≈ 718 kcal/day) on 5 of their last 9 logged days". */
     data class SustainedDeviation(
-        /** Sin signo: cuánto se alejó en promedio (el sentido va en [direction]). */
+        /** Unsigned: how far it strayed on average (the sign goes in [direction]). */
         val averagePercentFromTarget: Double,
         val deviatedDays: Int,
         val loggedDaysConsidered: Int,
         val direction: DeviationDirection,
-        /** kcal/día sin signo; `null` en ítems anteriores a X-2. */
+        /** Unsigned kcal/day; `null` on items that predate structured evidence. */
         val averageEnergyKcalFromTarget: Double?,
     ) : ReviewEvidence {
         init {
@@ -57,11 +57,11 @@ sealed interface ReviewEvidence {
         }
     }
 
-    /** «Revisión programada tras el ajuste del 8 sept. (v3): 2 de 6 días registrados fuera de la meta». */
+    /** "Scheduled review after the Sep 8 adjustment (v3): 2 of 6 logged days off target". */
     data class ScheduledRecheck(
         val adjustedOn: LocalDate,
         val adjustedPlanVersion: Int,
-        /** `null` (los dos) si no hubo resumen desde el ajuste. */
+        /** `null` (both) if there was no summary since the adjustment. */
         val deviatedDays: Int?,
         val loggedDaysConsidered: Int?,
     ) : ReviewEvidence {
@@ -79,8 +79,8 @@ sealed interface ReviewEvidence {
     }
 
     /**
-     * «Índice de consistencia: 0,46 kg/semana sin explicar; en alerta desde el 20 ago. (4 semanas); se le mostró al
-     * paciente el 9 sept.». Las partes que falten se omiten.
+     * "Consistency index: 0.46 kg/week unexplained; on alert since Aug 20 (4 weeks); shown to the
+     * patient on Sep 9". Missing parts are left out.
      */
     data class ConsistencyEscalation(
         val kgPerWeek: Double,
@@ -96,8 +96,8 @@ sealed interface ReviewEvidence {
 }
 
 /**
- * Nota con la que se resolvió un ítem (`resolutionNoteCode` + `resolutionNoteData`, X-2). Una nota escrita por el
- * profesional ([Custom]) se muestra tal cual y nunca se traduce.
+ * Note an item was resolved with (`resolutionNoteCode` + `resolutionNoteData`). A note written by the
+ * practitioner ([Custom]) is shown as is and never translated.
  */
 sealed interface ResolutionNote {
     data class PlanAssignedAsIs(val planVersion: Int) : ResolutionNote
@@ -112,14 +112,14 @@ sealed interface ResolutionNote {
 }
 
 /**
- * Resolución de PR14 (`POST /review-items/{id}/resolution`). **Decir si el plan se ajustó es obligatorio**: sin eso no
- * queda constancia de qué provocó la señal (*Resolution States Whether The Plan Was Adjusted*).
+ * Resolution of a review item (`POST /review-items/{id}/resolution`). **Saying whether the plan was adjusted is
+ * required**: without it there is no record of what the signal led to (*Resolution States Whether The Plan Was Adjusted*).
  */
 @ConsistentCopyVisibility
 data class ReviewResolution private constructor(val resolvedWithAdjustment: Boolean, val note: String?) {
 
     companion object {
-        /** `null` si no se respondió Sí o No (PR14.1 «Responde Sí o No»). La nota vacía no se envía. */
+        /** `null` if Yes or No was not answered ("Answer Yes or No"). An empty note is not sent. */
         fun of(resolvedWithAdjustment: Boolean?, note: String?): ReviewResolution? =
             resolvedWithAdjustment?.let { ReviewResolution(it, note?.trim()?.takeIf(String::isNotEmpty)) }
     }

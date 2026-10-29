@@ -5,8 +5,8 @@ import java.time.Instant
 import java.time.LocalDate
 
 /**
- * `PatientMonitoringPanelResource` (RM-3): la pestaña Seguimiento del profesional (PAC-2). **Solo lectura**: el
- * profesional nunca escribe ni corrige el diario (regla ética 5). No trae el índice de consistencia (Patient First).
+ * `PatientMonitoringPanelResource`: the practitioner's Follow-up tab. **Read-only**: the practitioner never writes
+ * or corrects the diary. It does not carry the consistency index (Patient First).
  */
 data class PatientMonitoringPanel(
     val date: LocalDate,
@@ -18,8 +18,8 @@ data class PatientMonitoringPanel(
 )
 
 /**
- * «Esta semana»: un resultado por día. [ComplianceOutcome.UNLOGGED] se muestra aparte («Sin registro»), nunca como
- * «Por debajo» ni como incumplimiento (regla ética 3).
+ * "This week": one outcome per day. [ComplianceOutcome.UNLOGGED] is shown separately ("No log"), never as
+ * "Below" or as non-compliance.
  */
 data class PanelWeek(val days: List<PanelDay>, val metDays: Int, val totalDays: Int) {
     init {
@@ -29,17 +29,17 @@ data class PanelWeek(val days: List<PanelDay>, val metDays: Int, val totalDays: 
 
 data class PanelDay(val date: LocalDate, val outcome: ComplianceOutcome)
 
-/** «Registro · 6 de 7 días». */
+/** "Logging · 6 of 7 days". */
 data class DaysRatio(val count: Int, val total: Int) {
     init {
         require(count in 0..total) { "Count cannot exceed the total" }
     }
 }
 
-/** «Tendencia de peso · −0,3 kg/sem · Autopesaje · 4 semanas». Nunca el peso de un día (regla ética 6). */
+/** "Weight trend · −0.3 kg/wk · Self-weighing · 4 weeks". Never a single day's weight. */
 data class PanelWeightTrend(val weeks: Int, val slopeKgPerWeek: Double?)
 
-/** Procedencia de una entrada del diario. */
+/** Source of a diary entry. */
 enum class PanelEntryProvenance(val code: String) {
     PHOTO("Photo"),
     MANUAL("Manual"),
@@ -52,7 +52,7 @@ enum class PanelEntryProvenance(val code: String) {
     }
 }
 
-/** Una entrada del «Diario de hoy» (solo lectura). `foodName` es el nombre del catálogo; puede faltar. */
+/** An entry of "Today's diary" (read-only). `foodName` is the catalog name; it may be missing. */
 data class PanelDiaryEntry(
     val id: Long,
     val localTimestamp: Instant,
@@ -62,7 +62,7 @@ data class PanelDiaryEntry(
     val isAwaitingConfirmation: Boolean,
 )
 
-/** Casillas del protocolo de la medición clínica (NC-3). */
+/** Checkboxes of the clinical measurement protocol. */
 enum class PanelProtocolCheck(val code: String) {
     FASTING("Fasting"),
     NO_SHOES("NoShoes"),
@@ -76,7 +76,7 @@ enum class PanelProtocolCheck(val code: String) {
     }
 }
 
-/** «Última medición clínica · 3 sept. · en ayunas, sin zapatos · 74.2 kg» (serie clínica, aparte del autopesaje). */
+/** "Last clinical measurement · Sep 3 · fasting, no shoes · 74.2 kg" (clinical series, apart from self-weighing). */
 data class PanelClinicalMeasurement(
     val takenAt: Instant,
     val weightKg: Double,
@@ -84,8 +84,8 @@ data class PanelClinicalMeasurement(
 )
 
 /**
- * IA-5 · «Resumen generado con IA · Revísalo antes de usarlo en consulta». Sin consentimiento de IA del paciente o con
- * la función apagada el backend manda solo los datos: [text] es `null` y la tarjeta no se muestra.
+ * "AI-generated summary · Review it before using it in a visit". Without the patient's AI consent or with the
+ * feature off, the backend sends only the data: [text] is `null` and the card is hidden.
  */
 data class MonitoringSummary(val text: String?) {
     val hasText: Boolean get() = !text.isNullOrBlank()

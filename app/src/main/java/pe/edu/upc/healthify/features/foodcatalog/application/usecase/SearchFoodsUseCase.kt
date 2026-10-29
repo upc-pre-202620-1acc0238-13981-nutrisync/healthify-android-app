@@ -10,11 +10,11 @@ import pe.edu.upc.healthify.features.foodcatalog.domain.valueobject.FoodSearchTe
 import javax.inject.Inject
 
 /**
- * PT9 · Buscar alimento, local-first (*Search Falls Back To Local Cache Offline*): emite primero lo que encuentra el
- * catálogo guardado en el teléfono y después la lista completada con el servidor. Sin conexión la segunda emisión
- * queda con `localOnly = true` (PT10 «Estás sin conexión: solo buscamos en tu catálogo guardado»).
+ * Search food, local-first (*Search Falls Back To Local Cache Offline*): first emits what the catalog saved on
+ * the phone finds, then the list completed by the server. Offline, the second emission
+ * has `localOnly = true` ("You're offline: we only search your saved catalog").
  *
- * Un error del servidor que no es de red (5xx) también se degrada a lo local: la búsqueda nunca bloquea el registro.
+ * A server error that is not a network error (5xx) also falls back to local: search never blocks logging.
  */
 class SearchFoodsUseCase @Inject constructor(
     private val repository: ReferenceFoodRepository,

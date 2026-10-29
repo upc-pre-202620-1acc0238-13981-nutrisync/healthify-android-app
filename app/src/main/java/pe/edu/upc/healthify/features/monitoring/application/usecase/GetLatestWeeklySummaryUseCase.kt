@@ -5,7 +5,7 @@ import pe.edu.upc.healthify.features.monitoring.domain.repository.WeeklySummaryR
 import pe.edu.upc.healthify.features.monitoring.domain.valueobject.PatientId
 import javax.inject.Inject
 
-/** PT13 card «Tu semana» y PT13.2: el último resumen semanal, «aún no» o apagado. */
+/** "Your week" card and screen: the latest weekly summary, "not yet" or off. */
 class GetLatestWeeklySummaryUseCase @Inject constructor(
     private val repository: WeeklySummaryRepository,
 ) {

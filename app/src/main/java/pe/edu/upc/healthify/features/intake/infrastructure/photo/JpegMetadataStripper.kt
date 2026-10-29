@@ -3,12 +3,12 @@ package pe.edu.upc.healthify.features.intake.infrastructure.photo
 import java.io.ByteArrayOutputStream
 
 /**
- * Quita de un JPEG todos los segmentos de metadatos antes de subirlo (IN-7: «la IA recibe la imagen sin ningún dato
- * del paciente»): APP1 (EXIF con GPS, fecha, modelo del teléfono, y XMP), APP2 (ICC), APP3…APP13 (IPTC/Photoshop),
- * APP15 y COM (comentarios). Conserva APP0 (JFIF) y APP14 (Adobe, necesario para decodificar ciertos colores), igual
- * que el `IPhotoMetadataStripper` del backend. Los píxeles no se tocan: todo lo que sigue a SOS se copia tal cual.
+ * Removes every metadata segment from a JPEG before upload ("the AI receives the image without any patient
+ * data"): APP1 (EXIF with GPS, date, phone model, and XMP), APP2 (ICC), APP3…APP13 (IPTC/Photoshop),
+ * APP15 and COM (comments). Keeps APP0 (JFIF) and APP14 (Adobe, needed to decode certain colors), like
+ * the backend's `IPhotoMetadataStripper`. Pixels are untouched: everything after SOS is copied as is.
  *
- * Kotlin puro para probarlo en la JVM. Que el backend vuelva a limpiar es una segunda barrera, no la primera.
+ * Pure Kotlin so it can be tested on the JVM. The backend cleaning again is a second barrier, not the first.
  */
 object JpegMetadataStripper {
 
@@ -24,11 +24,11 @@ object JpegMetadataStripper {
     private const val APP15 = 0xEF
     private const val COM = 0xFE
 
-    /** Si [bytes] empieza con la firma de un JPEG (FF D8 FF). */
+    /** Whether [bytes] starts with a JPEG signature (FF D8 FF). */
     fun isJpeg(bytes: ByteArray): Boolean =
         bytes.size >= 3 && bytes[0].u() == MARKER_PREFIX && bytes[1].u() == SOI && bytes[2].u() == MARKER_PREFIX
 
-    /** @throws IllegalArgumentException si [jpeg] no es un JPEG bien formado. */
+    /** @throws IllegalArgumentException if [jpeg] is not a well-formed JPEG. */
     fun strip(jpeg: ByteArray): ByteArray {
         require(isJpeg(jpeg)) { "Not a JPEG" }
         val out = ByteArrayOutputStream(jpeg.size)
@@ -36,7 +36,7 @@ object JpegMetadataStripper {
         var i = 2
         while (i < jpeg.size) {
             require(jpeg[i].u() == MARKER_PREFIX) { "Corrupt JPEG: expected a marker at $i" }
-            // Bytes de relleno 0xFF entre segmentos.
+            // 0xFF fill bytes between segments.
             while (i + 1 < jpeg.size && jpeg[i + 1].u() == MARKER_PREFIX) i++
             require(i + 1 < jpeg.size) { "Corrupt JPEG: truncated marker" }
             val marker = jpeg[i + 1].u()
@@ -55,7 +55,7 @@ object JpegMetadataStripper {
                     val end = i + 2 + length
                     require(length >= 2 && end <= jpeg.size) { "Corrupt JPEG: bad segment length" }
                     if (marker == SOS) {
-                        // Desde aquí son datos de imagen (y posibles escaneos más): se copian enteros.
+                        // From here on it is image data (and possibly more scans): copied whole.
                         out.write(jpeg, i, jpeg.size - i)
                         return out.toByteArray()
                     }
@@ -67,7 +67,7 @@ object JpegMetadataStripper {
         return out.toByteArray()
     }
 
-    /** APP1…APP13, APP15 y COM. */
+    /** APP1…APP13, APP15 and COM. */
     private fun isMetadata(marker: Int): Boolean =
         marker == COM || marker == APP15 || (marker in (APP0 + 1)..APP15 && marker != APP14)
 

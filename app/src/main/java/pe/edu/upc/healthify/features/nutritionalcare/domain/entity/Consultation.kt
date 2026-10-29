@@ -15,8 +15,8 @@ import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.Protocol
 import java.time.Instant
 
 /**
- * `ConsultationResource` (NC-2): la consulta guiada en curso con lo que cada paso ya guardó, para **re-hidratar**
- * EV-2 a EV-5 al reanudar (PAC-1.C «Continuar consulta»). Solo del profesional.
+ * `ConsultationResource`: the in-progress guided consultation with what each step already saved, used to
+ * **rehydrate** the steps on resume ("Continue consultation"). Practitioner only.
  */
 data class Consultation(
     val id: ConsultationId,
@@ -36,7 +36,7 @@ data class Consultation(
     }
 }
 
-/** Paso 1 guardado (NC-3). Talla, edad y sexo vienen de los datos base. */
+/** Saved step 1. Height, age and sex come from the baseline. */
 data class ConsultationMeasurement(
     val weightKg: Double,
     val heightCm: Double,
@@ -51,7 +51,7 @@ data class ConsultationMeasurement(
     val sex: BiologicalSex?,
 )
 
-/** Hábitos alimentarios opcionales (NC-3): al menos un valor si se envían. */
+/** Optional eating habits: at least one value if sent. */
 data class EatingHabits(val mealsPerDay: Int?, val waterLitersPerDay: Double?, val mealsOutPerWeek: Int?) {
     init {
         require(mealsPerDay != null || waterLitersPerDay != null || mealsOutPerWeek != null) {
@@ -60,7 +60,7 @@ data class EatingHabits(val mealsPerDay: Int?, val waterLitersPerDay: Double?, v
     }
 }
 
-/** Datos bioquímicos opcionales (NC-3): al menos un valor si se envían. */
+/** Optional biochemistry data: at least one value if sent. */
 data class BiochemistryPanel(val glucoseMgDl: Double?, val totalCholesterolMgDl: Double?, val triglyceridesMgDl: Double?) {
     init {
         require(glucoseMgDl != null || totalCholesterolMgDl != null || triglyceridesMgDl != null) {
@@ -70,9 +70,9 @@ data class BiochemistryPanel(val glucoseMgDl: Double?, val totalCholesterolMgDl:
 }
 
 /**
- * Paso 2 guardado (NC-4). `isPending` (NC-7): emitido en esta consulta, pasa a ser el diagnóstico activo al publicar;
- * mientras la consulta sigue en curso es lo normal y el paso cuenta como hecho. Si la medición cambia, el backend lo
- * descarta y la consulta llega sin diagnóstico.
+ * Saved step 2. `isPending`: issued in this consultation, it becomes the active diagnosis on publish; while the
+ * consultation is still in progress this is normal and the step counts as done. If the measurement changes, the
+ * backend discards it and the consultation comes back without a diagnosis.
  */
 data class ConsultationDiagnosis(
     val code: DiagnosisCode?,
@@ -81,14 +81,14 @@ data class ConsultationDiagnosis(
     val isPending: Boolean,
 )
 
-/** Metas (energía en kcal y macros en g). */
+/** Targets (energy in kcal and macros in g). */
 data class Targets(val energyKcal: Double, val proteinG: Double, val carbG: Double, val fatG: Double) {
     init {
         require(energyKcal > 0) { "Target energy must be positive" }
         require(proteinG >= 0 && carbG >= 0 && fatG >= 0) { "Macros cannot be negative" }
     }
 
-    /** Parte de la energía de cada macro (4/4/9 kcal por gramo), en porcentaje entero. */
+    /** Each macro's share of the energy (4/4/9 kcal per gram), as a whole percentage. */
     val proteinPercent: Int get() = percentOf(proteinG * KCAL_PER_G_PROTEIN)
     val carbPercent: Int get() = percentOf(carbG * KCAL_PER_G_CARB)
     val fatPercent: Int get() = percentOf(fatG * KCAL_PER_G_FAT)
@@ -106,7 +106,7 @@ data class Targets(val energyKcal: Double, val proteinG: Double, val carbG: Doub
 }
 
 /**
- * Base de cálculo de las metas (F9). Es información del profesional: **nunca** sale hacia el paciente (regla ética 1).
+ * How the targets were calculated. Practitioner-only information: it **never** reaches the patient (ethics rule 1).
  */
 data class CalculationBasis(
     val equation: EnergyEquation?,
@@ -116,7 +116,7 @@ data class CalculationBasis(
     val deficitValue: Double,
 )
 
-/** Paso 3 guardado (NC-5): el borrador de la versión N+1. */
+/** Saved step 3: the draft of version N+1. */
 data class ConsultationTargets(
     val basis: CalculationBasis,
     val proposal: Targets,
@@ -125,7 +125,7 @@ data class ConsultationTargets(
     val overrideReason: String?,
 )
 
-/** Borrador del paso 4 (`publication-draft`): lo elegido en EV-5, para que «lo que escribiste no se pierda». */
+/** Step 4 draft (`publication-draft`): the choices on the publication step, so "what you wrote is not lost". */
 data class PublicationDraft(
     val restrictions: Set<PlanRestrictionCode>,
     val guidelines: Set<PlanGuidelineCode>,
@@ -134,8 +134,8 @@ data class PublicationDraft(
 )
 
 /**
- * Lo que el paciente contó antes de la consulta (MA-4, EV-2 «Antes de la consulta, Ana contó»). Códigos tal como
- * llegan (`Good`/`Fair`/`Hard`, `Dinners`…); las preguntas son texto del paciente y se muestran tal cual.
+ * What the patient shared before the consultation (the "Before the consultation, Ana shared" card). Codes as they
+ * arrive (`Good`/`Fair`/`Hard`, `Dinners`…); the questions are the patient's own text and are shown as is.
  */
 data class PatientCheckIn(
     val feeling: String,
@@ -144,7 +144,7 @@ data class PatientCheckIn(
     val submittedAt: Instant,
 )
 
-/** IA-6 · «Sugerencia de IA» de EV-3, o la categoría del IMC (`source = Rule`) si la IA no está disponible. */
+/** The "AI suggestion" on the diagnosis step, or the BMI category (`source = Rule`) when AI is unavailable. */
 data class DiagnosisSuggestion(
     val aiGenerationId: Long?,
     val code: DiagnosisCode,
@@ -153,14 +153,14 @@ data class DiagnosisSuggestion(
     val disclaimer: String,
 )
 
-/** NC-5 · `ConsultationTargetProposalResource`: la propuesta y con qué se calculó («Calculado con…»). */
+/** `ConsultationTargetProposalResource`: the proposal and what it was calculated with ("Calculated with…"). */
 data class TargetProposal(
     val basis: CalculationBasis,
     val proposal: Targets,
     val inputs: TargetInputs,
 )
 
-/** «Mujer · 31 años · 168 cm · 74.2 kg · actividad moderada». */
+/** "Woman · 31 years · 168 cm · 74.2 kg · moderate activity". */
 data class TargetInputs(
     val sex: BiologicalSex?,
     val ageYears: Int,
@@ -169,10 +169,10 @@ data class TargetInputs(
     val activityLevel: ActivityLevel?,
 )
 
-/** IA-7 · indicaciones sugeridas según el diagnóstico (o la tabla fija, `Rule`). */
+/** Guidelines suggested from the diagnosis (or the fixed table, `Rule`). */
 data class GuidelineSuggestions(val codes: List<PlanGuidelineCode>, val isFromAi: Boolean)
 
-/** Lo que reciben los datos base en el resumen y en EV-2 («Mujer · 31 años · 168 cm · hipotiroidismo»). */
+/** What the summary and the measurement step get from the baseline ("Woman · 31 years · 168 cm · hypothyroidism"). */
 data class BaselineSummary(
     val sex: BiologicalSex?,
     val ageYears: Int,
