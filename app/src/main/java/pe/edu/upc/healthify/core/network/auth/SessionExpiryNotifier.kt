@@ -7,8 +7,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Evento one-shot «la sesión expiró» (el refresh token fue rechazado). Lo consume el grafo raíz para ir a S6.
- * Conflated: varias peticiones que fallan a la vez dejan un solo evento pendiente.
+ * One-shot "session expired" event (the refresh token was rejected). The root graph consumes it to open the
+ * session expired screen. Conflated: several requests failing at once leave a single pending event.
  */
 @Singleton
 class SessionExpiryNotifier @Inject constructor() {

@@ -18,8 +18,8 @@ import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 
 /**
- * «Badge · IA» del Figma: «✦ Ideas con IA» (PT14), «✦ Resumen con IA» (PT13, PT13.2). Todo lo generado por IA lleva esta
- * marca.
+ * Figma AI badge, as on the diary's AI ideas and the weight trend's AI summaries. Everything AI-generated
+ * carries this mark.
  */
 @Composable
 fun AiBadge(label: String, modifier: Modifier = Modifier) {
@@ -43,7 +43,7 @@ fun AiBadge(label: String, modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(name = "Badge · IA")
+@Preview(name = "Badge · AI")
 @Composable
 private fun AiBadgePreview() {
     ComponentPreview { AiBadge(label = "Resumen con IA") }

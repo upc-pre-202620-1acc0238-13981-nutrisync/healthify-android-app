@@ -6,8 +6,8 @@ import java.time.OffsetDateTime
 import java.time.format.DateTimeParseException
 
 /**
- * Fechas del backend en los mappers de `infrastructure`: `DateTimeOffset` llega como ISO-8601 con offset
- * (`2026-09-04T10:00:00-05:00`, hasta 7 decimales) y `DateOnly` como `2026-09-18`. `null` si no se puede leer.
+ * Backend dates in the `infrastructure` mappers: `DateTimeOffset` arrives as ISO-8601 with offset
+ * (`2026-09-04T10:00:00-05:00`, up to 7 decimals) and `DateOnly` as `2026-09-18`. `null` if it cannot be parsed.
  */
 fun String.toInstantOrNull(): Instant? =
     try {

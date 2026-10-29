@@ -12,17 +12,17 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 /**
- * Texto que la UI todavía no resolvió: una plantilla de `strings.xml` con sus argumentos (códigos del backend
- * traducidos en la app) o un texto escrito por una persona, que se muestra **tal cual**.
+ * Text the UI has not resolved yet: a `strings.xml` template with its arguments (backend codes
+ * translated in the app) or text written by a person, shown **as is**.
  *
- * Los argumentos pueden ser otros [UiText], `Int`, `String`, `Double`, [DecimalNumber] o [DayMonth]; los `Double` se formatean con el
- * `Locale` actual (hasta 1 decimal) y las fechas como día y mes, nunca concatenando.
+ * Arguments can be other [UiText], `Int`, `String`, `Double`, [DecimalNumber] or [DayMonth]; `Double`s are formatted with
+ * the current `Locale` (up to 1 decimal) and dates as day and month, never by concatenation.
  */
 sealed interface UiText {
 
     data class Resource(@param:StringRes val id: Int, val args: List<Any> = emptyList()) : UiText
 
-    /** Texto libre de una persona (indicación propia, restricción legada, mensaje): nunca se traduce. */
+    /** Free text from a person (custom guideline, legacy restriction, message): never translated. */
     data class Raw(val text: String) : UiText
 
     fun resolve(resources: Resources, locale: Locale): String = when (this) {
@@ -37,13 +37,13 @@ sealed interface UiText {
     companion object {
         fun of(@StringRes id: Int, vararg args: Any): UiText = Resource(id, args.toList())
 
-        /** Número con el `Locale` dado: separador de miles y hasta 1 decimal («1 850», «62,5»). */
+        /** Number in the given `Locale`: thousands separator and up to 1 decimal («1 850», «62,5»). */
         fun formatNumber(value: Double, locale: Locale): String =
             NumberFormat.getNumberInstance(locale).apply { maximumFractionDigits = 1 }.format(value)
     }
 }
 
-/** Argumento de fecha de un [UiText]: día y mes abreviado en el idioma del lector («8 sept.» / «Sep 8»). */
+/** Date argument of a [UiText]: day and abbreviated month in the reader's language («8 sept.» / «Sep 8»). */
 data class DayMonth(val date: LocalDate) {
     fun format(locale: Locale): String {
         val pattern = if (locale.language == Locale.ENGLISH.language) "MMM d" else "d MMM"
@@ -51,7 +51,7 @@ data class DayMonth(val date: LocalDate) {
     }
 }
 
-/** Argumento numérico con más decimales que el formato por defecto («0,46 kg/semana»). */
+/** Numeric argument with more decimals than the default format (e.g. «0.46 kg/week»). */
 data class DecimalNumber(val value: Double, val maxFractionDigits: Int) {
     fun format(locale: Locale): String =
         NumberFormat.getNumberInstance(locale).apply { maximumFractionDigits = maxFractionDigits }.format(value)
@@ -66,12 +66,12 @@ private fun Any.resolveArg(resources: Resources, locale: Locale): Any = when (th
     else -> this
 }
 
-/** Resuelve el texto con los recursos y el idioma actuales de la composición. */
+/** Resolves the text with the composition's current resources and language. */
 @Composable
 @ReadOnlyComposable
 fun UiText.asString(): String = resolve(LocalResources.current, currentLocale())
 
-/** El `Locale` de la configuración actual (el idioma que eligió el paciente en la app). */
+/** The current configuration's `Locale` (the language the patient chose in the app). */
 @Composable
 @ReadOnlyComposable
 fun currentLocale(): Locale = LocalConfiguration.current.locales[0]

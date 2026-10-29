@@ -31,14 +31,14 @@ import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 import pe.edu.upc.healthify.core.designsystem.theme.elevation
 
-// Diálogo con ícono del Figma (EV-2.S): 312 dp de ancho, círculo de 56 dp con el ícono de 28 dp.
+// Figma icon dialog: 312 dp wide, 56 dp circle with the 28 dp icon.
 private val IconDialogMaxWidth = 312.dp
 private val IconCircleSize = 56.dp
 private val IconGlyphSize = 28.dp
 
 /**
- * Diálogo con ícono del Figma (EV-2.S «¿Salir de la consulta?»): círculo `secondaryContainer` con el ícono, título en
- * Metric/Medium, texto de apoyo y dos acciones apiladas (Filled + Text).
+ * Figma icon dialog (e.g. leaving a consultation): `secondaryContainer` circle with the icon, title in
+ * Metric/Medium, supporting text and two stacked actions (Filled + Text).
  */
 @Composable
 fun HealthifyIconDialog(
@@ -57,7 +57,7 @@ fun HealthifyIconDialog(
     }
 }
 
-/** Superficie del diálogo con ícono sin ventana (previews). */
+/** Icon dialog surface without a window (previews). */
 @Composable
 fun HealthifyIconDialogContent(
     icon: ImageVector,
@@ -118,7 +118,7 @@ fun HealthifyIconDialogContent(
     }
 }
 
-@Preview(name = "Diálogo con ícono", widthDp = 360, heightDp = 520)
+@Preview(name = "Icon dialog", widthDp = 360, heightDp = 520)
 @Composable
 private fun HealthifyIconDialogPreview() {
     ComponentPreview {

@@ -23,13 +23,13 @@ import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 import pe.edu.upc.healthify.core.designsystem.theme.elevation
 
-/** Variantes «Style» del IconButton del Figma. */
+/** "Style" variants of the Figma IconButton. */
 enum class HealthifyIconButtonStyle { Standard, Tonal, Filled }
 
 /**
- * IconButton del Figma: área táctil 48×48 dp, ícono 24 dp.
+ * Figma IconButton: 48×48 dp touch target, 24 dp icon.
  *
- * @param contentDescription obligatorio salvo que el ícono sea decorativo y otro elemento lo describa.
+ * @param contentDescription required unless the icon is decorative and another element describes it.
  */
 @Composable
 fun HealthifyIconButton(
@@ -100,7 +100,7 @@ internal fun HealthifyIconButtonImpl(
     }
 }
 
-@Preview(name = "IconButton · estilos × estados", widthDp = 360)
+@Preview(name = "IconButton · styles × states", widthDp = 360)
 @Composable
 private fun IconButtonPreview() {
     ComponentPreview {

@@ -9,13 +9,13 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
-// «Grupo fijo» de PT1 y PT5: esquinas de 32 × 5 dp (radio 3) a 16 dp del borde del visor de 296 dp.
+// Figma viewfinder corners: 32 × 5 dp (radius 3), 16 dp from the edge of the 296 dp viewfinder.
 private val CornerInset = 16.dp
 private val CornerLength = 32.dp
 private val CornerThickness = 5.dp
 private val CornerRadiusDp = 3.dp
 
-/** Las cuatro esquinas del visor de PT1 y PT5, dibujadas sobre la vista de cámara (decorativas). */
+/** The four corners of the QR scanner and meal camera viewfinder, drawn over the camera view (decorative). */
 @Composable
 fun ViewfinderCorners(color: Color, modifier: Modifier = Modifier) {
     Canvas(modifier = modifier) {

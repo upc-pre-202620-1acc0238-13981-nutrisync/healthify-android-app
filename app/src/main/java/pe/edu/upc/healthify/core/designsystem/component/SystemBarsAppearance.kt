@@ -9,11 +9,11 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 /**
- * Color de los íconos de la status bar y de la barra de navegación según el fondo de la pantalla («StatusBar/Android ·
- * Iconos=Claro/Oscuro» del Figma). Con edge-to-edge la app dibuja detrás de las barras; al salir de la pantalla se
- * restaura lo anterior.
+ * Status bar and navigation bar icon color based on the screen background (the Figma "StatusBar/Android"
+ * light and dark icon variants). With edge-to-edge the app draws behind the bars; leaving the screen
+ * restores the previous value.
  *
- * @param darkBackground `true` = fondo oscuro o de color intenso → íconos claros.
+ * @param darkBackground `true` = dark or strongly colored background → light icons.
  */
 @Composable
 fun SystemBarsAppearance(darkBackground: Boolean) {

@@ -35,24 +35,24 @@ import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 import pe.edu.upc.healthify.core.designsystem.theme.elevation
 
 /**
- * Variantes «Style» del componente Button del Figma.
- * - [Filled]: CTA principal (naranja `secondary`).
- * - [Tonal], [Outlined], [Text]: acciones secundarias.
- * - [Danger]: acciones irreversibles.
+ * "Style" variants of the Figma Button component.
+ * - [Filled]: main CTA (orange `secondary`).
+ * - [Tonal], [Outlined], [Text]: secondary actions.
+ * - [Danger]: irreversible actions.
  */
 enum class HealthifyButtonStyle { Filled, Tonal, Outlined, Text, Danger }
 
-// Medidas del componente Button del Figma.
+// Figma Button component measurements.
 private val LoadingIndicatorSize = 20.dp
 private val LoadingIndicatorStroke = 2.dp
 
 /**
- * Button del Figma (M3 adaptado). Alto 56 dp (Text: 48 dp), forma de píldora.
+ * Figma Button (adapted M3). 56 dp tall (Text: 48 dp), pill shape.
  *
- * @param loading muestra el progreso circular y bloquea los toques; pasa en [text] el texto de carga del
- *   mockup (p. ej. «Guardando…»).
- * @param contentColor color del texto en estado habilitado, para las variantes del Figma que lo cambian sobre
- *   fondos oscuros (p. ej. Text «Ya tengo cuenta» en `inversePrimary` en S2). `null` = el del estilo.
+ * @param loading shows the circular progress and blocks taps; pass the mockup's loading text in [text]
+ *   (e.g. "Saving…").
+ * @param contentColor text color when enabled, for the Figma variants that change it on dark backgrounds
+ *   (e.g. the welcome screen's "I already have an account" Text button in `inversePrimary`). `null` = the style's.
  */
 @Composable
 fun HealthifyButton(
@@ -226,7 +226,7 @@ private fun ButtonDangerPreview() {
     ComponentPreview { ButtonStatesRow(HealthifyButtonStyle.Danger) }
 }
 
-@Preview(name = "Button · ancho completo con ícono", widthDp = 360)
+@Preview(name = "Button · full width with icon", widthDp = 360)
 @Composable
 private fun ButtonFullWidthPreview() {
     ComponentPreview {

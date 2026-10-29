@@ -31,16 +31,16 @@ import pe.edu.upc.healthify.R
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 import pe.edu.upc.healthify.core.designsystem.theme.elevation
 
-// Dialog del Figma: ancho 312 dp en el frame de 360 (24 dp por lado); scrim al 32 %.
+// Figma Dialog: 312 dp wide in the 360 frame (24 dp per side); scrim at 32 %.
 private val DialogMaxWidth = 312.dp
 private const val DIALOG_SCRIM_ALPHA = 0.32f
 
 /**
- * AlertDialog del Figma («Básico» / «Destructivo»). El gesto atrás y tocar fuera equivalen a Cancelar
+ * Figma AlertDialog ("Basic" / "Destructive"). The back gesture and tapping outside count as Cancel
  * ([onDismiss]).
  *
- * @param dismissLabel `null` = diálogo informativo con un solo botón ([confirmLabel]).
- * @param destructive el botón de confirmación usa el estilo Danger (acciones irreversibles).
+ * @param dismissLabel `null` = informational dialog with a single button ([confirmLabel]).
+ * @param destructive the confirm button uses the Danger style (irreversible actions).
  */
 @Composable
 fun HealthifyDialog(
@@ -71,8 +71,8 @@ fun HealthifyDialog(
 }
 
 /**
- * Scrim del Figma (32 %) para la ventana del diálogo actual. Lo usan [HealthifyDialog] y los destinos `dialog` de
- * Navigation que muestran un [HealthifyDialogContent].
+ * Figma scrim (32 %) for the current dialog window. Used by [HealthifyDialog] and by the Navigation `dialog`
+ * destinations that show a [HealthifyDialogContent].
  */
 @Composable
 fun HealthifyDialogScrim() {
@@ -80,10 +80,10 @@ fun HealthifyDialogScrim() {
     SideEffect { window?.setDimAmount(DIALOG_SCRIM_ALPHA) }
 }
 
-/** Ventana de diálogo sin el ancho por defecto de la plataforma (el ancho lo pone [HealthifyDialogContent]). */
+/** Dialog window without the platform's default width (the width comes from [HealthifyDialogContent]). */
 val HealthifyDialogProperties = DialogProperties(usePlatformDefaultWidth = false)
 
-/** Superficie del diálogo sin ventana (previews, catálogo y diálogos con contenido propio). */
+/** Dialog surface without a window (previews, catalog and dialogs with custom content). */
 @Composable
 fun HealthifyDialogContent(
     title: String,
@@ -137,7 +137,7 @@ fun HealthifyDialogContent(
     }
 }
 
-@Preview(name = "Dialog · Básico / Destructivo", widthDp = 360, heightDp = 520)
+@Preview(name = "Dialog · Basic / Destructive", widthDp = 360, heightDp = 520)
 @Composable
 private fun DialogPreview() {
     ComponentPreview {

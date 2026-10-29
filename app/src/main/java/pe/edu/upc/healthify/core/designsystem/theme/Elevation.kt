@@ -10,13 +10,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 
-/** Una sombra del estilo de efecto del Figma (offset Y, desenfoque y opacidad del negro). */
+/** One shadow of the Figma effect style (Y offset, blur and black opacity). */
 @Immutable
 data class HealthifyShadowLayer(val offsetY: Dp, val blur: Dp, val alpha: Float)
 
 /**
- * Estilos de efecto «Elevation/1–3» del Figma. Se dibujan con sombras reales ([dropShadow]) en lugar de
- * la elevación tonal de M3, para que coincidan con el diseño.
+ * Figma "Elevation/1–3" effect styles. Drawn with real shadows ([dropShadow]) instead of
+ * M3 tonal elevation, so they match the design.
  */
 @Immutable
 data class HealthifyElevation(val layers: List<HealthifyShadowLayer>) {
@@ -32,7 +32,7 @@ data class HealthifyElevation(val layers: List<HealthifyShadowLayer>) {
     }
 }
 
-/** Dibuja la elevación del Figma detrás del contenido. Va antes de `background`/`clip` en la cadena. */
+/** Draws the Figma elevation behind the content. Goes before `background`/`clip` in the chain. */
 fun Modifier.elevation(elevation: HealthifyElevation?, shape: Shape = RectangleShape): Modifier {
     if (elevation == null) return this
     return elevation.layers.fold(this) { acc, layer ->

@@ -9,9 +9,9 @@ import androidx.compose.ui.unit.dp
 import pe.edu.upc.healthify.core.designsystem.theme.IconFill
 
 /**
- * Íconos del Figma (frame «Íconos» de «Sistema de diseño · Healthify M3»), 24×24 dp, rellenos.
- * Se pintan con `Icon(imageVector, contentDescription, tint = …)`: el color sale siempre del tema.
- * Cada propiedad indica el nombre del componente en el Figma.
+ * Figma icons (the icons frame of the Healthify M3 design system file), 24×24 dp, filled.
+ * Painted with `Icon(imageVector, contentDescription, tint = …)`: the color always comes from the theme.
+ * Each property notes the component's name in the Figma.
  */
 object HealthifyIcons {
     /** Icon/arrow-back */
@@ -57,7 +57,7 @@ object HealthifyIcons {
         )
     }
 
-    /** Icon/visibility-off (ojo tachado de Material: «ocultar contraseña»). */
+    /** Icon/visibility-off (Material crossed eye: "hide password"). */
     val VisibilityOff by lazy {
         icon(
             "VisibilityOff",
@@ -616,7 +616,7 @@ object HealthifyIcons {
         )
     }
 
-    /** Icon/trend (misma figura que Icon/progreso en el Figma). */
+    /** Icon/trend (same shape as Icon/progreso in the Figma). */
     val Trend by lazy {
         icon(
             "Trend",
@@ -635,12 +635,12 @@ object HealthifyIcons {
     /** Icon/cal */
     val Calendar by lazy { icon("Calendar", IconPath(4.5f, 3.6665f, CALENDAR_PATH)) }
 
-    /** Icon/menu (menú principal del paciente; Material «menu»). */
+    /** Icon/menu (patient main menu; Material "menu"). */
     val Menu by lazy {
         icon("Menu", IconPath(3f, 6f, "M0 12 L18 12 L18 10 L0 10 L0 12 Z M0 7 L18 7 L18 5 L0 5 L0 7 Z M0 0 L0 2 L18 2 L18 0 L0 0 Z"))
     }
 
-    /** Icon/delete (Material «delete»). */
+    /** Icon/delete (Material "delete"). */
     val Delete by lazy {
         icon(
             "Delete",
@@ -666,8 +666,8 @@ object HealthifyIcons {
         )
     }
 
-    // DECISIÓN DS-I: en el Figma, Icon/language (22×20) e Icon/ia (22×22) tienen el vector pegado a la esquina
-    // superior izquierda. Se centran en la caja de 24 dp (desplazamiento 1,2 y 1,1), como el resto de íconos.
+    // In the Figma, Icon/language (22×20) and Icon/ia (22×22) have the vector stuck to the top-left corner.
+    // They are centered in the 24 dp box (offset 1.2 and 1.1), like the other icons.
 
     /** Icon/language */
     val Language by lazy {
@@ -699,7 +699,7 @@ object HealthifyIcons {
         )
     }
 
-    /** Todos los íconos con su nombre del Figma (catálogo interno). */
+    /** Every icon with its Figma name (internal catalog). */
     val all: List<Pair<String, ImageVector>>
         get() = listOf(
             "arrow-back" to ArrowBack, "chevron-right" to ChevronRight, "chevron-left" to ChevronLeft,
@@ -738,7 +738,7 @@ private const val BOWL_STEAM_SHORT =
         "C0 3.79357 0.373096 4.16667 0.833333 4.16667 C1.29357 4.16667 1.66667 3.79357 1.66667 3.33333 " +
         "L1.66667 0.833333 Z"
 
-/** Un trazo del ícono: su `d` del Figma y su posición dentro de la caja de 24 dp. */
+/** One icon path: its Figma `d` and its position inside the 24 dp box. */
 private class IconPath(val x: Float, val y: Float, val d: String, val evenOdd: Boolean = false)
 
 private fun icon(name: String, vararg paths: IconPath): ImageVector =

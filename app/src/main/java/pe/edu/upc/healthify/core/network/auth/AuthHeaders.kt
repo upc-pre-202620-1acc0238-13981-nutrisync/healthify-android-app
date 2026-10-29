@@ -2,13 +2,13 @@ package pe.edu.upc.healthify.core.network.auth
 
 import okhttp3.Request
 
-/** Cabecera `Authorization` y los endpoints anónimos de Iam (§5.1 del backend), que nunca la llevan. */
+/** The `Authorization` header and the anonymous Iam endpoints, which never carry it. */
 internal object AuthHeaders {
     const val AUTHORIZATION = "Authorization"
     private const val BEARER_PREFIX = "Bearer "
 
-    // DECISIÓN IAM-4: no se manda el bearer a los endpoints anónimos. Así un 401 de sign-in
-    // (InvalidCredentials/AccountLocked) o de token-refreshes nunca dispara una renovación.
+    // The bearer is never sent to the anonymous endpoints, so a 401 from sign-in
+    // (InvalidCredentials/AccountLocked) or from token-refreshes never triggers a renewal.
     private val ANONYMOUS_PATH_SUFFIXES = listOf(
         "authentication/sign-in",
         "authentication/sign-up",
@@ -17,7 +17,7 @@ internal object AuthHeaders {
 
     fun bearer(token: String): String = BEARER_PREFIX + token
 
-    /** El access token que llevó la request, o `null` si salió sin `Authorization: Bearer`. */
+    /** The access token the request carried, or `null` if it went out without `Authorization: Bearer`. */
     fun Request.bearerToken(): String? =
         header(AUTHORIZATION)?.takeIf { it.startsWith(BEARER_PREFIX) }?.removePrefix(BEARER_PREFIX)
 

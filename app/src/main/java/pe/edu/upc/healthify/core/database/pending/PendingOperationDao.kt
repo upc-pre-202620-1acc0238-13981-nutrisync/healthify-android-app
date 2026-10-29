@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface PendingOperationDao {
 
-    /** Ignora un `clientEntryId` repetido: encolar dos veces la misma operación no la duplica. */
+    /** Ignores a repeated `clientEntryId`: queuing the same operation twice does not duplicate it. */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(operation: PendingOperationEntity): Long
 

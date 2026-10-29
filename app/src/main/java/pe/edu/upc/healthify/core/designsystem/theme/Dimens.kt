@@ -6,8 +6,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /**
- * Colección «Dimensiones» del Figma (espaciado 0–64 en múltiplos de 4/8, radios y tamaños) más las
- * elevaciones 1–3 (estilos de efecto «Elevation/…»).
+ * Figma "Dimensiones" collection (spacing 0–64 in multiples of 4/8, radii and sizes) plus
+ * elevations 1–3 ("Elevation/…" effect styles).
  */
 @Immutable
 data class HealthifyDimens(
@@ -25,18 +25,18 @@ data class HealthifyDimens(
     val radiusMd: Dp = 12.dp,
     val radiusLg: Dp = 16.dp,
     val radiusXl: Dp = 24.dp,
-    /** «radius/full» (999 en el Figma): forma de píldora o círculo. */
+    /** "radius/full" (999 in the Figma): pill or circle shape. */
     val radiusFull: Dp = 999.dp,
-    // Radios de componente que no son variables del Figma pero sí valores fijos de sus componentes.
+    // Component radii that are not Figma variables but are fixed values of its components.
     /** Snackbar. */
     val radiusXs: Dp = 4.dp,
-    /** Bloques de texto del Skeleton. */
+    /** Skeleton text blocks. */
     val radiusSkeletonText: Dp = 6.dp,
-    /** Dialog y BottomSheet (M3). */
+    /** Dialog and BottomSheet (M3). */
     val radiusDialog: Dp = 28.dp,
-    /** Borde de reposo (Outlined, TextField, Segmento). */
+    /** Resting border (Outlined, TextField, Segment). */
     val borderThin: Dp = 1.dp,
-    /** Borde de foco/selección/error. */
+    /** Focus/selection/error border. */
     val borderThick: Dp = 2.dp,
     val touchMin: Dp = 48.dp,
     val icon: Dp = 24.dp,
@@ -45,7 +45,7 @@ data class HealthifyDimens(
     val gestureBar: Dp = 24.dp,
     val button: Dp = 56.dp,
     val textField: Dp = 56.dp,
-    /** Margen lateral de pantalla en el frame de referencia 360×800. */
+    /** Side screen margin in the 360×800 reference frame. */
     val screenHorizontal: Dp = 16.dp,
     val elevation1: HealthifyElevation = HealthifyElevation.Level1,
     val elevation2: HealthifyElevation = HealthifyElevation.Level2,

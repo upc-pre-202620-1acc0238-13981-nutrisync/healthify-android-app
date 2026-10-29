@@ -2,9 +2,9 @@ package pe.edu.upc.healthify.core.designsystem.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Primitivos del Figma «Sistema de diseño · Healthify M3» (colección Primitivos).
-// Único archivo donde se permite Color(0xFF…). Las pantallas usan MaterialTheme.colorScheme
-// o HealthifyTheme.extendedColors, nunca estos valores directo.
+// Figma primitives (Primitivos collection of the Healthify M3 design system).
+// The only file where Color(0xFF…) is allowed. Screens use MaterialTheme.colorScheme
+// or HealthifyTheme.extendedColors, never these values directly.
 internal val Green900 = Color(0xFF24461A)
 internal val Green700 = Color(0xFF3B6E23)
 internal val Green500 = Color(0xFF4C8F2F)
@@ -35,5 +35,5 @@ internal val StatePrimaryOverlayPressed = Color(0xFFE8EEE5)
 internal val StateErrorOverlayPressed = Color(0xFFF6E5E4)
 internal val StateCardPressed = Color(0xFFEDEDEC)
 
-/** Relleno base de los ImageVector de [pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons]; `Icon` lo tiñe. */
+/** Base fill of the [pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons] ImageVectors; `Icon` tints it. */
 internal val IconFill = Neutral1000

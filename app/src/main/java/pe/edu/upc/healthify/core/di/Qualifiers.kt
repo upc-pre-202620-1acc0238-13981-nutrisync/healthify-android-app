@@ -6,20 +6,20 @@ import javax.inject.Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class IoDispatcher
 
-/** DataStore de la sesión (solo texto cifrado). */
+/** Session DataStore (ciphertext only). */
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class SessionDataStore
 
 /**
- * `OkHttpClient`/`Retrofit` sin bearer ni `Authenticator`: para los endpoints anónimos de Iam (sign-up, sign-in,
- * token-refreshes). El refresh del authenticator debe usarlo para no entrar en recursión.
+ * `OkHttpClient`/`Retrofit` without bearer or `Authenticator`: for the anonymous Iam endpoints (sign-up, sign-in,
+ * token-refreshes). The authenticator's refresh must use it to avoid recursion.
  */
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class AnonymousApi
 
-/** Interceptores que solo existen en debug (logging). En release el set queda vacío. */
+/** Interceptors that only exist in debug (logging). In release the set is empty. */
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class DebugInterceptors

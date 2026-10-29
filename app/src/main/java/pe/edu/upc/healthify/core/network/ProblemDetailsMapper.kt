@@ -7,15 +7,15 @@ import kotlinx.serialization.json.JsonPrimitive
 import pe.edu.upc.healthify.core.common.error.DomainError
 
 /**
- * Traduce una respuesta de error del backend (RFC 7807, `application/problem+json`) a [DomainError].
+ * Translates a backend error response (RFC 7807, `application/problem+json`) into a [DomainError].
  *
- * X-3: todo ProblemDetails trae `extensions.code` con el nombre del valor del enum de error (`InvalidCredentials`,
- * `AccountLocked`, `AuthenticationRequired`…). ASP.NET serializa `Extensions` aplanado, así que llega como `code`
- * de primer nivel; se acepta también dentro de `extensions` por robustez. La UI decide por ese código, nunca por
- * `title`/`detail` (ya localizados). Tabla: `docs/backend/CODIGOS-DE-ERROR.md`.
+ * Every ProblemDetails carries `extensions.code` with the name of the error enum value (`InvalidCredentials`,
+ * `AccountLocked`, `AuthenticationRequired`…). ASP.NET serializes `Extensions` flattened, so it arrives as a
+ * top-level `code`; it is also accepted inside `extensions` just in case. The UI decides by that code, never by
+ * `title`/`detail` (already localized). Table: `docs/backend/CODIGOS-DE-ERROR.md`.
  *
- * Las respuestas vacías del framework (`Forbid()`, 403 de rol, 404 de ruta, 405, 415) no traen `code`: el error
- * queda sin código, o con `HTTP_<status>` en [DomainError.Validation]/[DomainError.Unexpected].
+ * Empty framework responses (`Forbid()`, role 403, route 404, 405, 415) carry no `code`: the error
+ * has no code, or `HTTP_<status>` in [DomainError.Validation]/[DomainError.Unexpected].
  */
 object ProblemDetailsMapper {
 

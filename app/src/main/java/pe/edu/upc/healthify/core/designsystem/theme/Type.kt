@@ -38,12 +38,12 @@ private val DisplaySmall = anton(36, 44)
 private val HeadlineMedium = anton(28, 36)
 
 /**
- * Estilos de texto del Figma (Display/Headline/Title/Body/Label): 12 aquí y 4 en
- * [HealthifyExtendedTypography] = los 16 estilos. Anton para Display/Headline/Title Large; Open Sans para el resto.
+ * Figma text styles (Display/Headline/Title/Body/Label): 12 here and 4 in
+ * [HealthifyExtendedTypography] = the 16 styles. Anton for Display/Headline/Title Large; Open Sans for the rest.
  */
 internal val HealthifyTypography = Typography(
-    // DECISIÓN Sistema de diseño: el Figma no define Display Large/Medium ni Headline Large. Se igualan al
-    // estilo más cercano del Figma para que nunca aparezca la fuente por defecto de Material.
+    // The Figma does not define Display Large/Medium or Headline Large. They match the closest
+    // Figma style so Material's default font never shows up.
     displayLarge = DisplaySmall,
     displayMedium = DisplaySmall,
     displaySmall = DisplaySmall,
@@ -61,7 +61,7 @@ internal val HealthifyTypography = Typography(
     labelSmall = openSans(FontWeight.SemiBold, 11, 16),
 )
 
-/** Estilos del Figma que Material 3 no tiene. */
+/** Figma styles that Material 3 does not have. */
 @Immutable
 data class HealthifyExtendedTypography(
     val buttonLarge: TextStyle,
