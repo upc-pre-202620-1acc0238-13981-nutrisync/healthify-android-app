@@ -1,3 +1,4 @@
+import com.google.firebase.appdistribution.gradle.firebaseAppDistribution
 import java.util.Properties
 
 plugins {
@@ -6,6 +7,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.firebase.appdistribution)
 }
 
 // Release signing: keystore.properties at the root locally, environment variables in CI.
@@ -58,6 +60,13 @@ android {
             buildConfigField("String", "BASE_URL", "\"https://platform.healthify.lat/api/v1/\"")
             optimization {
                 enable = false
+            }
+            // Uploaded by the distribute workflow; the app uses no Firebase SDK, so no google-services.json.
+            firebaseAppDistribution {
+                appId = providers.environmentVariable("FIREBASE_APP_ID").orNull
+                serviceCredentialsFile = providers.environmentVariable("FIREBASE_SERVICE_CREDENTIALS_FILE").orNull
+                artifactType = "APK"
+                groups = "qa"
             }
         }
     }
