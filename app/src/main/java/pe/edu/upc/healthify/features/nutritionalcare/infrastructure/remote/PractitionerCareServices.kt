@@ -6,6 +6,7 @@ import pe.edu.upc.healthify.features.nutritionalcare.infrastructure.remote.dto.D
 import pe.edu.upc.healthify.features.nutritionalcare.infrastructure.remote.dto.GuidelineSuggestionsDto
 import pe.edu.upc.healthify.features.nutritionalcare.infrastructure.remote.dto.MeasurementRequestDto
 import pe.edu.upc.healthify.features.nutritionalcare.infrastructure.remote.dto.NutritionPlanDto
+import pe.edu.upc.healthify.features.nutritionalcare.infrastructure.remote.dto.NutritionalAssessmentDto
 import pe.edu.upc.healthify.features.nutritionalcare.infrastructure.remote.dto.PatientBaselineDto
 import pe.edu.upc.healthify.features.nutritionalcare.infrastructure.remote.dto.PatientBaselineRequestDto
 import pe.edu.upc.healthify.features.nutritionalcare.infrastructure.remote.dto.PatientSummaryDto
@@ -111,4 +112,8 @@ interface PractitionerPatientService {
 
     @GET("patients/{patientId}/nutrition-plans")
     suspend fun getPlans(@Path("patientId") patientId: Long): List<NutritionPlanDto>
+
+    /** Solo el profesional que registró la evaluación · `403` si es de otro · `404` si no existe. */
+    @GET("nutritional-assessments/{assessmentId}")
+    suspend fun getAssessment(@Path("assessmentId") assessmentId: Long): NutritionalAssessmentDto
 }

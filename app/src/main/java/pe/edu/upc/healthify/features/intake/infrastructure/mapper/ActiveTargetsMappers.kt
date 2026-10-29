@@ -3,7 +3,9 @@ package pe.edu.upc.healthify.features.intake.infrastructure.mapper
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import pe.edu.upc.healthify.core.network.toInstantOrNull
+import pe.edu.upc.healthify.core.network.toLocalDateOrNull
 import pe.edu.upc.healthify.features.intake.domain.entity.ActiveTargets
+import pe.edu.upc.healthify.features.intake.domain.entity.DailyIntake
 import pe.edu.upc.healthify.features.intake.domain.valueobject.DailyTargets
 import pe.edu.upc.healthify.features.intake.domain.valueobject.DietaryRestriction
 import pe.edu.upc.healthify.features.intake.domain.valueobject.PatientId
@@ -11,6 +13,7 @@ import pe.edu.upc.healthify.features.intake.domain.valueobject.PlanChange
 import pe.edu.upc.healthify.features.intake.domain.valueobject.PlanGuideline
 import pe.edu.upc.healthify.features.intake.infrastructure.local.ActiveTargetsCacheEntity
 import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.ActiveTargetsDto
+import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.DailyIntakeDto
 import java.time.Instant
 
 /**
@@ -38,6 +41,25 @@ fun ActiveTargetsDto.toDomain(): ActiveTargets {
         },
         patientMessage = patientMessage?.trim()?.takeIf { it.isNotEmpty() },
     )
+}
+
+/** IN-9. `null` si el recurso rompe una invariante (fecha ilegible o valores negativos): el medidor usa las metas. */
+fun DailyIntakeDto.toDomainOrNull(): DailyIntake? {
+    val day = date.toLocalDateOrNull() ?: return null
+    return runCatching {
+        DailyIntake(
+            date = day,
+            energyKcal = energyKcal,
+            proteinG = proteinG,
+            carbG = carbG,
+            fatG = fatG,
+            entryCount = entryCount,
+            remainingEnergyKcal = remainingEnergyKcal,
+            remainingProteinG = remainingProteinG,
+            remainingCarbG = remainingCarbG,
+            remainingFatG = remainingFatG,
+        )
+    }.getOrNull()
 }
 
 fun ActiveTargetsDto.toEntity(json: Json, savedAt: Instant): ActiveTargetsCacheEntity =

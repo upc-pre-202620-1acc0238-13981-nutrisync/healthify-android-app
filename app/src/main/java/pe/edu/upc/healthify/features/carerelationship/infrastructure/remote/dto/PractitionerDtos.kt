@@ -14,6 +14,8 @@ data class PatientRosterItemDto(
     val activePlanVersion: Int? = null,
     val isNew: Boolean = false,
     val hasConsultationInProgress: Boolean = false,
+    val nextFollowUpAt: String? = null,
+    val hasOpenReviewItem: Boolean = false,
 )
 
 /** `IssueInvitationResource(ExpiresAt)` (F4). */

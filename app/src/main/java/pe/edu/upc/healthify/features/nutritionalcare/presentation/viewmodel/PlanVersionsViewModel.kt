@@ -1,5 +1,6 @@
 package pe.edu.upc.healthify.features.nutritionalcare.presentation.viewmodel
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,19 +15,30 @@ import pe.edu.upc.healthify.core.common.error.DomainError
 import pe.edu.upc.healthify.core.common.error.domainErrorOrNull
 import pe.edu.upc.healthify.features.iam.application.usecase.ObserveCurrentUserUseCase
 import pe.edu.upc.healthify.features.nutritionalcare.application.usecase.GetPlanVersionsUseCase
+import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.PlanVersion
+import pe.edu.upc.healthify.features.nutritionalcare.presentation.components.isSecondary
+import pe.edu.upc.healthify.features.nutritionalcare.presentation.components.toUiText
+import pe.edu.upc.healthify.features.nutritionalcare.presentation.navigation.PlanVersionsRoute
+import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.PlanChangeLine
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.PlanVersionItem
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.PlanVersionsUiState
 import javax.inject.Inject
 
-/** PT4.1 · Versiones del plan (`GET /patients/{pid}/plan-versions`, NC-8). */
+/**
+ * PT4.1 · Versiones del plan (`GET /patients/{pid}/plan-versions`, NC-8). Desde una consulta anterior (PT25) llega con
+ * la versión cuyo detalle se abre al cargar.
+ */
 @HiltViewModel
 class PlanVersionsViewModel @Inject constructor(
     private val observeCurrentUser: ObserveCurrentUserUseCase,
     private val getPlanVersions: GetPlanVersionsUseCase,
     connectivityObserver: ConnectivityObserver,
+    savedStateHandle: SavedStateHandle = SavedStateHandle(),
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(PlanVersionsUiState())
+    private val _state = MutableStateFlow(
+        PlanVersionsUiState(selectedVersion = savedStateHandle.get<Int>(PlanVersionsRoute.ARG_VERSION)),
+    )
     val state: StateFlow<PlanVersionsUiState> = _state.asStateFlow()
 
     init {
@@ -42,6 +54,10 @@ class PlanVersionsViewModel @Inject constructor(
 
     fun onRetry() = load()
 
+    fun onVersionSelected(version: Int) = _state.update { it.copy(selectedVersion = version) }
+
+    fun onDetailDismissed() = _state.update { it.copy(selectedVersion = null) }
+
     private fun load() {
         _state.update { it.copy(isLoading = it.versions.isEmpty(), loadFailed = false) }
         viewModelScope.launch {
@@ -51,8 +67,7 @@ class PlanVersionsViewModel @Inject constructor(
             _state.update {
                 it.copy(
                     isLoading = false,
-                    versions = versions?.map { v -> PlanVersionItem(v.version, v.publishedAt, v.energyKcal, v.isActive) }
-                        ?: it.versions,
+                    versions = versions?.map(PlanVersion::toItem) ?: it.versions,
                     // Sin red se muestra el estado «Sin conexión», no un error.
                     loadFailed = versions == null && result.domainErrorOrNull() != DomainError.Network,
                     isOffline = it.isOffline || result.domainErrorOrNull() == DomainError.Network,
@@ -61,3 +76,17 @@ class PlanVersionsViewModel @Inject constructor(
         }
     }
 }
+
+private fun PlanVersion.toItem() = PlanVersionItem(
+    version = version,
+    publishedAt = publishedAt,
+    energyKcal = energyKcal,
+    isActive = isActive,
+    proteinG = proteinG,
+    carbG = carbG,
+    fatG = fatG,
+    guidelines = guidelines.map { it.toUiText() },
+    restrictions = restrictions.map { it.toUiText() },
+    changes = changesFromPrevious.map { PlanChangeLine(it.toUiText(), secondary = it.isSecondary) },
+    patientMessage = patientMessage,
+)

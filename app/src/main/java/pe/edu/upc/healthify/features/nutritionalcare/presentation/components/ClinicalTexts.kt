@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import pe.edu.upc.healthify.R
+import pe.edu.upc.healthify.core.designsystem.component.UiText
 import pe.edu.upc.healthify.core.designsystem.component.currentLocale
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.BaselineSummary
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.PatientCheckIn
@@ -138,6 +139,17 @@ fun PlanGuidelineItem.text(): String = when (this) {
 fun PlanRestrictionItem.text(): String = when (this) {
     is PlanRestrictionItem.Catalog -> stringResource(code.labelRes())
     is PlanRestrictionItem.Legacy -> text
+}
+
+/** Como [text], para armar un [UiText] fuera de la composición (detalle de una versión del plan). */
+fun PlanGuidelineItem.toUiText(): UiText = when (this) {
+    is PlanGuidelineItem.Catalog -> UiText.of(code.labelRes())
+    is PlanGuidelineItem.Custom -> UiText.Raw(text)
+}
+
+fun PlanRestrictionItem.toUiText(): UiText = when (this) {
+    is PlanRestrictionItem.Catalog -> UiText.of(code.labelRes())
+    is PlanRestrictionItem.Legacy -> UiText.Raw(text)
 }
 
 /** Un número con [decimals] decimales en el idioma de la app («74,2» en español). */

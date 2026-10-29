@@ -247,22 +247,13 @@
     <!-- Shared formats -->
     <string name="format_kcal">%1$s kcal</string>
     <string name="format_grams">%1$s g</string>
-    <string name="format_percent">%1$d%%</string>
     <string name="format_separator_dot">%1$s · %2$s</string>
     <string name="macro_protein">Protein</string>
-    <string name="macro_carb">Carbs</string>
     <string name="macro_fat">Fat</string>
 
     <!-- PT3 · Home -->
     <string name="home_greeting">Hi, %1$s</string>
     <string name="home_title">TODAY</string>
-    <string name="home_targets_title">Your current targets</string>
-    <string name="home_energy_progress">%1$s / %2$s kcal</string>
-    <string name="home_remaining">%1$s kcal left today</string>
-    <string name="home_target_reached">You\'ve logged today\'s energy target</string>
-    <string name="home_progress_offline">Today\'s progress updates when you\'re back online.</string>
-    <string name="home_see_detail">See details</string>
-    <string name="home_today_targets">Your targets for today</string>
     <string name="home_register_meal">Log a meal</string>
     <string name="home_how_am_i_doing">How I\'m doing today</string>
     <string name="home_outcome_met">Today your log is within your targets</string>
@@ -805,7 +796,6 @@
     <!-- PR1 · My roster -->
     <string name="roster_title">MY PATIENTS</string>
     <string name="roster_invite">Invite patient</string>
-    <string name="roster_linked_since">In your roster since %1$s</string>
     <string name="roster_empty_title">No patients yet</string>
     <string name="roster_empty_body">Invite your first patient by generating a QR code during the consultation.</string>
     <string name="roster_offline_title">You need a connection</string>
@@ -1311,4 +1301,63 @@
     <string name="local_food_save">Save food</string>
 
     <string name="practitioner_sign_out_body">You\'ll have to enter your email and password again. Your patients and their data stay saved.</string>
+
+    <!-- Plan version detail (PT4.1 / PAC-4) -->
+    <string name="plan_version_detail_published">Published on %1$s</string>
+    <string name="plan_version_detail_changes">What changed in this version</string>
+    <string name="plan_version_detail_message_to_patient">Message to the patient</string>
+
+    <!-- Assessment and referral detail (PAC-3 / PT20) -->
+    <string name="evaluation_detail_title">Assessment</string>
+    <string name="referral_detail_open">Ongoing</string>
+    <string name="referral_detail_closed">Closed</string>
+    <string name="referral_detail_issued_on">Recorded on %1$s</string>
+    <string name="referral_detail_closed_on">closed on %1$s</string>
+    <string name="referral_detail_reason">Reason</string>
+    <string name="referral_detail_no_reason">No reason recorded.</string>
+
+    <!-- Local notices for the next consultation -->
+    <string name="consultation_reminder_channel_name">Consultations</string>
+    <string name="consultation_reminder_channel_description">Notices before each scheduled consultation.</string>
+    <string name="consultation_reminder_patient_title_day">Your consultation is tomorrow</string>
+    <string name="consultation_reminder_patient_title_hour">Your consultation is in one hour</string>
+    <string name="consultation_reminder_patient_text">With your dietitian at %1$s.</string>
+    <string name="consultation_reminder_practitioner_title_day">Consultation tomorrow</string>
+    <string name="consultation_reminder_practitioner_title_hour">Consultation in one hour</string>
+    <string name="consultation_reminder_practitioner_text">With %1$s at %2$s.</string>
+    <string name="consultation_reminder_practitioner_text_no_name">With your patient at %1$s.</string>
+    <string name="consultation_reminder_public_text">Open the app to see the details.</string>
+
+    <!-- PT3 · Daily gauge and Your week -->
+    <string name="home_gauge_left_today">left for today</string>
+    <string name="home_gauge_target_today">your goal for today</string>
+    <string name="home_gauge_target_met">Today\'s goal reached</string>
+    <string name="home_gauge_scale">%1$s of %2$s kcal</string>
+    <string name="home_gauge_needs_connection">You need a connection to see what you\'ve logged</string>
+    <string name="home_gauge_protein">of protein</string>
+    <string name="home_gauge_carb">of carbohydrate</string>
+    <string name="home_gauge_fat">of fat</string>
+    <string name="home_gauge_footer_left">What\'s left for today</string>
+    <string name="home_gauge_footer_targets">Your goal for today</string>
+    <string name="home_week_title">Your week</string>
+    <plurals name="home_week_count">
+        <item quantity="one">%1$d of %2$d day</item>
+        <item quantity="other">%1$d of %2$d days</item>
+    </plurals>
+    <string name="home_week_legend">Day with entries</string>
+    <string name="home_week_day_logged">%1$s, with entries</string>
+    <string name="home_week_day_unlogged">%1$s, no entries</string>
+
+    <!-- PR1 · My patients grouped by action -->
+    <string name="roster_search">Search patient</string>
+    <string name="roster_search_placeholder">Search patient…</string>
+    <string name="roster_needs_action">Need action · %1$d</string>
+    <string name="roster_up_to_date">Up to date · %1$d</string>
+    <string name="roster_up_to_date_body">Nothing pending</string>
+    <string name="roster_reason_open_review">Signal to review</string>
+    <string name="roster_reason_consultation">Consultation to finish</string>
+    <string name="roster_reason_baseline">Baseline data missing</string>
+    <string name="roster_reason_plan">Plan not published yet</string>
+    <string name="roster_no_results_title">No results</string>
+    <string name="roster_no_results_body">No patient matches “%1$s”.</string>
 </resources>

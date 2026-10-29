@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.HorizontalDivider
@@ -28,6 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -164,6 +167,14 @@ fun PractitionerPatientContent(
     tabContent: @Composable (PatientDetailTab) -> Unit,
 ) {
     SystemBarsAppearance(darkBackground = false)
+    // Se desliza entre pestañas: tocar una pestaña mueve el pager y la página asentada actualiza la pestaña elegida.
+    val pagerState = rememberPagerState(initialPage = selectedTab.ordinal) { PatientDetailTab.entries.size }
+    LaunchedEffect(selectedTab) {
+        if (pagerState.currentPage != selectedTab.ordinal) pagerState.animateScrollToPage(selectedTab.ordinal)
+    }
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.settledPage }.collect { page -> onSelectTab(PatientDetailTab.entries[page]) }
+    }
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -172,13 +183,14 @@ fun PractitionerPatientContent(
         Column(modifier = Modifier.fillMaxSize()) {
             HealthifyTopAppBar(title = patientName.uppercase(currentLocale()), onBack = onBack)
             PatientTabRow(selected = selectedTab, onSelect = onSelectTab)
-            Box(
+            HorizontalPager(
+                state = pagerState,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
                     .navigationBarsPadding(),
-            ) {
-                tabContent(selectedTab)
+            ) { page ->
+                Box(modifier = Modifier.fillMaxSize()) { tabContent(PatientDetailTab.entries[page]) }
             }
         }
         HealthifySnackbarHost(

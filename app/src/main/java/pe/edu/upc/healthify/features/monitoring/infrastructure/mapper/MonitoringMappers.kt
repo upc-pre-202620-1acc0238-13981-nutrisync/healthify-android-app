@@ -2,6 +2,7 @@ package pe.edu.upc.healthify.features.monitoring.infrastructure.mapper
 
 import pe.edu.upc.healthify.core.network.toInstantOrNull
 import pe.edu.upc.healthify.core.network.toLocalDateOrNull
+import pe.edu.upc.healthify.features.monitoring.domain.entity.ComplianceDay
 import pe.edu.upc.healthify.features.monitoring.domain.entity.ComplianceSummary
 import pe.edu.upc.healthify.features.monitoring.domain.entity.ConsistencyIndex
 import pe.edu.upc.healthify.features.monitoring.domain.entity.ConsistencyState
@@ -11,6 +12,7 @@ import pe.edu.upc.healthify.features.monitoring.domain.entity.NextFollowUp
 import pe.edu.upc.healthify.features.monitoring.domain.valueobject.ComplianceOutcome
 import pe.edu.upc.healthify.features.monitoring.domain.valueobject.ConsultationModality
 import pe.edu.upc.healthify.features.monitoring.domain.valueobject.PreparationInstruction
+import pe.edu.upc.healthify.features.monitoring.infrastructure.remote.dto.ComplianceDayDto
 import pe.edu.upc.healthify.features.monitoring.infrastructure.remote.dto.ComplianceSummaryDto
 import pe.edu.upc.healthify.features.monitoring.infrastructure.remote.dto.ConsistencyIndexDto
 import pe.edu.upc.healthify.features.monitoring.infrastructure.remote.dto.DailyComplianceDto
@@ -26,6 +28,13 @@ fun List<DailyComplianceDto>.toDailyProgress(date: LocalDate): DailyProgress {
     val day = lastOrNull { it.date.toLocalDateOrNull() == date } ?: return DailyProgress.unlogged(date)
     val outcome = ComplianceOutcome.fromCode(day.outcome) ?: return DailyProgress.unlogged(date)
     return DailyProgress(date, outcome, observedEnergyKcal = day.observedEnergyKcal.coerceAtLeast(0.0))
+}
+
+/** Un día con fecha ilegible o resultado desconocido se omite: queda «sin registro», nunca se inventa. */
+fun ComplianceDayDto.toDomainOrNull(): ComplianceDay? {
+    val day = date.toLocalDateOrNull() ?: return null
+    val result = ComplianceOutcome.fromCode(outcome) ?: return null
+    return ComplianceDay(day, result)
 }
 
 fun ComplianceSummaryDto.toDomain(): ComplianceSummary = ComplianceSummary(

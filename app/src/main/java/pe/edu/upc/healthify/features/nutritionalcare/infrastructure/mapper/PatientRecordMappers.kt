@@ -78,6 +78,8 @@ fun RecordReferralDto.toDomainOrNull(): RecordReferral? {
         issuedAt = issuedAt,
         // Sin estado (recurso anterior a RM-4) = abierta, como el default del backend.
         isOpen = status == null || status == REFERRAL_STATUS_OPEN,
+        reason = reason?.trim().orEmpty(),
+        closedAt = closedAt?.toInstantOrNull(),
     )
 }
 

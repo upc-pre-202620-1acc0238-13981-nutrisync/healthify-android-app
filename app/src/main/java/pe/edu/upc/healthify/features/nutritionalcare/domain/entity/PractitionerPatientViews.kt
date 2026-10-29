@@ -78,7 +78,14 @@ data class RecordComplianceWindow(val from: LocalDate, val to: LocalDate, val ra
 data class RecordDiagnosis(val code: DiagnosisCode?, val statement: String, val issuedAt: Instant)
 
 /** Derivación (MA, F25): especialidad y motivo son texto del profesional; no se traducen. */
-data class ReferralSummary(val id: Long, val specialty: String, val issuedAt: Instant, val isOpen: Boolean)
+data class ReferralSummary(
+    val id: Long,
+    val specialty: String,
+    val issuedAt: Instant,
+    val isOpen: Boolean,
+    val reason: String = "",
+    val closedAt: Instant? = null,
+)
 
 /** «3 sept. 2026 · 74.2 kg · IMC 26.3 · cintura 88 cm» / «… · primera evaluación». */
 data class RecordEvaluation(
@@ -88,6 +95,17 @@ data class RecordEvaluation(
     val bmi: Double,
     val waistCm: Double?,
     val isFirst: Boolean,
+)
+
+/**
+ * PAC-3 · detalle de una evaluación del expediente (`GET /nutritional-assessments/{id}`, solo del profesional que la
+ * registró): la medición más reciente de la evaluación, con los datos base de ese momento.
+ */
+data class EvaluationDetail(
+    val assessmentId: Long,
+    val takenAt: Instant,
+    val measurement: ConsultationMeasurement,
+    val bmiCategory: DiagnosisCode?,
 )
 
 /** Una versión publicada del plan (PAC-4 «HISTORIAL DEL PLAN»). */

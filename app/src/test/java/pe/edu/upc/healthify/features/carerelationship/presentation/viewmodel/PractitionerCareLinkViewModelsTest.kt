@@ -13,6 +13,7 @@ import pe.edu.upc.healthify.features.carerelationship.application.usecase.GetPat
 import pe.edu.upc.healthify.features.carerelationship.application.usecase.IssueInvitationUseCase
 import pe.edu.upc.healthify.features.carerelationship.domain.entity.PatientRoster
 import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.InvitationValidity
+import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.RosterAttention
 import pe.edu.upc.healthify.features.carerelationship.infrastructure.mapper.toDomain
 import pe.edu.upc.healthify.features.carerelationship.infrastructure.mapper.toRoster
 import pe.edu.upc.healthify.features.carerelationship.infrastructure.remote.dto.InvitationDto
@@ -31,6 +32,7 @@ import pe.edu.upc.healthify.testing.invitation
 import pe.edu.upc.healthify.testing.rosterPatient
 import pe.edu.upc.healthify.testing.sessionUser
 import java.time.Duration
+import java.time.Instant
 
 class PractitionerCareLinkViewModelsTest {
 
@@ -121,6 +123,82 @@ class PractitionerCareLinkViewModelsTest {
 
         assertEquals(listOf("Ana Flores"), roster.patients.map { it.fullName })
         assertTrue(roster.patients.single().isLinkActive)
+    }
+
+    @Test
+    fun `PR1 groups patients by action, with the first reason by priority, and the rest as up to date`() {
+        repository.rosterResult = Result.success(
+            PatientRoster(
+                listOf(
+                    rosterPatient(1, "Jorge Salas"),
+                    rosterPatient(2, "Luz Ramírez", isNew = true),
+                    rosterPatient(3, "Carlos Quispe", hasConsultationInProgress = true),
+                    rosterPatient(4, "Ana Flores", hasConsultationInProgress = true, hasOpenReviewItem = true),
+                    rosterPatient(5, "Rosa Vega", isNew = true, hasBaseline = true),
+                ),
+            ),
+        )
+
+        val state = rosterViewModel().state.value
+
+        assertEquals(listOf("Ana Flores", "Carlos Quispe", "Luz Ramírez", "Rosa Vega"), state.needsAction.map { it.fullName })
+        assertEquals(
+            listOf(
+                RosterAttention.OPEN_REVIEW,
+                RosterAttention.CONSULTATION_IN_PROGRESS,
+                RosterAttention.MISSING_BASELINE,
+                RosterAttention.PLAN_NOT_PUBLISHED,
+            ),
+            state.needsAction.map { it.attention },
+        )
+        assertEquals(listOf("Jorge Salas"), state.upToDate.map { it.fullName })
+    }
+
+    @Test
+    fun `PR1 search filters by name on the phone, ignoring case and accents`() {
+        repository.rosterResult = Result.success(
+            PatientRoster(listOf(rosterPatient(1, "Ana Flores"), rosterPatient(2, "Luz Ramírez", isNew = true))),
+        )
+        val viewModel = rosterViewModel()
+
+        viewModel.onQueryChange("ramirez")
+
+        assertEquals(listOf("Luz Ramírez"), viewModel.state.value.needsAction.map { it.fullName })
+        assertTrue(viewModel.state.value.upToDate.isEmpty())
+        assertEquals(1, repository.rosterCalls)
+
+        viewModel.onQueryChange("Zoila")
+        assertTrue(viewModel.state.value.noSearchResults)
+    }
+
+    @Test
+    fun `PR1 the up to date row unfolds in place and folds back`() {
+        repository.rosterResult = Result.success(PatientRoster(listOf(rosterPatient(1, "Ana Flores"))))
+        val viewModel = rosterViewModel()
+
+        viewModel.onToggleUpToDate()
+        assertTrue(viewModel.state.value.isUpToDateExpanded)
+
+        viewModel.onToggleUpToDate()
+        assertFalse(viewModel.state.value.isUpToDateExpanded)
+    }
+
+    @Test
+    fun `roster mapper reads the next consultation and the open review signal`() {
+        val json = Json { ignoreUnknownKeys = true }
+        val patient = json.decodeFromString<List<PatientRosterItemDto>>(
+            """
+            [
+              { "patientId": 1, "careLinkId": 11, "fullName": "Ana Flores", "linkedSince": "2026-03-12T10:00:00-05:00",
+                "linkStatus": "Active", "hasBaseline": true, "activePlanVersion": 3,
+                "nextFollowUpAt": "2026-10-09T10:00:00-05:00", "hasOpenReviewItem": true }
+            ]
+            """.trimIndent(),
+        ).toRoster().patients.single()
+
+        assertEquals(Instant.parse("2026-10-09T15:00:00Z"), patient.nextFollowUpAt)
+        assertTrue(patient.hasOpenReviewItem)
+        assertEquals(RosterAttention.OPEN_REVIEW, patient.attention)
     }
 
     // ----- PR2 · Generar invitación -----

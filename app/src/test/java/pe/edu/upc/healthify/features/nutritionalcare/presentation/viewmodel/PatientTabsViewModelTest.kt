@@ -10,6 +10,7 @@ import org.junit.Rule
 import org.junit.Test
 import pe.edu.upc.healthify.core.common.error.DomainError
 import pe.edu.upc.healthify.features.carerelationship.application.usecase.GetLinkTargetsReadStatusUseCase
+import pe.edu.upc.healthify.features.nutritionalcare.application.usecase.GetEvaluationDetailUseCase
 import pe.edu.upc.healthify.features.nutritionalcare.application.usecase.GetPatientBaselineUseCase
 import pe.edu.upc.healthify.features.nutritionalcare.application.usecase.GetPatientSummaryUseCase
 import pe.edu.upc.healthify.features.nutritionalcare.application.usecase.GetPlanHistoryUseCase
@@ -27,6 +28,7 @@ import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.Consulta
 import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.ConsultationStep
 import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.MedicalCondition
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.BaselineEvent
+import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.EvaluationSheetState
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.PatientTabEvent
 import pe.edu.upc.healthify.testing.CONSULTATIONS_NOW
 import pe.edu.upc.healthify.testing.FakeCareLinkRepository
@@ -216,10 +218,32 @@ class PatientTabsViewModelTest {
     @Test
     fun `PAC-3 failure without a previous read shows the error`() {
         val records = FakePractitionerRecordRepository().apply { result = failureOf(DomainError.Forbidden("AccessNotAllowed")) }
-        val viewModel = PractitionerRecordViewModel(patientArgs(), GetPractitionerRecordUseCase(records), connectivity)
+        val viewModel = PractitionerRecordViewModel(patientArgs(), GetPractitionerRecordUseCase(records), GetEvaluationDetailUseCase(records), connectivity)
 
         assertTrue(viewModel.state.value.loadFailed)
         assertFalse(viewModel.state.value.isOffline)
+    }
+
+    @Test
+    fun `PAC-3 tapping an evaluation opens its detail and dismissing closes it`() {
+        val records = FakePractitionerRecordRepository()
+        val viewModel = PractitionerRecordViewModel(patientArgs(), GetPractitionerRecordUseCase(records), GetEvaluationDetailUseCase(records), connectivity)
+
+        viewModel.onEvaluationSelected(1)
+        assertTrue(viewModel.state.value.evaluationSheet is EvaluationSheetState.Loaded)
+
+        viewModel.onEvaluationDismissed()
+        assertNull(viewModel.state.value.evaluationSheet)
+    }
+
+    @Test
+    fun `PAC-3 an evaluation that cannot be read shows the error in its sheet`() {
+        val records = FakePractitionerRecordRepository().apply { evaluationResult = failureOf(DomainError.Network) }
+        val viewModel = PractitionerRecordViewModel(patientArgs(), GetPractitionerRecordUseCase(records), GetEvaluationDetailUseCase(records), connectivity)
+
+        viewModel.onEvaluationSelected(1)
+
+        assertEquals(EvaluationSheetState.Failed, viewModel.state.value.evaluationSheet)
     }
 
     // ----- EV-1 · Datos base -----

@@ -83,6 +83,8 @@ data class ReferralSummaryDto(
     val specialty: String,
     val issuedAt: String,
     val status: String = "Open",
+    val reason: String = "",
+    val closedAt: String? = null,
 )
 
 @Serializable
@@ -118,4 +120,29 @@ data class NutritionPlanDto(
     val guidelineItems: List<GuidelineItemDto>? = null,
     val legacyRestrictions: List<String>? = null,
     val patientMessage: String? = null,
+)
+
+/** `NutritionalAssessmentResource` (PAC-3 · detalle de una evaluación). Solo los campos que se muestran. */
+@Serializable
+data class NutritionalAssessmentDto(
+    val assessmentId: Long,
+    val ageYears: Int = 0,
+    val biologicalSex: String? = null,
+    val anthropometry: List<ClinicalMeasurementDto> = emptyList(),
+    val activityLevel: String? = null,
+    val eatingHabits: EatingHabitsDto? = null,
+    val biochemistryPanel: BiochemistryPanelDto? = null,
+)
+
+/** `ClinicalMeasurementResource`. */
+@Serializable
+data class ClinicalMeasurementDto(
+    val weightKg: Double,
+    val heightCm: Double,
+    val bodyFatPercentage: Double? = null,
+    val waistCircumferenceCm: Double? = null,
+    val takenAt: String,
+    val bmi: Double,
+    val bmiCategory: String? = null,
+    val protocolChecks: List<String>? = null,
 )

@@ -34,6 +34,8 @@ data class PractitionerRecordUiState(
     val isOffline: Boolean = false,
     val loadFailed: Boolean = false,
     val record: PractitionerPatientRecord? = null,
+    /** La evaluación abierta en su hoja de detalle; `null` sin hoja. */
+    val evaluationSheet: EvaluationSheetState? = null,
 )
 
 /**

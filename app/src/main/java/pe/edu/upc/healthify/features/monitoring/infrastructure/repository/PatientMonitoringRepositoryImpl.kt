@@ -4,6 +4,7 @@ import pe.edu.upc.healthify.core.common.error.DomainError
 import pe.edu.upc.healthify.core.common.error.domainErrorOrNull
 import pe.edu.upc.healthify.core.common.error.domainFailure
 import pe.edu.upc.healthify.core.network.apiCall
+import pe.edu.upc.healthify.features.monitoring.domain.entity.ComplianceDay
 import pe.edu.upc.healthify.features.monitoring.domain.entity.ComplianceSummary
 import pe.edu.upc.healthify.features.monitoring.domain.entity.ConsistencyIndex
 import pe.edu.upc.healthify.features.monitoring.domain.entity.DailyProgress
@@ -12,6 +13,7 @@ import pe.edu.upc.healthify.features.monitoring.domain.repository.PatientMonitor
 import pe.edu.upc.healthify.features.monitoring.domain.valueobject.PatientId
 import pe.edu.upc.healthify.features.monitoring.infrastructure.mapper.toDailyProgress
 import pe.edu.upc.healthify.features.monitoring.infrastructure.mapper.toDomain
+import pe.edu.upc.healthify.features.monitoring.infrastructure.mapper.toDomainOrNull
 import pe.edu.upc.healthify.features.monitoring.infrastructure.remote.PatientMonitoringService
 import java.time.LocalDate
 import javax.inject.Inject
@@ -31,6 +33,14 @@ class PatientMonitoringRepositoryImpl @Inject constructor(
         val result = apiCall { service.getDailyComplianceRange(patientId.value, from.toString(), to.toString()) }
         return result.mapCatching { it.summary.toDomain() }.invalidAsUnexpected(result)
     }
+
+    override suspend fun getComplianceDays(
+        patientId: PatientId,
+        from: LocalDate,
+        to: LocalDate,
+    ): Result<List<ComplianceDay>> =
+        apiCall { service.getDailyComplianceRange(patientId.value, from.toString(), to.toString()) }
+            .map { range -> range.days.mapNotNull { it.toDomainOrNull() } }
 
     override suspend fun getConsistencyIndex(patientId: PatientId): Result<ConsistencyIndex?> {
         val result = apiCall { service.getConsistencyIndex(patientId.value) }
