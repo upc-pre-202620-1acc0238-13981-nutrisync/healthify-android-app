@@ -19,6 +19,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,8 +40,8 @@ import pe.edu.upc.healthify.R
 import pe.edu.upc.healthify.core.designsystem.component.EmptyState
 import pe.edu.upc.healthify.core.designsystem.component.ErrorState
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyCard
-import pe.edu.upc.healthify.core.designsystem.component.HealthifyTag
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyIconButton
+import pe.edu.upc.healthify.core.designsystem.component.HealthifyTag
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyTopAppBar
 import pe.edu.upc.healthify.core.designsystem.component.ListCardStyle
 import pe.edu.upc.healthify.core.designsystem.component.OfflineBanner
@@ -65,8 +68,10 @@ import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.RecordNextFol
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.RecordPlan
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.RecordPractitioner
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.RecordReferral
+import pe.edu.upc.healthify.features.nutritionalcare.presentation.components.ReferralSheet
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.components.toUiText
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.PatientRecordUiState
+import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.toDetailItem
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.viewmodel.PatientRecordViewModel
 import java.text.NumberFormat
 import java.time.Instant
@@ -95,13 +100,19 @@ fun PatientRecordScreen(
         viewModel.onResume()
         onPauseOrDispose {}
     }
+    var showReferrals by rememberSaveable { mutableStateOf(false) }
     PatientRecordContent(
         state = state,
         onRetry = viewModel::onRetry,
         onOpenMyConsultations = onOpenMyConsultations,
         onOpenMenu = onOpenMenu,
+        onOpenReferrals = { showReferrals = true },
         modifier = modifier,
     )
+    val openReferrals = state.record?.openReferrals.orEmpty()
+    if (showReferrals && openReferrals.isNotEmpty()) {
+        ReferralSheet(referrals = openReferrals.map { it.toDetailItem() }, onDismiss = { showReferrals = false })
+    }
 }
 
 @Composable
@@ -111,6 +122,7 @@ fun PatientRecordContent(
     onOpenMyConsultations: () -> Unit,
     modifier: Modifier = Modifier,
     onOpenMenu: () -> Unit = {},
+    onOpenReferrals: () -> Unit = {},
 ) {
     val dimens = HealthifyTheme.dimens
     SystemBarsAppearance(darkBackground = false)
@@ -139,7 +151,7 @@ fun PatientRecordContent(
             if (state.isOffline) OfflineBanner(type = OfflineBannerType.RequiresNetwork)
             val record = state.record
             when {
-                record != null -> RecordBody(record, onOpenMyConsultations)
+                record != null -> RecordBody(record, onOpenMyConsultations, onOpenReferrals)
                 state.isLoading -> repeat(4) { SkeletonListItem(modifier = Modifier.fillMaxWidth()) }
                 state.loadFailed && state.isOffline -> EmptyState(
                     title = stringResource(R.string.record_offline_title),
@@ -153,11 +165,15 @@ fun PatientRecordContent(
 }
 
 @Composable
-private fun ColumnScope.RecordBody(record: PatientOwnRecord, onOpenMyConsultations: () -> Unit) {
+private fun ColumnScope.RecordBody(
+    record: PatientOwnRecord,
+    onOpenMyConsultations: () -> Unit,
+    onOpenReferrals: () -> Unit,
+) {
     PractitionerCard(record.practitioner)
     ConsultationsCard(record.nextFollowUp, onOpenMyConsultations)
     MyNumbersSection(record.myNumbers)
-    PlanSection(record.plan, record.openReferrals)
+    PlanSection(record.plan, record.openReferrals, onOpenReferrals)
 }
 
 /** «Card · Mi nutricionista». Sin datos (el contexto no respondió): la sección queda vacía. */
@@ -317,9 +333,12 @@ private fun NumberCard(
     }
 }
 
-/** «MI PLAN» (indicaciones y restricciones traducidas; lo escrito por el nutricionista, tal cual) y «Derivaciones». */
+/**
+ * «MI PLAN» (indicaciones y restricciones traducidas; lo escrito por el nutricionista, tal cual) y «Derivaciones». Con
+ * derivaciones activas, la tarjeta abre su detalle (especialidad, fecha y motivo).
+ */
 @Composable
-private fun PlanSection(plan: RecordPlan?, openReferrals: List<RecordReferral>) {
+private fun PlanSection(plan: RecordPlan?, openReferrals: List<RecordReferral>, onOpenReferrals: () -> Unit) {
     val dimens = HealthifyTheme.dimens
     val scheme = MaterialTheme.colorScheme
     Section(title = stringResource(R.string.record_plan_title)) {
@@ -339,7 +358,7 @@ private fun PlanSection(plan: RecordPlan?, openReferrals: List<RecordReferral>) 
                 TagGroup(stringResource(R.string.record_plan_restrictions), restrictions, stringResource(R.string.record_plan_no_restrictions))
             }
         }
-        RecordCard {
+        RecordCard(onClick = onOpenReferrals.takeIf { openReferrals.isNotEmpty() }) {
             Row(horizontalArrangement = Arrangement.spacedBy(dimens.space8), verticalAlignment = Alignment.CenterVertically) {
                 Icon(imageVector = HealthifyIcons.Forward, contentDescription = null, tint = scheme.onSurfaceVariant)
                 Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(dimens.space4)) {
@@ -357,6 +376,9 @@ private fun PlanSection(plan: RecordPlan?, openReferrals: List<RecordReferral>) 
                         style = MaterialTheme.typography.bodySmall,
                         color = scheme.onSurfaceVariant,
                     )
+                }
+                if (openReferrals.isNotEmpty()) {
+                    Icon(imageVector = HealthifyIcons.ChevronRight, contentDescription = null, tint = scheme.onSurfaceVariant)
                 }
             }
         }

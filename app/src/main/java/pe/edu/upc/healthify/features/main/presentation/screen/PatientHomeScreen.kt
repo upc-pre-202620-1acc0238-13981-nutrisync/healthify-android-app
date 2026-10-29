@@ -6,10 +6,13 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -24,19 +27,28 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -47,8 +59,6 @@ import pe.edu.upc.healthify.core.designsystem.component.BottomSheetContent
 import pe.edu.upc.healthify.core.designsystem.component.EmptyState
 import pe.edu.upc.healthify.core.designsystem.component.GreetingTopAppBar
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyBottomSheet
-import pe.edu.upc.healthify.core.designsystem.component.HealthifyButton
-import pe.edu.upc.healthify.core.designsystem.component.HealthifyButtonStyle
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyCard
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyIconButton
 import pe.edu.upc.healthify.core.designsystem.component.OfflineBanner
@@ -65,27 +75,31 @@ import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 import pe.edu.upc.healthify.core.designsystem.theme.elevation
 import pe.edu.upc.healthify.features.intake.presentation.components.CachedTargetsNotice
+import pe.edu.upc.healthify.features.main.presentation.state.HomeDay
 import pe.edu.upc.healthify.features.main.presentation.state.HomeFollowUp
+import pe.edu.upc.healthify.features.main.presentation.state.HomeMacros
+import pe.edu.upc.healthify.features.main.presentation.state.HomeNotice
 import pe.edu.upc.healthify.features.main.presentation.state.HomeTargets
+import pe.edu.upc.healthify.features.main.presentation.state.HomeWeek
 import pe.edu.upc.healthify.features.main.presentation.state.PatientHomeUiState
 import pe.edu.upc.healthify.features.main.presentation.viewmodel.PatientHomeViewModel
 import pe.edu.upc.healthify.features.monitoring.domain.valueobject.ComplianceOutcome
 import pe.edu.upc.healthify.features.monitoring.presentation.components.homeSummaryRes
 import java.time.Instant
-import kotlin.math.roundToInt
+import java.time.LocalDate
+import java.time.format.TextStyle
 
 // Medidas del frame «PT3 · Inicio».
-private val RingSize = 104.dp
-private val RingThickness = 11.dp
-private val MacroDotSize = 10.dp
-private val NoticeBadgeSize = 36.dp
-private val NoticeBadgeIconSize = 20.dp
+private val NoticeBadgeSize = 32.dp
+private val NoticeBadgeIconSize = 18.dp
+private const val NOTICE_MAX_LINES = 2
 
 /** Acciones de PT3 (navegación + eventos del ViewModel). */
 data class PatientHomeActions(
     val onOpenMenu: () -> Unit = {},
     val onOpenReminders: () -> Unit = {},
     val onOpenMyPlan: () -> Unit = {},
+    val onOpenDiary: () -> Unit = {},
     val onRegisterMeal: () -> Unit = {},
     val onOpenHowAmIToday: () -> Unit = {},
     val onOpenFollowUp: (followUpId: Long) -> Unit = {},
@@ -100,6 +114,7 @@ data class PatientHomeActions(
  *
  * @param onOpenMenu ☰ · menú principal del shell.
  * @param onOpenReminders campana → PT22 Recordatorios.
+ * @param onOpenDiary «Tu semana» → pestaña Diario del shell.
  * @param onRegisterMeal «Registrar comida» (PT3.V) y «Registrar ahora» (PT18); en el resto de estados lo cubre el
  *   botón cámara de la barra inferior.
  */
@@ -108,6 +123,7 @@ fun PatientHomeScreen(
     onOpenMenu: () -> Unit,
     onOpenReminders: () -> Unit,
     onOpenMyPlan: () -> Unit,
+    onOpenDiary: () -> Unit,
     onRegisterMeal: () -> Unit,
     onOpenHowAmIToday: () -> Unit,
     onOpenFollowUp: (followUpId: Long) -> Unit,
@@ -126,6 +142,7 @@ fun PatientHomeScreen(
             onOpenMenu = onOpenMenu,
             onOpenReminders = onOpenReminders,
             onOpenMyPlan = onOpenMyPlan,
+            onOpenDiary = onOpenDiary,
             onRegisterMeal = onRegisterMeal,
             onOpenHowAmIToday = onOpenHowAmIToday,
             onOpenFollowUp = onOpenFollowUp,
@@ -173,30 +190,50 @@ fun PatientHomeContent(
             },
         )
         val targets = state.targets
-        Column(
+        // DECISIÓN PT3 (sin scroll): con metas, Inicio cabe en una pantalla y el medidor ocupa el alto que sobra. Solo si
+        // no alcanza (pantalla baja o letra grande del sistema) la columna pasa a desplazarse, como respaldo.
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-                .padding(dimens.space16),
-            verticalArrangement = Arrangement.spacedBy(dimens.space12),
+                .weight(1f),
         ) {
-            when {
-                state.isLoading -> HomeSkeleton()
-                targets == null -> {
-                    if (state.isOffline) OfflineBanner(type = OfflineBannerType.Queueable)
-                    // PT3.V · el frame trae «Registrar comida» (Tonal), aunque la nota diga «sin botón».
-                    EmptyState(
-                        title = stringResource(R.string.home_empty_title),
-                        text = stringResource(R.string.home_empty_body),
-                        actionLabel = stringResource(R.string.home_register_meal),
-                        onAction = actions.onRegisterMeal,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(min = EmptyStateMinHeight),
+            val fontScale = LocalDensity.current.fontScale
+            // Si con lo que hay en pantalla el medidor queda más bajo que su mínimo, se pasa al respaldo con scroll. Se
+            // vuelve a probar cuando cambia lo que se muestra o el alto disponible.
+            var overflows by remember(maxHeight, state.activeNotice, state.weekVisible, state.howAmIDoingVisible, state.nextFollowUpVisible) {
+                mutableStateOf(false)
+            }
+            val fits = targets != null && !state.isLoading && fontScale <= MAX_FIT_FONT_SCALE && !overflows
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(if (fits) Modifier else Modifier.verticalScroll(rememberScrollState()))
+                    .padding(dimens.space16),
+                verticalArrangement = Arrangement.spacedBy(dimens.space12),
+            ) {
+                when {
+                    state.isLoading -> HomeSkeleton()
+                    targets == null -> {
+                        if (state.isOffline) OfflineBanner(type = OfflineBannerType.Queueable)
+                        // PT3.V · el frame trae «Registrar comida» (Tonal), aunque la nota diga «sin botón».
+                        EmptyState(
+                            title = stringResource(R.string.home_empty_title),
+                            text = stringResource(R.string.home_empty_body),
+                            actionLabel = stringResource(R.string.home_register_meal),
+                            onAction = actions.onRegisterMeal,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = EmptyStateMinHeight),
+                        )
+                    }
+                    else -> HomeBody(
+                        state = state,
+                        targets = targets,
+                        actions = actions,
+                        fillHeight = fits,
+                        onGaugeTooShort = { overflows = true },
                     )
                 }
-                else -> HomeBody(state = state, targets = targets, actions = actions)
             }
         }
     }
@@ -218,18 +255,50 @@ fun PatientHomeContent(
 // Alto del área del estado vacío de PT3.V (576 dp en el frame, menos el padding de la pantalla).
 private val EmptyStateMinHeight = 560.dp
 
+// Con letra del sistema más grande que esto, Inicio pasa a desplazarse en vez de apretar el medidor.
+private const val MAX_FIT_FONT_SCALE = 1.3f
+
+// Alto mínimo del medidor: compacto (con un aviso arriba) o completo. Por debajo, Inicio pasa a desplazarse.
+private val GaugeMinHeightCompact = 150.dp
+private val GaugeMinHeight = 200.dp
+
 @Composable
-private fun HomeBody(state: PatientHomeUiState, targets: HomeTargets, actions: PatientHomeActions) {
-    if (state.consistencyCardVisible) {
-        ConsistencyNoticeCard(onClick = actions.onOpenConsistencyNotice)
-        // MA-7: el acuse se registra cuando la tarjeta se pintó (una vez por aparición).
-        LaunchedEffect(Unit) { actions.onConsistencyCardShown() }
+private fun ColumnScope.HomeBody(
+    state: PatientHomeUiState,
+    targets: HomeTargets,
+    actions: PatientHomeActions,
+    fillHeight: Boolean,
+    onGaugeTooShort: () -> Unit,
+) {
+    when (state.activeNotice) {
+        HomeNotice.CONSISTENCY -> {
+            ConsistencyNoticeCard(onClick = actions.onOpenConsistencyNotice)
+            // MA-7: el acuse se registra cuando la tarjeta se pintó (una vez por aparición).
+            LaunchedEffect(Unit) { actions.onConsistencyCardShown() }
+        }
+        HomeNotice.CACHED_TARGETS -> CachedTargetsNotice(cachedAt = state.cachedAt)
+        HomeNotice.LOGGING_GAP -> LoggingGapCard(onRegisterNow = actions.onRegisterMeal)
+        HomeNotice.ENERGY_EXCEEDED -> EnergyExceededCard()
+        null -> Unit
     }
-    if (state.loggingGapCardVisible) LoggingGapCard(onRegisterNow = actions.onRegisterMeal)
-    if (state.energyExceededCardVisible) EnergyExceededCard()
-    if (state.isOffline || state.cachedAt != null) CachedTargetsNotice(cachedAt = state.cachedAt)
-    TargetsCard(targets = targets, consumedKcal = state.consumedKcal, onSeeDetail = actions.onOpenMyPlan)
-    MacroTargets(targets = targets)
+    // Con un aviso arriba el medidor se compacta: sin la escala ni el pie.
+    val compact = state.activeNotice != null
+    val minHeightPx = with(LocalDensity.current) { (if (compact) GaugeMinHeightCompact else GaugeMinHeight).roundToPx() }
+    DailyGaugeCard(
+        state = state,
+        targets = targets,
+        compact = compact,
+        onClick = actions.onOpenMyPlan,
+        modifier = if (fillHeight) {
+            Modifier
+                .weight(1f)
+                .onSizeChanged { if (it.height < minHeightPx) onGaugeTooShort() }
+        } else {
+            Modifier
+        },
+        fillHeight = fillHeight,
+    )
+    state.week?.takeIf { state.weekVisible }?.let { WeekCard(week = it, onClick = actions.onOpenDiary) }
     TodayAndNextCard(
         outcome = state.todayOutcome.takeIf { state.howAmIDoingVisible },
         nextFollowUp = state.nextFollowUp.takeIf { state.nextFollowUpVisible },
@@ -238,7 +307,7 @@ private fun HomeBody(state: PatientHomeUiState, targets: HomeTargets, actions: P
     )
 }
 
-/** PT3.L · skeleton sobre la tarjeta de metas, los macros y las filas. */
+/** PT3.L · skeleton sobre el medidor, la semana y las filas. */
 @Composable
 private fun HomeSkeleton() {
     val dimens = HealthifyTheme.dimens
@@ -257,124 +326,167 @@ private fun HomeSkeleton() {
     SkeletonListItem()
 }
 
+/**
+ * «Medidor del día»: arco de 180° con lo que queda de energía, la escala «0 · 1 260 de 1 850 kcal · 1 850» y lo que
+ * queda de cada macro. Al tocarla abre PT4 Mi plan. Si ya se alcanzó la meta, el arco va lleno y dice «Meta de hoy
+ * cumplida» (sin rojo ni reproche). Sin la lectura del día muestra las metas (desde la copia, sin conexión).
+ *
+ * @param fillHeight el arco crece hasta ocupar el alto que le da Inicio; si no, usa su alto fijo.
+ */
 @Composable
-private fun TargetsCard(targets: HomeTargets, consumedKcal: Double?, onSeeDetail: () -> Unit) {
+private fun DailyGaugeCard(
+    state: PatientHomeUiState,
+    targets: HomeTargets,
+    compact: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    fillHeight: Boolean = false,
+) {
     val dimens = HealthifyTheme.dimens
     val scheme = MaterialTheme.colorScheme
     val locale = currentLocale()
-    val target = UiText.formatNumber(targets.energyKcal, locale)
-    val ratio = consumedKcal?.let { (it / targets.energyKcal).toFloat() }
-    HealthifyCard(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(dimens.space16), verticalArrangement = Arrangement.spacedBy(dimens.space16)) {
-            Text(
-                text = stringResource(R.string.home_targets_title),
-                style = MaterialTheme.typography.titleSmall,
-                color = scheme.primary,
-            )
-            Row(horizontalArrangement = Arrangement.spacedBy(dimens.space16), verticalAlignment = Alignment.CenterVertically) {
-                EnergyRing(ratio = ratio)
-                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(dimens.space8)) {
-                    Column(
-                        modifier = Modifier.semantics(mergeDescendants = true) {},
-                        verticalArrangement = Arrangement.spacedBy(dimens.space4),
-                    ) {
-                        Text(
-                            text = if (consumedKcal != null) {
-                                stringResource(R.string.home_energy_progress, UiText.formatNumber(consumedKcal, locale), target)
-                            } else {
-                                stringResource(R.string.format_kcal, target)
-                            },
-                            style = HealthifyTheme.extendedTypography.metricMedium,
-                            color = scheme.onSurface,
-                        )
-                        Text(
-                            text = when {
-                                consumedKcal == null -> stringResource(R.string.home_progress_offline)
-                                consumedKcal < targets.energyKcal -> stringResource(
-                                    R.string.home_remaining,
-                                    UiText.formatNumber(targets.energyKcal - consumedKcal, locale),
-                                )
-                                else -> stringResource(R.string.home_target_reached)
-                            },
-                            style = MaterialTheme.typography.bodySmall,
-                            color = scheme.onSurfaceVariant,
-                        )
-                    }
-                    HealthifyButton(
-                        text = stringResource(R.string.home_see_detail),
-                        onClick = onSeeDetail,
-                        style = HealthifyButtonStyle.Text,
-                    )
-                }
+    val consumed = state.consumedKcal
+    val ratio = consumed?.let { (it / targets.energyKcal).toFloat().coerceIn(0f, 1f) } ?: 0f
+    val macrosLeft = state.macrosLeft
+    HealthifyCard(modifier = modifier.fillMaxWidth(), onClick = onClick) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(if (fillHeight) Modifier.weight(1f) else Modifier)
+                .padding(dimens.space16),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(dimens.space8),
+        ) {
+            GaugeArc(
+                ratio = ratio,
+                modifier = if (fillHeight) Modifier.weight(1f) else Modifier.height(GaugeFixedHeight),
+            ) {
+                GaugeCenter(state = state, targets = targets)
+            }
+            if (!compact) GaugeScale(consumedKcal = consumed, targetKcal = targets.energyKcal)
+            HorizontalDivider(thickness = dimens.borderThin, color = scheme.outlineVariant)
+            Row(modifier = Modifier.fillMaxWidth()) {
+                MacroLeft(macrosLeft?.proteinG ?: targets.proteinG, R.string.home_gauge_protein, locale, Modifier.weight(1f))
+                MacroLeft(macrosLeft?.carbG ?: targets.carbG, R.string.home_gauge_carb, locale, Modifier.weight(1f))
+                MacroLeft(macrosLeft?.fatG ?: targets.fatG, R.string.home_gauge_fat, locale, Modifier.weight(1f))
+            }
+            if (!compact) {
+                Text(
+                    // Sin la lectura del día (IN-9) se muestran las metas, no lo que queda.
+                    text = stringResource(if (macrosLeft != null) R.string.home_gauge_footer_left else R.string.home_gauge_footer_targets),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = scheme.onSurfaceVariant,
+                )
             }
         }
     }
 }
 
-/** Anillo de energía: pista `surfaceContainer` y avance `secondary` desde las 12, sentido horario. */
+/** «590 kcal · te quedan hoy», «Meta de hoy cumplida» o, sin la lectura del día, la meta. */
 @Composable
-private fun EnergyRing(ratio: Float?) {
-    val track = MaterialTheme.colorScheme.surfaceContainer
-    val progress = MaterialTheme.colorScheme.secondary
-    Box(modifier = Modifier.size(RingSize), contentAlignment = Alignment.Center) {
-        Canvas(modifier = Modifier.size(RingSize)) {
-            val stroke = RingThickness.toPx()
-            val inset = stroke / 2
-            val arcSize = Size(size.width - stroke, size.height - stroke)
-            drawArc(track, 0f, FULL_CIRCLE, useCenter = false, topLeft = Offset(inset, inset), size = arcSize, style = Stroke(stroke))
-            val sweep = (ratio ?: 0f).coerceIn(0f, 1f) * FULL_CIRCLE
-            if (sweep > 0f) {
-                drawArc(progress, START_ANGLE, sweep, useCenter = false, topLeft = Offset(inset, inset), size = arcSize, style = Stroke(stroke))
-            }
-        }
-        if (ratio != null) {
-            Text(
-                text = stringResource(R.string.format_percent, (ratio * PERCENT).roundToInt()),
-                style = HealthifyTheme.extendedTypography.metricMedium,
-                color = MaterialTheme.colorScheme.onSurface,
+private fun GaugeCenter(state: PatientHomeUiState, targets: HomeTargets) {
+    val scheme = MaterialTheme.colorScheme
+    val locale = currentLocale()
+    val left = state.energyLeftKcal
+    Column(
+        modifier = Modifier.semantics(mergeDescendants = true) {},
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        when {
+            state.energyTargetReached -> Text(
+                text = stringResource(R.string.home_gauge_target_met),
+                style = MaterialTheme.typography.titleLarge,
+                color = scheme.onSurface,
                 textAlign = TextAlign.Center,
             )
-        }
-    }
-}
-
-private const val FULL_CIRCLE = 360f
-private const val START_ANGLE = -90f
-private const val PERCENT = 100
-
-@Composable
-private fun MacroTargets(targets: HomeTargets) {
-    val dimens = HealthifyTheme.dimens
-    val scheme = MaterialTheme.colorScheme
-    val locale = currentLocale()
-    Column(verticalArrangement = Arrangement.spacedBy(dimens.space8)) {
-        Text(
-            text = stringResource(R.string.home_today_targets),
-            style = MaterialTheme.typography.titleSmall,
-            color = scheme.onSurface,
-        )
-        HealthifyCard(modifier = Modifier.fillMaxWidth()) {
-            Row(modifier = Modifier.padding(dimens.space16), horizontalArrangement = Arrangement.spacedBy(dimens.space12)) {
-                MacroColumn(targets.proteinG, R.string.macro_protein, scheme.secondary, locale, Modifier.weight(1f))
-                MacroColumn(targets.carbG, R.string.macro_carb, scheme.tertiary, locale, Modifier.weight(1f))
-                MacroColumn(targets.fatG, R.string.macro_fat, scheme.primary, locale, Modifier.weight(1f))
+            else -> {
+                Text(
+                    text = stringResource(R.string.format_kcal, UiText.formatNumber(left ?: targets.energyKcal, locale)),
+                    style = HealthifyTheme.extendedTypography.metricLarge,
+                    color = scheme.onSurface,
+                    maxLines = 1,
+                )
+                Text(
+                    text = stringResource(if (left != null) R.string.home_gauge_left_today else R.string.home_gauge_target_today),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = scheme.onSurfaceVariant,
+                )
             }
         }
     }
 }
 
+/** «0 · 1 260 de 1 850 kcal · 1 850»; sin la lectura del día, «Necesitas conexión para ver lo que llevas». */
 @Composable
-private fun MacroColumn(grams: Double, labelRes: Int, dotColor: Color, locale: java.util.Locale, modifier: Modifier) {
+private fun GaugeScale(consumedKcal: Double?, targetKcal: Double) {
+    val scheme = MaterialTheme.colorScheme
+    val locale = currentLocale()
+    if (consumedKcal == null) {
+        Text(
+            text = stringResource(R.string.home_gauge_needs_connection),
+            style = MaterialTheme.typography.bodySmall,
+            color = scheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
+        return
+    }
+    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Text(text = UiText.formatNumber(0.0, locale), style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant)
+        Text(
+            text = stringResource(
+                R.string.home_gauge_scale,
+                UiText.formatNumber(consumedKcal, locale),
+                UiText.formatNumber(targetKcal, locale),
+            ),
+            style = MaterialTheme.typography.labelMedium,
+            color = scheme.onSurface,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.weight(1f),
+        )
+        Text(text = UiText.formatNumber(targetKcal, locale), style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant)
+    }
+}
+
+/**
+ * Arco de 180°: pista `surfaceContainer` y avance `secondary` de izquierda a derecha. Se ajusta al ancho y al alto
+ * disponibles (el diámetro nunca pasa del ancho ni del doble del alto); [center] va abajo, dentro del arco.
+ */
+@Composable
+private fun GaugeArc(ratio: Float, modifier: Modifier = Modifier, center: @Composable () -> Unit) {
+    val track = MaterialTheme.colorScheme.surfaceContainer
+    val progress = MaterialTheme.colorScheme.secondary
+    BoxWithConstraints(modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.BottomCenter) {
+        val diameter = minOf(maxWidth, maxHeight * 2, GaugeMaxDiameter)
+        Box(modifier = Modifier.size(width = diameter, height = diameter / 2), contentAlignment = Alignment.BottomCenter) {
+            Canvas(modifier = Modifier.matchParentSize()) {
+                val stroke = GaugeThickness.toPx()
+                val inset = stroke / 2
+                val arcSize = Size(size.width - stroke, size.width - stroke)
+                val style = Stroke(width = stroke, cap = StrokeCap.Round)
+                drawArc(track, HALF_START_ANGLE, HALF_CIRCLE, useCenter = false, topLeft = Offset(inset, inset), size = arcSize, style = style)
+                val sweep = ratio.coerceIn(0f, 1f) * HALF_CIRCLE
+                if (sweep > 0f) {
+                    drawArc(progress, HALF_START_ANGLE, sweep, useCenter = false, topLeft = Offset(inset, inset), size = arcSize, style = style)
+                }
+            }
+            center()
+        }
+    }
+}
+
+private val GaugeThickness = 20.dp
+private val GaugeMaxDiameter = 260.dp
+private val GaugeFixedHeight = 120.dp
+private const val HALF_CIRCLE = 180f
+private const val HALF_START_ANGLE = 180f
+
+/** «38 g · de proteína». */
+@Composable
+private fun MacroLeft(grams: Double, labelRes: Int, locale: java.util.Locale, modifier: Modifier) {
     Column(
         modifier = modifier.semantics(mergeDescendants = true) {},
-        verticalArrangement = Arrangement.spacedBy(HealthifyTheme.dimens.space4),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Box(
-            modifier = Modifier
-                .size(MacroDotSize)
-                .clip(CircleShape)
-                .background(dotColor),
-        )
         Text(
             text = stringResource(R.string.format_grams, UiText.formatNumber(grams, locale)),
             style = HealthifyTheme.extendedTypography.metricMedium,
@@ -389,8 +501,84 @@ private fun MacroColumn(grams: Double, labelRes: Int, dotColor: Color, locale: j
 }
 
 /**
- * «Registrar comida»: tarjeta `secondary` de 100 dp (ícono arriba) o, con un aviso arriba, fila horizontal de 56 dp.
+ * «Tu semana · 5 de 7 días»: los últimos 7 días como círculos. Con registro, lima claro con check; sin registro,
+ * neutro con borde (nunca color de alerta); hoy, con borde `primary`. Al tocarla abre el Diario.
  */
+@Composable
+private fun WeekCard(week: HomeWeek, onClick: () -> Unit) {
+    val dimens = HealthifyTheme.dimens
+    val scheme = MaterialTheme.colorScheme
+    val locale = currentLocale()
+    HealthifyCard(modifier = Modifier.fillMaxWidth(), onClick = onClick) {
+        Column(modifier = Modifier.padding(dimens.space16), verticalArrangement = Arrangement.spacedBy(dimens.space8)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = stringResource(R.string.home_week_title),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = scheme.onSurface,
+                    modifier = Modifier.weight(1f),
+                )
+                Text(
+                    text = pluralStringResource(R.plurals.home_week_count, week.days.size, week.loggedDays, week.days.size),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = scheme.primary,
+                )
+            }
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                week.days.forEach { day -> WeekDay(day, locale) }
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(dimens.space4), verticalAlignment = Alignment.CenterVertically) {
+                Icon(HealthifyIcons.Check, contentDescription = null, tint = scheme.onSurfaceVariant, modifier = Modifier.size(WeekLegendIconSize))
+                Text(
+                    text = stringResource(R.string.home_week_legend),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = scheme.onSurfaceVariant,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun WeekDay(day: HomeDay, locale: java.util.Locale) {
+    val dimens = HealthifyTheme.dimens
+    val scheme = MaterialTheme.colorScheme
+    val name = day.date.dayOfWeek.getDisplayName(TextStyle.FULL, locale)
+    val description = stringResource(if (day.isLogged) R.string.home_week_day_logged else R.string.home_week_day_unlogged, name)
+    Column(
+        modifier = Modifier.clearAndSetSemantics { contentDescription = description },
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(dimens.space4),
+    ) {
+        Box(
+            modifier = Modifier
+                .size(WeekDaySize)
+                .clip(CircleShape)
+                // Lima claro (Lime200) para los días con registro; sin registro, el fondo neutro de la tarjeta.
+                .background(if (day.isLogged) scheme.inversePrimary else scheme.surfaceContainerLowest)
+                .border(
+                    width = if (day.isToday) dimens.borderThick else dimens.borderThin,
+                    color = if (day.isToday) scheme.primary else scheme.outlineVariant,
+                    shape = CircleShape,
+                ),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (day.isLogged) {
+                Icon(HealthifyIcons.Check, contentDescription = null, tint = scheme.onSurface, modifier = Modifier.size(WeekCheckSize))
+            }
+        }
+        Text(
+            text = day.date.dayOfWeek.getDisplayName(TextStyle.NARROW, locale).uppercase(locale),
+            style = MaterialTheme.typography.labelSmall,
+            color = scheme.onSurfaceVariant,
+        )
+    }
+}
+
+private val WeekDaySize = 28.dp
+private val WeekCheckSize = 16.dp
+private val WeekLegendIconSize = 14.dp
+
 /** Fase 15: «Cómo voy hoy» y «Próxima consulta» comparten una card; cada fila se oculta si no hay dato. */
 @Composable
 private fun TodayAndNextCard(
@@ -475,13 +663,14 @@ private fun ConsistencyNoticeCard(onClick: () -> Unit) {
 @Composable
 private fun LoggingGapCard(onRegisterNow: () -> Unit) {
     val scheme = MaterialTheme.colorScheme
+    // DECISIÓN PT3 (sin scroll): en el aviso compacto toda la tarjeta lleva a registrar (antes, enlace «Registrar ahora»).
     HomeNoticeCard(
         icon = HealthifyIcons.Heart,
         badgeColor = scheme.primary,
         containerColor = scheme.primaryContainer,
         body = stringResource(R.string.home_gap_body),
-        actionLabel = stringResource(R.string.home_gap_action),
-        onAction = onRegisterNow,
+        onClick = onRegisterNow,
+        onClickLabel = stringResource(R.string.home_gap_action),
     )
 }
 
@@ -499,8 +688,8 @@ private fun EnergyExceededCard() {
 }
 
 /**
- * Aviso de Inicio: insignia, título opcional y texto. Con [onClick] toda la tarjeta navega (chevron); con
- * [onAction] lleva un enlace alineado con el texto, sin el padding de un botón.
+ * Aviso de Inicio, en su variante compacta (Inicio cabe en una pantalla): insignia, título opcional y texto de hasta
+ * dos líneas. Con [onClick] toda la tarjeta navega (chevron); [onClickLabel] es lo que anuncia el lector de pantalla.
  */
 @Composable
 private fun HomeNoticeCard(
@@ -511,13 +700,11 @@ private fun HomeNoticeCard(
     title: String? = null,
     borderColor: Color? = null,
     onClick: (() -> Unit)? = null,
-    actionLabel: String? = null,
-    onAction: (() -> Unit)? = null,
+    onClickLabel: String? = null,
 ) {
     val dimens = HealthifyTheme.dimens
     val scheme = MaterialTheme.colorScheme
     val shape = RoundedCornerShape(dimens.radiusXl)
-    val hasAction = actionLabel != null && onAction != null
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -526,15 +713,15 @@ private fun HomeNoticeCard(
             .background(containerColor)
             .then(if (borderColor != null) Modifier.border(dimens.borderThin, borderColor, shape) else Modifier)
             .then(
-                when {
-                    onClick != null -> Modifier.clickable(role = Role.Button, onClick = onClick)
-                    hasAction -> Modifier
-                    else -> Modifier.semantics(mergeDescendants = true) {}
+                if (onClick != null) {
+                    Modifier.clickable(role = Role.Button, onClickLabel = onClickLabel, onClick = onClick)
+                } else {
+                    Modifier.semantics(mergeDescendants = true) {}
                 },
             )
-            .padding(dimens.space16),
+            .padding(dimens.space12),
         horizontalArrangement = Arrangement.spacedBy(dimens.space12),
-        verticalAlignment = if (hasAction) Alignment.Top else Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         NoticeBadge(icon = icon, color = badgeColor)
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(dimens.space4)) {
@@ -545,18 +732,9 @@ private fun HomeNoticeCard(
                 text = body,
                 style = if (title != null) MaterialTheme.typography.bodySmall else MaterialTheme.typography.labelMedium,
                 color = if (title != null) scheme.onSurfaceVariant else scheme.onSurface,
+                maxLines = NOTICE_MAX_LINES,
+                overflow = TextOverflow.Ellipsis,
             )
-            if (hasAction) {
-                // Enlace con área táctil de 48 dp, sin padding lateral: queda alineado con el texto.
-                Box(
-                    modifier = Modifier
-                        .heightIn(min = dimens.touchMin)
-                        .clickable(role = Role.Button, onClick = onAction!!),
-                    contentAlignment = Alignment.CenterStart,
-                ) {
-                    Text(text = actionLabel!!, style = MaterialTheme.typography.labelLarge, color = scheme.primary)
-                }
-            }
         }
         if (onClick != null) Icon(HealthifyIcons.ChevronRight, contentDescription = null, tint = scheme.onSurfaceVariant)
     }
@@ -578,12 +756,23 @@ private fun NoticeBadge(icon: ImageVector, color: Color) {
 
 private val previewTargets = HomeTargets(planVersion = 3, energyKcal = 1850.0, proteinG = 90.0, carbG = 238.0, fatG = 60.0)
 
+private val previewToday = LocalDate.parse("2026-09-21")
+
+private val previewWeek = HomeWeek(
+    days = (6 downTo 0).map { back ->
+        val date = previewToday.minusDays(back.toLong())
+        HomeDay(date = date, isLogged = back != 3, isToday = back == 0)
+    },
+)
+
 private val previewState = PatientHomeUiState(
     greetingName = "María",
     avatarInitial = "M",
     isLoading = false,
     targets = previewTargets,
     consumedKcal = 1260.0,
+    macrosLeft = HomeMacros(proteinG = 38.0, carbG = 88.0, fatG = 19.0),
+    week = previewWeek,
     todayOutcome = ComplianceOutcome.MET,
     nextFollowUp = HomeFollowUp(id = 7, scheduledFor = Instant.parse("2026-09-18T15:00:00Z")),
 )
@@ -594,7 +783,7 @@ private fun PatientHomePreview() {
     HealthifyTheme { PatientHomeContent(state = previewState, actions = PatientHomeActions()) }
 }
 
-/** Prueba de adaptabilidad del Figma («PT3 · prueba fuente 200 %»): todo sigue alcanzable con scroll. */
+/** Prueba de adaptabilidad del Figma («PT3 · prueba fuente 200 %»): con letra grande, Inicio pasa a desplazarse. */
 @Preview(name = "PT3 · Inicio — fuente 200 %", widthDp = 360, heightDp = 800, fontScale = 2f)
 @Composable
 private fun PatientHomeLargeFontPreview() {
@@ -622,12 +811,30 @@ private fun PatientHomeGapPreview() {
     }
 }
 
+@Preview(name = "PT3 · Inicio — sin lo que queda de cada macro (muestra las metas)", widthDp = 360, heightDp = 800)
+@Composable
+private fun PatientHomeTargetsOnlyPreview() {
+    HealthifyTheme { PatientHomeContent(state = previewState.copy(macrosLeft = null), actions = PatientHomeActions()) }
+}
+
+@Preview(name = "PT3 · Inicio — pantalla baja (respaldo con scroll)", widthDp = 360, heightDp = 560)
+@Composable
+private fun PatientHomeShortScreenPreview() {
+    HealthifyTheme {
+        PatientHomeContent(state = previewState.copy(showConsistencyCard = true), actions = PatientHomeActions())
+    }
+}
+
 @Preview(name = "PT3 · Inicio — meta de energía superada", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientHomeEnergyExceededPreview() {
     HealthifyTheme {
         PatientHomeContent(
-            state = previewState.copy(consumedKcal = 2140.0, todayOutcome = ComplianceOutcome.EXCEEDED),
+            state = previewState.copy(
+                consumedKcal = 2140.0,
+                todayOutcome = ComplianceOutcome.EXCEEDED,
+                macrosLeft = HomeMacros(proteinG = 0.0, carbG = 0.0, fatG = 0.0),
+            ),
             actions = PatientHomeActions(),
         )
     }

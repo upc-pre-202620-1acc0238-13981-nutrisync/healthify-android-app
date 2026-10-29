@@ -18,20 +18,26 @@ import pe.edu.upc.healthify.core.common.connectivity.ConnectivityObserver
 import pe.edu.upc.healthify.core.common.error.DomainError
 import pe.edu.upc.healthify.core.common.error.domainErrorOrNull
 import pe.edu.upc.healthify.features.carerelationship.application.usecase.GetLinkTargetsReadStatusUseCase
+import pe.edu.upc.healthify.features.nutritionalcare.application.usecase.GetEvaluationDetailUseCase
 import pe.edu.upc.healthify.features.nutritionalcare.application.usecase.GetPlanHistoryUseCase
 import pe.edu.upc.healthify.features.nutritionalcare.application.usecase.GetPractitionerRecordUseCase
 import pe.edu.upc.healthify.features.nutritionalcare.application.usecase.StartOrResumeConsultationUseCase
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.navigation.PatientArgs
+import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.EvaluationSheetState
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.PatientPlanUiState
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.PatientTabEvent
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.PractitionerRecordUiState
 import javax.inject.Inject
 
-/** PAC-3 · Expediente (RM-4 con el token del profesional). Se relee al volver a la pestaña y al volver la conexión. */
+/**
+ * PAC-3 · Expediente (RM-4 con el token del profesional). Se relee al volver a la pestaña y al volver la conexión. Tocar
+ * una evaluación pide su detalle (`GET /nutritional-assessments/{id}`) y lo muestra en una hoja.
+ */
 @HiltViewModel
 class PractitionerRecordViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getPractitionerRecord: GetPractitionerRecordUseCase,
+    private val getEvaluationDetail: GetEvaluationDetailUseCase,
     private val connectivityObserver: ConnectivityObserver,
 ) : ViewModel() {
 
@@ -41,6 +47,8 @@ class PractitionerRecordViewModel @Inject constructor(
     val state: StateFlow<PractitionerRecordUiState> = _state.asStateFlow()
 
     private var loadJob: Job? = null
+    private var evaluationJob: Job? = null
+    private var selectedAssessmentId: Long? = null
 
     init {
         viewModelScope.launch {
@@ -57,6 +65,32 @@ class PractitionerRecordViewModel @Inject constructor(
 
     fun onResume() {
         if (_state.value.record != null) load()
+    }
+
+    fun onEvaluationSelected(assessmentId: Long) {
+        selectedAssessmentId = assessmentId
+        loadEvaluation(assessmentId)
+    }
+
+    fun onEvaluationRetry() {
+        selectedAssessmentId?.let(::loadEvaluation)
+    }
+
+    fun onEvaluationDismissed() {
+        evaluationJob?.cancel()
+        selectedAssessmentId = null
+        _state.update { it.copy(evaluationSheet = null) }
+    }
+
+    private fun loadEvaluation(assessmentId: Long) {
+        evaluationJob?.cancel()
+        evaluationJob = viewModelScope.launch {
+            _state.update { it.copy(evaluationSheet = EvaluationSheetState.Loading) }
+            val detail = getEvaluationDetail(assessmentId).getOrNull()
+            _state.update {
+                it.copy(evaluationSheet = detail?.let(EvaluationSheetState::Loaded) ?: EvaluationSheetState.Failed)
+            }
+        }
     }
 
     private fun load() {

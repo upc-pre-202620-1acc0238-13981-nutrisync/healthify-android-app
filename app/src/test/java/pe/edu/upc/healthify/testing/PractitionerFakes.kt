@@ -11,6 +11,7 @@ import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.Invitat
 import pe.edu.upc.healthify.features.monitoring.domain.entity.MonitoringSummary
 import pe.edu.upc.healthify.features.monitoring.domain.entity.PatientMonitoringPanel
 import pe.edu.upc.healthify.features.monitoring.domain.repository.PractitionerMonitoringRepository
+import pe.edu.upc.healthify.features.monitoring.domain.valueobject.PatientId as MonitoringPatientId
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.BaselineSummary
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.CalculationBasis
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.ComplianceRatio
@@ -20,6 +21,7 @@ import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.ConsultationM
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.ConsultationTargets
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.DiagnosisChoice
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.DiagnosisSuggestion
+import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.EvaluationDetail
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.GuidelineSuggestions
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.NewBaseline
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.NewMeasurement
@@ -55,7 +57,6 @@ import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.PatientI
 import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.ProtocolCheck
 import java.time.Instant
 import java.time.LocalDate
-import pe.edu.upc.healthify.features.monitoring.domain.valueobject.PatientId as MonitoringPatientId
 
 const val PATIENT_ID = 7L
 
@@ -69,7 +70,14 @@ fun patientArgs(editing: Boolean? = null, careLinkId: Long? = 4) = SavedStateHan
     },
 )
 
-fun rosterPatient(id: Long, name: String, isNew: Boolean = false, hasBaseline: Boolean = !isNew) = RosterPatient(
+fun rosterPatient(
+    id: Long,
+    name: String,
+    isNew: Boolean = false,
+    hasBaseline: Boolean = !isNew,
+    hasConsultationInProgress: Boolean = false,
+    hasOpenReviewItem: Boolean = false,
+) = RosterPatient(
     patientId = id,
     careLinkId = CareLinkId(id + 100),
     fullName = name,
@@ -78,7 +86,8 @@ fun rosterPatient(id: Long, name: String, isNew: Boolean = false, hasBaseline: B
     hasBaseline = hasBaseline,
     activePlanVersion = if (isNew) null else 3,
     isNew = isNew,
-    hasConsultationInProgress = false,
+    hasConsultationInProgress = hasConsultationInProgress,
+    hasOpenReviewItem = hasOpenReviewItem,
 )
 
 class FakePractitionerCareLinkRepository : PractitionerCareLinkRepository {
@@ -169,6 +178,12 @@ class FakePractitionerRecordRepository : PractitionerRecordRepository {
         Result.success(PractitionerPatientRecord(null, null, null, null, null, emptyList(), emptyList()))
 
     override suspend fun getRecord(patientId: PatientId): Result<PractitionerPatientRecord> = result
+
+    var evaluationResult: Result<EvaluationDetail> = Result.success(
+        EvaluationDetail(1, Instant.parse("2026-09-03T15:00:00Z"), savedMeasurement(), null),
+    )
+
+    override suspend fun getEvaluation(assessmentId: Long): Result<EvaluationDetail> = evaluationResult
 }
 
 class FakeNutritionPlanRepository : NutritionPlanRepository {

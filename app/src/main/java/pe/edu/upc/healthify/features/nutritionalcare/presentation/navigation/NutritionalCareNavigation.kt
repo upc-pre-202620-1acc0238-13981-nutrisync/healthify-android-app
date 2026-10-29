@@ -10,9 +10,17 @@ import pe.edu.upc.healthify.features.nutritionalcare.presentation.screen.PlanVer
 @Serializable
 data object MyPlanRoute
 
-/** PT4.1 · Versiones anteriores. */
+/**
+ * PT4.1 · Versiones anteriores.
+ *
+ * @param version la versión cuyo detalle se abre al llegar (desde una consulta anterior de PT25); `null` muestra la lista.
+ */
 @Serializable
-data object PlanVersionsRoute
+data class PlanVersionsRoute(val version: Int? = null) {
+    companion object {
+        const val ARG_VERSION = "version"
+    }
+}
 
 data class NutritionalCareNavigationCallbacks(
     val onBack: () -> Unit,

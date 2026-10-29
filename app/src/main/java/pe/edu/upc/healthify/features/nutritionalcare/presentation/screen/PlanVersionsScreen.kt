@@ -1,16 +1,19 @@
 package pe.edu.upc.healthify.features.nutritionalcare.presentation.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -36,13 +40,15 @@ import pe.edu.upc.healthify.core.designsystem.component.SystemBarsAppearance
 import pe.edu.upc.healthify.core.designsystem.component.UiText
 import pe.edu.upc.healthify.core.designsystem.component.currentLocale
 import pe.edu.upc.healthify.core.designsystem.component.mediumDateText
+import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
+import pe.edu.upc.healthify.features.nutritionalcare.presentation.components.PlanVersionSheet
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.PlanVersionItem
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.PlanVersionsUiState
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.viewmodel.PlanVersionsViewModel
 import java.time.Instant
 
-/** PT4.1 · Versiones anteriores del plan, solo de consulta. */
+/** PT4.1 · Versiones anteriores del plan, solo de consulta. Tocar una versión abre su detalle. */
 @Composable
 fun PlanVersionsScreen(
     onBack: () -> Unit,
@@ -50,7 +56,20 @@ fun PlanVersionsScreen(
     viewModel: PlanVersionsViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    PlanVersionsContent(state = state, onBack = onBack, onRetry = viewModel::onRetry, modifier = modifier)
+    PlanVersionsContent(
+        state = state,
+        onBack = onBack,
+        onRetry = viewModel::onRetry,
+        onSelectVersion = viewModel::onVersionSelected,
+        modifier = modifier,
+    )
+    state.selected?.let { item ->
+        PlanVersionSheet(
+            item = item,
+            messageTitle = stringResource(R.string.my_plan_message),
+            onDismiss = viewModel::onDetailDismissed,
+        )
+    }
 }
 
 @Composable
@@ -59,6 +78,7 @@ fun PlanVersionsContent(
     onBack: () -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
+    onSelectVersion: (version: Int) -> Unit = {},
 ) {
     val dimens = HealthifyTheme.dimens
     val scheme = MaterialTheme.colorScheme
@@ -82,7 +102,7 @@ fun PlanVersionsContent(
             when {
                 state.isLoading -> repeat(3) { SkeletonListItem() }
                 state.versions.isNotEmpty() -> {
-                    VersionsCard(versions = state.versions)
+                    VersionsCard(versions = state.versions, onSelect = onSelectVersion)
                     Text(
                         text = stringResource(R.string.plan_versions_note),
                         style = MaterialTheme.typography.bodySmall,
@@ -104,7 +124,7 @@ fun PlanVersionsContent(
 }
 
 @Composable
-private fun VersionsCard(versions: List<PlanVersionItem>) {
+private fun VersionsCard(versions: List<PlanVersionItem>, onSelect: (version: Int) -> Unit) {
     val dimens = HealthifyTheme.dimens
     val scheme = MaterialTheme.colorScheme
     val locale = currentLocale()
@@ -118,6 +138,8 @@ private fun VersionsCard(versions: List<PlanVersionItem>) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .heightIn(min = dimens.touchMin)
+                        .clickable(role = Role.Button, onClick = { onSelect(item.version) })
                         .semantics(mergeDescendants = true) {},
                     horizontalArrangement = Arrangement.spacedBy(dimens.space8),
                     verticalAlignment = Alignment.CenterVertically,
@@ -141,6 +163,7 @@ private fun VersionsCard(versions: List<PlanVersionItem>) {
                     if (item.isActive) {
                         StatusChip(type = StatusChipType.Confirmed, label = stringResource(R.string.plan_versions_current))
                     }
+                    Icon(imageVector = HealthifyIcons.ChevronRight, contentDescription = null, tint = scheme.onSurfaceVariant)
                 }
             }
         }

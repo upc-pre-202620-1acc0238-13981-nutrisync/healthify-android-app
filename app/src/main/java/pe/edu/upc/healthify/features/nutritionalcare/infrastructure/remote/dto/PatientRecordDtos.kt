@@ -72,4 +72,6 @@ data class RecordReferralDto(
     val specialty: String,
     val issuedAt: String,
     val status: String? = null,
+    val reason: String? = null,
+    val closedAt: String? = null,
 )

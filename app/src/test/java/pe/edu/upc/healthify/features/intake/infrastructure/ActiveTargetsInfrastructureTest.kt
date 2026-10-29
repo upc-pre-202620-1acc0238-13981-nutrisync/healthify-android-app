@@ -10,8 +10,8 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import pe.edu.upc.healthify.core.common.error.DomainError
-import pe.edu.upc.healthify.core.common.error.domainErrorOrNull
 import pe.edu.upc.healthify.core.common.error.DomainException
+import pe.edu.upc.healthify.core.common.error.domainErrorOrNull
 import pe.edu.upc.healthify.features.intake.domain.valueobject.DietaryRestriction
 import pe.edu.upc.healthify.features.intake.domain.valueobject.GuidelineCode
 import pe.edu.upc.healthify.features.intake.domain.valueobject.PatientId
@@ -23,6 +23,7 @@ import pe.edu.upc.healthify.features.intake.infrastructure.local.ActiveTargetsCa
 import pe.edu.upc.healthify.features.intake.infrastructure.mapper.toDomain
 import pe.edu.upc.healthify.features.intake.infrastructure.remote.ActiveTargetsService
 import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.ActiveTargetsDto
+import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.DailyIntakeDto
 import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.GuidelineItemDto
 import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.PlanChangeDto
 import pe.edu.upc.healthify.features.intake.infrastructure.repository.ActiveTargetsRepositoryImpl
@@ -31,6 +32,7 @@ import retrofit2.HttpException
 import retrofit2.Response
 import java.io.IOException
 import java.time.Instant
+import java.time.LocalDate
 
 class ActiveTargetsInfrastructureTest {
 
@@ -159,6 +161,28 @@ class ActiveTargetsInfrastructureTest {
         assertTrue(result.exceptionOrNull() is DomainException)
     }
 
+    @Test
+    fun `IN-9 the day's intake asks for the patient's day and is never cached`() = runTest {
+        service.dailyIntake = {
+            DailyIntakeDto("2026-10-07", 1260.0, 52.0, 150.0, 41.0, 3, 590.0, 38.0, 88.0, 19.0)
+        }
+
+        val intake = repository.getDailyIntake(PatientId(12), LocalDate.of(2026, 10, 7)).getOrThrow()
+
+        assertEquals(listOf("2026-10-07"), service.dailyIntakeDates)
+        assertEquals(38.0, intake.remainingProteinG, 0.0)
+        assertTrue(dao.rows.isEmpty())
+    }
+
+    @Test
+    fun `IN-9 without network the day's intake fails with Network`() = runTest {
+        service.dailyIntake = { throw IOException("offline") }
+
+        val result = repository.getDailyIntake(PatientId(12), LocalDate.of(2026, 10, 7))
+
+        assertEquals(DomainError.Network, result.domainErrorOrNull())
+    }
+
     private fun httpError(code: Int, body: String) =
         HttpException(Response.error<Any>(code, body.toResponseBody("application/problem+json".toMediaType())))
 }
@@ -166,6 +190,13 @@ class ActiveTargetsInfrastructureTest {
 private class FakeActiveTargetsService : ActiveTargetsService {
     var response: () -> ActiveTargetsDto = { error("not programmed") }
     override suspend fun getActiveTargets(patientId: Long): ActiveTargetsDto = response()
+
+    var dailyIntake: () -> DailyIntakeDto = { error("not programmed") }
+    val dailyIntakeDates = mutableListOf<String>()
+    override suspend fun getDailyIntake(patientId: Long, date: String): DailyIntakeDto {
+        dailyIntakeDates += date
+        return dailyIntake()
+    }
 }
 
 private class FakeActiveTargetsCacheDao : ActiveTargetsCacheDao {

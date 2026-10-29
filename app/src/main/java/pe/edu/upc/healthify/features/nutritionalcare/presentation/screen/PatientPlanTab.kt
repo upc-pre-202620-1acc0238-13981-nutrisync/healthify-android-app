@@ -1,5 +1,6 @@
 package pe.edu.upc.healthify.features.nutritionalcare.presentation.screen
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -7,13 +8,18 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.LifecycleResumeEffect
@@ -47,10 +53,13 @@ import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.PlanRestricti
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.Targets
 import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.PlanGuidelineCode
 import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.PlanRestrictionCode
+import pe.edu.upc.healthify.features.nutritionalcare.presentation.components.PlanVersionSheet
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.components.compactText
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.components.shortDateText
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.components.text
+import pe.edu.upc.healthify.features.nutritionalcare.presentation.components.toUiText
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.PatientPlanUiState
+import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.PlanVersionItem
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.viewmodel.PatientPlanViewModel
 import java.time.Instant
 import java.time.ZoneId
@@ -59,7 +68,7 @@ import java.time.ZoneId
  * PAC-4 · pestaña Plan: metas vigentes, si el paciente las vio («Ana las vio el mismo día», `lastAcknowledgedAt` de
  * CR-3), indicaciones, restricciones e historial. «Ajustar plan» inicia o reanuda la consulta guiada.
  *
- * DECISIÓN PAC-4: las filas del historial no son táctiles (no hay frame de detalle de una versión).
+ * DECISIÓN PAC-4: no hay frame de detalle de una versión; tocar una fila del historial abre [PlanVersionSheet].
  */
 @Composable
 fun PatientPlanTab(
@@ -75,13 +84,22 @@ fun PatientPlanTab(
         onPauseOrDispose {}
     }
     ObserveEvents(viewModel.events) { event -> onNavigate(event.toRoute(patientId, patientName)) }
+    var selectedVersion by rememberSaveable { mutableStateOf<Int?>(null) }
     PatientPlanContent(
         state = state,
         patientName = patientName,
         onAdjustPlan = viewModel::onAdjustPlan,
         onRetry = viewModel::onRetry,
+        onSelectVersion = { selectedVersion = it },
         modifier = modifier,
     )
+    state.history?.versions?.firstOrNull { it.version == selectedVersion }?.let { version ->
+        PlanVersionSheet(
+            item = version.toItem(),
+            messageTitle = stringResource(R.string.plan_version_detail_message_to_patient),
+            onDismiss = { selectedVersion = null },
+        )
+    }
     if (state.showStartError) {
         ServerErrorDialog(onRetry = viewModel::onAdjustPlan, onDismiss = viewModel::onStartErrorDismissed)
     }
@@ -94,6 +112,7 @@ fun PatientPlanContent(
     onAdjustPlan: () -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
+    onSelectVersion: (version: Int) -> Unit = {},
 ) {
     val history = state.history
     PatientTabLayout(
@@ -118,7 +137,7 @@ fun PatientPlanContent(
                 text = stringResource(R.string.plan_empty_body),
                 modifier = Modifier.fillMaxWidth(),
             )
-            history != null -> PlanBody(history, state.readStatus, patientName)
+            history != null -> PlanBody(history, state.readStatus, patientName, onSelectVersion)
             state.isLoading -> repeat(SKELETON_ROWS) { SkeletonListItem(modifier = Modifier.fillMaxWidth()) }
             state.loadFailed && state.isOffline -> NeedsConnection(onRetry)
             state.loadFailed -> ErrorState(onRetry = onRetry, modifier = Modifier.fillMaxWidth())
@@ -129,11 +148,16 @@ fun PatientPlanContent(
 private const val SKELETON_ROWS = 3
 
 @Composable
-private fun ColumnScope.PlanBody(history: PlanHistory, readStatus: TargetsReadStatus?, patientName: String) {
+private fun ColumnScope.PlanBody(
+    history: PlanHistory,
+    readStatus: TargetsReadStatus?,
+    patientName: String,
+    onSelectVersion: (version: Int) -> Unit,
+) {
     val active = history.active ?: return
     ActiveTargetsCard(active, readStatus, patientName)
     GuidelinesCard(active)
-    HistorySection(history.versions)
+    HistorySection(history.versions, onSelectVersion)
 }
 
 @Composable
@@ -245,7 +269,7 @@ private fun GuidelinesCard(active: NutritionPlanVersion) {
 
 /** «HISTORIAL DEL PLAN»: «Versión 3 · 4 sept. 2026 · 1 796 kcal · Vigente». */
 @Composable
-private fun HistorySection(versions: List<NutritionPlanVersion>) {
+private fun HistorySection(versions: List<NutritionPlanVersion>, onSelect: (version: Int) -> Unit) {
     val dimens = HealthifyTheme.dimens
     Column(verticalArrangement = Arrangement.spacedBy(dimens.space8)) {
         SectionOverline(stringResource(R.string.plan_history))
@@ -254,22 +278,42 @@ private fun HistorySection(versions: List<NutritionPlanVersion>) {
                 if (index > 0) CardDivider()
                 IconInfoRow(
                     icon = HealthifyIcons.History,
+                    modifier = Modifier.clickable(role = Role.Button, onClick = { onSelect(version.version) }),
                     title = stringResource(R.string.plan_version_title, version.version),
                     supportingText = stringResource(
                         R.string.plan_version_line,
                         version.publishedAt.mediumDateText(),
                         compactText(version.targets.energyKcal, 0),
                     ),
-                    trailing = if (version.isActive) {
-                        { StatusChip(type = StatusChipType.Confirmed, label = stringResource(R.string.patient_plan_active_chip)) }
-                    } else {
-                        null
+                    trailing = {
+                        if (version.isActive) {
+                            StatusChip(type = StatusChipType.Confirmed, label = stringResource(R.string.patient_plan_active_chip))
+                        }
+                        Icon(
+                            imageVector = HealthifyIcons.ChevronRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                     },
                 )
             }
         }
     }
 }
+
+/** El nutricionista no recibe «qué cambió» por versión: el detalle muestra metas, indicaciones y mensaje. */
+private fun NutritionPlanVersion.toItem() = PlanVersionItem(
+    version = version,
+    publishedAt = publishedAt,
+    energyKcal = targets.energyKcal,
+    isActive = isActive,
+    proteinG = targets.proteinG,
+    carbG = targets.carbG,
+    fatG = targets.fatG,
+    guidelines = guidelines.map { it.toUiText() },
+    restrictions = restrictions.map { it.toUiText() },
+    patientMessage = patientMessage?.trim()?.takeIf { it.isNotEmpty() },
+)
 
 private val previewHistory = PlanHistory.of(
     listOf(

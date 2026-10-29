@@ -7,16 +7,19 @@ import pe.edu.upc.healthify.core.common.error.domainFailure
 import pe.edu.upc.healthify.core.network.apiCall
 import pe.edu.upc.healthify.features.intake.domain.entity.ActiveTargets
 import pe.edu.upc.healthify.features.intake.domain.entity.ActiveTargetsLookup
+import pe.edu.upc.healthify.features.intake.domain.entity.DailyIntake
 import pe.edu.upc.healthify.features.intake.domain.repository.ActiveTargetsRepository
 import pe.edu.upc.healthify.features.intake.domain.valueobject.PatientId
 import pe.edu.upc.healthify.features.intake.infrastructure.local.ActiveTargetsCacheDao
 import pe.edu.upc.healthify.features.intake.infrastructure.mapper.toDomain
+import pe.edu.upc.healthify.features.intake.infrastructure.mapper.toDomainOrNull
 import pe.edu.upc.healthify.features.intake.infrastructure.mapper.toDtoOrNull
 import pe.edu.upc.healthify.features.intake.infrastructure.mapper.toEntity
 import pe.edu.upc.healthify.features.intake.infrastructure.remote.ActiveTargetsService
 import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.ActiveTargetsDto
 import java.time.Clock
 import java.time.Instant
+import java.time.LocalDate
 import javax.inject.Inject
 
 /**
@@ -45,6 +48,13 @@ class ActiveTargetsRepositoryImpl @Inject constructor(
             return Result.success(ActiveTargetsLookup.None)
         }
         return cachedOr(pid, Result.failure(requireNotNull(remote.exceptionOrNull())))
+    }
+
+    override suspend fun getDailyIntake(patientId: PatientId, date: LocalDate): Result<DailyIntake> {
+        val remote = apiCall { service.getDailyIntake(patientId.value, date.toString()) }
+        val dto = remote.getOrElse { return Result.failure(it) }
+        return dto.toDomainOrNull()?.let { Result.success(it) }
+            ?: domainFailure(DomainError.Unexpected(CODE_INVALID_RESOURCE))
     }
 
     private suspend fun cachedOr(patientId: Long, failure: Result<ActiveTargetsLookup>): Result<ActiveTargetsLookup> {

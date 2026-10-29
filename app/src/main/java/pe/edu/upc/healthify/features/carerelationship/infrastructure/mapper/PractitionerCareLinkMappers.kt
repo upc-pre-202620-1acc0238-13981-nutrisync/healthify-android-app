@@ -25,6 +25,8 @@ fun List<PatientRosterItemDto>.toRoster(): PatientRoster = PatientRoster(
             activePlanVersion = dto.activePlanVersion,
             isNew = dto.isNew,
             hasConsultationInProgress = dto.hasConsultationInProgress,
+            nextFollowUpAt = dto.nextFollowUpAt?.toInstantOrNull(),
+            hasOpenReviewItem = dto.hasOpenReviewItem,
         )
     },
 )

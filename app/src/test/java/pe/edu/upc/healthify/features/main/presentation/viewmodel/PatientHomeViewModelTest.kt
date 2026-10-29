@@ -10,13 +10,20 @@ import pe.edu.upc.healthify.core.common.error.DomainError
 import pe.edu.upc.healthify.features.carerelationship.application.usecase.GetTargetsReadStatusUseCase
 import pe.edu.upc.healthify.features.iam.application.usecase.ObserveCurrentUserUseCase
 import pe.edu.upc.healthify.features.intake.application.usecase.GetActiveTargetsUseCase
+import pe.edu.upc.healthify.features.intake.application.usecase.GetDailyIntakeUseCase
+import pe.edu.upc.healthify.features.intake.application.usecase.ObserveSyncedDiaryEntriesUseCase
 import pe.edu.upc.healthify.features.intake.domain.entity.ActiveTargetsLookup
+import pe.edu.upc.healthify.features.intake.domain.entity.DailyIntake
 import pe.edu.upc.healthify.features.main.presentation.state.HomeFollowUp
+import pe.edu.upc.healthify.features.main.presentation.state.HomeMacros
+import pe.edu.upc.healthify.features.main.presentation.state.HomeNotice
 import pe.edu.upc.healthify.features.monitoring.application.usecase.AcknowledgeConsistencyPromptUseCase
 import pe.edu.upc.healthify.features.monitoring.application.usecase.DetectLoggingGapUseCase
 import pe.edu.upc.healthify.features.monitoring.application.usecase.GetConsistencyIndexUseCase
+import pe.edu.upc.healthify.features.monitoring.application.usecase.GetLoggedWeekUseCase
 import pe.edu.upc.healthify.features.monitoring.application.usecase.GetNextFollowUpUseCase
 import pe.edu.upc.healthify.features.monitoring.application.usecase.GetTodayProgressUseCase
+import pe.edu.upc.healthify.features.monitoring.domain.entity.ComplianceDay
 import pe.edu.upc.healthify.features.monitoring.domain.entity.ConsistencyIndex
 import pe.edu.upc.healthify.features.monitoring.domain.entity.ConsistencyState
 import pe.edu.upc.healthify.features.monitoring.domain.entity.DailyProgress
@@ -26,6 +33,7 @@ import pe.edu.upc.healthify.features.monitoring.domain.valueobject.ComplianceOut
 import pe.edu.upc.healthify.testing.FakeActiveTargetsRepository
 import pe.edu.upc.healthify.testing.FakeCareLinkRepository
 import pe.edu.upc.healthify.testing.FakeConnectivityObserver
+import pe.edu.upc.healthify.testing.FakeDiaryRepository
 import pe.edu.upc.healthify.testing.FakePatientMonitoringRepository
 import pe.edu.upc.healthify.testing.FakeSessionRepository
 import pe.edu.upc.healthify.testing.MainDispatcherRule
@@ -36,8 +44,6 @@ import pe.edu.upc.healthify.testing.fixedClock
 import pe.edu.upc.healthify.testing.readStatus
 import pe.edu.upc.healthify.testing.summary
 import java.time.Instant
-import pe.edu.upc.healthify.features.intake.application.usecase.ObserveSyncedDiaryEntriesUseCase
-import pe.edu.upc.healthify.testing.FakeDiaryRepository
 
 class PatientHomeViewModelTest {
 
@@ -55,7 +61,9 @@ class PatientHomeViewModelTest {
         PatientHomeViewModel(
             observeCurrentUser = ObserveCurrentUserUseCase(session),
             getActiveTargets = GetActiveTargetsUseCase(targets),
+            getDailyIntake = GetDailyIntakeUseCase(targets, fixedClock),
             getTodayProgress = GetTodayProgressUseCase(monitoring, fixedClock),
+            getLoggedWeek = GetLoggedWeekUseCase(monitoring, fixedClock),
             getNextFollowUp = GetNextFollowUpUseCase(monitoring),
             getConsistencyIndex = GetConsistencyIndexUseCase(monitoring),
             acknowledgeConsistencyPrompt = AcknowledgeConsistencyPromptUseCase(monitoring),
@@ -246,5 +254,78 @@ class PatientHomeViewModelTest {
         assertEquals(callsOffline + 1, targets.calls)
         assertNull(viewModel.state.value.cachedAt)
         assertFalse(viewModel.state.value.isOffline)
+    }
+
+    // ----- PT3 · Medidor del día y Tu semana -----
+
+    @Test
+    fun `PT3 gauge shows what is left of each macro from the day's intake`() {
+        targets.dailyIntakeResult = Result.success(
+            DailyIntake(TODAY, 1260.0, 52.0, 150.0, 41.0, 3, 590.0, 38.0, 88.0, 19.0),
+        )
+
+        val state = viewModel.state.value
+
+        assertEquals(HomeMacros(proteinG = 38.0, carbG = 88.0, fatG = 19.0), state.macrosLeft)
+        assertEquals(590.0, state.energyLeftKcal ?: 0.0, 0.0)
+        assertFalse(state.energyTargetReached)
+    }
+
+    @Test
+    fun `PT3 without the day's intake the gauge falls back to the targets`() {
+        targets.dailyIntakeResult = failureOf(DomainError.Network)
+
+        assertNull(viewModel.state.value.macrosLeft)
+    }
+
+    @Test
+    fun `PT3 once the energy goal is reached nothing is left and the goal reads as met`() {
+        monitoring.progressResult = Result.success(DailyProgress(TODAY, ComplianceOutcome.EXCEEDED, observedEnergyKcal = 2100.0))
+
+        val state = viewModel.state.value
+
+        assertEquals(0.0, state.energyLeftKcal ?: -1.0, 0.0)
+        assertTrue(state.energyTargetReached)
+    }
+
+    @Test
+    fun `PT3 your week counts every evaluated day as logged and marks today`() {
+        monitoring.complianceDaysResult = Result.success(
+            listOf(
+                ComplianceDay(TODAY, ComplianceOutcome.MET),
+                ComplianceDay(TODAY.minusDays(1), ComplianceOutcome.EXCEEDED),
+                ComplianceDay(TODAY.minusDays(2), ComplianceOutcome.UNLOGGED),
+                ComplianceDay(TODAY.minusDays(4), ComplianceOutcome.SHORT),
+            ),
+        )
+
+        val week = viewModel.state.value.week!!
+
+        assertEquals(7, week.days.size)
+        assertEquals(3, week.loggedDays)
+        assertEquals(TODAY, week.days.last().date)
+        assertTrue(week.days.last().isToday)
+        assertTrue(viewModel.state.value.weekVisible)
+    }
+
+    @Test
+    fun `PT3 offline hides your week`() {
+        monitoring.complianceDaysResult = Result.success(emptyList())
+        connectivity.online.value = false
+
+        assertFalse(viewModel.state.value.weekVisible)
+    }
+
+    @Test
+    fun `PT3 shows a single notice, the one with the highest priority`() {
+        monitoring.consistencyResult = Result.success(
+            ConsistencyIndex(ConsistencyState.ALERT, patientPromptPending = true),
+        )
+        monitoring.progressResult = Result.success(DailyProgress(TODAY, ComplianceOutcome.EXCEEDED, observedEnergyKcal = 2100.0))
+
+        val state = viewModel.state.value
+
+        assertTrue(state.consistencyCardVisible && state.energyExceededCardVisible)
+        assertEquals(HomeNotice.CONSISTENCY, state.activeNotice)
     }
 }

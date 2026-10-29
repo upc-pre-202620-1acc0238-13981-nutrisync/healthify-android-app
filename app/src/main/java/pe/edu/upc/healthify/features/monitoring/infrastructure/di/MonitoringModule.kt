@@ -5,21 +5,23 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import pe.edu.upc.healthify.features.monitoring.domain.repository.ConsultationReminderScheduler
 import pe.edu.upc.healthify.features.monitoring.domain.repository.ConsultationsRepository
 import pe.edu.upc.healthify.features.monitoring.domain.repository.PatientMonitoringRepository
-import pe.edu.upc.healthify.features.monitoring.infrastructure.remote.ConsultationsService
-import pe.edu.upc.healthify.features.monitoring.infrastructure.repository.ConsultationsRepositoryImpl
-import pe.edu.upc.healthify.features.monitoring.infrastructure.remote.PatientMonitoringService
-import pe.edu.upc.healthify.features.monitoring.infrastructure.remote.WeeklySummaryService
-import pe.edu.upc.healthify.features.monitoring.infrastructure.repository.WeeklySummaryRepositoryImpl
-import pe.edu.upc.healthify.features.monitoring.domain.repository.WeeklySummaryRepository
-import pe.edu.upc.healthify.features.monitoring.infrastructure.repository.PatientMonitoringRepositoryImpl
-import pe.edu.upc.healthify.features.monitoring.domain.repository.PractitionerMonitoringRepository
-import pe.edu.upc.healthify.features.monitoring.infrastructure.remote.PractitionerMonitoringService
-import pe.edu.upc.healthify.features.monitoring.infrastructure.repository.PractitionerMonitoringRepositoryImpl
 import pe.edu.upc.healthify.features.monitoring.domain.repository.PractitionerAgendaRepository
+import pe.edu.upc.healthify.features.monitoring.domain.repository.PractitionerMonitoringRepository
+import pe.edu.upc.healthify.features.monitoring.domain.repository.WeeklySummaryRepository
+import pe.edu.upc.healthify.features.monitoring.infrastructure.reminder.WorkManagerConsultationReminderScheduler
+import pe.edu.upc.healthify.features.monitoring.infrastructure.remote.ConsultationsService
+import pe.edu.upc.healthify.features.monitoring.infrastructure.remote.PatientMonitoringService
 import pe.edu.upc.healthify.features.monitoring.infrastructure.remote.PractitionerAgendaService
+import pe.edu.upc.healthify.features.monitoring.infrastructure.remote.PractitionerMonitoringService
+import pe.edu.upc.healthify.features.monitoring.infrastructure.remote.WeeklySummaryService
+import pe.edu.upc.healthify.features.monitoring.infrastructure.repository.ConsultationsRepositoryImpl
+import pe.edu.upc.healthify.features.monitoring.infrastructure.repository.PatientMonitoringRepositoryImpl
 import pe.edu.upc.healthify.features.monitoring.infrastructure.repository.PractitionerAgendaRepositoryImpl
+import pe.edu.upc.healthify.features.monitoring.infrastructure.repository.PractitionerMonitoringRepositoryImpl
+import pe.edu.upc.healthify.features.monitoring.infrastructure.repository.WeeklySummaryRepositoryImpl
 import retrofit2.Retrofit
 import javax.inject.Singleton
 
@@ -73,4 +75,7 @@ interface MonitoringBindingsModule {
 
     @Binds
     fun bindPractitionerAgendaRepository(impl: PractitionerAgendaRepositoryImpl): PractitionerAgendaRepository
+
+    @Binds
+    fun bindConsultationReminderScheduler(impl: WorkManagerConsultationReminderScheduler): ConsultationReminderScheduler
 }

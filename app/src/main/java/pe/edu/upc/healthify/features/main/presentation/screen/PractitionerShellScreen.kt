@@ -37,6 +37,7 @@ import pe.edu.upc.healthify.core.designsystem.component.shortTimeText
 import pe.edu.upc.healthify.core.designsystem.component.weekdayDayMonthText
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 import pe.edu.upc.healthify.features.carerelationship.presentation.screen.PatientRosterScreen
+import pe.edu.upc.healthify.features.main.presentation.components.NotificationPermissionRequest
 import pe.edu.upc.healthify.features.main.presentation.components.PlaceholderScreen
 import pe.edu.upc.healthify.features.main.presentation.components.PractitionerMenuContent
 import pe.edu.upc.healthify.features.main.presentation.components.PractitionerMenuItem
@@ -123,6 +124,7 @@ fun PractitionerShellScreen(
     viewModel: PractitionerShellViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    NotificationPermissionRequest()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val selected = PractitionerTab.entries.firstOrNull { tab ->
         backStackEntry?.destination?.hierarchy?.any { it.hasRoute(tab.route()::class) } == true
