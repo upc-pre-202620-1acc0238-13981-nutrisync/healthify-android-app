@@ -252,22 +252,13 @@
     <!-- Formatos compartidos (números con el Locale actual) -->
     <string name="format_kcal">%1$s kcal</string>
     <string name="format_grams">%1$s g</string>
-    <string name="format_percent">%1$d %%</string>
     <string name="format_separator_dot">%1$s · %2$s</string>
     <string name="macro_protein">Proteína</string>
-    <string name="macro_carb">Carbohidrato</string>
     <string name="macro_fat">Grasa</string>
 
     <!-- PT3 · Inicio -->
     <string name="home_greeting">Hola, %1$s</string>
     <string name="home_title">HOY</string>
-    <string name="home_targets_title">Tus metas vigentes</string>
-    <string name="home_energy_progress">%1$s / %2$s kcal</string>
-    <string name="home_remaining">Te quedan %1$s kcal hoy</string>
-    <string name="home_target_reached">Ya registraste tu meta de energía de hoy</string>
-    <string name="home_progress_offline">Tu avance del día se actualiza al volver la conexión.</string>
-    <string name="home_see_detail">Ver detalle</string>
-    <string name="home_today_targets">Tus metas de hoy</string>
     <string name="home_register_meal">Registrar comida</string>
     <string name="home_how_am_i_doing">Cómo voy hoy</string>
     <string name="home_outcome_met">Hoy tu registro está dentro de tus metas</string>

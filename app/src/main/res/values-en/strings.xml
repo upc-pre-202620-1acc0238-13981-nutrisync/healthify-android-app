@@ -247,22 +247,13 @@
     <!-- Shared formats -->
     <string name="format_kcal">%1$s kcal</string>
     <string name="format_grams">%1$s g</string>
-    <string name="format_percent">%1$d%%</string>
     <string name="format_separator_dot">%1$s · %2$s</string>
     <string name="macro_protein">Protein</string>
-    <string name="macro_carb">Carbs</string>
     <string name="macro_fat">Fat</string>
 
     <!-- PT3 · Home -->
     <string name="home_greeting">Hi, %1$s</string>
     <string name="home_title">TODAY</string>
-    <string name="home_targets_title">Your current targets</string>
-    <string name="home_energy_progress">%1$s / %2$s kcal</string>
-    <string name="home_remaining">%1$s kcal left today</string>
-    <string name="home_target_reached">You\'ve logged today\'s energy target</string>
-    <string name="home_progress_offline">Today\'s progress updates when you\'re back online.</string>
-    <string name="home_see_detail">See details</string>
-    <string name="home_today_targets">Your targets for today</string>
     <string name="home_register_meal">Log a meal</string>
     <string name="home_how_am_i_doing">How I\'m doing today</string>
     <string name="home_outcome_met">Today your log is within your targets</string>
