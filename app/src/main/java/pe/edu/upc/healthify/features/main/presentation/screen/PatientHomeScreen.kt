@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -50,6 +52,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.LifecycleResumeEffect
@@ -360,10 +363,22 @@ private fun DailyGaugeCard(
             GaugeArc(
                 ratio = ratio,
                 modifier = if (fillHeight) Modifier.weight(1f) else Modifier.height(GaugeFixedHeight),
+                scale = if (!compact && consumed != null) {
+                    { GaugeScale(consumedKcal = consumed, targetKcal = targets.energyKcal) }
+                } else {
+                    null
+                },
             ) {
                 GaugeCenter(state = state, targets = targets)
             }
-            if (!compact) GaugeScale(consumedKcal = consumed, targetKcal = targets.energyKcal)
+            if (!compact && consumed == null) {
+                Text(
+                    text = stringResource(R.string.home_gauge_needs_connection),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = scheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                )
+            }
             HorizontalDivider(thickness = dimens.borderThin, color = scheme.outlineVariant)
             Row(modifier = Modifier.fillMaxWidth()) {
                 MacroLeft(macrosLeft?.proteinG ?: targets.proteinG, R.string.home_gauge_protein, locale, Modifier.weight(1f))
@@ -416,22 +431,13 @@ private fun GaugeCenter(state: PatientHomeUiState, targets: HomeTargets) {
     }
 }
 
-/** «0 · 1 260 de 1 850 kcal · 1 850»; sin la lectura del día, «Necesitas conexión para ver lo que llevas». */
+/** «0 · 1 260 de 1 850 kcal · 1 850», con «0» y la meta centrados bajo los extremos del arco. */
 @Composable
-private fun GaugeScale(consumedKcal: Double?, targetKcal: Double) {
+private fun GaugeScale(consumedKcal: Double, targetKcal: Double) {
     val scheme = MaterialTheme.colorScheme
     val locale = currentLocale()
-    if (consumedKcal == null) {
-        Text(
-            text = stringResource(R.string.home_gauge_needs_connection),
-            style = MaterialTheme.typography.bodySmall,
-            color = scheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
-        return
-    }
-    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        Text(text = UiText.formatNumber(0.0, locale), style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant)
+    Row(modifier = Modifier.fillMaxWidth().height(GaugeScaleHeight), verticalAlignment = Alignment.CenterVertically) {
+        GaugeScaleEnd(text = UiText.formatNumber(0.0, locale))
         Text(
             text = stringResource(
                 R.string.home_gauge_scale,
@@ -441,42 +447,75 @@ private fun GaugeScale(consumedKcal: Double?, targetKcal: Double) {
             style = MaterialTheme.typography.labelMedium,
             color = scheme.onSurface,
             textAlign = TextAlign.Center,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f),
         )
-        Text(text = UiText.formatNumber(targetKcal, locale), style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant)
+        GaugeScaleEnd(text = UiText.formatNumber(targetKcal, locale))
+    }
+}
+
+/** Extremo de la escala: tan ancho como el trazo del arco, con el número centrado bajo él aunque lo desborde. */
+@Composable
+private fun GaugeScaleEnd(text: String) {
+    Box(modifier = Modifier.width(GaugeThickness), contentAlignment = Alignment.Center) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            softWrap = false,
+            modifier = Modifier.wrapContentWidth(unbounded = true),
+        )
     }
 }
 
 /**
  * Arco de 180°: pista `surfaceContainer` y avance `secondary` de izquierda a derecha. Se ajusta al ancho y al alto
- * disponibles (el diámetro nunca pasa del ancho ni del doble del alto); [center] va abajo, dentro del arco.
+ * disponibles (el diámetro nunca pasa del ancho ni del doble del alto, descontando la [scale]); [center] va abajo,
+ * dentro del arco, y la [scale], justo debajo y del mismo ancho que el arco. El conjunto va centrado en su espacio.
  */
 @Composable
-private fun GaugeArc(ratio: Float, modifier: Modifier = Modifier, center: @Composable () -> Unit) {
+private fun GaugeArc(
+    ratio: Float,
+    modifier: Modifier = Modifier,
+    scale: (@Composable () -> Unit)? = null,
+    center: @Composable () -> Unit,
+) {
     val track = MaterialTheme.colorScheme.surfaceContainer
     val progress = MaterialTheme.colorScheme.secondary
-    BoxWithConstraints(modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.BottomCenter) {
-        val diameter = minOf(maxWidth, maxHeight * 2, GaugeMaxDiameter)
-        Box(modifier = Modifier.size(width = diameter, height = diameter / 2), contentAlignment = Alignment.BottomCenter) {
-            Canvas(modifier = Modifier.matchParentSize()) {
-                val stroke = GaugeThickness.toPx()
-                val inset = stroke / 2
-                val arcSize = Size(size.width - stroke, size.width - stroke)
-                val style = Stroke(width = stroke, cap = StrokeCap.Round)
-                drawArc(track, HALF_START_ANGLE, HALF_CIRCLE, useCenter = false, topLeft = Offset(inset, inset), size = arcSize, style = style)
-                val sweep = ratio.coerceIn(0f, 1f) * HALF_CIRCLE
-                if (sweep > 0f) {
-                    drawArc(progress, HALF_START_ANGLE, sweep, useCenter = false, topLeft = Offset(inset, inset), size = arcSize, style = style)
+    BoxWithConstraints(modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+        // Los extremos redondeados bajan medio trazo por debajo del centro del arco: se reserva ese alto.
+        val reserved = GaugeThickness / 2 + if (scale != null) GaugeScaleHeight else 0.dp
+        val diameter = minOf(maxWidth, (maxHeight - reserved) * 2, GaugeMaxDiameter).coerceAtLeast(GaugeThickness * 2)
+        Column(modifier = Modifier.width(diameter), horizontalAlignment = Alignment.CenterHorizontally) {
+            Box(
+                modifier = Modifier.size(width = diameter, height = diameter / 2 + GaugeThickness / 2),
+                contentAlignment = Alignment.BottomCenter,
+            ) {
+                Canvas(modifier = Modifier.matchParentSize()) {
+                    val stroke = GaugeThickness.toPx()
+                    val inset = stroke / 2
+                    val arcSize = Size(size.width - stroke, size.width - stroke)
+                    val style = Stroke(width = stroke, cap = StrokeCap.Round)
+                    drawArc(track, HALF_START_ANGLE, HALF_CIRCLE, useCenter = false, topLeft = Offset(inset, inset), size = arcSize, style = style)
+                    val sweep = ratio.coerceIn(0f, 1f) * HALF_CIRCLE
+                    if (sweep > 0f) {
+                        drawArc(progress, HALF_START_ANGLE, sweep, useCenter = false, topLeft = Offset(inset, inset), size = arcSize, style = style)
+                    }
                 }
+                // El texto central se apoya sobre la línea de los extremos, no sobre el borde inferior del trazo.
+                Box(modifier = Modifier.padding(bottom = GaugeThickness / 2)) { center() }
             }
-            center()
+            scale?.invoke()
         }
     }
 }
 
-private val GaugeThickness = 20.dp
-private val GaugeMaxDiameter = 260.dp
-private val GaugeFixedHeight = 120.dp
+private val GaugeThickness = 24.dp
+private val GaugeMaxDiameter = 340.dp
+private val GaugeScaleHeight = 24.dp
+private val GaugeFixedHeight = GaugeMaxDiameter / 2 + GaugeThickness / 2 + GaugeScaleHeight
 private const val HALF_CIRCLE = 180f
 private const val HALF_START_ANGLE = 180f
 
