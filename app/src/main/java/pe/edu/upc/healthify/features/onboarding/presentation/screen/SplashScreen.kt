@@ -37,7 +37,7 @@ import pe.edu.upc.healthify.features.onboarding.presentation.state.SplashDestina
 import pe.edu.upc.healthify.features.onboarding.presentation.state.SplashEvent
 import pe.edu.upc.healthify.features.onboarding.presentation.viewmodel.SplashViewModel
 
-// Medidas del frame «S1 · Splash».
+// Measurements from the splash frame.
 private val TopCircleSize = 320.dp
 private val TopCircleOffsetX = 120.dp
 private val TopCircleOffsetY = (-70).dp
@@ -54,7 +54,7 @@ private const val DECOR_ALPHA = 0.3f
 private const val HALO_ALPHA = 0.14f
 private const val DOT_COUNT = 3
 
-/** S1 · Splash. Navega sola en cuanto sabe si hay sesión guardada. */
+/** Splash. Navigates on its own as soon as it knows whether a session is saved. */
 @Composable
 fun SplashScreen(
     onNavigate: (SplashDestination) -> Unit,
@@ -133,7 +133,7 @@ private fun DecorCircle(size: Dp, color: Color, modifier: Modifier = Modifier) {
     )
 }
 
-@Preview(name = "S1 · Splash", widthDp = 360, heightDp = 800)
+@Preview(name = "Splash", widthDp = 360, heightDp = 800)
 @Composable
 private fun SplashContentPreview() {
     HealthifyTheme { SplashContent() }

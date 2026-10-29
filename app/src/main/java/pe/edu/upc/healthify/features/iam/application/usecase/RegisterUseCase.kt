@@ -8,19 +8,19 @@ import pe.edu.upc.healthify.features.iam.domain.entity.SessionUser
 import pe.edu.upc.healthify.features.iam.domain.repository.AuthenticationRepository
 import javax.inject.Inject
 
-/** Resultado de crear la cuenta (S3): crear y luego entrar son dos llamadas que fallan por separado. */
+/** Result of creating the account: creating and then signing in are two calls that fail separately. */
 sealed interface RegisterResult {
-    /** Cuenta creada y sesión iniciada: sigue S5. */
+    /** Account created and signed in: shell loading comes next. */
     data class SignedIn(val user: SessionUser) : RegisterResult
 
-    /** La cuenta existe pero el inicio de sesión automático falló: la persona entra desde S4. */
+    /** The account exists but the automatic sign-in failed: the person signs in from the sign-in screen. */
     data class CreatedWithoutSession(val error: DomainError) : RegisterResult
 
-    /** No se creó la cuenta. */
+    /** The account was not created. */
     data class Failed(val error: DomainError) : RegisterResult
 }
 
-/** F1 → F2: `POST /authentication/sign-up` y, si responde `201`, `POST /authentication/sign-in`. */
+/** `POST /authentication/sign-up` and, if it returns `201`, `POST /authentication/sign-in`. */
 class RegisterUseCase @Inject constructor(
     private val authenticationRepository: AuthenticationRepository,
 ) {

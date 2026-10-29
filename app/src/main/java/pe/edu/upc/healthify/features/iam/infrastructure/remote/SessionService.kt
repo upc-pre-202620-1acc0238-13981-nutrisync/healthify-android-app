@@ -9,21 +9,21 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 
-/** Endpoints autenticados de Iam (§5.1): van por el Retrofit con bearer y renovación del par (IAM-4). */
+/** Authenticated Iam endpoints: they go through the Retrofit with bearer and token pair refresh. */
 interface SessionService {
 
-    /** El `sessionId` sale del token, no del cuerpo (F3). `204`. */
+    /** The `sessionId` comes from the token, not the body. `204`. */
     @POST("authentication/sign-out")
     suspend fun signOut()
 
     @GET("sessions/{sessionId}/navigation-shell")
     suspend fun getNavigationShell(@Path("sessionId") sessionId: Long): NavigationShellDto
 
-    /** La cuenta propia (`403` si no es la del token). */
+    /** The caller's own account (`403` if it is not the token's). */
     @GET("users/{userId}")
     suspend fun getUser(@Path("userId") userId: Long): UserDto
 
-    /** `204` (IAM-3). */
+    /** `204`. */
     @PUT("users/{userId}/preferred-language")
     suspend fun changePreferredLanguage(
         @Path("userId") userId: Long,

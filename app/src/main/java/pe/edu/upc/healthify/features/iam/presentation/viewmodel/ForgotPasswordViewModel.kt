@@ -30,10 +30,10 @@ import pe.edu.upc.healthify.features.iam.presentation.state.ForgotPasswordUiStat
 import javax.inject.Inject
 
 /**
- * IAM-2 · Recuperar contraseña: correo → código → contraseña nueva → listo. Decide por `extensions.code` (X-3):
- * `PasswordResetCodeInvalid`, `WeakPassword` y `PasswordReuseNotAllowed` marcan su campo; `PasswordResetTokenInvalid`
- * vuelve al paso del código; cualquier otro error abre el diálogo de reintento. Pedir el código siempre «funciona»
- * (el backend no dice si la cuenta existe), así que el paso del código se muestra igual.
+ * Password recovery: email → code → new password → done. Decides by `extensions.code`:
+ * `PasswordResetCodeInvalid`, `WeakPassword` and `PasswordReuseNotAllowed` mark their field; `PasswordResetTokenInvalid`
+ * goes back to the code step; any other error opens the retry dialog. Requesting the code always "works"
+ * (the backend does not say whether the account exists), so the code step shows anyway.
  */
 @HiltViewModel
 class ForgotPasswordViewModel @Inject constructor(
@@ -51,10 +51,10 @@ class ForgotPasswordViewModel @Inject constructor(
 
     private var countdown: Job? = null
 
-    /** El token de la verificación. Solo en memoria: nunca en el estado ni en `SavedStateHandle`. */
+    /** The verification token. In memory only: never in the state or in `SavedStateHandle`. */
     private var resetToken: PasswordResetToken? = null
 
-    /** La última llamada al backend, para «Reintentar» del diálogo de error. */
+    /** The last backend call, for "Retry" in the error dialog. */
     private var retry: (() -> Unit)? = null
 
     init {
@@ -72,7 +72,7 @@ class ForgotPasswordViewModel @Inject constructor(
     fun onNewPasswordChange(value: String) =
         _state.update { it.copy(newPassword = value, weakPassword = false, passwordReused = false) }
 
-    /** Paso 1: «Enviar código». */
+    /** Step 1: "Send code". */
     fun onSendCode() {
         val current = _state.value
         if (current.isSubmitting || current.isOffline) return
@@ -84,7 +84,7 @@ class ForgotPasswordViewModel @Inject constructor(
         sendCode(email, resent = false)
     }
 
-    /** Paso 2: «Reenviar código», solo cuando terminó la espera. */
+    /** Step 2: "Resend code", only once the wait is over. */
     fun onResendCode() {
         val current = _state.value
         if (current.isSubmitting || current.isOffline || current.resendInSeconds > 0) return
@@ -92,7 +92,7 @@ class ForgotPasswordViewModel @Inject constructor(
         sendCode(email, resent = true)
     }
 
-    /** Paso 2: «Verificar código». Un código que no son seis dígitos no gasta un intento. */
+    /** Step 2: "Verify code". A code that is not six digits does not use up an attempt. */
     fun onVerifyCode() {
         val current = _state.value
         if (current.isSubmitting || current.isOffline) return
@@ -118,7 +118,7 @@ class ForgotPasswordViewModel @Inject constructor(
         }
     }
 
-    /** Paso 3: «Cambiar contraseña». La contraseña se valida con las reglas de registro antes de enviarla. */
+    /** Step 3: "Change password". The password is checked against the sign-up rules before it is sent. */
     fun onSubmitNewPassword() {
         val current = _state.value
         if (current.isSubmitting || current.isOffline) return
@@ -149,7 +149,7 @@ class ForgotPasswordViewModel @Inject constructor(
         }
     }
 
-    /** «Usar otro correo»: vuelve al paso 1 conservando lo escrito. */
+    /** "Use another email": goes back to step 1 keeping what was typed. */
     fun onChangeEmail() {
         resetToken = null
         _state.update {
@@ -167,8 +167,8 @@ class ForgotPasswordViewModel @Inject constructor(
     }
 
     /**
-     * «Atrás» del sistema: de la contraseña al código (el token se descarta y hará falta un código nuevo), del código
-     * al correo, y desde el correo o al terminar, a S4.
+     * System "back": from the password to the code (the token is discarded and a new code is needed), from the code
+     * to the email, and from the email or at the end, to sign-in.
      */
     fun onBack() {
         when (_state.value.step) {
@@ -184,7 +184,7 @@ class ForgotPasswordViewModel @Inject constructor(
 
     fun onErrorDialogDismiss() = _state.update { it.copy(showErrorDialog = false) }
 
-    /** Repite la acción que falló: enviar, reenviar, verificar o cambiar la contraseña. */
+    /** Repeats the action that failed: send, resend, verify or change the password. */
     fun onErrorDialogRetry() {
         _state.update { it.copy(showErrorDialog = false) }
         retry?.invoke()
@@ -241,7 +241,7 @@ class ForgotPasswordViewModel @Inject constructor(
     private fun DomainError.hasCode(code: String): Boolean = this is DomainError.Validation && this.code == code
 
     internal companion object {
-        /** Igual que `Iam:PasswordResetResendSeconds` del backend. */
+        /** Same as the backend's `Iam:PasswordResetResendSeconds`. */
         const val RESEND_COOLDOWN_SECONDS = 60
         private const val ONE_SECOND_MILLIS = 1_000L
         private const val CODE_RESET_CODE_INVALID = "PasswordResetCodeInvalid"

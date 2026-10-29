@@ -1,8 +1,8 @@
 package pe.edu.upc.healthify.features.iam.presentation.state
 
 /**
- * S6 · Sesión expirada. Los frames Pa y Nu son iguales; cambia el visual con la conexión: oscuro (Normal) o claro
- * con banner y «En cuanto tengas conexión, vuelve a iniciar sesión.» (Sin conexión).
+ * Session expired. The patient and practitioner frames are the same; the visual changes with the connection: dark
+ * (Normal) or light with a banner and the "sign in again once you are online" text (Offline).
  */
 data class SessionExpiredUiState(
     val isOffline: Boolean = false,

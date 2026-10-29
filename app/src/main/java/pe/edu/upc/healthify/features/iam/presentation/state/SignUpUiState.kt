@@ -3,10 +3,10 @@ package pe.edu.upc.healthify.features.iam.presentation.state
 import pe.edu.upc.healthify.features.iam.domain.valueobject.PersonName
 import pe.edu.upc.healthify.features.iam.domain.valueobject.UserRole
 
-/** Error del campo de correo en S3 (frame «S3 · Validaciones»). */
+/** Email field error on sign-up (the "Validations" frame). */
 enum class SignUpEmailError { Invalid, AlreadyTaken }
 
-/** Errores por campo (S3.E). `null` = el campo está bien o aún no se validó. */
+/** Errors per field. `null` = the field is fine or not validated yet. */
 data class SignUpFieldErrors(
     val givenNames: PersonName.Problem? = null,
     val familyNames: PersonName.Problem? = null,
@@ -16,11 +16,11 @@ data class SignUpFieldErrors(
 )
 
 /**
- * S3 · Registro. La contraseña vive solo en memoria (nunca en `SavedStateHandle`).
+ * Sign-up. The password lives in memory only (never in `SavedStateHandle`).
  *
- * @param isOffline sin conexión: banner «Necesitas conexión para continuar» y el texto bajo el botón (S3 Sin
- *   conexión). Crear la cuenta no se intenta sin red.
- * @param showErrorDialog error inesperado del servidor («Reintentar» / «Cerrar»).
+ * @param isOffline offline: the "You need a connection to continue" banner and the text under the button
+ *   (offline frame). Creating the account is not attempted offline.
+ * @param showErrorDialog unexpected server error ("Retry" / "Close").
  */
 data class SignUpUiState(
     val givenNames: String = "",
@@ -38,9 +38,9 @@ data class SignUpUiState(
 }
 
 sealed interface SignUpEvent {
-    /** Cuenta creada y sesión iniciada → S5. */
+    /** Account created and signed in → loading. */
     data object NavigateToShellLoading : SignUpEvent
 
-    /** «Ya tengo cuenta», o la cuenta se creó pero el inicio de sesión automático falló → S4. */
+    /** "I already have an account", or the account was created but the automatic sign-in failed → sign-in. */
     data object NavigateToSignIn : SignUpEvent
 }

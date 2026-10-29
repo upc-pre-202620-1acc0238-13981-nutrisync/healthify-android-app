@@ -15,8 +15,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Persistencia de la sesión: tokens cifrados en [SessionTokenStore] y el usuario en Room. Solo lo usa la
- * infrastructure de `iam` (repositorios de sesión y, en S3/S4/S6, el de autenticación al iniciar sesión).
+ * Session persistence: tokens encrypted in [SessionTokenStore] and the user in Room. Only used by the `iam`
+ * infrastructure (the session repositories and, on sign-up, sign-in and session expiry, the authentication one).
  */
 @Singleton
 class SessionLocalDataSource @Inject constructor(
@@ -30,26 +30,26 @@ class SessionLocalDataSource @Inject constructor(
     val isLoggedIn: Flow<Boolean> =
         combine(tokenStore.hasSession, user) { hasTokens, user -> hasTokens && user != null }
 
-    /** Guarda una sesión recién iniciada y pide enviar lo que quedó pendiente de este usuario (PT21.1). */
+    /** Stores a newly started session and asks to send whatever this user left pending. */
     suspend fun save(user: SessionUser, accessToken: String, refreshToken: String) {
         tokenStore.save(accessToken, refreshToken)
-        // La fecha de creación de la cuenta no cambia: si es el mismo usuario, se conserva la ya leída.
+        // The account creation date never changes: for the same user, the one already read is kept.
         val createdAt = sessionUserDao.get()?.takeIf { it.userId == user.id.value }?.createdAt
         sessionUserDao.upsert(user.toEntity().copy(createdAt = createdAt))
         syncScheduler.requestSync()
     }
 
-    /** `UserResource.CreatedAt` guardado del usuario [userId], o `null` si aún no se leyó (u otro usuario). */
+    /** Stored `UserResource.CreatedAt` of user [userId], or `null` if not read yet (or another user). */
     suspend fun accountCreatedAt(userId: Long): String? =
         sessionUserDao.get()?.takeIf { it.userId == userId }?.createdAt
 
-    /** Guarda `CreatedAt` si [userId] sigue siendo el usuario con sesión. */
+    /** Stores `CreatedAt` if [userId] is still the signed-in user. */
     suspend fun saveAccountCreatedAt(userId: Long, createdAt: String) {
         val row = sessionUserDao.get()?.takeIf { it.userId == userId } ?: return
         sessionUserDao.upsert(row.copy(createdAt = createdAt))
     }
 
-    /** IAM-3: el idioma ya guardado en la cuenta. Sin usuario guardado no hace nada. */
+    /** The language already saved on the account. Does nothing without a stored user. */
     suspend fun updatePreferredLanguage(language: PreferredLanguage) {
         val row = sessionUserDao.get() ?: return
         sessionUserDao.upsert(row.copy(preferredLanguage = language.code))
@@ -63,7 +63,7 @@ class SessionLocalDataSource @Inject constructor(
     override suspend fun activeUserId(): Long? =
         if (isLoggedIn.first()) sessionUserDao.get()?.userId else null
 
-    // Una fila que ya no forma un usuario válido (p. ej. de una versión anterior) equivale a no tener sesión.
+    // A row that no longer forms a valid user (e.g. from an older version) counts as having no session.
     private fun SessionUserEntity.toDomainOrNull(): SessionUser? = try {
         toDomain()
     } catch (_: IllegalArgumentException) {

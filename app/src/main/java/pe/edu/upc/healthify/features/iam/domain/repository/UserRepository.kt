@@ -3,12 +3,12 @@ package pe.edu.upc.healthify.features.iam.domain.repository
 import pe.edu.upc.healthify.features.iam.domain.valueobject.PreferredLanguage
 import pe.edu.upc.healthify.features.iam.domain.valueobject.UserId
 
-/** La cuenta del usuario con sesión. */
+/** The signed-in user's account. */
 interface UserRepository {
 
     /**
-     * `PUT /users/{userId}/preferred-language` (IAM-3). Si el backend lo acepta, también se actualiza el usuario
-     * guardado en el dispositivo.
+     * `PUT /users/{userId}/preferred-language`. If the backend accepts it, the user stored on the device is
+     * updated too.
      */
     suspend fun changePreferredLanguage(userId: UserId, language: PreferredLanguage): Result<Unit>
 }

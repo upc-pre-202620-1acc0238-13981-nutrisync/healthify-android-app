@@ -8,7 +8,7 @@ import pe.edu.upc.healthify.features.iam.domain.repository.UserRepository
 import pe.edu.upc.healthify.features.iam.domain.valueobject.PreferredLanguage
 import javax.inject.Inject
 
-/** IAM-3 (PT21.I / PR20.I): guarda el idioma en la cuenta del usuario con sesión. */
+/** Saves the language to the signed-in user's account. */
 class ChangePreferredLanguageUseCase @Inject constructor(
     private val sessionRepository: SessionRepository,
     private val userRepository: UserRepository,

@@ -1,6 +1,6 @@
 package pe.edu.upc.healthify.features.iam.domain.valueobject
 
-/** Id de la cuenta en el backend (`users.id`, también el `sub` del token). */
+/** Account id on the backend (`users.id`, also the token's `sub`). */
 @JvmInline
 value class UserId(val value: Long) {
     init {

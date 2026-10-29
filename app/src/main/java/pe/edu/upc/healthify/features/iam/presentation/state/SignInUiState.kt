@@ -1,19 +1,19 @@
 package pe.edu.upc.healthify.features.iam.presentation.state
 
-/** Errores de S4 que tienen frame propio. */
+/** Sign-in errors that have their own frame. */
 enum class SignInError {
-    /** S4.1 · `InvalidCredentials` (el mismo exista o no el correo). */
+    /** `InvalidCredentials` (the same whether or not the email exists). */
     InvalidCredentials,
 
-    /** S4.2 · `AccountLocked`. */
+    /** `AccountLocked`. */
     AccountLocked,
 }
 
 /**
- * S4 · Login único. La contraseña vive solo en memoria.
+ * Single sign-in. The password lives in memory only.
  *
- * @param isOffline DECISIÓN S4: el Figma no tiene frame sin conexión para S4; se usa el mismo banner
- *   «Necesitas conexión para continuar» de S3 y no se intenta entrar sin red.
+ * @param isOffline the Figma has no offline frame for sign-in; it uses the same "You need a connection to
+ *   continue" banner as sign-up and does not try to sign in offline.
  */
 data class SignInUiState(
     val email: String = "",
@@ -31,6 +31,6 @@ sealed interface SignInEvent {
     data object NavigateToShellLoading : SignInEvent
     data object NavigateToSignUp : SignInEvent
 
-    /** «¿Olvidaste tu contraseña?» → IAM-2. */
+    /** "Forgot your password?" → password recovery. */
     data object NavigateToForgotPassword : SignInEvent
 }

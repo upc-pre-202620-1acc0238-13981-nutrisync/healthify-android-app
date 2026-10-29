@@ -1,13 +1,13 @@
 package pe.edu.upc.healthify.features.iam.domain.valueobject
 
-/** Shell que la app monta para una sesión (read model App Shell, `NavigationShellResource`). */
+/** Shell the app mounts for a session (App Shell read model, `NavigationShellResource`). */
 enum class NavigationShell {
     PATIENT,
     PRACTITIONER,
     ;
 
     companion object {
-        /** El shell que corresponde a un rol (`NavigationShell.ForRole` del backend). */
+        /** The shell for a role (the backend's `NavigationShell.ForRole`). */
         fun forRole(role: UserRole): NavigationShell = when (role) {
             UserRole.PATIENT -> PATIENT
             UserRole.PRACTITIONER -> PRACTITIONER

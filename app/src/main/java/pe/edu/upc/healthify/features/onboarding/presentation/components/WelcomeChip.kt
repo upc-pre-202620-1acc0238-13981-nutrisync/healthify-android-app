@@ -24,24 +24,24 @@ import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 import pe.edu.upc.healthify.core.designsystem.theme.elevation
 
-// Medidas de «chip/meta», «chip/registro» y «chip/nutri» del frame S2.
+// Measurements of the goal, logging and nutritionist chips in the welcome frame.
 private val BadgeSize = 36.dp
 private val BadgeIconSize = 18.dp
 private val TargetRingStroke = 2.dp
 private val TargetRingInset = 2.dp
 private val TargetDotRadius = 2.dp
 
-/** Ícono de cada chip ilustrativo de S2. */
+/** Icon of each illustrative welcome chip. */
 sealed interface WelcomeChipIcon {
-    /** «Meta de hoy»: diana (anillo con punto), dibujada como en el Figma. */
+    /** "Today's goal": a target (ring with a dot), drawn as in Figma. */
     data object Target : WelcomeChipIcon
     data class Vector(val imageVector: ImageVector) : WelcomeChipIcon
 }
 
 /**
- * Tarjeta ilustrativa inclinada de S2 (no es interactiva ni muestra datos reales).
+ * Tilted illustrative card on the welcome screen (not interactive, shows no real data).
  *
- * @param rotation grados en sentido horario (el Figma los da en sentido antihorario).
+ * @param rotation degrees clockwise (Figma gives them counterclockwise).
  */
 @Composable
 fun WelcomeChip(
@@ -98,7 +98,7 @@ private fun TargetIcon(color: Color, modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(name = "S2 · chips", widthDp = 360)
+@Preview(name = "Welcome chips", widthDp = 360)
 @Composable
 private fun WelcomeChipPreview() {
     HealthifyTheme {

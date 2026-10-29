@@ -8,7 +8,7 @@ import pe.edu.upc.healthify.features.iam.infrastructure.remote.dto.TokenRefreshR
 import java.io.IOException
 import javax.inject.Inject
 
-/** Canje del refresh token (IAM-4) para `TokenRefreshCoordinator`. */
+/** Refresh token exchange for `TokenRefreshCoordinator`. */
 class RetrofitTokenRefresher @Inject constructor(
     private val service: AuthenticationService,
 ) : TokenRefresher {
@@ -18,7 +18,7 @@ class RetrofitTokenRefresher @Inject constructor(
         val body = response.body()
         when {
             response.isSuccessful && body != null -> TokenRefreshResult.Refreshed(body.token, body.refreshToken)
-            // 401 RefreshTokenInvalid (vencido, revocado o reusado) o 400 (token vacío): no hay sesión que salvar.
+            // 401 RefreshTokenInvalid (expired, revoked or reused) or 400 (empty token): there is no session to save.
             response.code() == HTTP_UNAUTHORIZED || response.code() == HTTP_BAD_REQUEST -> TokenRefreshResult.Rejected
             else -> TokenRefreshResult.Unavailable
         }

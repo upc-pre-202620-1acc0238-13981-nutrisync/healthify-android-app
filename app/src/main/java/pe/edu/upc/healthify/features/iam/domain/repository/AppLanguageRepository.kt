@@ -2,11 +2,11 @@ package pe.edu.upc.healthify.features.iam.domain.repository
 
 import pe.edu.upc.healthify.features.iam.domain.valueobject.PreferredLanguage
 
-/** Idioma de la interfaz en este teléfono (PT21.I/PR20.I). Los datos clínicos nunca se traducen: solo la interfaz. */
+/** UI language on this phone. Clinical data is never translated: only the UI. */
 interface AppLanguageRepository {
 
     fun current(): PreferredLanguage
 
-    /** Aplica el idioma de inmediato en la app (lo guarda el teléfono). */
+    /** Applies the language in the app right away (the phone stores it). */
     fun apply(language: PreferredLanguage)
 }

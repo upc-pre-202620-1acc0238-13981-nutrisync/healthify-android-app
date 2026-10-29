@@ -18,7 +18,7 @@ import pe.edu.upc.healthify.features.onboarding.presentation.state.WelcomeEvent
 import pe.edu.upc.healthify.features.onboarding.presentation.state.WelcomeUiState
 import javax.inject.Inject
 
-/** S2: los dos botones llevan a S3/S4, que necesitan red; sin conexión se muestra el banner y no se navega. */
+/** The two buttons lead to sign-up and sign-in, which need a network; offline the banner shows and nothing navigates. */
 @HiltViewModel
 class WelcomeViewModel @Inject constructor(
     connectivityObserver: ConnectivityObserver,

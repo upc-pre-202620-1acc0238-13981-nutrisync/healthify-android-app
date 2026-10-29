@@ -27,10 +27,10 @@ fun Credentials.toDto(): SignInRequestDto = SignInRequestDto(email = email.value
 fun PasswordReset.toDto(): PasswordResetDto =
     PasswordResetDto(resetToken = token.value, newPassword = newPassword.value)
 
-/** @throws IllegalArgumentException si el backend devolvió un token vacío (contrato roto). */
+/** @throws IllegalArgumentException if the backend returned an empty token (broken contract). */
 fun PasswordResetVerificationResponseDto.toDomain(): PasswordResetToken = PasswordResetToken(resetToken)
 
-/** `null` si la sesión ya terminó o no tiene shell; un valor desconocido también se lee como «sin shell». */
+/** `null` if the session already ended or has no shell; an unknown value is also read as "no shell". */
 fun NavigationShellDto.toDomain(): NavigationShell? = when {
     !isActive -> null
     navigationShell.equals(SHELL_PATIENT, ignoreCase = true) -> NavigationShell.PATIENT
