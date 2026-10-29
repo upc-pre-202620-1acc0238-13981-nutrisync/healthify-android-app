@@ -1,10 +1,22 @@
+import com.google.firebase.appdistribution.gradle.firebaseAppDistribution
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.firebase.appdistribution)
 }
+
+// Release signing: keystore.properties at the root locally, environment variables in CI.
+val keystoreProperties = Properties().apply {
+    rootProject.file("keystore.properties").takeIf { it.exists() }?.inputStream()?.use(::load)
+}
+
+fun signingValue(key: String): String? =
+    keystoreProperties.getProperty(key) ?: providers.environmentVariable(key).orNull
 
 android {
     namespace = "pe.edu.upc.healthify"
@@ -18,10 +30,23 @@ android {
         applicationId = "pe.edu.upc.healthify"
         minSdk = 24
         targetSdk = 37
-        versionCode = 1
-        versionName = "1.0"
+        // CI passes -PversionCode with the run number: each distributed build needs a higher one.
+        versionCode = providers.gradleProperty("versionCode").orNull?.toInt() ?: 1
+        versionName = "1.7.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        // Without a keystore the release build stays unsigned instead of failing.
+        signingValue("KEYSTORE_FILE")?.let { keystoreFile ->
+            create("release") {
+                storeFile = rootProject.file(keystoreFile)
+                storePassword = signingValue("KEYSTORE_PASSWORD")
+                keyAlias = signingValue("KEY_ALIAS")
+                keyPassword = signingValue("KEY_PASSWORD")
+            }
+        }
     }
 
     buildTypes {
@@ -31,9 +56,17 @@ android {
             buildConfigField("String", "BASE_URL", "\"https://platform.healthify.lat/api/v1/\"")
         }
         release {
+            signingConfig = signingConfigs.findByName("release")
             buildConfigField("String", "BASE_URL", "\"https://platform.healthify.lat/api/v1/\"")
             optimization {
                 enable = false
+            }
+            // Uploaded by the distribute workflow; the app uses no Firebase SDK, so no google-services.json.
+            firebaseAppDistribution {
+                appId = providers.environmentVariable("FIREBASE_APP_ID").orNull
+                serviceCredentialsFile = providers.environmentVariable("FIREBASE_SERVICE_CREDENTIALS_FILE").orNull
+                artifactType = "APK"
+                groups = "qa"
             }
         }
     }
