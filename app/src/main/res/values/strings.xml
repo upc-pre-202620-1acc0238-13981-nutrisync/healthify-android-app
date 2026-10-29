@@ -1347,4 +1347,17 @@
     <string name="local_food_save">Guardar alimento</string>
 
     <string name="practitioner_sign_out_body">Tendrás que volver a ingresar tu correo y contraseña. Tus pacientes y sus datos quedan guardados.</string>
+
+    <!-- PR1 · Mis pacientes agrupada por acción -->
+    <string name="roster_search">Buscar paciente</string>
+    <string name="roster_search_placeholder">Buscar paciente…</string>
+    <string name="roster_needs_action">Requieren acción · %1$d</string>
+    <string name="roster_up_to_date">Al día · %1$d</string>
+    <string name="roster_up_to_date_body">Sin pendientes</string>
+    <string name="roster_reason_open_review">Señal por revisar</string>
+    <string name="roster_reason_consultation">Consulta por terminar</string>
+    <string name="roster_reason_baseline">Faltan datos base</string>
+    <string name="roster_reason_plan">Falta publicar el plan</string>
+    <string name="roster_no_results_title">Sin resultados</string>
+    <string name="roster_no_results_body">Ningún paciente coincide con «%1$s».</string>
 </resources>

@@ -1311,4 +1311,17 @@
     <string name="local_food_save">Save food</string>
 
     <string name="practitioner_sign_out_body">You\'ll have to enter your email and password again. Your patients and their data stay saved.</string>
+
+    <!-- PR1 · My patients grouped by action -->
+    <string name="roster_search">Search patient</string>
+    <string name="roster_search_placeholder">Search patient…</string>
+    <string name="roster_needs_action">Need action · %1$d</string>
+    <string name="roster_up_to_date">Up to date · %1$d</string>
+    <string name="roster_up_to_date_body">Nothing pending</string>
+    <string name="roster_reason_open_review">Signal to review</string>
+    <string name="roster_reason_consultation">Consultation to finish</string>
+    <string name="roster_reason_baseline">Baseline data missing</string>
+    <string name="roster_reason_plan">Plan not published yet</string>
+    <string name="roster_no_results_title">No results</string>
+    <string name="roster_no_results_body">No patient matches “%1$s”.</string>
 </resources>
