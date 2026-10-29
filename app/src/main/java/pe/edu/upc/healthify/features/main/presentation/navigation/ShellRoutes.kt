@@ -8,7 +8,7 @@ import pe.edu.upc.healthify.core.designsystem.component.PractitionerTab
 @Serializable
 data object PatientShellRoute
 
-/** Shell del nutricionista (NavigationBar de 4 destinos). */
+/** Shell del nutricionista (NavigationBar de 3 destinos). */
 @Serializable
 data object PractitionerShellRoute
 
@@ -30,6 +30,10 @@ data object PatientRecordRoute
 /** PT21 · Ajustes del paciente: se abre desde el menú principal (pantalla completa del grafo raíz sobre el shell). */
 @Serializable
 data object PatientSettingsRoute
+
+/** PR20 · Ajustes del nutricionista: se abre desde el menú principal (pantalla completa del grafo raíz sobre el shell). */
+@Serializable
+data object PractitionerSettingsRoute
 
 /** PT21.1 · Cerrar sesión (pantalla completa del grafo raíz sobre el shell). */
 @Serializable
@@ -57,9 +61,6 @@ data object PractitionerInboxRoute
 @Serializable
 data object PractitionerAgendaRoute
 
-@Serializable
-data object PractitionerSettingsRoute
-
 internal fun PatientTab.route(): Any = when (this) {
     PatientTab.Home -> PatientHomeRoute
     PatientTab.Diary -> PatientDiaryRoute
@@ -71,5 +72,4 @@ internal fun PractitionerTab.route(): Any = when (this) {
     PractitionerTab.Patients -> PractitionerPatientsRoute
     PractitionerTab.Inbox -> PractitionerInboxRoute
     PractitionerTab.Agenda -> PractitionerAgendaRoute
-    PractitionerTab.Settings -> PractitionerSettingsRoute
 }
