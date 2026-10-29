@@ -42,6 +42,7 @@ import pe.edu.upc.healthify.core.designsystem.component.HealthifyButton
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyButtonStyle
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyCard
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyDialog
+import pe.edu.upc.healthify.core.designsystem.component.HealthifyIconButton
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyTopAppBar
 import pe.edu.upc.healthify.core.designsystem.component.ObserveEvents
 import pe.edu.upc.healthify.core.designsystem.component.OfflineBanner
@@ -74,6 +75,8 @@ data class AgendaActions(
     val onCancelRequested: () -> Unit = {},
     val onCancelConfirmed: () -> Unit = {},
     val onDialogDismissed: () -> Unit = {},
+    /** ☰ · menú principal del shell (PR1.D). */
+    val onOpenMenu: () -> Unit = {},
 )
 
 /**
@@ -81,12 +84,14 @@ data class AgendaActions(
  * muestra el shell al volver.
  *
  * @param onCancelled el shell muestra «Consulta cancelada».
+ * @param onOpenMenu ☰ · menú principal del shell (PR1.D).
  */
 @Composable
 fun PractitionerAgendaScreen(
     onSchedule: () -> Unit,
     onReschedule: (AgendaRow) -> Unit,
     onCancelled: () -> Unit,
+    onOpenMenu: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: PractitionerAgendaViewModel = hiltViewModel(),
 ) {
@@ -112,6 +117,7 @@ fun PractitionerAgendaScreen(
             onCancelRequested = viewModel::onCancelRequested,
             onCancelConfirmed = viewModel::onCancelConfirmed,
             onDialogDismissed = viewModel::onDialogDismissed,
+            onOpenMenu = onOpenMenu,
         ),
         modifier = modifier,
     )
@@ -127,7 +133,16 @@ fun PractitionerAgendaContent(state: AgendaUiState, actions: AgendaActions, modi
             .fillMaxSize()
             .background(scheme.surface),
     ) {
-        HealthifyTopAppBar(title = stringResource(R.string.agenda_title))
+        HealthifyTopAppBar(
+            title = stringResource(R.string.agenda_title),
+            actions = {
+                HealthifyIconButton(
+                    icon = HealthifyIcons.Menu,
+                    contentDescription = stringResource(R.string.menu_cd_open),
+                    onClick = actions.onOpenMenu,
+                )
+            },
+        )
         Box(
             modifier = Modifier
                 .fillMaxWidth()

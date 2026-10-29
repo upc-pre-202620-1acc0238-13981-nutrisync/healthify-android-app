@@ -36,7 +36,6 @@
     <string name="nav_diary">Diary</string>
     <string name="nav_progress">Progress</string>
     <string name="nav_record">Record</string>
-    <string name="nav_settings">Settings</string>
     <!-- Patient main menu -->
     <string name="menu_cd_open">Open menu</string>
     <string name="menu_role_patient">Patient</string>
@@ -45,6 +44,9 @@
     <string name="menu_pending">Pending</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_sign_out">Sign out</string>
+    <!-- Practitioner main menu (Settings and Sign out reuse the patient texts) -->
+    <string name="menu_role_practitioner">Nutritionist</string>
+    <string name="menu_food_catalog">Food catalog</string>
     <string name="nav_patients">Patients</string>
     <string name="nav_inbox">Inbox</string>
     <string name="nav_agenda">Schedule</string>
@@ -1308,6 +1310,5 @@
     <string name="local_food_fat_example">E.g. 6</string>
     <string name="local_food_save">Save food</string>
 
-    <string name="practitioner_settings_food_catalog">Food catalog</string>
     <string name="practitioner_sign_out_body">You\'ll have to enter your email and password again. Your patients and their data stay saved.</string>
 </resources>

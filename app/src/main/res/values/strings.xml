@@ -40,7 +40,6 @@
     <string name="nav_diary">Diario</string>
     <string name="nav_progress">Progreso</string>
     <string name="nav_record">Expediente</string>
-    <string name="nav_settings">Ajustes</string>
     <!-- Menú principal del paciente -->
     <string name="menu_cd_open">Abrir menú</string>
     <string name="menu_role_patient">Paciente</string>
@@ -49,6 +48,9 @@
     <string name="menu_pending">Pendientes</string>
     <string name="menu_settings">Ajustes</string>
     <string name="menu_sign_out">Cerrar sesión</string>
+    <!-- Menú principal del nutricionista (Ajustes y Cerrar sesión usan los textos del paciente) -->
+    <string name="menu_role_practitioner">Nutricionista</string>
+    <string name="menu_food_catalog">Catálogo de alimentos</string>
     <string name="nav_patients">Pacientes</string>
     <string name="nav_inbox">Bandeja</string>
     <string name="nav_agenda">Agenda</string>
@@ -1344,6 +1346,5 @@
     <string name="local_food_fat_example">Ej. 6</string>
     <string name="local_food_save">Guardar alimento</string>
 
-    <string name="practitioner_settings_food_catalog">Catálogo de alimentos</string>
     <string name="practitioner_sign_out_body">Tendrás que volver a ingresar tu correo y contraseña. Tus pacientes y sus datos quedan guardados.</string>
 </resources>

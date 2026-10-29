@@ -13,7 +13,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -33,25 +32,29 @@ import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 import pe.edu.upc.healthify.features.iam.domain.valueobject.PreferredLanguage
 import pe.edu.upc.healthify.features.main.presentation.components.LanguageSheetContent
 import pe.edu.upc.healthify.features.main.presentation.components.labelRes
+import pe.edu.upc.healthify.features.main.presentation.state.PractitionerSettingsUiState
 import pe.edu.upc.healthify.features.main.presentation.viewmodel.PractitionerSettingsEvent
-import pe.edu.upc.healthify.features.main.presentation.viewmodel.PractitionerSettingsUiState
 import pe.edu.upc.healthify.features.main.presentation.viewmodel.PractitionerSettingsViewModel
 
-data class PractitionerSettingsActions(
-    /** PR15 · Catálogo de alimentos. */
-    val onOpenFoodCatalog: () -> Unit = {},
+/** Destinos de PR20 (pantallas del grafo raíz). */
+data class PractitionerSettingsCallbacks(
+    /** «Atrás»: vuelve a la pestaña donde estaba el nutricionista (Ajustes se abre desde el menú principal). */
+    val onBack: () -> Unit,
     /** PR20.1 · confirmación de cierre de sesión. */
-    val onSignOut: () -> Unit = {},
+    val onSignOut: () -> Unit,
+)
+
+data class PractitionerSettingsActions(
+    val callbacks: PractitionerSettingsCallbacks,
     val onOpenLanguage: () -> Unit = {},
     val onDismissLanguage: () -> Unit = {},
     val onLanguageSelected: (PreferredLanguage) -> Unit = {},
 )
 
-/** PR20 · Ajustes del nutricionista (+ PR20.I idioma), pestaña «Ajustes» del shell. */
+/** PR20 · Ajustes del nutricionista (+ PR20.I idioma), pantalla interna que se abre desde el menú principal. */
 @Composable
 fun PractitionerSettingsScreen(
-    onOpenFoodCatalog: () -> Unit,
-    onSignOut: () -> Unit,
+    callbacks: PractitionerSettingsCallbacks,
     modifier: Modifier = Modifier,
     viewModel: PractitionerSettingsViewModel = hiltViewModel(),
 ) {
@@ -71,8 +74,7 @@ fun PractitionerSettingsScreen(
     PractitionerSettingsContent(
         state = state,
         actions = PractitionerSettingsActions(
-            onOpenFoodCatalog = onOpenFoodCatalog,
-            onSignOut = onSignOut,
+            callbacks = callbacks,
             onOpenLanguage = viewModel::onOpenLanguage,
             onDismissLanguage = viewModel::onDismissLanguage,
             onLanguageSelected = viewModel::onLanguageSelected,
@@ -88,13 +90,14 @@ fun PractitionerSettingsContent(
     modifier: Modifier = Modifier,
 ) {
     val dimens = HealthifyTheme.dimens
+    val callbacks = actions.callbacks
     SystemBarsAppearance(darkBackground = false)
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface),
     ) {
-        HealthifyTopAppBar(title = stringResource(R.string.settings_title))
+        HealthifyTopAppBar(title = stringResource(R.string.settings_title), onBack = callbacks.onBack)
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -103,13 +106,11 @@ fun PractitionerSettingsContent(
             verticalArrangement = Arrangement.spacedBy(dimens.space12),
         ) {
             if (state.isOffline) OfflineBanner(type = OfflineBannerType.RequiresNetwork)
-            // Sin conexión el catálogo se ve deshabilitado (su gestión necesita red, nota de PR20).
+            // DECISIÓN PR20: como PT21, «Mi cuenta» no tiene pantalla en el Figma; se muestra sin chevron ni destino.
             ListCard(
-                title = stringResource(R.string.practitioner_settings_food_catalog),
-                leadingIcon = HealthifyIcons.Cutlery,
-                onClick = if (state.isOffline) null else actions.onOpenFoodCatalog,
-                showChevron = true,
-                modifier = if (state.isOffline) Modifier.alpha(DISABLED_ALPHA) else Modifier,
+                title = stringResource(R.string.settings_account),
+                supportingText = listOf(state.fullName, state.email).filter(String::isNotEmpty).joinToString(" · "),
+                leadingIcon = HealthifyIcons.Person,
             )
             ListCard(
                 title = stringResource(R.string.settings_language),
@@ -121,7 +122,7 @@ fun PractitionerSettingsContent(
             ListCard(
                 title = stringResource(R.string.sign_out_dialog_confirm),
                 leadingIcon = HealthifyIcons.Logout,
-                onClick = actions.onSignOut,
+                onClick = callbacks.onSignOut,
             )
         }
     }
@@ -132,19 +133,29 @@ fun PractitionerSettingsContent(
     }
 }
 
-private const val DISABLED_ALPHA = 0.38f
+private val PreviewCallbacks = PractitionerSettingsCallbacks({}, {})
+
+private val PreviewState = PractitionerSettingsUiState(
+    fullName = "Lucía Paredes",
+    email = "lucia.paredes@correo.com",
+)
 
 @Preview(name = "PR20 · Ajustes", widthDp = 360, heightDp = 800)
 @Composable
 private fun PractitionerSettingsPreview() {
-    HealthifyTheme { PractitionerSettingsContent(state = PractitionerSettingsUiState(), actions = PractitionerSettingsActions()) }
+    HealthifyTheme {
+        PractitionerSettingsContent(state = PreviewState, actions = PractitionerSettingsActions(PreviewCallbacks))
+    }
 }
 
 @Preview(name = "PR20 · Sin conexión", widthDp = 360, heightDp = 800)
 @Composable
 private fun PractitionerSettingsOfflinePreview() {
     HealthifyTheme {
-        PractitionerSettingsContent(state = PractitionerSettingsUiState(isOffline = true), actions = PractitionerSettingsActions())
+        PractitionerSettingsContent(
+            state = PreviewState.copy(isOffline = true),
+            actions = PractitionerSettingsActions(PreviewCallbacks),
+        )
     }
 }
 
