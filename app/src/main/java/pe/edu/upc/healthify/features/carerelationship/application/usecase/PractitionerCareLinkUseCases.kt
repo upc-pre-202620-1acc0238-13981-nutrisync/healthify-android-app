@@ -11,14 +11,14 @@ import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.Invitat
 import java.time.Clock
 import javax.inject.Inject
 
-/** PR1 · la cartera del nutricionista con sesión. */
+/** The signed-in nutritionist's patient roster. */
 class GetPatientRosterUseCase @Inject constructor(
     private val repository: PractitionerCareLinkRepository,
 ) {
     suspend operator fun invoke(practitionerUserId: Long): Result<PatientRoster> = repository.getRoster(practitionerUserId)
 }
 
-/** PR2 · emite una invitación que vence en [validity] desde ahora («Generar otro código» emite una nueva). */
+/** Issues an invitation that expires [validity] from now ("Generate another code" issues a new one). */
 class IssueInvitationUseCase @Inject constructor(
     private val repository: PractitionerCareLinkRepository,
     private val clock: Clock,
@@ -27,7 +27,7 @@ class IssueInvitationUseCase @Inject constructor(
         repository.issueInvitation(validity.expiresAt(clock.instant()))
 }
 
-/** PAC-4 · si el paciente vio las metas publicadas («Ana las vio el mismo día»), leído por el vínculo (CR-3). */
+/** Whether the patient saw the published targets ("Ana saw them the same day"), read through the care link. */
 class GetLinkTargetsReadStatusUseCase @Inject constructor(
     private val repository: CareLinkRepository,
 ) {
@@ -35,7 +35,7 @@ class GetLinkTargetsReadStatusUseCase @Inject constructor(
         repository.getTargetsReadStatus(CareLinkId(careLinkId))
 }
 
-/** PR18 «Sí, dar de alta»: el motivo clínico es obligatorio (la regla vive en [ClinicalReason]). */
+/** "Yes, discharge": the clinical reason is required (the rule lives in [ClinicalReason]). */
 class DischargePatientUseCase @Inject constructor(
     private val repository: PractitionerCareLinkRepository,
 ) {

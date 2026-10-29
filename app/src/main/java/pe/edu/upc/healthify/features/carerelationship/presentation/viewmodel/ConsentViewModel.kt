@@ -26,8 +26,8 @@ import pe.edu.upc.healthify.features.iam.application.usecase.ObserveCurrentUserU
 import javax.inject.Inject
 
 /**
- * PT2 · Consentimiento y alcance (F6). «Doy mi consentimiento» activa el vínculo y lleva a PT3; «Ahora no» deja el
- * vínculo pendiente (PT2.1). La IA se acepta aparte con el interruptor (CR-2).
+ * Consent and scope. "I give my consent" activates the care link and goes home; "Not now" leaves the
+ * care link pending. AI is accepted separately with the switch.
  */
 @HiltViewModel
 class ConsentViewModel @Inject constructor(
@@ -87,7 +87,7 @@ class ConsentViewModel @Inject constructor(
         viewModelScope.launch { _events.send(ConsentEvent.NavigateToPendingConsent) }
     }
 
-    /** Botón del aviso de error: cada caso lleva a su sitio (el vínculo ya activo → PT3; cerrado → PT1). */
+    /** Error notice button: each case leads to its place (care link already active → home; closed → scan). */
     fun onErrorAction() {
         val error = _state.value.error ?: return
         _state.update { it.copy(error = null) }
@@ -99,7 +99,7 @@ class ConsentViewModel @Inject constructor(
         viewModelScope.launch { _events.send(event) }
     }
 
-    /** Cerrar el aviso con atrás o tocando fuera equivale a su botón: el estado del vínculo ya cambió. */
+    /** Dismissing the notice with back or by tapping outside equals its button: the care link state already changed. */
     fun onErrorDismiss() = onErrorAction()
 
     fun onServerErrorRetry() {
@@ -110,7 +110,7 @@ class ConsentViewModel @Inject constructor(
     fun onServerErrorDismiss() = _state.update { it.copy(showServerError = false) }
 }
 
-/** Validaciones de la nota de PT2; `null` = «error servidor» (404 del vínculo, red, 5xx…). */
+/** Consent note validations; `null` = "server error" (care link 404, network, 5xx…). */
 internal fun DomainError.toConsentError(): ConsentError? = when {
     this is DomainError.Validation && code == "ConsentScopeRequired" -> ConsentError.ScopeRequired
     this is DomainError.Conflict -> when (code) {

@@ -1,6 +1,6 @@
 package pe.edu.upc.healthify.features.carerelationship.domain.valueobject
 
-/** Id del paciente en CareRelationship: es el `userId` de su cuenta (el backend compara `patientId` con el token). */
+/** Patient id in CareRelationship: their account's `userId` (the backend compares `patientId` with the token). */
 @JvmInline
 value class PatientId(val value: Long) {
     init {

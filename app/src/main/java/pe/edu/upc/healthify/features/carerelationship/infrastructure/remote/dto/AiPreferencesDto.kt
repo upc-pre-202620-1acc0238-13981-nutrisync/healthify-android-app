@@ -3,8 +3,8 @@ package pe.edu.upc.healthify.features.carerelationship.infrastructure.remote.dto
 import kotlinx.serialization.Serializable
 
 /**
- * `AiPreferencesResource` (IA-1; `mealPhotoRecognitionEnabled` desde IN-7, antes faltaba = apagado). También es el
- * formato de la última lectura guardada en el teléfono.
+ * `AiPreferencesResource` (older responses lack `mealPhotoRecognitionEnabled`, which means off). It is also the
+ * format of the last read saved on the phone.
  */
 @Serializable
 data class AiPreferencesDto(
@@ -15,7 +15,7 @@ data class AiPreferencesDto(
     val mealPhotoRecognitionEnabled: Boolean = false,
 )
 
-/** `UpdateAiPreferencesResource` (IA-1; `mealPhotoRecognitionEnabled` siempre se manda, IN-7). */
+/** `UpdateAiPreferencesResource` (`mealPhotoRecognitionEnabled` is always sent). */
 @Serializable
 data class UpdateAiPreferencesRequestDto(
     val weeklySummaryEnabled: Boolean,

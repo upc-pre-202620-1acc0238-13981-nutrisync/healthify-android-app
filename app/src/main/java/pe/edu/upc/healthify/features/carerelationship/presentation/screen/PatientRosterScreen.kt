@@ -65,14 +65,14 @@ import pe.edu.upc.healthify.features.carerelationship.presentation.state.RosterI
 import pe.edu.upc.healthify.features.carerelationship.presentation.viewmodel.PatientRosterViewModel
 import java.time.Instant
 
-// Medidas del frame «N10 · Inicio — agrupada por acción».
+// Measurements from the home frame grouped by action.
 private val AvatarSize = 40.dp
 private val StackedAvatarSize = 32.dp
 private val StackedAvatarOverlap = 10.dp
 private const val STACKED_AVATARS = 3
 private const val CHEVRON_UP = -90f
 
-/** Acciones de PR1 (navegación + eventos del ViewModel). */
+/** Roster actions (navigation plus ViewModel events). */
 data class PatientRosterActions(
     val onInvitePatient: () -> Unit = {},
     val onOpenPatient: (RosterItem) -> Unit = {},
@@ -83,13 +83,13 @@ data class PatientRosterActions(
 )
 
 /**
- * PR1 · Mis pacientes (pestaña «Pacientes» del shell del nutricionista), agrupada por acción: quienes requieren algo
- * (con el motivo) y quienes están al día, plegados en una fila. Tocar un paciente abre su ficha: PAC-0 si aún no tiene
- * datos base, PAC-1 si ya los tiene y PAC-1.C con una consulta en curso (lo decide el resumen, RM-2).
+ * My patients ("Patients" tab of the nutritionist shell), grouped by action: those who need something
+ * (with the reason) and those up to date, collapsed into one row. Tapping a patient opens their file: the baseline
+ * form without baseline data, the overview with it, or the consultation in progress (the summary decides).
  *
- * DECISIÓN PR1 (sin scroll): la pantalla no se desplaza; si una lista no cabe, se desplaza dentro de su tarjeta.
+ * The screen does not scroll; if a list does not fit, it scrolls inside its card.
  *
- * @param onOpenMenu ☰ · menú principal del shell (PR1.D).
+ * @param onOpenMenu ☰ · the shell's main menu.
  */
 @Composable
 fun PatientRosterScreen(
@@ -187,7 +187,7 @@ fun PatientRosterContent(
                 }
             }
         }
-        // «Invitar paciente» fijo abajo (sobre la NavigationBar); sin conexión no se puede generar el código.
+        // "Invite patient" pinned at the bottom (above the NavigationBar); offline the code cannot be generated.
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -206,7 +206,7 @@ fun PatientRosterContent(
 
 private const val SKELETON_ROWS = 4
 
-/** El mismo campo que PR15 (catálogo): filtra la cartera por nombre en el teléfono. */
+/** The same field as the food catalog: filters the roster by name on the phone. */
 @Composable
 private fun RosterSearchField(query: String, onQueryChange: (String) -> Unit) {
     val focusManager = LocalFocusManager.current
@@ -225,8 +225,8 @@ private fun RosterSearchField(query: String, onQueryChange: (String) -> Unit) {
 }
 
 /**
- * «Requieren acción · N» (oculta si no hay nadie) y «Al día · N». Cada grupo ocupa lo que necesita; si no cabe, se
- * reparte el alto y su lista se desplaza dentro de la tarjeta.
+ * "Need action · N" (hidden if nobody) and "Up to date · N". Each group takes what it needs; if they do not fit,
+ * the height is shared and each list scrolls inside its card.
  */
 @Composable
 private fun ColumnScope.RosterGroups(state: PatientRosterUiState, actions: PatientRosterActions) {
@@ -280,7 +280,7 @@ private fun GroupTitle(text: String) {
     )
 }
 
-/** «Ana Flores · Señal por revisar» (o, al día, solo el nombre). */
+/** "Ana Flores · Signal to review" (or, when up to date, just the name). */
 @Composable
 private fun PatientRow(patient: RosterItem, onClick: () -> Unit) {
     val dimens = HealthifyTheme.dimens
@@ -305,7 +305,7 @@ private fun PatientRow(patient: RosterItem, onClick: () -> Unit) {
     }
 }
 
-/** «Al día · 9 · Sin pendientes» con hasta tres avatares superpuestos; al tocarla se despliega en su sitio. */
+/** "Up to date · 9 · Nothing pending" with up to three overlapping avatars; tapping it expands it in place. */
 @Composable
 private fun UpToDateRow(patients: List<RosterItem>, expanded: Boolean, onClick: () -> Unit) {
     val dimens = HealthifyTheme.dimens
@@ -346,7 +346,7 @@ private fun UpToDateRow(patients: List<RosterItem>, expanded: Boolean, onClick: 
                 color = scheme.onSurfaceVariant,
             )
         }
-        // Desplegada, el chevron apunta hacia arriba (se pliega al tocar).
+        // Expanded, the chevron points up (tap to collapse).
         Icon(
             imageVector = HealthifyIcons.ChevronRight,
             contentDescription = null,
@@ -375,7 +375,7 @@ private fun Avatar(name: String, color: Color, size: Dp, modifier: Modifier = Mo
     }
 }
 
-/** El fondo del avatar acompaña al motivo: señal (naranja claro), consulta (verde claro), lo demás neutro. */
+/** The avatar background follows the reason: signal (light orange), consultation (light green), the rest neutral. */
 @Composable
 private fun RosterAttention?.avatarColor(): Color {
     val scheme = MaterialTheme.colorScheme
@@ -405,7 +405,7 @@ private val previewPatients = listOf(
     previewPatient(6, "Rosa Vega"),
 )
 
-@Preview(name = "PR1 · Mis pacientes (agrupada por acción)", widthDp = 360, heightDp = 800)
+@Preview(name = "My patients (grouped by action)", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientRosterPreview() {
     HealthifyTheme {
@@ -413,7 +413,7 @@ private fun PatientRosterPreview() {
     }
 }
 
-@Preview(name = "PR1 · «Al día» desplegada", widthDp = 360, heightDp = 800)
+@Preview(name = "My patients - up to date expanded", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientRosterExpandedPreview() {
     HealthifyTheme {
@@ -424,7 +424,7 @@ private fun PatientRosterExpandedPreview() {
     }
 }
 
-@Preview(name = "PR1 · Todos al día", widthDp = 360, heightDp = 800)
+@Preview(name = "My patients - all up to date", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientRosterAllUpToDatePreview() {
     HealthifyTheme {
@@ -435,7 +435,7 @@ private fun PatientRosterAllUpToDatePreview() {
     }
 }
 
-@Preview(name = "PR1 · Sin resultados de búsqueda", widthDp = 360, heightDp = 800)
+@Preview(name = "My patients - no search results", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientRosterNoResultsPreview() {
     HealthifyTheme {
@@ -446,13 +446,13 @@ private fun PatientRosterNoResultsPreview() {
     }
 }
 
-@Preview(name = "PR1.L · Cargando", widthDp = 360, heightDp = 800)
+@Preview(name = "My patients - loading", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientRosterLoadingPreview() {
     HealthifyTheme { PatientRosterContent(state = PatientRosterUiState(), actions = PatientRosterActions()) }
 }
 
-@Preview(name = "PR1.V · Sin pacientes", widthDp = 360, heightDp = 800)
+@Preview(name = "My patients - no patients", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientRosterEmptyPreview() {
     HealthifyTheme {
@@ -460,7 +460,7 @@ private fun PatientRosterEmptyPreview() {
     }
 }
 
-@Preview(name = "PR1.O · Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "My patients - offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientRosterOfflinePreview() {
     HealthifyTheme {
@@ -471,7 +471,7 @@ private fun PatientRosterOfflinePreview() {
     }
 }
 
-@Preview(name = "PR1 · Error", widthDp = 360, heightDp = 800)
+@Preview(name = "My patients - error", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientRosterErrorPreview() {
     HealthifyTheme {

@@ -17,14 +17,14 @@ fun CareLinkDto.toDomain(): CareLink = CareLink(
     id = CareLinkId(careLinkId),
     patientId = PatientId(patientId),
     isActive = isActive,
-    // Un vínculo activo siempre tiene consentimiento, aunque la respuesta no traiga el campo.
+    // An active care link always has consent, even if the response omits the field.
     hasConsent = hasConsent || isActive,
     aiProcessingGranted = aiProcessingGranted,
     isRevoked = revokedAt != null,
     isDischarged = dischargedAt != null,
 )
 
-/** Activo → [PatientLinkStatus.ACTIVE]; abierto sin consentimiento → pendiente; revocado o dado de alta → sin vínculo. */
+/** Active → [PatientLinkStatus.ACTIVE]; open without consent → pending; revoked or discharged → no care link. */
 fun CareLinkDto.toPatientLinkStatus(): PatientLinkStatus = toDomain().patientStatus
 
 fun InvitationToken.toRedeemDto(replaceActiveLink: Boolean) =
@@ -35,7 +35,7 @@ fun ConsentScope.toGrantDto(aiProcessingGranted: Boolean) =
 
 fun TargetsReadStatusDto.toDomain(): TargetsReadStatus = TargetsReadStatus(
     careLinkId = CareLinkId(careLinkId),
-    // Una versión no positiva no es una versión: se lee como «nada pendiente».
+    // A non-positive version is not a version: read it as "nothing pending".
     pendingVersion = pendingTargetsVersion?.takeIf { it > 0 },
     lastAcknowledgedVersion = lastAcknowledgedVersion?.takeIf { it > 0 },
     hasPendingAcknowledgement = hasPendingAcknowledgement,

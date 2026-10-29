@@ -41,10 +41,10 @@ import pe.edu.upc.healthify.features.carerelationship.presentation.state.Withdra
 import pe.edu.upc.healthify.features.carerelationship.presentation.state.WithdrawConsentUiState
 import pe.edu.upc.healthify.features.carerelationship.presentation.viewmodel.WithdrawConsentViewModel
 
-// Medidas del frame «PT23 · Retirar consentimiento»: ícono de advertencia de 54 × 51 dp.
+// Measurements from the withdraw consent frame: 54 × 51 dp warning icon.
 private val WarningIconSize = 52.dp
 
-/** Acciones de PT23 que la pantalla con estado conecta con el ViewModel. */
+/** Withdraw screen actions that the stateful screen wires to the ViewModel. */
 data class WithdrawConsentActions(
     val onBack: () -> Unit = {},
     val onWithdraw: () -> Unit = {},
@@ -55,7 +55,7 @@ data class WithdrawConsentActions(
     val onServerErrorDismiss: () -> Unit = {},
 )
 
-/** PT23 · Retirar consentimiento (+ PT23.M confirmación final). */
+/** Withdraw consent (plus the final confirmation). */
 @Composable
 fun WithdrawConsentScreen(
     onBack: () -> Unit,
@@ -142,7 +142,7 @@ fun WithdrawConsentContent(
                 HealthifyButton(
                     text = stringResource(R.string.withdraw_consent_action),
                     onClick = actions.onWithdraw,
-                    // Nota PT23 «Sin conexión: botón deshabilitado».
+                    // Design note: offline, the button is disabled.
                     enabled = !state.isOffline,
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -157,7 +157,7 @@ fun WithdrawConsentContent(
     }
 
     when {
-        // PT23.M · confirmación final; «Retirando…» en el botón mientras se envía.
+        // Final confirmation; "Withdrawing…" on the button while it is sent.
         state.showConfirmDialog -> HealthifyDialog(
             title = stringResource(R.string.withdraw_consent_dialog_title),
             text = stringResource(R.string.withdraw_consent_dialog_body),
@@ -184,13 +184,13 @@ fun WithdrawConsentContent(
     }
 }
 
-@Preview(name = "PT23 · Retirar consentimiento", widthDp = 360, heightDp = 800)
+@Preview(name = "Withdraw consent", widthDp = 360, heightDp = 800)
 @Composable
 private fun WithdrawConsentPreview() {
     HealthifyTheme { WithdrawConsentContent(state = WithdrawConsentUiState(), actions = WithdrawConsentActions()) }
 }
 
-@Preview(name = "PT23.M · Retirar consentimiento — confirmación final", widthDp = 360, heightDp = 800)
+@Preview(name = "Withdraw consent - final confirmation", widthDp = 360, heightDp = 800)
 @Composable
 private fun WithdrawConsentConfirmPreview() {
     HealthifyTheme {
@@ -201,7 +201,7 @@ private fun WithdrawConsentConfirmPreview() {
     }
 }
 
-@Preview(name = "PT23.M · Retirando… (carga)", widthDp = 360, heightDp = 800)
+@Preview(name = "Withdraw consent - withdrawing (loading)", widthDp = 360, heightDp = 800)
 @Composable
 private fun WithdrawConsentLoadingPreview() {
     HealthifyTheme {
@@ -212,7 +212,7 @@ private fun WithdrawConsentLoadingPreview() {
     }
 }
 
-@Preview(name = "PT23 · Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Withdraw consent - offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun WithdrawConsentOfflinePreview() {
     HealthifyTheme {
@@ -220,7 +220,7 @@ private fun WithdrawConsentOfflinePreview() {
     }
 }
 
-@Preview(name = "PT23 · Consentimiento ya no vigente", widthDp = 360, heightDp = 800)
+@Preview(name = "Withdraw consent - consent no longer current", widthDp = 360, heightDp = 800)
 @Composable
 private fun WithdrawConsentInactivePreview() {
     HealthifyTheme {

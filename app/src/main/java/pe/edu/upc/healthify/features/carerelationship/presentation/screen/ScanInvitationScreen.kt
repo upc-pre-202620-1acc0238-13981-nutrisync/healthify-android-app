@@ -67,13 +67,13 @@ import pe.edu.upc.healthify.features.carerelationship.presentation.state.ScanInv
 import pe.edu.upc.healthify.features.carerelationship.presentation.state.ScanInvitationUiState
 import pe.edu.upc.healthify.features.carerelationship.presentation.viewmodel.ScanInvitationViewModel
 
-// Medidas del frame «PT1 · Escanear invitación».
+// Measurements from the scan invitation frame.
 private val ViewfinderSize = 296.dp
 private val ViewfinderTopSpacing = 132.dp
 private val ProgressSize = 16.dp
 private val ProgressStroke = 2.dp
 
-/** Acciones de PT1 que la pantalla con estado conecta con el ViewModel y el sistema. */
+/** Scan screen actions that the stateful screen wires to the ViewModel and the system. */
 data class ScanInvitationActions(
     val onBack: () -> Unit = {},
     val onNoCamera: () -> Unit = {},
@@ -85,10 +85,10 @@ data class ScanInvitationActions(
 )
 
 /**
- * PT1 · Escanear invitación (+ PT1.M permiso de cámara).
+ * Scan invitation (plus the camera permission prompt).
  *
- * @param onBack `null` cuando PT1 es la primera pantalla (desde S5 o PT24): «atrás» ofrece cerrar sesión.
- * @param onExitApp «Salir» de PT1.M sin pantalla anterior.
+ * @param onBack `null` when this is the first screen (entry routing or after withdrawal): "back" offers to sign out.
+ * @param onExitApp "Exit" on the camera permission prompt when there is no previous screen.
  */
 @Composable
 fun ScanInvitationScreen(
@@ -112,7 +112,7 @@ fun ScanInvitationScreen(
     val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
         viewModel.onCameraPermissionResult(it)
     }
-    // Al volver de los ajustes del teléfono (PT1.M → «Abrir ajustes») se revisa otra vez el permiso.
+    // On returning from the phone's settings ("Open settings" on the permission prompt), check the permission again.
     LifecycleResumeEffect(Unit) {
         if (context.hasCameraPermission()) {
             viewModel.onCameraPermissionResult(true)
@@ -148,7 +148,7 @@ fun ScanInvitationScreen(
     )
 }
 
-/** @param cameraPreview vista de cámara (solo con permiso); las previews no la usan. */
+/** @param cameraPreview camera view (only with permission); previews do not use it. */
 @Composable
 fun ScanInvitationContent(
     state: ScanInvitationUiState,
@@ -198,7 +198,7 @@ fun ScanInvitationContent(
             text = stringResource(R.string.scan_invitation_no_camera),
             onClick = actions.onNoCamera,
             style = HealthifyButtonStyle.Text,
-            // Nota PT1 «Sin conexión: banner + botón inactivo».
+            // Design note: offline, banner plus inactive button.
             enabled = !state.isOffline && !state.isRedeeming,
             contentColor = scheme.inversePrimary,
             modifier = Modifier
@@ -229,7 +229,7 @@ private fun Viewfinder(showCamera: Boolean, cameraPreview: @Composable () -> Uni
     }
 }
 
-/** Bajo el visor: la pista, «Buscando el código…» o el mensaje de la última lectura rechazada. */
+/** Below the viewfinder: the hint, "Looking for the code…" or the message of the last rejected scan. */
 @Composable
 private fun ScanStatus(state: ScanInvitationUiState, modifier: Modifier = Modifier) {
     val dimens = HealthifyTheme.dimens
@@ -286,7 +286,7 @@ private fun ScanStatus(state: ScanInvitationUiState, modifier: Modifier = Modifi
 @Composable
 private fun ScanInvitationDialogs(state: ScanInvitationUiState, actions: ScanInvitationActions) {
     when {
-        // PT1.M · permiso de cámara denegado.
+        // Camera permission denied.
         state.cameraPermission == CameraPermissionState.Denied -> HealthifyDialog(
             title = stringResource(R.string.camera_permission_title),
             text = stringResource(R.string.camera_permission_body),
@@ -324,7 +324,7 @@ private fun Context.openAppSettings() {
     )
 }
 
-@Preview(name = "PT1 · Escanear invitación", widthDp = 360, heightDp = 800)
+@Preview(name = "Scan invitation", widthDp = 360, heightDp = 800)
 @Composable
 private fun ScanInvitationPreview() {
     HealthifyTheme {
@@ -335,7 +335,7 @@ private fun ScanInvitationPreview() {
     }
 }
 
-@Preview(name = "PT1.M · Escanear — permiso de cámara", widthDp = 360, heightDp = 800)
+@Preview(name = "Scan invitation - camera permission", widthDp = 360, heightDp = 800)
 @Composable
 private fun ScanInvitationPermissionPreview() {
     HealthifyTheme {
@@ -346,7 +346,7 @@ private fun ScanInvitationPermissionPreview() {
     }
 }
 
-@Preview(name = "PT1 · Buscando el código (carga)", widthDp = 360, heightDp = 800)
+@Preview(name = "Scan invitation - looking for the code (loading)", widthDp = 360, heightDp = 800)
 @Composable
 private fun ScanInvitationLoadingPreview() {
     HealthifyTheme {
@@ -357,7 +357,7 @@ private fun ScanInvitationLoadingPreview() {
     }
 }
 
-@Preview(name = "PT1 · Código vencido (error)", widthDp = 360, heightDp = 800)
+@Preview(name = "Scan invitation - expired code (error)", widthDp = 360, heightDp = 800)
 @Composable
 private fun ScanInvitationErrorPreview() {
     HealthifyTheme {
@@ -371,7 +371,7 @@ private fun ScanInvitationErrorPreview() {
     }
 }
 
-@Preview(name = "PT1 · Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Scan invitation - offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun ScanInvitationOfflinePreview() {
     HealthifyTheme {

@@ -2,7 +2,7 @@ package pe.edu.upc.healthify.features.carerelationship.infrastructure.remote.dto
 
 import kotlinx.serialization.Serializable
 
-/** `TargetsReadStatusResource` (F12, CR-3). */
+/** `TargetsReadStatusResource`. */
 @Serializable
 data class TargetsReadStatusDto(
     val careLinkId: Long,
@@ -13,7 +13,7 @@ data class TargetsReadStatusDto(
     val lastAcknowledgedAt: String? = null,
 )
 
-/** `AcknowledgeActiveTargetsResource(PlanVersion)` (F12). */
+/** `AcknowledgeActiveTargetsResource(PlanVersion)`. */
 @Serializable
 data class AcknowledgeActiveTargetsRequestDto(
     val planVersion: Int,

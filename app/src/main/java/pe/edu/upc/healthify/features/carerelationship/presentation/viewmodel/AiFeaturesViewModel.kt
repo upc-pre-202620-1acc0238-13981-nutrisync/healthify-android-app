@@ -25,14 +25,14 @@ import pe.edu.upc.healthify.features.iam.application.usecase.ObserveCurrentUserU
 import javax.inject.Inject
 
 sealed interface AiFeaturesEvent {
-    /** Snackbar: el cambio no se guardó (sin red o error del servidor); el interruptor vuelve a como estaba. */
+    /** Snackbar: the change was not saved (offline or server error); the switch goes back to how it was. */
     data class ShowSaveFailed(val offline: Boolean) : AiFeaturesEvent
 }
 
 /**
- * PT21.IA: el paciente decide qué funciones con IA usa. Encender una sin el consentimiento de IA (CR-2) ofrece
- * activarlo primero; al aceptarlo se otorga (`PUT /care-links/{id}/ai-processing-consent`) y luego se enciende la
- * función. Apagar nunca pide nada más: no cambia el plan ni los registros.
+ * The patient decides which AI features to use. Turning one on without AI consent offers to grant it
+ * first; once accepted, consent is granted (`PUT /care-links/{id}/ai-processing-consent`) and then the feature is
+ * turned on. Turning one off never asks for anything else: it changes neither the plan nor the logs.
  */
 @HiltViewModel
 class AiFeaturesViewModel @Inject constructor(
@@ -77,7 +77,7 @@ class AiFeaturesViewModel @Inject constructor(
         save(pid, feature, enabled)
     }
 
-    /** «Activar funciones con IA» de la card sin consentimiento. */
+    /** "Turn on AI features" from the no-consent card. */
     fun onActivateConsent() {
         if (!_state.value.canChange) return
         _state.update { it.copy(consentOffer = ConsentOffer(feature = null)) }
@@ -107,7 +107,7 @@ class AiFeaturesViewModel @Inject constructor(
 
     private fun save(pid: Long, feature: AiFeature, enabled: Boolean) {
         val before = _state.value.preferences
-        // Optimista: el interruptor cambia al tocarlo y vuelve si el backend no lo acepta.
+        // Optimistic: the switch flips on tap and reverts if the backend rejects it.
         _state.update { it.copy(savingFeature = feature, preferences = before.with(feature, enabled)) }
         viewModelScope.launch {
             val result = changeAiFeature(pid, before, feature, enabled)
@@ -119,7 +119,7 @@ class AiFeaturesViewModel @Inject constructor(
             val error = result.domainErrorOrNull()
             _state.update { it.copy(savingFeature = null, preferences = before) }
             if (error is DomainError.Conflict && error.code == ChangeAiFeatureUseCase.CODE_CONSENT_REQUIRED) {
-                // El consentimiento se retiró en otro lado: se ofrece activarlo otra vez.
+                // Consent was withdrawn elsewhere: offer to grant it again.
                 _state.update { it.copy(preferences = before.copy(consentGranted = false), consentOffer = ConsentOffer(feature)) }
             } else {
                 _events.send(AiFeaturesEvent.ShowSaveFailed(offline = error == DomainError.Network))

@@ -10,7 +10,7 @@ import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.Invitat
 import pe.edu.upc.healthify.features.carerelationship.infrastructure.remote.dto.InvitationDto
 import pe.edu.upc.healthify.features.carerelationship.infrastructure.remote.dto.PatientRosterItemDto
 
-/** Un paciente sin nombre legible o sin fecha de vínculo se omite: el resto de la cartera se muestra igual. */
+/** A patient without a readable name or link date is skipped: the rest of the roster still shows. */
 fun List<PatientRosterItemDto>.toRoster(): PatientRoster = PatientRoster(
     mapNotNull { dto ->
         val since = dto.linkedSince.toInstantOrNull() ?: return@mapNotNull null
@@ -31,7 +31,7 @@ fun List<PatientRosterItemDto>.toRoster(): PatientRoster = PatientRoster(
     },
 )
 
-/** Sin un token con la forma de una invitación, la respuesta no sirve para el QR. */
+/** Without a token shaped like an invitation, the response is useless for the QR code. */
 fun InvitationDto.toDomain(): IssuedInvitation = IssuedInvitation(
     invitationId = invitationId,
     token = token?.let(InvitationToken::parse) ?: throw SerializationException("Invitation without a usable token"),

@@ -2,7 +2,7 @@ package pe.edu.upc.healthify.features.carerelationship.infrastructure.remote.dto
 
 import kotlinx.serialization.Serializable
 
-/** `PatientRosterItemResource` (RM-1). */
+/** `PatientRosterItemResource`. */
 @Serializable
 data class PatientRosterItemDto(
     val patientId: Long,
@@ -18,11 +18,11 @@ data class PatientRosterItemDto(
     val hasOpenReviewItem: Boolean = false,
 )
 
-/** `IssueInvitationResource(ExpiresAt)` (F4). */
+/** `IssueInvitationResource(ExpiresAt)`. */
 @Serializable
 data class IssueInvitationRequestDto(val expiresAt: String)
 
-/** `InvitationResource` (F4): `token` solo viene en la respuesta del `POST`. */
+/** `InvitationResource`: `token` only comes in the `POST` response. */
 @Serializable
 data class InvitationDto(
     val invitationId: Long,
@@ -30,6 +30,6 @@ data class InvitationDto(
     val expiresAt: String,
 )
 
-/** `DischargePatientResource` (F29). */
+/** `DischargePatientResource`. */
 @Serializable
 data class DischargePatientRequestDto(val clinicalReason: String)

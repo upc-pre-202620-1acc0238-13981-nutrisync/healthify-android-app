@@ -3,17 +3,17 @@ package pe.edu.upc.healthify.features.carerelationship.presentation.state
 import androidx.annotation.StringRes
 import pe.edu.upc.healthify.R
 
-/** Adónde lleva el botón del aviso de un error de PT2. */
+/** Where the button of a consent error notice leads. */
 enum class ConsentErrorAction { Dismiss, GoHome, ScanInvitation }
 
-/** Validaciones de PT2 (frame «Notas») por `extensions.code` de F6. */
+/** Consent screen validations (design "Notes" frame) by the consent request's `extensions.code`. */
 enum class ConsentError(
     @param:StringRes val titleRes: Int,
     @param:StringRes val messageRes: Int,
     @param:StringRes val actionRes: Int,
     val action: ConsentErrorAction,
 ) {
-    /** `ConsentScopeRequired` (400). No debería ocurrir: el alcance es fijo (`ConsentScope.CURRENT`). */
+    /** `ConsentScopeRequired` (400). Should not happen: the scope is fixed (`ConsentScope.CURRENT`). */
     ScopeRequired(
         R.string.consent_error_scope_title,
         R.string.consent_error_scope,
@@ -37,7 +37,7 @@ enum class ConsentError(
         ConsentErrorAction.ScanInvitation,
     ),
 
-    /** `ConsentAlreadyGranted` (409): el vínculo ya está activo. */
+    /** `ConsentAlreadyGranted` (409): the care link is already active. */
     AlreadyGranted(
         R.string.consent_error_already_title,
         R.string.consent_error_already_granted,
@@ -47,12 +47,12 @@ enum class ConsentError(
 }
 
 /**
- * PT2 · Consentimiento y alcance.
+ * Consent and scope.
  *
- * @param aiProcessingGranted interruptor «Usar funciones con IA» (CR-2). DECISIÓN PT2: empieza **apagado** aunque el
- *   frame lo dibuje encendido; la IA es un consentimiento aparte y debe ser un acto explícito del paciente (Ley 29733;
- *   el backend también asume `false` si falta).
- * @param showServerError «Vínculo no existe → error servidor» y fallas de red/5xx: diálogo Reintentar/Cerrar.
+ * @param aiProcessingGranted the "Use AI features" switch. It starts **off** even though the
+ *   design draws it on; AI is a separate consent and must be an explicit act by the patient (Ley 29733;
+ *   the backend also assumes `false` if missing).
+ * @param showServerError "Care link does not exist → server error" and network/5xx failures: Retry/Close dialog.
  */
 data class ConsentUiState(
     val aiProcessingGranted: Boolean = false,

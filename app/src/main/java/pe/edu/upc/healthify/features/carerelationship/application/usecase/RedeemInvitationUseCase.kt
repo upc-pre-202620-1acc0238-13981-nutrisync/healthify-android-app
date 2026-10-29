@@ -9,10 +9,10 @@ import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.Patient
 import javax.inject.Inject
 
 /**
- * PT1 · Canjear la invitación leída del QR (F5). El vínculo nace sin consentimiento: se recuerda en el dispositivo
- * para que S5 lleve a PT2.1 si el paciente sale antes de consentir.
+ * Redeems the invitation read from the QR code. The care link starts without consent: the device remembers it
+ * so the app returns to the pending consent screen if the patient leaves before consenting.
  *
- * @param replaceActiveLink `true` **solo** cuando el paciente confirmó PT21.V (CR-1).
+ * @param replaceActiveLink `true` **only** when the patient confirmed switching nutritionists.
  */
 class RedeemInvitationUseCase @Inject constructor(
     private val careLinkRepository: CareLinkRepository,
@@ -31,7 +31,7 @@ class RedeemInvitationUseCase @Inject constructor(
     }
 
     companion object {
-        /** Mismo código que el backend (F5 caso 1): la UI muestra un solo mensaje para ambos orígenes. */
+        /** Same code as the backend: the UI shows a single message for both sources. */
         const val CODE_INVITATION_NOT_VALID = "InvitationNotValid"
     }
 }

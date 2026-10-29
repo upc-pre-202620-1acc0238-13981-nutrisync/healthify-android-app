@@ -10,7 +10,7 @@ import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.Patient
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/** Lo que el dispositivo recuerda del vínculo de cada paciente que entró en él. */
+/** What the device remembers about the care link of each patient who signed in on it. */
 interface CareLinkLocalDataSource {
     suspend fun lastKnownStatus(patientId: Long): PatientLinkStatus?
     suspend fun saveStatus(patientId: Long, status: PatientLinkStatus)
@@ -20,8 +20,8 @@ interface CareLinkLocalDataSource {
 }
 
 /**
- * DataStore propio de CareRelationship. Guarda solo ids y el estado del vínculo (nada clínico); el backup está
- * deshabilitado para toda la app.
+ * CareRelationship's own DataStore. It stores only ids and the care link state (nothing clinical); backup is
+ * disabled for the whole app.
  */
 @Singleton
 class DataStoreCareLinkLocalDataSource @Inject constructor(

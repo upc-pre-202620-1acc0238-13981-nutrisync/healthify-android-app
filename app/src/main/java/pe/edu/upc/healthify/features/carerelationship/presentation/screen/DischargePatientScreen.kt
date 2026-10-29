@@ -54,7 +54,7 @@ data class DischargePatientActions(
     val onDialogDismissed: () -> Unit = {},
 )
 
-/** PR18 · Alta clínica (pantalla oscura del frame) + PR18.M confirmación. */
+/** Clinical discharge (the design's dark screen) plus its confirmation. */
 @Composable
 fun DischargePatientScreen(
     onBack: () -> Unit,
@@ -131,7 +131,7 @@ fun DischargePatientContent(state: DischargePatientUiState, actions: DischargePa
                     style = MaterialTheme.typography.bodyMedium,
                     color = scheme.inverseOnSurface,
                 )
-                // Texto clínico del profesional: se guarda tal cual (nunca se traduce).
+                // The practitioner's clinical text: saved as is (never translated).
                 HealthifyTextField(
                     value = state.reason,
                     onValueChange = actions.onReasonChange,
@@ -192,13 +192,13 @@ fun DischargePatientContent(state: DischargePatientUiState, actions: DischargePa
     }
 }
 
-@Preview(name = "PR18 · Alta clínica", widthDp = 360, heightDp = 800)
+@Preview(name = "Clinical discharge", widthDp = 360, heightDp = 800)
 @Composable
 private fun DischargePatientPreview() {
     HealthifyTheme { DischargePatientContent(state = DischargePatientUiState(), actions = DischargePatientActions()) }
 }
 
-@Preview(name = "PR18 · Falta motivo", widthDp = 360, heightDp = 800)
+@Preview(name = "Clinical discharge - missing reason", widthDp = 360, heightDp = 800)
 @Composable
 private fun DischargePatientMissingReasonPreview() {
     HealthifyTheme {
@@ -206,7 +206,7 @@ private fun DischargePatientMissingReasonPreview() {
     }
 }
 
-@Preview(name = "PR18.M · Confirmación", widthDp = 360, heightDp = 800)
+@Preview(name = "Clinical discharge - confirmation", widthDp = 360, heightDp = 800)
 @Composable
 private fun DischargePatientConfirmPreview() {
     HealthifyTheme {
@@ -217,7 +217,7 @@ private fun DischargePatientConfirmPreview() {
     }
 }
 
-@Preview(name = "PR18 · Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Clinical discharge - offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun DischargePatientOfflinePreview() {
     HealthifyTheme {

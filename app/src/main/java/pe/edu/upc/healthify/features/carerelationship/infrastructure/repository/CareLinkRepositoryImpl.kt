@@ -22,12 +22,12 @@ import pe.edu.upc.healthify.features.carerelationship.infrastructure.remote.dto.
 import javax.inject.Inject
 
 /**
- * DECISIÓN S5/PT2.1: `GET /patients/{pid}/care-links/active` solo devuelve vínculos con consentimiento, y el backend
- * no expone el vínculo pendiente por paciente. El pendiente se detecta con el `careLinkId` que PT1 recuerda al
- * canjear la invitación y `GET /care-links/{careLinkId}`. Si el dispositivo no lo recuerda (reinstalación, otro
- * teléfono), el paciente va a PT1. Pendiente del backend: una lectura del vínculo sin cerrar del paciente.
+ * `GET /patients/{pid}/care-links/active` only returns consented care links, and the backend does not expose a
+ * patient's pending care link. The pending one is found with the `careLinkId` remembered when the invitation is
+ * redeemed plus `GET /care-links/{careLinkId}`. If the device does not remember it (reinstall, another
+ * phone), the patient goes back to scanning. Still needed from the backend: a read of the patient's open care link.
  *
- * Cada escritura deja el estado local del vínculo al día, para que S5 decida bien también sin conexión.
+ * Each write keeps the local care link state current, so entry routing also decides correctly offline.
  */
 class CareLinkRepositoryImpl @Inject constructor(
     private val service: CareLinkService,
@@ -70,7 +70,7 @@ class CareLinkRepositoryImpl @Inject constructor(
         val error = result.domainErrorOrNull()
         when {
             error == null -> saveStatus(patientId.value, result.getOrThrow().patientStatus)
-            // F6 casos 3–5: el vínculo ya estaba activo o ya se cerró; deja de estar pendiente en el dispositivo.
+            // The care link was already active or already closed; it is no longer pending on the device.
             error is DomainError.Conflict && error.code == CODE_CONSENT_ALREADY_GRANTED ->
                 saveStatus(patientId.value, PatientLinkStatus.ACTIVE)
             error is DomainError.Conflict && error.code in CLOSED_LINK_CODES ->
@@ -105,19 +105,19 @@ class CareLinkRepositoryImpl @Inject constructor(
         local.saveStatus(patientId, status)
     }
 
-    /** Sin vínculo con consentimiento: ¿hay uno recién canjeado esperando el consentimiento? */
+    /** No consented care link: is there a newly redeemed one waiting for consent? */
     private suspend fun pendingStatus(patientId: Long): Result<PatientLinkStatus> {
         val careLinkId = local.pendingCareLinkId(patientId) ?: return Result.success(PatientLinkStatus.NO_LINK)
         val link = apiCall { service.getCareLink(careLinkId) }
         return when (link.domainErrorOrNull()) {
             null -> link.map { it.toPatientLinkStatus() }
-            // El vínculo ya no existe o no es de este paciente.
+            // The care link no longer exists or does not belong to this patient.
             is DomainError.NotFound, is DomainError.Forbidden -> Result.success(PatientLinkStatus.NO_LINK)
             else -> link.map { it.toPatientLinkStatus() }
         }
     }
 
-    /** Sin conexión vale el último estado conocido; cualquier otro error se propaga. */
+    /** Offline, the last known state counts; any other error propagates. */
     private suspend fun offlineFallback(patientId: Long, failure: Throwable): Result<PatientLinkStatus> {
         val result = Result.failure<PatientLinkStatus>(failure)
         if (result.domainErrorOrNull() != DomainError.Network) return result

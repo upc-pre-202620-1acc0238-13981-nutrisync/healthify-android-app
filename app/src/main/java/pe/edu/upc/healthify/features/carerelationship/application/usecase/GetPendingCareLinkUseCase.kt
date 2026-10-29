@@ -5,7 +5,7 @@ import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.CareLin
 import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.PatientId
 import javax.inject.Inject
 
-/** PT2.1 · El vínculo que espera el consentimiento (el que PT1 recordó al canjear), o `null`. */
+/** The care link waiting for consent (the one remembered when the invitation was redeemed), or `null`. */
 class GetPendingCareLinkUseCase @Inject constructor(
     private val careLinkRepository: CareLinkRepository,
 ) {

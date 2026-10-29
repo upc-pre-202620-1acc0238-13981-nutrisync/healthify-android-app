@@ -5,10 +5,10 @@ import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.Patient
 import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.PatientLinkStatus
 
 /**
- * Vínculo asistencial entre un paciente y su nutricionista (`CareLinkResource`). Nace inactivo al canjear la
- * invitación (F5) y solo el consentimiento lo activa (F6). Revocado o dado de alta, queda cerrado para siempre.
+ * Care link between a patient and their nutritionist (`CareLinkResource`). It starts inactive when the invitation
+ * is redeemed and only consent activates it. Once revoked or discharged, it stays closed for good.
  *
- * @param aiProcessingGranted el paciente aceptó las funciones con IA (CR-2); se decide aparte del consentimiento.
+ * @param aiProcessingGranted the patient accepted the AI features; decided separately from consent.
  */
 data class CareLink(
     val id: CareLinkId,
@@ -27,7 +27,7 @@ data class CareLink(
 
     val isClosed: Boolean get() = isRevoked || isDischarged
 
-    /** Adónde lleva este vínculo al paciente: activo → PT3, abierto sin consentimiento → PT2.1, cerrado → PT1. */
+    /** Where this link takes the patient: active → home, unconsented → pending consent, closed → scan invitation. */
     val patientStatus: PatientLinkStatus
         get() = when {
             isActive -> PatientLinkStatus.ACTIVE

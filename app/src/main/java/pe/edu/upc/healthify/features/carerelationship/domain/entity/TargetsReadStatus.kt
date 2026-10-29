@@ -4,10 +4,10 @@ import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.CareLin
 import java.time.Instant
 
 /**
- * `TargetsReadStatusResource` (F12, CR-3): si el paciente **vio** las metas publicadas. No dice nada de si las
- * sigue. La marca vive en el vínculo, no en el plan.
+ * `TargetsReadStatusResource`: whether the patient **saw** the published targets. It says nothing about whether
+ * they follow them. The mark lives on the care link, not on the plan.
  *
- * @param pendingVersion versión publicada que espera el acuse («Tus metas cambiaron (versión 4)»), o `null`.
+ * @param pendingVersion published version awaiting acknowledgement ("Your targets changed (version 4)"), or `null`.
  */
 data class TargetsReadStatus(
     val careLinkId: CareLinkId,
@@ -21,6 +21,6 @@ data class TargetsReadStatus(
         require(lastAcknowledgedVersion == null || lastAcknowledgedVersion > 0) { "Plan versions are positive" }
     }
 
-    /** La versión que el paciente todavía no revisó (PT3.M), o `null` si no hay nada pendiente. */
+    /** The version the patient has not reviewed yet, or `null` if nothing is pending. */
     val versionAwaitingReview: Int? get() = pendingVersion?.takeIf { hasPendingAcknowledgement }
 }

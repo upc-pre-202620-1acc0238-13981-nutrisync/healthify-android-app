@@ -7,10 +7,10 @@ import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.Patient
 import javax.inject.Inject
 
 /**
- * PT4 «Ya las revisé» (F12): acusa recibo de [planVersion] en el vínculo activo. Acusar no cambia el plan.
+ * "I've reviewed them": acknowledges [planVersion] on the active care link. Acknowledging does not change the plan.
  *
- * `422 NoPendingTargetsVersion` (ya no había nada pendiente, p. ej. otro dispositivo ya acusó) se trata como éxito:
- * el resultado que el paciente buscaba ya está.
+ * `422 NoPendingTargetsVersion` (nothing was pending, e.g. another device already acknowledged) counts as success:
+ * the patient already has the outcome they wanted.
  */
 class AcknowledgeActiveTargetsUseCase @Inject constructor(
     private val careLinkRepository: CareLinkRepository,

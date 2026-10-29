@@ -1,9 +1,9 @@
 package pe.edu.upc.healthify.features.carerelationship.domain.valueobject
 
 /**
- * Alcance del consentimiento informado (`GrantConsentResource.Scope`, F6). PT2 no ofrece nada para elegir: el paciente
- * acepta un texto fijo, así que la app manda un literal **versionado** que dice qué texto aceptó (CR-5, Ley 29733).
- * Vacío → `ConsentScopeRequired`; se valida aquí para que nunca llegue al backend.
+ * Scope of informed consent (`GrantConsentResource.Scope`). The consent screen offers nothing to choose: the patient
+ * accepts a fixed text, so the app sends a **versioned** literal that says which text they accepted (Ley 29733).
+ * Blank → `ConsentScopeRequired`; it is validated here so it never reaches the backend.
  */
 @JvmInline
 value class ConsentScope(val value: String) {
@@ -16,9 +16,9 @@ value class ConsentScope(val value: String) {
         private const val VERSION_PREFIX = "consent-v"
 
         /**
-         * DECISIÓN PT2/CR-5: literal recomendado por el backend para el texto vigente de PT2 (qué compartes, qué
-         * puede hacer tu nutricionista, derechos y privacidad). Si cambia el texto de PT2, se sube la versión.
-         * La IA es una decisión aparte (`aiProcessingGranted`, CR-2), no forma parte del alcance.
+         * Literal the backend recommends for the current consent text (what you share, what your nutritionist
+         * can do, rights and privacy). If that text changes, bump the version.
+         * AI is a separate decision (`aiProcessingGranted`), not part of the scope.
          */
         val CURRENT = ConsentScope("consent-v2@2026-10: diary,self-weigh-ins,active-targets")
     }

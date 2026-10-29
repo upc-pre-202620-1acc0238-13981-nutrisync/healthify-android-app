@@ -22,7 +22,7 @@ import pe.edu.upc.healthify.features.iam.application.usecase.ObserveCurrentUserU
 import javax.inject.Inject
 
 /**
- * PT23 · Retirar consentimiento (F28) con la confirmación final PT23.M. Nunca pide una razón
+ * Withdraw consent with the final confirmation. Never asks for a reason
  * (*Consent Always Revocable · No Justification Required*).
  */
 @HiltViewModel
@@ -44,7 +44,7 @@ class WithdrawConsentViewModel @Inject constructor(
         }
     }
 
-    /** «Retirar mi consentimiento» → PT23.M. */
+    /** "Withdraw my consent" → final confirmation. */
     fun onWithdrawClick() {
         if (_state.value.isOffline) return
         _state.update { it.copy(showConfirmDialog = true) }
@@ -55,7 +55,7 @@ class WithdrawConsentViewModel @Inject constructor(
         _state.update { it.copy(showConfirmDialog = false) }
     }
 
-    /** «Sí, retirar». */
+    /** "Yes, withdraw". */
     fun onConfirmWithdraw() {
         val current = _state.value
         if (current.isWithdrawing || current.isOffline) return
@@ -77,7 +77,7 @@ class WithdrawConsentViewModel @Inject constructor(
         }
     }
 
-    /** «Tu consentimiento ya no está vigente.» → PT24 igual (nota de PT23). */
+    /** "Your consent is no longer current." → still goes to the withdrawn screen (design note). */
     fun onNoActiveConsentAcknowledged() {
         _state.update { it.copy(showNoActiveConsent = false) }
         viewModelScope.launch { _events.send(WithdrawConsentEvent.NavigateToWithdrawn) }
