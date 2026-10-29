@@ -44,3 +44,18 @@ data class PlanChangeDto(
     val from: Double? = null,
     val to: Double? = null,
 )
+
+/** `DailyIntakeResource` (IN-9, `GET /patients/{pid}/daily-intake?date=`): lo registrado hoy y lo que queda. */
+@Serializable
+data class DailyIntakeDto(
+    val date: String,
+    val energyKcal: Double,
+    val proteinG: Double,
+    val carbG: Double,
+    val fatG: Double,
+    val entryCount: Int = 0,
+    val remainingEnergyKcal: Double,
+    val remainingProteinG: Double,
+    val remainingCarbG: Double,
+    val remainingFatG: Double,
+)
