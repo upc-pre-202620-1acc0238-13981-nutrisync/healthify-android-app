@@ -805,7 +805,6 @@
     <!-- PR1 · My roster -->
     <string name="roster_title">MY PATIENTS</string>
     <string name="roster_invite">Invite patient</string>
-    <string name="roster_linked_since">In your roster since %1$s</string>
     <string name="roster_empty_title">No patients yet</string>
     <string name="roster_empty_body">Invite your first patient by generating a QR code during the consultation.</string>
     <string name="roster_offline_title">You need a connection</string>

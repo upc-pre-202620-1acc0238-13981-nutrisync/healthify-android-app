@@ -835,7 +835,6 @@
     <!-- PR1 · Mi cartera -->
     <string name="roster_title">MIS PACIENTES</string>
     <string name="roster_invite">Invitar paciente</string>
-    <string name="roster_linked_since">En tu cartera desde el %1$s</string>
     <string name="roster_empty_title">Sin pacientes aún</string>
     <string name="roster_empty_body">Invita a tu primer paciente generando un código QR durante la consulta.</string>
     <string name="roster_offline_title">Necesitas conexión</string>

@@ -21,7 +21,8 @@ import javax.inject.Inject
 
 /**
  * PR1 · Mi cartera (+ PR1.L, PR1.V, PR1.O). La cartera no se guarda en el teléfono: sin conexión y sin una lectura
- * previa en memoria se muestra PR1.O. Se relee al volver a la pestaña y al volver la conexión.
+ * previa en memoria se muestra PR1.O. Se relee al volver a la pestaña y al volver la conexión. La búsqueda y la fila
+ * «Al día» desplegada son solo de la pantalla: no piden nada al backend.
  */
 @HiltViewModel
 class PatientRosterViewModel @Inject constructor(
@@ -52,6 +53,10 @@ class PatientRosterViewModel @Inject constructor(
     }
 
     fun onRetry() = load()
+
+    fun onQueryChange(query: String) = _state.update { it.copy(query = query) }
+
+    fun onToggleUpToDate() = _state.update { it.copy(isUpToDateExpanded = !it.isUpToDateExpanded) }
 
     fun onResume() {
         if (_state.value.patients != null) load()
