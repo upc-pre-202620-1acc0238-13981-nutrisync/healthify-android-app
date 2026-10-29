@@ -71,12 +71,15 @@ import pe.edu.upc.healthify.features.intake.presentation.navigation.SelfWeighInR
 import pe.edu.upc.healthify.features.intake.presentation.navigation.intakeDestinations
 import pe.edu.upc.healthify.features.main.presentation.navigation.PatientSettingsRoute
 import pe.edu.upc.healthify.features.main.presentation.navigation.PatientShellRoute
+import pe.edu.upc.healthify.features.main.presentation.navigation.PractitionerSettingsRoute
 import pe.edu.upc.healthify.features.main.presentation.navigation.PractitionerShellRoute
 import pe.edu.upc.healthify.features.main.presentation.navigation.SignOutConfirmationRoute
 import pe.edu.upc.healthify.features.main.presentation.screen.PatientSettingsCallbacks
 import pe.edu.upc.healthify.features.main.presentation.screen.PatientSettingsScreen
 import pe.edu.upc.healthify.features.main.presentation.screen.PatientShellCallbacks
 import pe.edu.upc.healthify.features.main.presentation.screen.PatientShellScreen
+import pe.edu.upc.healthify.features.main.presentation.screen.PractitionerSettingsCallbacks
+import pe.edu.upc.healthify.features.main.presentation.screen.PractitionerSettingsScreen
 import pe.edu.upc.healthify.features.main.presentation.screen.PractitionerShellScreen
 import pe.edu.upc.healthify.features.main.presentation.screen.SignOutConfirmationScreen
 import pe.edu.upc.healthify.features.monitoring.presentation.navigation.CheckInRoute
@@ -324,10 +327,20 @@ fun AppNavHost(
                         )
                     },
                     onOpenFoodCatalog = { navController.navigateSingleTop(FoodCatalogRoute) },
+                    onOpenSettings = { navController.navigateSingleTop(PractitionerSettingsRoute) },
                     onSignOut = { navController.navigateSingleTop(PractitionerSignOutConfirmationRoute) },
                 ),
                 message = shellMessage?.let(PractitionerShellMessage::decode),
                 onMessageHandled = { entry.savedStateHandle[KEY_PRACTITIONER_SHELL_MESSAGE] = null },
+            )
+        }
+        // PR20 · Ajustes: pantalla interna desde el menú; «Atrás» vuelve a la pestaña donde estaba el nutricionista.
+        composable<PractitionerSettingsRoute> {
+            PractitionerSettingsScreen(
+                callbacks = PractitionerSettingsCallbacks(
+                    onBack = { navController.popBackStack() },
+                    onSignOut = { navController.navigateSingleTop(PractitionerSignOutConfirmationRoute) },
+                ),
             )
         }
         composable<PractitionerPatientRoute> { entry ->

@@ -30,6 +30,7 @@ import pe.edu.upc.healthify.core.designsystem.component.EmptyState
 import pe.edu.upc.healthify.core.designsystem.component.ErrorState
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyButton
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyCard
+import pe.edu.upc.healthify.core.designsystem.component.HealthifyIconButton
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyTopAppBar
 import pe.edu.upc.healthify.core.designsystem.component.OfflineBanner
 import pe.edu.upc.healthify.core.designsystem.component.OfflineBannerType
@@ -48,11 +49,14 @@ import java.time.Instant
 /**
  * PR1 · Mi cartera de pacientes (pestaña «Pacientes» del shell del nutricionista). Tocar un paciente abre su ficha:
  * PAC-0 si aún no tiene datos base, PAC-1 si ya los tiene (lo decide el resumen, RM-2).
+ *
+ * @param onOpenMenu ☰ · menú principal del shell (PR1.D).
  */
 @Composable
 fun PatientRosterScreen(
     onInvitePatient: () -> Unit,
     onOpenPatient: (patientId: Long, careLinkId: Long, fullName: String) -> Unit,
+    onOpenMenu: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: PatientRosterViewModel = hiltViewModel(),
 ) {
@@ -66,6 +70,7 @@ fun PatientRosterScreen(
         onInvitePatient = onInvitePatient,
         onOpenPatient = { onOpenPatient(it.patientId, it.careLinkId, it.fullName) },
         onRetry = viewModel::onRetry,
+        onOpenMenu = onOpenMenu,
         modifier = modifier,
     )
 }
@@ -77,6 +82,7 @@ fun PatientRosterContent(
     onOpenPatient: (RosterItem) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
+    onOpenMenu: () -> Unit = {},
 ) {
     val dimens = HealthifyTheme.dimens
     SystemBarsAppearance(darkBackground = false)
@@ -85,7 +91,16 @@ fun PatientRosterContent(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface),
     ) {
-        HealthifyTopAppBar(title = stringResource(R.string.roster_title))
+        HealthifyTopAppBar(
+            title = stringResource(R.string.roster_title),
+            actions = {
+                HealthifyIconButton(
+                    icon = HealthifyIcons.Menu,
+                    contentDescription = stringResource(R.string.menu_cd_open),
+                    onClick = onOpenMenu,
+                )
+            },
+        )
         Box(
             modifier = Modifier
                 .fillMaxWidth()

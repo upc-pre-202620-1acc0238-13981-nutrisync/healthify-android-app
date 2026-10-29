@@ -17,6 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
@@ -26,6 +28,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import pe.edu.upc.healthify.R
+import pe.edu.upc.healthify.core.designsystem.component.HealthifyEndDrawer
 import pe.edu.upc.healthify.core.designsystem.component.HealthifySnackbarHost
 import pe.edu.upc.healthify.core.designsystem.component.PractitionerNavigationBar
 import pe.edu.upc.healthify.core.designsystem.component.PractitionerTab
@@ -35,11 +38,14 @@ import pe.edu.upc.healthify.core.designsystem.component.weekdayDayMonthText
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 import pe.edu.upc.healthify.features.carerelationship.presentation.screen.PatientRosterScreen
 import pe.edu.upc.healthify.features.main.presentation.components.PlaceholderScreen
+import pe.edu.upc.healthify.features.main.presentation.components.PractitionerMenuContent
+import pe.edu.upc.healthify.features.main.presentation.components.PractitionerMenuItem
 import pe.edu.upc.healthify.features.main.presentation.navigation.PractitionerAgendaRoute
 import pe.edu.upc.healthify.features.main.presentation.navigation.PractitionerInboxRoute
 import pe.edu.upc.healthify.features.main.presentation.navigation.PractitionerPatientsRoute
-import pe.edu.upc.healthify.features.main.presentation.navigation.PractitionerSettingsRoute
 import pe.edu.upc.healthify.features.main.presentation.navigation.route
+import pe.edu.upc.healthify.features.main.presentation.state.PractitionerShellUiState
+import pe.edu.upc.healthify.features.main.presentation.viewmodel.PractitionerShellViewModel
 import pe.edu.upc.healthify.features.monitoring.presentation.screen.PractitionerAgendaScreen
 import pe.edu.upc.healthify.features.monitoring.presentation.state.AgendaRow
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.screen.ReviewInboxScreen
@@ -57,9 +63,11 @@ data class PractitionerShellCallbacks(
     val onScheduleFollowUp: () -> Unit = {},
     /** PR17.0 «Reprogramar» → PR17 con la consulta prellenada. */
     val onRescheduleFollowUp: (AgendaRow) -> Unit = {},
-    /** PR20 → PR15. */
+    /** Menú «Catálogo de alimentos» → PR15. */
     val onOpenFoodCatalog: () -> Unit = {},
-    /** PR20 → PR20.1. */
+    /** Menú «Ajustes» → PR20 (pantalla completa del grafo raíz, con «Atrás»). */
+    val onOpenSettings: () -> Unit = {},
+    /** Menú «Cerrar sesión» → PR20.1. */
     val onSignOut: () -> Unit = {},
 )
 
@@ -101,8 +109,9 @@ sealed interface PractitionerShellMessage {
 }
 
 /**
- * Shell del nutricionista: NavigationBar Pacientes (PR1) · Bandeja (PR13) · Agenda (PR17.0) · Ajustes (PR20) con su
- * propio NavHost. Los Snackbars de vuelta (PR13.1, PR17.0-S, alta) se muestran sobre la NavigationBar.
+ * Shell del nutricionista: NavigationBar Pacientes (PR1) · Bandeja (PR13) · Agenda (PR17.0) con su propio NavHost y
+ * el menú principal (PR1.D, ☰ de las pestañas) que abre desde la derecha. Los Snackbars de vuelta (PR13.1, PR17.0-S,
+ * alta) se muestran sobre la NavigationBar.
  */
 @Composable
 fun PractitionerShellScreen(
@@ -111,7 +120,9 @@ fun PractitionerShellScreen(
     onMessageHandled: () -> Unit,
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
+    viewModel: PractitionerShellViewModel = hiltViewModel(),
 ) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val selected = PractitionerTab.entries.firstOrNull { tab ->
         backStackEntry?.destination?.hierarchy?.any { it.hasRoute(tab.route()::class) } == true
@@ -133,9 +144,28 @@ fun PractitionerShellScreen(
     }
     val cancelledText = stringResource(R.string.agenda_cancelled)
 
+    // Cada destino del menú es una pantalla del grafo raíz: el menú se cierra antes de abrirla.
+    val fromMenu = { action: () -> Unit ->
+        viewModel.onCloseMenu()
+        action()
+    }
+    val onOpenMenu = viewModel::onOpenMenu
     PractitionerShellContent(
+        state = state,
         selected = selected,
-        onSelect = { tab -> navController.navigateToTab(tab.route()) },
+        actions = PractitionerShellActions(
+            onSelect = { tab -> navController.navigateToTab(tab.route()) },
+            onCloseMenu = viewModel::onCloseMenu,
+            onMenuItem = { item ->
+                fromMenu(
+                    when (item) {
+                        PractitionerMenuItem.FoodCatalog -> callbacks.onOpenFoodCatalog
+                        PractitionerMenuItem.Settings -> callbacks.onOpenSettings
+                    },
+                )
+            },
+            onSignOut = { fromMenu(callbacks.onSignOut) },
+        ),
         snackbarHostState = snackbarHostState,
         modifier = modifier,
     ) {
@@ -144,20 +174,19 @@ fun PractitionerShellScreen(
                 PatientRosterScreen(
                     onInvitePatient = callbacks.onInvitePatient,
                     onOpenPatient = callbacks.onOpenPatient,
+                    onOpenMenu = onOpenMenu,
                 )
             }
             composable<PractitionerInboxRoute> {
-                ReviewInboxScreen(onOpenItem = callbacks.onOpenReviewItem)
+                ReviewInboxScreen(onOpenItem = callbacks.onOpenReviewItem, onOpenMenu = onOpenMenu)
             }
             composable<PractitionerAgendaRoute> {
                 PractitionerAgendaScreen(
                     onSchedule = callbacks.onScheduleFollowUp,
                     onReschedule = callbacks.onRescheduleFollowUp,
                     onCancelled = { scope.launch { snackbarHostState.showSnackbar(cancelledText) } },
+                    onOpenMenu = onOpenMenu,
                 )
-            }
-            composable<PractitionerSettingsRoute> {
-                PractitionerSettingsScreen(onOpenFoodCatalog = callbacks.onOpenFoodCatalog, onSignOut = callbacks.onSignOut)
             }
         }
     }
@@ -182,34 +211,58 @@ private fun messageText(message: PractitionerShellMessage): String = when (messa
     is PractitionerShellMessage.PatientDischarged -> stringResource(R.string.shell_patient_discharged, message.patientName)
 }
 
+data class PractitionerShellActions(
+    val onSelect: (PractitionerTab) -> Unit = {},
+    val onCloseMenu: () -> Unit = {},
+    val onMenuItem: (PractitionerMenuItem) -> Unit = {},
+    val onSignOut: () -> Unit = {},
+)
+
 @Composable
 fun PractitionerShellContent(
+    state: PractitionerShellUiState,
     selected: PractitionerTab,
-    onSelect: (PractitionerTab) -> Unit,
+    actions: PractitionerShellActions,
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     content: @Composable () -> Unit,
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface),
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-        ) {
-            content()
-            // Sobre la acción fija de la pestaña (88 dp del Figma: botón de 56 dp + 16 dp arriba y abajo).
-            HealthifySnackbarHost(
-                hostState = snackbarHostState,
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = HealthifyTheme.dimens.space64 + HealthifyTheme.dimens.space24),
+    HealthifyEndDrawer(
+        open = state.isMenuOpen,
+        onDismissRequest = actions.onCloseMenu,
+        drawerContent = {
+            PractitionerMenuContent(
+                fullName = state.fullName,
+                avatarInitial = state.avatarInitial,
+                // El menú solo se abre desde las pestañas, que no son ítems del menú.
+                selected = null,
+                onSelect = actions.onMenuItem,
+                onSignOut = actions.onSignOut,
             )
+        },
+        modifier = modifier,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surface),
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+            ) {
+                content()
+                // Sobre la acción fija de la pestaña (88 dp del Figma: botón de 56 dp + 16 dp arriba y abajo).
+                HealthifySnackbarHost(
+                    hostState = snackbarHostState,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = HealthifyTheme.dimens.space64 + HealthifyTheme.dimens.space24),
+                )
+            }
+            PractitionerNavigationBar(selected = selected, onSelect = actions.onSelect)
         }
-        PractitionerNavigationBar(selected = selected, onSelect = onSelect)
     }
 }
 
@@ -217,7 +270,25 @@ fun PractitionerShellContent(
 @Composable
 private fun PractitionerShellContentPreview() {
     HealthifyTheme {
-        PractitionerShellContent(selected = PractitionerTab.Patients, onSelect = {}) {
+        PractitionerShellContent(
+            state = PractitionerShellUiState(),
+            selected = PractitionerTab.Patients,
+            actions = PractitionerShellActions(),
+        ) {
+            PlaceholderScreen(title = "Pacientes")
+        }
+    }
+}
+
+@Preview(name = "PR1.D · Menú principal", widthDp = 360, heightDp = 800)
+@Composable
+private fun PractitionerShellMenuPreview() {
+    HealthifyTheme {
+        PractitionerShellContent(
+            state = PractitionerShellUiState(fullName = "Lucía Paredes", avatarInitial = "L", isMenuOpen = true),
+            selected = PractitionerTab.Patients,
+            actions = PractitionerShellActions(),
+        ) {
             PlaceholderScreen(title = "Pacientes")
         }
     }
