@@ -15,7 +15,10 @@ import pe.edu.upc.healthify.features.intake.domain.entity.NewMealGroup
 import pe.edu.upc.healthify.features.intake.domain.entity.NewPhotoMeal
 import pe.edu.upc.healthify.features.intake.domain.entity.PendingDiaryEntry
 import pe.edu.upc.healthify.features.intake.domain.entity.PhotoConfirmation
+import pe.edu.upc.healthify.features.intake.domain.entity.PlanFit
+import pe.edu.upc.healthify.features.intake.domain.entity.PlanFitReason
 import pe.edu.upc.healthify.features.intake.domain.valueobject.ClientEntryId
+import pe.edu.upc.healthify.features.intake.domain.valueobject.DietaryRestriction
 import pe.edu.upc.healthify.features.intake.domain.valueobject.DiaryEntryId
 import pe.edu.upc.healthify.features.intake.domain.valueobject.EntryProvenance
 import pe.edu.upc.healthify.features.intake.domain.valueobject.LocalTimestamp
@@ -33,6 +36,7 @@ import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.MealPhotoA
 import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.PendingDiaryEntryDto
 import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.PhotoConfirmationDto
 import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.PhotoLogRequestDto
+import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.PlanFitDto
 import pe.edu.upc.healthify.features.intake.infrastructure.sync.QueuedDiaryEntryPayload
 import java.time.format.DateTimeFormatter
 
@@ -217,10 +221,35 @@ fun MealPhotoAnalysisDto.toDomain(): MealPhotoAnalysis = MealPhotoAnalysis(
             name = name,
             grams = alternative.grams,
             food = alternative.referenceFoodId?.takeIf { it > 0 }?.let { MealFood(it, name) },
+            planFit = alternative.planFit?.toDomainOrNull(),
         )
     },
     expiresAt = requireNotNull(expiresAt.toInstantOrNull()) { "Unreadable expiresAt" },
+    planFit = planFit?.toDomainOrNull(),
 )
+
+// ----- Sugerencia de plan -----
+
+/**
+ * IN-8. `null` si la sugerencia no se puede usar (respuesta desconocida o sin responder): nunca se inventa una. Un
+ * código de restricción desconocido se muestra tal cual (X-2).
+ */
+fun PlanFitDto.toDomainOrNull(): PlanFit? {
+    val suggested = PlanAdherence.fromCode(suggestedAdherence).takeIf { it.isAnswered } ?: return null
+    val restrictions = violatedRestrictions.mapNotNull(DietaryRestriction::ofCode).distinct()
+    val reason = PlanFitReason.fromCode(reason) ?: when {
+        restrictions.isNotEmpty() -> PlanFitReason.BREAKS_RESTRICTION
+        suggested == PlanAdherence.IN_PLAN -> PlanFitReason.FITS
+        else -> PlanFitReason.EXCEEDS_REMAINING
+    }
+    return PlanFit(
+        suggested = suggested,
+        violatedRestrictions = restrictions,
+        reason = reason,
+        energyKcal = energyKcal.coerceAtLeast(0.0),
+        remainingKcal = remainingKcal?.coerceAtLeast(0.0),
+    )
+}
 
 // ----- Ideas -----
 

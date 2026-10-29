@@ -1,6 +1,7 @@
 package pe.edu.upc.healthify.features.intake.infrastructure.remote
 
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.DiaryEntryDto
 import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.EstimateAdjustmentRequestDto
 import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.EstimateConfirmationRequestDto
@@ -10,6 +11,7 @@ import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.MealGroupL
 import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.MealIdeasDto
 import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.MealPhotoAnalysisDto
 import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.PhotoLogRequestDto
+import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.PlanFitDto
 import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.SyncOutcomeDto
 import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.SyncPendingEntriesRequestDto
 import retrofit2.http.Body
@@ -58,9 +60,14 @@ interface DiaryService {
 /** IN-7 · la foto viaja solo en memoria del servidor y nunca se guarda. */
 interface MealPhotoService {
 
+    /** [localDate] (`yyyy-MM-dd`) es opcional: Retrofit omite la parte si es `null`. */
     @Multipart
     @POST("patients/{patientId}/meal-photo-analyses")
-    suspend fun analyze(@Path("patientId") patientId: Long, @Part photo: MultipartBody.Part): MealPhotoAnalysisDto
+    suspend fun analyze(
+        @Path("patientId") patientId: Long,
+        @Part photo: MultipartBody.Part,
+        @Part("localDate") localDate: RequestBody? = null,
+    ): MealPhotoAnalysisDto
 }
 
 /** IA-3 · ideas de comidas. */
@@ -68,4 +75,16 @@ interface MealIdeasService {
 
     @POST("patients/{patientId}/meal-ideas")
     suspend fun generate(@Path("patientId") patientId: Long, @Body body: GenerateMealIdeasRequestDto): MealIdeasDto
+}
+
+/** IN-8 · sugerencia de «¿Estaba en tu plan?», sin IA. */
+interface PlanFitService {
+
+    @GET("patients/{patientId}/plan-fit")
+    suspend fun check(
+        @Path("patientId") patientId: Long,
+        @Query("referenceFoodId") referenceFoodId: Long,
+        @Query("grams") grams: Double,
+        @Query("date") date: String?,
+    ): PlanFitDto
 }
