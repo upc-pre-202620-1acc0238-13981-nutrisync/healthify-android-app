@@ -59,7 +59,7 @@ class MonitoringTest {
         assertEquals(TODAY.minusDays(2), LoggingGap.lookbackStart(TODAY))
         assertTrue(LoggingGap.isGap(loggedDaysInLookback = 0, trackingSince = TODAY.minusDays(3), today = TODAY))
         assertFalse(LoggingGap.isGap(loggedDaysInLookback = 1, trackingSince = TODAY.minusDays(30), today = TODAY))
-        // Recién vinculado: todavía no hay hueco que señalar.
+        // Just linked: no gap to flag yet.
         assertFalse(LoggingGap.isGap(loggedDaysInLookback = 0, trackingSince = TODAY.minusDays(2), today = TODAY))
     }
 

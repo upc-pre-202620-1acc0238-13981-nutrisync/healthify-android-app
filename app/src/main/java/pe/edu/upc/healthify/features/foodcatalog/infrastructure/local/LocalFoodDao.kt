@@ -12,7 +12,7 @@ interface LocalFoodDao {
     @Query("SELECT * FROM local_food_catalog ORDER BY position")
     suspend fun getAll(): List<LocalFoodEntity>
 
-    /** Cuándo se guardó la copia actual (epoch ms), o `null` si no hay. */
+    /** When the current copy was saved (epoch ms), or `null` if there is none. */
     @Query("SELECT MIN(saved_at) FROM local_food_catalog")
     suspend fun savedAt(): Long?
 
@@ -22,7 +22,7 @@ interface LocalFoodDao {
     @Query("DELETE FROM local_food_catalog")
     suspend fun deleteAll()
 
-    /** Reemplaza la copia entera en una transacción: nunca queda a medias. */
+    /** Replaces the whole copy in one transaction: it is never left half written. */
     @Transaction
     suspend fun replaceAll(foods: List<LocalFoodEntity>) {
         deleteAll()

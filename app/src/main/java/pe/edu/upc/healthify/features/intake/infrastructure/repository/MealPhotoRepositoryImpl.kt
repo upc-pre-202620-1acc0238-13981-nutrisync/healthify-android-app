@@ -32,8 +32,8 @@ import java.util.UUID
 import javax.inject.Inject
 
 /**
- * F41 · la foto se prepara en el teléfono (≤ 1024 px, JPEG, **sin EXIF**) y se sube en memoria; nunca se guarda en el
- * servidor. En el teléfono solo vive en `cacheDir/meal_photos` y se borra al terminar el flujo.
+ * The photo is prepared on the phone (≤ 1024 px, JPEG, **no EXIF**) and uploaded in memory; it is never stored on
+ * the server. On the phone it only lives in `cacheDir/meal_photos` and is deleted when the flow ends.
  */
 class MealPhotoRepositoryImpl @Inject constructor(
     private val service: MealPhotoService,
@@ -94,7 +94,7 @@ class MealPhotoRepositoryImpl @Inject constructor(
 
     override suspend fun discardPhoto(photoPath: String) {
         dao.deleteByPath(photoPath)
-        // Solo se borran archivos de la carpeta de este flujo: nunca una ruta arbitraria.
+        // Only files in this flow's folder are deleted: never an arbitrary path.
         if (encoder.isOwnPhoto(photoPath)) {
             withContext(ioDispatcher) { File(photoPath).delete() }
         }
@@ -111,7 +111,7 @@ class MealPhotoRepositoryImpl @Inject constructor(
         const val JPEG_MEDIA_TYPE = "image/jpeg"
         const val TEXT_MEDIA_TYPE = "text/plain"
 
-        /** La foto ya no está o no se pudo decodificar: se trata como `UnsupportedPhotoFormat` (tomar otra). */
+        /** The photo is gone or could not be decoded: treated as `UnsupportedPhotoFormat` (take another one). */
         const val CODE_UNREADABLE_PHOTO = "UnsupportedPhotoFormat"
         const val CODE_INVALID_ANALYSIS = "INVALID_MEAL_PHOTO_ANALYSIS"
     }

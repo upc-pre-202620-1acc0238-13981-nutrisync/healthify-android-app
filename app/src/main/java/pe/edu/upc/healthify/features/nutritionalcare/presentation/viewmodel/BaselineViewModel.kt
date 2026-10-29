@@ -37,8 +37,8 @@ import java.util.Locale
 import javax.inject.Inject
 
 /**
- * EV-1 · Datos base. La primera vez se registran (`POST`) y «Guardar e iniciar consulta» lleva directo al paso 1; al
- * editar (desde Resumen o EV-2) se precargan y se guardan con `PUT`. La edad se calcula sola con el reloj del teléfono.
+ * Baseline. The first time it is recorded (`POST`) and "Save and start consultation" goes straight to step 1; when
+ * editing (from Summary or the measurement step) it is preloaded and saved with `PUT`. Age comes from the phone clock.
  */
 @HiltViewModel
 class BaselineViewModel @Inject constructor(
@@ -60,10 +60,10 @@ class BaselineViewModel @Inject constructor(
     private val _events = Channel<BaselineEvent>(Channel.BUFFERED)
     val events: Flow<BaselineEvent> = _events.receiveAsFlow()
 
-    /** Si ya están registrados (editar, o un `POST` anterior que salió bien), se guardan con `PUT`. */
+    /** If it is already recorded (editing, or an earlier `POST` that succeeded), it is saved with `PUT`. */
     private var alreadyRecorded = editing
 
-    /** Lo último que se guardó: un reintento de «iniciar consulta» no vuelve a enviarlo. */
+    /** The last thing saved: a retry of "start consultation" does not resend it. */
     private var saved: NewBaseline? = null
 
     init {
@@ -103,10 +103,10 @@ class BaselineViewModel @Inject constructor(
         it.copy(conditions = if (condition in it.conditions) it.conditions - condition else it.conditions + condition)
     }
 
-    /** «Guardar e iniciar consulta» (solo la primera vez). */
+    /** "Save and start consultation" (first time only). */
     fun onSaveAndStart() = save(startConsultation = true)
 
-    /** «Guardar y salir». */
+    /** "Save and exit". */
     fun onSaveAndExit() = save(startConsultation = false)
 
     fun onSaveFailureDismissed() = _state.update { it.copy(saveFailure = null) }
@@ -158,7 +158,7 @@ class BaselineViewModel @Inject constructor(
         }
     }
 
-    /** `400 InvalidBirthDate`/`InvalidHeight` marcan su campo; lo demás es un aviso con «Reintentar». */
+    /** `400 InvalidBirthDate`/`InvalidHeight` flag their field; anything else is a notice with "Retry". */
     private fun BaselineUiState.withSaveError(error: DomainError?): BaselineUiState = when (error) {
         DomainError.Validation(INVALID_BIRTH_DATE) -> copy(problems = setOf(BaselineProblem.BIRTH_DATE_IMPLAUSIBLE))
         DomainError.Validation(INVALID_HEIGHT) -> copy(problems = setOf(BaselineProblem.HEIGHT_OUT_OF_RANGE))
@@ -169,7 +169,7 @@ class BaselineViewModel @Inject constructor(
         viewModelScope.launch {
             val baseline = getPatientBaseline(patientId).getOrNull()
             if (baseline == null) {
-                // Sin datos base guardados (o sin poder leerlos) se registra como la primera vez.
+                // With no saved baseline (or unable to read it), it is recorded as the first time.
                 alreadyRecorded = false
                 _state.update { it.copy(isLoading = false) }
                 return@launch
@@ -191,7 +191,7 @@ class BaselineViewModel @Inject constructor(
         const val INVALID_BIRTH_DATE = "InvalidBirthDate"
         const val INVALID_HEIGHT = "InvalidHeight"
 
-        /** La talla precargada se escribe como la escribiría el profesional («168» o «168.5»). */
+        /** The preloaded height is written the way the practitioner would ("168" or "168.5"). */
         val heightFormat = DecimalFormat("0.#", DecimalFormatSymbols(Locale.ROOT))
     }
 }

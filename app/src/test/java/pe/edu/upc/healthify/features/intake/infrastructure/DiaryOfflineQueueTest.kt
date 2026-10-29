@@ -149,7 +149,7 @@ class DiaryOfflineQueueTest {
         val second = manual.copy(clientEntryId = ClientEntryId("9b8a7c6d-5e4f-4a3b-8c2d-1e0f9a8b7c6d"))
         repository.logManualMeal(PATIENT, second)
         service.failWith = null
-        // El primero ya había llegado (reenvío): el backend lo reconoce y no lo duplica.
+        // The first one had already arrived (resend): the backend recognizes it and does not duplicate it.
         service.syncOutcomes = { ids -> ids.mapIndexed { i, id -> SyncedEntryOutcomeDto(id, 100L + i, if (i == 0) "AlreadyPresent" else "Created") } }
 
         val result = PendingSyncEngine(dao, setOf(sender), syncEvents) { PATIENT.value }.syncAll()

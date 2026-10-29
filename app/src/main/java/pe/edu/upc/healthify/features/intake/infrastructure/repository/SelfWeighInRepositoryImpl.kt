@@ -33,14 +33,15 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Backend primero. **Solo sin conexión** (`DomainError.Network`) el autopesaje se encola en la cola offline genérica
- * con su `clientEntryId` y su hora local exacta; `PendingSyncWorker` lo envía a `/self-weigh-ins/synchronization`
- * cuando hay red (IN-4). Un 5xx no encola: PT12.2 muestra el error y el paciente reintenta.
+ * Backend first. **Only when offline** (`DomainError.Network`) is the self weigh-in queued in the generic offline
+ * queue with its `clientEntryId` and exact local time; `PendingSyncWorker` sends it to
+ * `/self-weigh-ins/synchronization` when there is network. A 5xx does not queue: the screen shows the error and
+ * the patient retries.
  *
- * La tendencia se guarda en Room (`weight_trend_cache`) cada vez que llega; sin conexión o con 5xx se devuelve esa
- * copia. El `404 WeightTrendNotFound` la borra (la tendencia ya no existe en el backend).
+ * The trend is stored in Room (`weight_trend_cache`) every time it arrives; offline or on 5xx that copy is
+ * returned. `404 WeightTrendNotFound` deletes it (the trend no longer exists on the backend).
  *
- * `@Singleton`: guarda el aviso del último autopesaje hasta que PT13 lo muestra.
+ * `@Singleton`: keeps the latest self weigh-in's message until the trend screen shows it.
  */
 @Singleton
 class SelfWeighInRepositoryImpl @Inject constructor(
@@ -67,7 +68,7 @@ class SelfWeighInRepositoryImpl @Inject constructor(
             result.isSuccess -> SelfWeighInOutcome.RECORDED
             result.domainErrorOrNull() == DomainError.Network -> {
                 val payload = weighIn.toQueuedPayload()
-                // Encolar dos veces el mismo clientEntryId no lo duplica (la cola lo ignora).
+                // Queuing the same clientEntryId twice does not duplicate it (the queue ignores it).
                 queue.enqueue(
                     type = QueuedSelfWeighInPayload.TYPE,
                     ownerUserId = patientId.value,

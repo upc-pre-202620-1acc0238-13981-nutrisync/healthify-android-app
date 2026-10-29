@@ -6,10 +6,10 @@ import pe.edu.upc.healthify.features.intake.domain.valueobject.RestrictionCode
 import java.time.LocalDate
 
 /**
- * «Ideas para hoy» (`MealIdeasResource`, IA-3): 2 o 3 ideas que caben en lo que le queda al paciente hoy y respetan
- * las restricciones de su plan. El texto de la IA ([MealIdea.why], [disclaimer]) ya llega en el idioma del lector.
+ * "Ideas for today" (`MealIdeasResource`): 2 or 3 ideas that fit what the patient has left today and respect
+ * their plan's restrictions. The AI text ([MealIdea.why], [disclaimer]) already arrives in the reader's language.
  *
- * @param restrictions las restricciones del plan que se respetaron (códigos conocidos; los demás se omiten).
+ * @param restrictions the plan restrictions that were respected (known codes; the rest are skipped).
  */
 data class MealIdeas(
     val localDate: LocalDate,
@@ -38,17 +38,17 @@ data class MealIdea(
         require(energyKcal >= 0 && proteinG >= 0 && carbG >= 0 && fatG >= 0) { "Nutrients cannot be negative" }
     }
 
-    /** Los ingredientes que el catálogo resolvió: son los que se registran (FC-2). */
+    /** The ingredients the catalog resolved: these are the ones that get logged. */
     val loggableIngredients: List<MealIdeaIngredient> get() = ingredients.filter { it.isLoggable }
 
-    /** Los que no están en el catálogo: se excluyen del registro y se avisa (PT14.5). */
+    /** The ones not in the catalog: they are left out of the log and the patient is warned. */
     val excludedIngredients: List<MealIdeaIngredient> get() = ingredients.filterNot { it.isLoggable }
 
     val canBeLogged: Boolean get() = loggableIngredients.isNotEmpty()
 }
 
 /**
- * @param food el alimento del catálogo, o `null` si `resolved = false` (la IA lo nombró pero el catálogo no lo tiene).
+ * @param food the catalog food, or `null` if `resolved = false` (the AI named it but the catalog does not have it).
  */
 data class MealIdeaIngredient(val name: String, val grams: Double, val food: MealFood?) {
     init {
@@ -56,6 +56,6 @@ data class MealIdeaIngredient(val name: String, val grams: Double, val food: Mea
         require(grams >= 0) { "Grams cannot be negative" }
     }
 
-    /** Resuelto y con una porción que se puede registrar. */
+    /** Resolved and with a portion that can be logged. */
     val isLoggable: Boolean get() = food != null && PortionGrams.ofOrNull(grams) != null
 }

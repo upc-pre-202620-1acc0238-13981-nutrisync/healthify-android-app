@@ -22,21 +22,21 @@ import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-/** IntakeBodyResponse · diario (§5.5). No hay `DELETE` en este contexto. */
+/** IntakeBodyResponse · diary. There is no `DELETE` in this context. */
 interface DiaryService {
 
     @GET("patients/{patientId}/diary-entries")
     suspend fun getDiaryEntries(@Path("patientId") patientId: Long, @Query("date") date: String): List<DiaryEntryDto>
 
-    /** F17 · `201`. Reenviar el mismo `clientEntryId` devuelve la misma entrada. */
+    /** `201`. Resending the same `clientEntryId` returns the same entry. */
     @POST("diary-entries/manual-logs")
     suspend fun logManualMeal(@Body body: ManualLogRequestDto): DiaryEntryDto
 
-    /** F41 paso 5 · `201`. Reenviar el mismo `clientEntryId` o `analysisId` devuelve la misma entrada. */
+    /** `201`. Resending the same `clientEntryId` or `analysisId` returns the same entry. */
     @POST("diary-entries/photo-logs")
     suspend fun logPhotoMeal(@Body body: PhotoLogRequestDto): DiaryEntryDto
 
-    /** IN-6 · `201` con `MealGroupLogResource` (solo se usa el status). */
+    /** `201` with `MealGroupLogResource` (only the status is used). */
     @POST("diary-entries/manual-logs/batch")
     suspend fun logMealGroup(@Body body: MealGroupLogRequestDto)
 
@@ -52,15 +52,15 @@ interface DiaryService {
         @Body body: EstimateAdjustmentRequestDto,
     )
 
-    /** F20 · idempotente por `clientEntryId`; cada ítem se reporta en `entries`. */
+    /** Idempotent by `clientEntryId`; each item is reported in `entries`. */
     @POST("diary-entries/synchronization")
     suspend fun synchronize(@Body body: SyncPendingEntriesRequestDto): SyncOutcomeDto
 }
 
-/** IN-7 · la foto viaja solo en memoria del servidor y nunca se guarda. */
+/** The photo only travels in server memory and is never stored. */
 interface MealPhotoService {
 
-    /** [localDate] (`yyyy-MM-dd`) es opcional: Retrofit omite la parte si es `null`. */
+    /** [localDate] (`yyyy-MM-dd`) is optional: Retrofit leaves the part out if it is `null`. */
     @Multipart
     @POST("patients/{patientId}/meal-photo-analyses")
     suspend fun analyze(
@@ -70,14 +70,14 @@ interface MealPhotoService {
     ): MealPhotoAnalysisDto
 }
 
-/** IA-3 · ideas de comidas. */
+/** Meal ideas. */
 interface MealIdeasService {
 
     @POST("patients/{patientId}/meal-ideas")
     suspend fun generate(@Path("patientId") patientId: Long, @Body body: GenerateMealIdeasRequestDto): MealIdeasDto
 }
 
-/** IN-8 · sugerencia de «¿Estaba en tu plan?», sin IA. */
+/** The "Was it in your plan?" suggestion, without AI. */
 interface PlanFitService {
 
     @GET("patients/{patientId}/plan-fit")

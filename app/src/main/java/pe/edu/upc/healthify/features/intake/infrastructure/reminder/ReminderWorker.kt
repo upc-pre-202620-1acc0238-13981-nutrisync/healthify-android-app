@@ -11,8 +11,8 @@ import pe.edu.upc.healthify.features.intake.domain.entity.ReminderKind
 import pe.edu.upc.healthify.features.intake.domain.repository.ReminderSettingsRepository
 
 /**
- * PT22 · publica el aviso local si, al llegar la hora, hay sesión y ese paciente tiene el recordatorio encendido. Sin
- * sesión, con el recordatorio apagado o sin permiso de notificaciones no hace nada (el trabajo sigue programado).
+ * Posts the local notification if, when the time comes, there is a session and that patient has the reminder on.
+ * With no session, the reminder off or no notification permission it does nothing (the work stays scheduled).
  */
 @HiltWorker
 class ReminderWorker @AssistedInject constructor(

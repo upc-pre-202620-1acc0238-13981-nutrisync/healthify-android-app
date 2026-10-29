@@ -16,7 +16,7 @@ class PatientRecordRepositoryImpl @Inject constructor(
         apiCall { service.getOwnRecord(patientId.value, RECORD_DAYS) }.map { it.toDomain() }
 
     private companion object {
-        /** `PatientRecordComposer.DefaultDays`: «Mi cumplimiento» siempre son los últimos 7 días, aparte. */
+        /** `PatientRecordComposer.DefaultDays`: "My adherence" is always the last 7 days, separately. */
         const val RECORD_DAYS = 30
     }
 }

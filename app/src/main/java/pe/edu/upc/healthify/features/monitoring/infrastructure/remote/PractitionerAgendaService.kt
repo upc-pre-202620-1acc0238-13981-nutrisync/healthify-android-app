@@ -13,7 +13,7 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-/** Agenda y derivaciones del nutricionista (F25, F26, MA-2, MA-5). */
+/** The nutritionist's agenda and referrals. */
 interface PractitionerAgendaService {
 
     @GET("practitioners/{practitionerId}/scheduled-follow-ups")
@@ -36,7 +36,7 @@ interface PractitionerAgendaService {
         @Body body: RescheduleFollowUpRequestDto,
     ): ScheduledFollowUpDto
 
-    /** `201` con el `ReferralResource` (no se usa: la ficha se relee al volver). */
+    /** `201` with the `ReferralResource` (unused: the patient profile is re-read on return). */
     @POST("referrals")
     suspend fun recordReferral(@Body body: RecordReferralRequestDto): ResponseBody
 }

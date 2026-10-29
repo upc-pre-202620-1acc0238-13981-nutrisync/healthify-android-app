@@ -2,7 +2,7 @@ package pe.edu.upc.healthify.features.intake.infrastructure.remote.dto
 
 import kotlinx.serialization.Serializable
 
-/** `DiaryEntryResource` (§5.5, IN-1/IN-6). También es el formato de la copia offline de un día. */
+/** `DiaryEntryResource`. It is also the format of the offline copy of a day. */
 @Serializable
 data class DiaryEntryDto(
     val diaryEntryId: Long,
@@ -26,7 +26,7 @@ data class DiaryEntryDto(
     val origin: String? = null,
 )
 
-/** `LogMealManuallyResource` (IN-1 `planAdherence` requerido, IN-7 `clientEntryId`). */
+/** `LogMealManuallyResource` (`planAdherence` required, `clientEntryId` for idempotency). */
 @Serializable
 data class ManualLogRequestDto(
     val patientId: Long,
@@ -37,7 +37,7 @@ data class ManualLogRequestDto(
     val clientEntryId: String,
 )
 
-/** `PhotoConfirmationResource`: `AsProposed` o `Adjusted` con alimento y gramos (IN-2). */
+/** `PhotoConfirmationResource`: `AsProposed`, or `Adjusted` with food and grams. */
 @Serializable
 data class PhotoConfirmationDto(
     val kind: String,
@@ -46,9 +46,9 @@ data class PhotoConfirmationDto(
 )
 
 /**
- * `LogMealByPhotoResource` con `analysisId` (IN-7): la propuesta sale del análisis y el servidor ignora
- * `referenceFoodId`/`portionGrams`/`confidence` del cuerpo; se mandan igual porque el recurso los declara.
- * Sin [confirmation], la entrada queda «Por confirmar» y [planAdherence] se ignora.
+ * `LogMealByPhotoResource` with `analysisId`: the proposal comes from the analysis and the server ignores
+ * `referenceFoodId`/`portionGrams`/`confidence` in the body; they are sent anyway because the resource declares them.
+ * Without [confirmation], the entry stays "To confirm" and [planAdherence] is ignored.
  */
 @Serializable
 data class PhotoLogRequestDto(
@@ -75,7 +75,7 @@ data class MealGroupItemDto(
 @Serializable
 data class MealGroupOriginDto(val kind: String, val mealIdeaId: String? = null)
 
-/** `LogMealGroupResource` (IN-6, PT14.5). */
+/** `LogMealGroupResource`. */
 @Serializable
 data class MealGroupLogRequestDto(
     val patientId: Long,
@@ -97,7 +97,7 @@ data class EstimateAdjustmentRequestDto(
     val planAdherence: String,
 )
 
-/** `PendingDiaryEntryResource` (F20, IN-1 `confirmed`/`planAdherence`). */
+/** `PendingDiaryEntryResource` (with `confirmed`/`planAdherence`). */
 @Serializable
 data class PendingDiaryEntryDto(
     val clientEntryId: String,
@@ -115,7 +115,7 @@ data class PendingDiaryEntryDto(
 @Serializable
 data class SyncPendingEntriesRequestDto(val patientId: Long, val entries: List<PendingDiaryEntryDto>)
 
-/** `SyncedEntryOutcomeResource`: `Created` · `AlreadyPresent` · `ConflictResolved` · `Rejected` (con `reason`). */
+/** `SyncedEntryOutcomeResource`: `Created` · `AlreadyPresent` · `ConflictResolved` · `Rejected` (with `reason`). */
 @Serializable
 data class SyncedEntryOutcomeDto(
     val clientEntryId: String,
@@ -124,7 +124,7 @@ data class SyncedEntryOutcomeDto(
     val reason: String? = null,
 )
 
-/** `SyncOutcomeResource`: cada ítem se reporta por separado. */
+/** `SyncOutcomeResource`: each item is reported separately. */
 @Serializable
 data class SyncOutcomeDto(
     val patientId: Long? = null,

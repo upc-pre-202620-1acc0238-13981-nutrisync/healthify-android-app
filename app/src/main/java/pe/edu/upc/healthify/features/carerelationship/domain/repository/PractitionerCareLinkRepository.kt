@@ -7,20 +7,20 @@ import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.Clinica
 import java.time.Instant
 
 /**
- * Lado del nutricionista de CareRelationship. Nada se guarda en el teléfono: la cartera no está disponible sin
- * conexión (PR1.O) y el token de una invitación se muestra una sola vez.
+ * The nutritionist side of CareRelationship. Nothing is stored on the phone: the roster is not available
+ * offline and an invitation token is shown only once.
  */
 interface PractitionerCareLinkRepository {
 
-    /** `GET /practitioners/{uid}/patient-roster` (RM-1). `403 AccessNotAllowed` si no es la cartera propia. */
+    /** `GET /practitioners/{uid}/patient-roster`. `403 AccessNotAllowed` if it is not the caller's own roster. */
     suspend fun getRoster(practitionerId: Long): Result<PatientRoster>
 
-    /** `POST /invitations` (F4). `400 ExpirationDateRequired` si [expiresAt] no es futura. */
+    /** `POST /invitations`. `400 ExpirationDateRequired` if [expiresAt] is not in the future. */
     suspend fun issueInvitation(expiresAt: Instant): Result<IssuedInvitation>
 
     /**
-     * `POST /care-links/{id}/discharge` (F29, CR-4). `400 ClinicalReasonRequired`, `403 PractitionerOnly`,
-     * `404 CareLinkNotFound` y `409 DischargedLinkCannotBeReactivated` (ya estaba dado de alta).
+     * `POST /care-links/{id}/discharge`. `400 ClinicalReasonRequired`, `403 PractitionerOnly`,
+     * `404 CareLinkNotFound` and `409 DischargedLinkCannotBeReactivated` (already discharged).
      */
     suspend fun discharge(careLinkId: CareLinkId, reason: ClinicalReason): Result<Unit>
 }

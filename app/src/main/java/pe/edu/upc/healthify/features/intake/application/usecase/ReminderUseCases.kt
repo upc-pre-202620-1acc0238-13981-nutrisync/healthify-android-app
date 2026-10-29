@@ -7,14 +7,14 @@ import pe.edu.upc.healthify.features.intake.domain.repository.ReminderScheduler
 import pe.edu.upc.healthify.features.intake.domain.repository.ReminderSettingsRepository
 import javax.inject.Inject
 
-/** PT22 · los recordatorios guardados del paciente. */
+/** The patient's saved reminders. */
 class ObserveReminderSettingsUseCase @Inject constructor(
     private val repository: ReminderSettingsRepository,
 ) {
     operator fun invoke(patientUserId: Long): Flow<ReminderSettings> = repository.observe(patientUserId)
 }
 
-/** PT22 · enciende o apaga un recordatorio: se guarda al vuelo y se programa (o cancela) su aviso. */
+/** Turns a reminder on or off: it is saved right away and its notification is scheduled (or cancelled). */
 class ChangeReminderUseCase @Inject constructor(
     private val repository: ReminderSettingsRepository,
     private val scheduler: ReminderScheduler,

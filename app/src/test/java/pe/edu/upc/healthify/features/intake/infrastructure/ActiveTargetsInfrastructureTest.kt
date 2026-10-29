@@ -71,7 +71,7 @@ class ActiveTargetsInfrastructureTest {
             listOf(PlanGuideline.Catalog(GuidelineCode.REDUCE_SALT), PlanGuideline.Custom("Caminar 20 min")),
             targets.guidelines,
         )
-        // Primero los códigos, después las restricciones legadas tal cual.
+        // Codes first, then the legacy restrictions as they are.
         assertEquals(
             listOf(DietaryRestriction.Catalog(RestrictionCode.SHELLFISH_FREE), DietaryRestriction.Legacy("Sin ají")),
             targets.restrictions,

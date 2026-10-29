@@ -3,10 +3,10 @@ package pe.edu.upc.healthify.core.common.connectivity
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Estado de la conexión para los banners «Sin conexión» (`OfflineBanner`) y los estados offline del Figma.
- * Kotlin puro: los ViewModels lo inyectan sin conocer `ConnectivityManager`.
+ * Connection state for the offline banners (`OfflineBanner`) and the Figma offline states.
+ * Pure Kotlin: ViewModels inject it without knowing about `ConnectivityManager`.
  */
 interface ConnectivityObserver {
-    /** Emite el estado actual al suscribirse y luego cada cambio (sin repetidos). */
+    /** Emits the current state on subscription and then every change (no repeats). */
     val isOnline: Flow<Boolean>
 }

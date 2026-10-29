@@ -43,35 +43,35 @@ import java.text.DecimalFormatSymbols
 import java.util.Locale
 import javax.inject.Inject
 
-/** Lo que piden los pasos de la consulta a su pantalla. */
+/** What the consultation steps ask of their screen. */
 sealed interface ConsultationStepEvent {
-    /** Paso guardado: al siguiente. */
+    /** Step saved: on to the next. */
     data object Continue : ConsultationStepEvent
 
-    /** EV-2.S «Salir y continuar después». */
+    /** "Exit and continue later". */
     data object Exit : ConsultationStepEvent
 
-    /** Falta un paso anterior (p. ej. la medición): se vuelve a él. */
+    /** A previous step is missing (e.g. the measurement): go back to it. */
     data object Back : ConsultationStepEvent
 
-    /** Ya no hay consulta en curso (se publicó o se cerró): vuelve a la ficha. */
+    /** No consultation in progress anymore (published or closed): back to the profile. */
     data object ConsultationClosed : ConsultationStepEvent
 
-    /** EV-5 publicado: a la ficha con PAC-1-S1. */
+    /** Plan published: to the profile with "Plan published". */
     data object Published : ConsultationStepEvent
 }
 
-/** `409 ConsultationNotInProgress` o `404 ConsultationNotFound`: la consulta ya no admite pasos. */
+/** `409 ConsultationNotInProgress` or `404 ConsultationNotFound`: the consultation no longer accepts steps. */
 internal fun DomainError?.closesConsultation(): Boolean =
     this == DomainError.Conflict("ConsultationNotInProgress") || this == DomainError.NotFound("ConsultationNotFound")
 
-/** Número guardado → texto del campo («74.2», «88»), como lo escribiría el profesional. */
+/** Saved number → field text ("74.2", "88"), the way the practitioner would type it. */
 internal val formFormat = DecimalFormat("0.##", DecimalFormatSymbols(Locale.ROOT))
 
 /**
- * EV-2 · Paso 1 Medición de hoy. Re-hidrata lo guardado de la consulta en curso (reanudar) y lee los datos base para
- * la tarjeta «Datos base» y el IMC en vivo (la talla no se vuelve a pedir). Si lo escrito es igual a lo ya guardado,
- * «Continuar a diagnóstico» no lo reenvía: repetir el paso 1 obligaría a rehacer el diagnóstico.
+ * Step 1, today's measurement. Rehydrates what the in-progress consultation saved (resume) and reads the baseline
+ * for the "Baseline" card and the live BMI (height is not asked again). If the input matches what is already saved,
+ * "Continue to diagnosis" does not resend it: repeating step 1 would force redoing the diagnosis.
  */
 @HiltViewModel
 class MeasurementStepViewModel @Inject constructor(
@@ -106,7 +106,7 @@ class MeasurementStepViewModel @Inject constructor(
 
     fun onRetry() = load()
 
-    /** Al volver de editar los datos base se releen (la talla cambia el IMC). */
+    /** After editing the baseline it is reread (height changes the BMI). */
     fun onResume() {
         if (consultation == null) return
         viewModelScope.launch {
@@ -135,12 +135,12 @@ class MeasurementStepViewModel @Inject constructor(
 
     fun onToggleBiochemistry() = _state.update { it.copy(biochemistryExpanded = !it.biochemistryExpanded) }
 
-    /** «‹» en el paso 1 abre EV-2.S. */
+    /** "‹" on step 1 opens the exit dialog. */
     fun onBack() = _state.update { it.copy(showExitDialog = true) }
 
     fun onStay() = _state.update { it.copy(showExitDialog = false) }
 
-    /** EV-2.S «Salir y continuar después»: lo ya guardado queda guardado (cada paso persiste al continuar). */
+    /** "Exit and continue later": what is saved stays saved (each step persists on continue). */
     fun onExit() {
         _state.update { it.copy(showExitDialog = false) }
         _events.trySend(ConsultationStepEvent.Exit)
@@ -148,7 +148,7 @@ class MeasurementStepViewModel @Inject constructor(
 
     fun onSaveFailureDismissed() = _state.update { it.copy(saveFailure = null) }
 
-    /** Tacho «Borrar consulta» (se abrió por error): primero se confirma. */
+    /** "Delete consultation" trash can (opened by mistake): asks for confirmation first. */
     fun onDiscard() {
         if (consultation == null || _state.value.isDiscarding) return
         _state.update { it.copy(showDiscardDialog = true) }
@@ -158,7 +158,7 @@ class MeasurementStepViewModel @Inject constructor(
 
     fun onDiscardFailureDismissed() = _state.update { it.copy(discardFailure = null) }
 
-    /** Confirmado: la consulta se descarta y se vuelve a la ficha del paciente. */
+    /** Confirmed: the consultation is discarded and it returns to the patient profile. */
     fun onDiscardConfirmed() {
         val current = consultation ?: return
         if (_state.value.isDiscarding) return
@@ -169,7 +169,7 @@ class MeasurementStepViewModel @Inject constructor(
             val error = result.domainErrorOrNull()
             when {
                 result.isSuccess -> _events.send(ConsultationStepEvent.Exit)
-                // Ya no estaba en curso (otro dispositivo la cerró): no hay nada que borrar.
+                // It was no longer in progress (another device closed it): nothing to delete.
                 error.closesConsultation() -> _events.send(ConsultationStepEvent.ConsultationClosed)
                 else -> _state.update { it.copy(discardFailure = SaveFailure(isNetwork = error == DomainError.Network)) }
             }
@@ -224,7 +224,7 @@ class MeasurementStepViewModel @Inject constructor(
         }
     }
 
-    /** IMC con el peso escrito y la talla de los datos base; `null` mientras el peso no sea válido. */
+    /** BMI from the typed weight and the baseline height; `null` while the weight is invalid. */
     private fun liveBmi(weightText: String): Double? {
         val height = heightCm ?: return null
         val weight = (ClinicalRange.WEIGHT_KG.parse(weightText) as? NumberInput.Valid)?.value ?: return null

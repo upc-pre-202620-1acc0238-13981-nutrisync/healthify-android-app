@@ -45,7 +45,7 @@ import java.time.Instant
 import java.time.OffsetDateTime
 import pe.edu.upc.healthify.core.sync.SyncEvents
 
-/** Autopesajes sin conexión (IN-4): cola, reenvío idempotente y copia offline de la tendencia (IN-5). */
+/** Offline self weigh-ins: queue, idempotent resend and the offline copy of the trend. */
 class SelfWeighInSyncTest {
 
     private val json = Json { ignoreUnknownKeys = true; explicitNulls = false }
@@ -95,7 +95,7 @@ class SelfWeighInSyncTest {
         assertTrue(payload.fastedState)
         assertEquals(SelfWeighInOutcome.QUEUED, repository.savedNotice.first())
         assertTrue(syncRequests > 0)
-        // PT19 lo muestra con la hora tal como se guardó.
+        // The pending list shows it with the time exactly as it was saved.
         val pending = repository.observePending(PATIENT).first().single()
         assertEquals(declared, pending.localTimestamp.value)
         assertFalse(pending.isRejected)
@@ -128,7 +128,7 @@ class SelfWeighInSyncTest {
         val second = weighIn.copy(clientEntryId = ClientEntryId("7a6b5c4d-3e2f-4a1b-8c9d-0e1f2a3b4c5d"), fasted = false)
         repository.record(PATIENT, second)
         service.failWith = null
-        // El primero ya había llegado (reenvío): el backend lo resuelve en silencio como AlreadyPresent.
+        // The first one had already arrived (resend): the backend quietly resolves it as AlreadyPresent.
         service.syncOutcomes = { ids ->
             ids.mapIndexed { i, id -> SyncedSelfWeighInOutcomeDto(id, 100L + i, if (i == 0) "AlreadyPresent" else "Created") }
         }

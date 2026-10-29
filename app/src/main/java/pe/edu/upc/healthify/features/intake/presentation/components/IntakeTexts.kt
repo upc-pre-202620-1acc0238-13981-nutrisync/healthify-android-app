@@ -17,43 +17,43 @@ import java.util.Locale
 import kotlin.math.roundToInt
 
 /*
- * Formatos del diario: números y horas con el Locale actual, nunca concatenando.
+ * Diary formats: numbers and times with the current Locale, never by concatenation.
  */
 
-/** «280», «62,5». */
+/** "280", "62,5". */
 @Composable
 @ReadOnlyComposable
 fun numberText(value: Double): String = UiText.formatNumber(value, currentLocale())
 
-/** «280 g aprox.» (propuesta) o «280 g» (confirmado). */
+/** "280 g approx." (proposal) or "280 g" (confirmed). */
 @Composable
 @ReadOnlyComposable
 fun gramsText(grams: Double, approximate: Boolean): String =
     stringResource(if (approximate) R.string.diary_grams_approx else R.string.format_grams, numberText(grams))
 
-/** «2:10 p. m.»: la hora que declaró el paciente, en su propio offset (no se convierte de zona). */
+/** "2:10 p.m.": the time the patient declared, in their own offset (no time zone conversion). */
 @Composable
 @ReadOnlyComposable
 fun OffsetDateTime.clockTimeText(): String =
     DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(currentLocale()).format(this)
 
-/** Confianza 0–1 → porcentaje entero (0,64 → 64). */
+/** Confidence 0–1 → whole percentage (0.64 → 64). */
 fun confidencePercent(confidence: Double): Int = (confidence * PERCENT).roundToInt().coerceIn(0, PERCENT.toInt())
 
-/** «9 de septiembre» / «September 9». */
+/** "9 de septiembre" / "September 9". */
 fun dayMonthText(date: LocalDate, locale: Locale): String {
     val pattern = if (locale.language == Locale.ENGLISH.language) "MMMM d" else "d 'de' MMMM"
     return DateTimeFormatter.ofPattern(pattern, locale).format(date)
 }
 
-/** «Miércoles, 7 de septiembre» / «Wednesday, September 7». */
+/** "Miércoles, 7 de septiembre" / "Wednesday, September 7". */
 fun weekdayDayMonthText(date: LocalDate, locale: Locale): String {
     val pattern = if (locale.language == Locale.ENGLISH.language) "EEEE, MMMM d" else "EEEE, d 'de' MMMM"
     return DateTimeFormatter.ofPattern(pattern, locale).format(date)
         .replaceFirstChar { if (it.isLowerCase()) it.titlecase(locale) else it.toString() }
 }
 
-/** Selector de fecha de PT14: «Hoy, 9 de septiembre», «Ayer, 8 de septiembre» o «Lunes, 7 de septiembre». */
+/** Diary date picker: "Today, September 9", "Yesterday, September 8" or "Monday, September 7". */
 @Composable
 @ReadOnlyComposable
 fun diaryDateText(date: LocalDate, today: LocalDate): String {
@@ -65,7 +65,7 @@ fun diaryDateText(date: LocalDate, today: LocalDate): String {
     }
 }
 
-/** Campo «¿Cuándo comiste?»: «Hoy · 1:15 p. m.», «Ayer · 9:30 p. m.» o «Lunes, 7 de septiembre · 8:00 a. m.». */
+/** "When did you eat?" field: "Today · 1:15 p.m.", "Yesterday · 9:30 p.m." or "Monday, September 7 · 8:00 a.m.". */
 @Composable
 @ReadOnlyComposable
 fun mealTimeText(value: OffsetDateTime, today: LocalDate): String {
@@ -78,7 +78,7 @@ fun mealTimeText(value: OffsetDateTime, today: LocalDate): String {
     }
 }
 
-/** Frase de cada restricción para PT14.4 («…y no llevan mariscos»). */
+/** Sentence for each restriction on the meal ideas screen ("…and contain no seafood"). */
 @get:StringRes
 val RestrictionCode.ideasPhraseRes: Int
     get() = when (this) {
@@ -92,7 +92,7 @@ val RestrictionCode.ideasPhraseRes: Int
         RestrictionCode.HALAL -> R.string.ideas_restriction_halal
     }
 
-/** Nombre de la restricción («Sin mariscos»); una legada o desconocida se muestra tal cual (X-2). */
+/** Restriction name ("No seafood"); a legacy or unknown one is shown as is. */
 @Composable
 @ReadOnlyComposable
 fun restrictionName(restriction: DietaryRestriction): String = when (restriction) {
@@ -111,7 +111,7 @@ fun restrictionName(restriction: DietaryRestriction): String = when (restriction
     )
 }
 
-/** «no llevan mariscos», «no llevan gluten y no llevan lácteos», «a, b y c» (`null` si no hay ninguna). */
+/** "contain no seafood", "contain no gluten and contain no dairy", "a, b and c" (`null` if there are none). */
 fun restrictionsPhrase(restrictions: List<RestrictionCode>): UiText? {
     val phrases = restrictions.map { UiText.of(it.ideasPhraseRes) }
     if (phrases.isEmpty()) return null

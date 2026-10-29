@@ -5,7 +5,7 @@ import pe.edu.upc.healthify.features.monitoring.domain.repository.PatientMonitor
 import pe.edu.upc.healthify.features.monitoring.domain.valueobject.PatientId
 import javax.inject.Inject
 
-/** PT3 «Próxima consulta»: `null` si no hay ninguna agendada (la fila se oculta). */
+/** Home "Next visit" row: `null` if none is scheduled (the row is hidden). */
 class GetNextFollowUpUseCase @Inject constructor(
     private val repository: PatientMonitoringRepository,
 ) {

@@ -7,8 +7,8 @@ import pe.edu.upc.healthify.features.monitoring.domain.valueobject.QuestionOrigi
 import java.time.Instant
 
 /**
- * «Cuéntale cómo te fue» tal como lo guardó el backend (`PreVisitCheckInResource`, MA-4). Uno por consulta; el
- * paciente lo edita hasta la hora de la consulta ([isLocked] lo dice el backend). Es voluntario y no levanta señales.
+ * "Tell them how it went" as the backend saved it (`PreVisitCheckInResource`). One per visit; the patient can edit
+ * it until the visit's time ([isLocked] comes from the backend). It is voluntary and raises no signals.
  */
 data class PreVisitCheckIn(
     val followUpId: FollowUpId,
@@ -19,8 +19,8 @@ data class PreVisitCheckIn(
 )
 
 /**
- * Lo que el paciente responde (`SubmitPreVisitCheckInResource`): cómo se sintió (obligatorio), dificultades (sin
- * repetir) y hasta 3 preguntas propias y 3 sugerencias de IA aceptadas.
+ * What the patient answers (`SubmitPreVisitCheckInResource`): how they felt (required), difficulties (no repeats)
+ * and up to 3 custom questions and 3 accepted AI suggestions.
  */
 data class CheckInAnswer(
     val feeling: PlanFeeling,
@@ -42,7 +42,7 @@ data class CheckInAnswer(
     }
 }
 
-/** Resumen del check-in dentro de Mis consultas (`ConsultationCheckInSummaryResource`): las preguntas solo como texto. */
+/** Check-in summary inside My visits (`ConsultationCheckInSummaryResource`): questions as text only. */
 data class CheckInSummary(
     val feeling: PlanFeeling,
     val difficulties: Set<CheckInDifficulty>,
@@ -52,11 +52,11 @@ data class CheckInSummary(
     val isLocked: Boolean,
 )
 
-/** Preguntas sugeridas por IA para llevar a la consulta (`SuggestedQuestionsResource`, IA-4). */
+/** AI-suggested questions to bring to the visit (`SuggestedQuestionsResource`). */
 data class SuggestedQuestions(
     val questions: List<SuggestedQuestion>,
     val aiGenerationId: Long,
-    /** Idioma en que se generaron (X-2); se manda con cada sugerencia aceptada. */
+    /** Language they were generated in; sent with each accepted suggestion. */
     val language: String?,
 )
 
@@ -66,7 +66,7 @@ data class SuggestedQuestion(val id: String, val text: String) {
     }
 }
 
-/** IA-4: las preguntas, «aún no» (`404 NotEnoughData`) o la función apagada (`403`/`503 AiFeatureDisabled`). */
+/** The questions, "not yet" (`404 NotEnoughData`) or the feature off (`403`/`503 AiFeatureDisabled`). */
 sealed interface SuggestedQuestionsAvailability {
     data class Ready(val suggestions: SuggestedQuestions) : SuggestedQuestionsAvailability
     data object NotYet : SuggestedQuestionsAvailability

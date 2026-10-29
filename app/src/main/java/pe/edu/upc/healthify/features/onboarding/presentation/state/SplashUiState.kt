@@ -1,9 +1,9 @@
 package pe.edu.upc.healthify.features.onboarding.presentation.state
 
-/** Adónde sigue la app después de S1. */
+/** Where the app goes after the splash. */
 enum class SplashDestination { Welcome, ShellLoading, SessionExpired }
 
-/** S1 tiene un solo visual; [destination] queda en `null` mientras se lee la sesión local. */
+/** The splash has a single visual; [destination] stays `null` while the local session is read. */
 data class SplashUiState(
     val destination: SplashDestination? = null,
 )

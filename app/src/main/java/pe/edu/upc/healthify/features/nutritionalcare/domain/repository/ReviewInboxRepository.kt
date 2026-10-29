@@ -9,23 +9,23 @@ import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.ReviewIt
 import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.ReviewItemState
 
 /**
- * Bandeja de revisión del nutricionista con sesión (F27, F40, NC-10, NC-11). No se guarda en el teléfono: sin conexión
- * se muestra el estado offline del Figma.
+ * Review inbox of the signed-in nutritionist. Not stored on the phone: offline it shows the Figma offline
+ * state.
  */
 interface ReviewInboxRepository {
 
-    /** `GET /review-items?state=` · los ítems de la bandeja propia, más recientes primero. */
+    /** `GET /review-items?state=` · the nutritionist's own inbox items, newest first. */
     suspend fun getItems(state: ReviewItemState): Result<List<ReviewItem>>
 
     /**
-     * `POST /review-items/{id}/resolution`. `400 ResolutionOutcomeRequired` sin Sí/No, `404 ReviewItemNotFound` si no
-     * existe o ya estaba resuelto. Una propuesta de IA pendiente queda descartada y el plan no cambia.
+     * `POST /review-items/{id}/resolution`. `400 ResolutionOutcomeRequired` without Yes/No, `404 ReviewItemNotFound` if
+     * it does not exist or was already resolved. A pending AI proposal is discarded and the plan does not change.
      */
     suspend fun resolve(id: ReviewItemId, resolution: ReviewResolution): Result<ReviewItem>
 
-    /** `GET /review-items/{id}/plan-proposal`: `200` lista, `202` + `Retry-After` generándose, `404` sin propuesta. */
+    /** `GET /review-items/{id}/plan-proposal`: `200` ready, `202` + `Retry-After` generating, `404` no proposal. */
     suspend fun getPlanProposal(id: ReviewItemId): Result<PlanProposalLookup>
 
-    /** `POST /review-items/{id}/plan-proposal/acceptance`: crea la versión ajustada y resuelve el ítem en un solo paso. */
+    /** `POST /review-items/{id}/plan-proposal/acceptance`: creates the adjusted version and resolves the item at once. */
     suspend fun acceptPlanProposal(id: ReviewItemId, acceptance: PlanAcceptance): Result<AcceptedProposal>
 }

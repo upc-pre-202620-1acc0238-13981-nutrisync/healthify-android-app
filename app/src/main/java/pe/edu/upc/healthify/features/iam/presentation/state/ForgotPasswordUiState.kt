@@ -1,32 +1,32 @@
 package pe.edu.upc.healthify.features.iam.presentation.state
 
-/** Pasos de la recuperación de contraseña (IAM-2). */
+/** Password recovery steps. */
 enum class ForgotPasswordStep {
-    /** Se escribe el correo de la cuenta. */
+    /** The account email is typed. */
     Email,
 
-    /** Se escribe el código recibido; el backend lo verifica antes de pedir la contraseña. */
+    /** The received code is typed; the backend verifies it before asking for the password. */
     Code,
 
-    /** Código verificado: se escribe la contraseña nueva. */
+    /** Code verified: the new password is typed. */
     NewPassword,
 
-    /** Contraseña cambiada: queda volver a S4. */
+    /** Password changed: all that is left is going back to sign-in. */
     Done,
 }
 
 /**
- * IAM-2 · Recuperar contraseña. El código y la contraseña viven solo en memoria; el token de la verificación ni
- * siquiera está en el estado (lo guarda el ViewModel).
+ * Password recovery. The code and the password live in memory only; the verification token is not even
+ * in the state (the ViewModel keeps it).
  *
- * @param invalidEmail el correo no tiene forma de correo (se valida antes de llamar al backend).
- * @param invalidCode `PasswordResetCodeInvalid`, o un código que no son seis dígitos.
- * @param weakPassword `WeakPassword`, o una contraseña que no cumple las reglas de registro.
- * @param passwordReused `PasswordReuseNotAllowed`: es la contraseña actual.
- * @param tokenExpired `PasswordResetTokenInvalid`: se acabó el tiempo para cambiarla; se vuelve al paso del código.
- * @param resendInSeconds segundos que faltan para poder pedir otro código; `0` = ya se puede. El backend tampoco
- *   envía otro correo antes de un minuto.
- * @param codeResent se pidió un código nuevo desde el paso [ForgotPasswordStep.Code].
+ * @param invalidEmail the email is not shaped like an email (checked before calling the backend).
+ * @param invalidCode `PasswordResetCodeInvalid`, or a code that is not six digits.
+ * @param weakPassword `WeakPassword`, or a password that does not meet the sign-up rules.
+ * @param passwordReused `PasswordReuseNotAllowed`: it is the current password.
+ * @param tokenExpired `PasswordResetTokenInvalid`: the time to change it ran out; it goes back to the code step.
+ * @param resendInSeconds seconds left before another code can be requested; `0` = it can be now. The backend does
+ *   not send another email within a minute either.
+ * @param codeResent a new code was requested from the [ForgotPasswordStep.Code] step.
  */
 data class ForgotPasswordUiState(
     val step: ForgotPasswordStep = ForgotPasswordStep.Email,
@@ -51,6 +51,6 @@ data class ForgotPasswordUiState(
 }
 
 sealed interface ForgotPasswordEvent {
-    /** «Volver a iniciar sesión», «atrás» en el primer paso, o «Iniciar sesión» al terminar → S4. */
+    /** "Back to sign in", "back" on the first step, or "Sign in" at the end → sign-in. */
     data object NavigateToSignIn : ForgotPasswordEvent
 }

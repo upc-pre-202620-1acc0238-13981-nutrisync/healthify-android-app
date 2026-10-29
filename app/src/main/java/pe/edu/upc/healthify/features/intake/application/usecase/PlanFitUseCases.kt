@@ -10,8 +10,8 @@ import javax.inject.Inject
 import kotlin.math.abs
 
 /**
- * IN-8 · la sugerencia de «¿Estaba en tu plan?» para un plato y una porción. El servidor solo pesa lo que queda del
- * día de hoy (±1); para una comida de otro día se piden solo las restricciones.
+ * The "Was it in your plan?" suggestion for a dish and a portion. The server only weighs what is left of today
+ * (±1); for a meal on another day only the restrictions are requested.
  */
 class CheckPlanFitUseCase @Inject constructor(
     private val repository: PlanFitRepository,

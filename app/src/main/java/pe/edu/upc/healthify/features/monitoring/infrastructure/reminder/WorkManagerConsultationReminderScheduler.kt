@@ -18,12 +18,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Un trabajo único de WorkManager por aviso (un día y una hora antes de cada consulta), más una relectura periódica de
- * la agenda para seguir los cambios que se hagan desde otro teléfono.
+ * One unique WorkManager job per reminder (a day and an hour before each visit), plus a periodic re-read of the
+ * agenda to follow changes made from another phone.
  *
- * DECISIÓN: no hay push en el backend; los avisos los programa el teléfono con lo que leyó la última vez. Si la consulta
- * se mueve en otro dispositivo, el aviso se corrige en la siguiente relectura (al abrir la app o cada [REFRESH_HOURS] h).
- * Como en PT22, WorkManager puede diferir el aviso unos minutos para ahorrar batería.
+ * The backend has no push; the phone schedules the reminders from what it last read. If the visit moves on another
+ * device, the reminder is corrected on the next re-read (on app start or every [REFRESH_HOURS] h).
+ * As with the other local reminders, WorkManager may delay it a few minutes to save battery.
  */
 @Singleton
 class WorkManagerConsultationReminderScheduler @Inject constructor(
@@ -32,7 +32,7 @@ class WorkManagerConsultationReminderScheduler @Inject constructor(
 ) : ConsultationReminderScheduler {
 
     override fun replaceAll(userId: Long, reminders: List<ConsultationReminder>) {
-        // WorkManager aplica las operaciones en orden: primero se quitan los avisos viejos, luego se programan los nuevos.
+        // WorkManager applies operations in order: old reminders are removed first, then the new ones are scheduled.
         workManager.cancelAllWorkByTag(TAG_NOTIFY)
         val now = clock.instant()
         reminders.forEach { reminder ->

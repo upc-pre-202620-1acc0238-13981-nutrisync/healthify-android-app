@@ -21,8 +21,8 @@ import pe.edu.upc.healthify.features.onboarding.presentation.state.SplashUiState
 import javax.inject.Inject
 
 /**
- * S1: decide el destino solo con la sesión guardada en el dispositivo (sin red, nota «Sin conexión: igual»).
- * Sin sesión → S2; con sesión → S5; usuario guardado cuya sesión venció → S6.
+ * Decides the destination only from the session saved on the device (no network; design note "Offline: same").
+ * No session → welcome; session → shell loading; saved user whose session expired → session expired.
  */
 @HiltViewModel
 class SplashViewModel @Inject constructor(
@@ -49,13 +49,13 @@ class SplashViewModel @Inject constructor(
         when {
             user == null -> SplashDestination.Welcome
             observeIsLoggedIn().first() -> SplashDestination.ShellLoading
-            // DECISIÓN S1: la sesión venció con la app cerrada (se conserva el usuario, no los tokens) → S6.
+            // The session expired while the app was closed (the user is kept, the tokens are not) → session expired.
             else -> SplashDestination.SessionExpired
         }
     } catch (e: CancellationException) {
         throw e
     } catch (_: Exception) {
-        // Nota S1 «Error: si falla la lectura local, va a S2 por defecto» (DataStore, Tink o Room).
+        // Design note "Error: if the local read fails, go to welcome by default" (DataStore, Tink or Room).
         SplashDestination.Welcome
     }
 }

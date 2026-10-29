@@ -1,8 +1,8 @@
 package pe.edu.upc.healthify.features.iam.domain.valueobject
 
 /**
- * Correo de la cuenta, normalizado y validado como el VO `Email` del backend (F1): sin espacios, en minúsculas,
- * hasta 255 caracteres y con la forma `^[^@\s]+@[^@\s]+\.[^@\s]+$`.
+ * Account email, normalized and validated like the backend `Email` VO: no spaces, lowercase,
+ * up to 255 characters and shaped like `^[^@\s]+@[^@\s]+\.[^@\s]+$`.
  */
 @JvmInline
 value class EmailAddress private constructor(val value: String) {
@@ -12,7 +12,7 @@ value class EmailAddress private constructor(val value: String) {
 
         private val Pattern = Regex("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")
 
-        /** @throws IllegalArgumentException si [raw] no es un correo válido. */
+        /** @throws IllegalArgumentException if [raw] is not a valid email. */
         operator fun invoke(raw: String): EmailAddress {
             val normalized = raw.trim().lowercase()
             require(normalized.isNotEmpty() && normalized.length <= MAX_LENGTH) { "Invalid email length" }
@@ -20,7 +20,7 @@ value class EmailAddress private constructor(val value: String) {
             return EmailAddress(normalized)
         }
 
-        /** El correo, o `null` si [raw] no es válido (validación de formularios sin excepciones). */
+        /** The email, or `null` if [raw] is not valid (form validation without exceptions). */
         fun parse(raw: String): EmailAddress? = try {
             invoke(raw)
         } catch (_: IllegalArgumentException) {

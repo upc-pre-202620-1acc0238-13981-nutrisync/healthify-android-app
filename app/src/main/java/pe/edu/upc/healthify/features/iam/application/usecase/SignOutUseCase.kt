@@ -5,11 +5,11 @@ import pe.edu.upc.healthify.features.iam.domain.repository.SessionRepository
 import javax.inject.Inject
 
 /**
- * F3 · cerrar sesión: avisa al backend (`POST /authentication/sign-out`) y luego borra la sesión del dispositivo.
+ * Sign out: notifies the backend (`POST /authentication/sign-out`) and then clears the session from the device.
  *
- * DECISIÓN F3: la sesión local se borra aunque el backend no responda (sin conexión, 404, 409). Cerrar sesión
- * nunca deja a la persona atrapada; el refresh token olvidado ya no se puede usar desde este dispositivo.
- * La cola de pendientes se conserva (PT21.1).
+ * The local session is cleared even if the backend does not answer (offline, 404, 409). Signing out never leaves
+ * the person stuck; the forgotten refresh token can no longer be used from this device.
+ * The pending queue is kept.
  */
 class SignOutUseCase @Inject constructor(
     private val authenticationRepository: AuthenticationRepository,

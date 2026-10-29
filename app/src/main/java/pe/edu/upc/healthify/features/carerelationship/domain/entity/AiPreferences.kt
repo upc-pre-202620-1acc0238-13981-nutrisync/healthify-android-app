@@ -1,11 +1,11 @@
 package pe.edu.upc.healthify.features.carerelationship.domain.entity
 
 /**
- * Consentimiento de IA y preferencias por función del paciente (`AiPreferencesResource`, CR-2/IA-1/IN-7). Una
- * función con IA solo está disponible si el consentimiento de IA sigue vigente **y** su preferencia está encendida.
- * Que la IA esté apagada en el servidor (`503 AiFeatureDisabled`) no se sabe por aquí: lo dice cada función.
+ * The patient's AI consent and per-feature preferences (`AiPreferencesResource`). An AI feature is available
+ * only if AI consent is still current **and** its preference is on.
+ * Whether AI is turned off on the server (`503 AiFeatureDisabled`) is not known here: each feature reports it.
  */
-/** Las funciones con IA que el paciente enciende o apaga en PT21.IA (IA-1, IN-7). */
+/** The AI features the patient turns on or off in the AI features settings. */
 enum class AiFeature { WEEKLY_SUMMARY, MEAL_IDEAS, SUGGESTED_QUESTIONS, MEAL_PHOTO_RECOGNITION }
 
 data class AiPreferences(
@@ -15,19 +15,19 @@ data class AiPreferences(
     val suggestedQuestionsEnabled: Boolean,
     val mealPhotoRecognitionEnabled: Boolean,
 ) {
-    /** PT5: «Registrar comida» abre la cámara; si no, va directo a registrar a mano (PT9). */
+    /** "Log meal" opens the camera; otherwise it goes straight to manual logging. */
     val canRecognizeMealPhotos: Boolean get() = consentGranted && mealPhotoRecognitionEnabled
 
-    /** PT14: la card «¿No sabes qué comer?» (IA-3). */
+    /** The "Not sure what to eat?" card. */
     val canSuggestMealIdeas: Boolean get() = consentGranted && mealIdeasEnabled
 
-    /** PT25 «Prepara tu consulta» y PT25.2 «También podrías preguntar» (IA-4). */
+    /** "Prepare your consultation" and its "You could also ask" suggestions. */
     val canSuggestQuestions: Boolean get() = consentGranted && suggestedQuestionsEnabled
 
-    /** PT21 «Funciones con IA · Activadas»: hay consentimiento y al menos una función encendida. */
+    /** "AI features · On": consent is granted and at least one feature is on. */
     val anyFeatureAvailable: Boolean get() = consentGranted && AiFeature.entries.any(::isEnabled)
 
-    /** La preferencia guardada de [feature] (sin mirar el consentimiento). */
+    /** The saved preference for [feature] (ignoring consent). */
     fun isEnabled(feature: AiFeature): Boolean = when (feature) {
         AiFeature.WEEKLY_SUMMARY -> weeklySummaryEnabled
         AiFeature.MEAL_IDEAS -> mealIdeasEnabled
@@ -35,7 +35,7 @@ data class AiPreferences(
         AiFeature.MEAL_PHOTO_RECOGNITION -> mealPhotoRecognitionEnabled
     }
 
-    /** Las mismas preferencias con [feature] encendida o apagada. */
+    /** The same preferences with [feature] turned on or off. */
     fun with(feature: AiFeature, enabled: Boolean): AiPreferences = when (feature) {
         AiFeature.WEEKLY_SUMMARY -> copy(weeklySummaryEnabled = enabled)
         AiFeature.MEAL_IDEAS -> copy(mealIdeasEnabled = enabled)
@@ -44,7 +44,7 @@ data class AiPreferences(
     }
 
     companion object {
-        /** Sin datos (nunca se leyeron y no hay conexión): ninguna función con IA. */
+        /** No data (never read and no connection): no AI features. */
         val NoneGranted = AiPreferences(
             consentGranted = false,
             weeklySummaryEnabled = false,

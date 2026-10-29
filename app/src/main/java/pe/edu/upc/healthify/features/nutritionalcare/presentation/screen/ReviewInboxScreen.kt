@@ -49,14 +49,14 @@ import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.ReviewIn
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.viewmodel.ReviewInboxViewModel
 import java.time.Instant
 
-// Punto de «sin revisar» de cada fila (frame PR13).
+// "Unreviewed" dot on each row (inbox frame).
 private val UnreadDotSize = 8.dp
 
 /**
- * PR13 · Bandeja de revisión (pestaña «Bandeja» del shell del nutricionista) + PR13.V al día. Nada de lo que hay aquí
- * cambió un plan: tocar un ítem abre PR14 (o PR14.IA si la IA propuso un plan).
+ * Review inbox (the "Inbox" tab of the nutritionist shell), including the all-caught-up state. Nothing here
+ * has changed a plan: tapping an item opens it (with the AI proposal if the AI proposed a plan).
  *
- * @param onOpenMenu ☰ · menú principal del shell (PR1.D).
+ * @param onOpenMenu ☰ · the shell's main menu.
  */
 @Composable
 fun ReviewInboxScreen(
@@ -119,7 +119,7 @@ fun ReviewInboxContent(
                     if (state.isOffline) {
                         item(key = "offline") { OfflineBanner(type = OfflineBannerType.RequiresNetwork) }
                     }
-                    // DECISIÓN PR13: el conteo de PR13.1 se muestra siempre que hay ítems (no solo tras resolver uno).
+                    // The resolved count shows whenever there are items (not only after resolving one).
                     item(key = "count") {
                         Text(
                             text = pluralStringResource(R.plurals.inbox_pending_count, items.size, items.size),
@@ -218,7 +218,7 @@ private val previewRows = listOf(
     InboxRow(2, "Carlos Quispe", UiText.Raw("señal de consistencia"), Instant.parse("2026-09-06T15:00:00Z")),
 )
 
-@Preview(name = "PR13 · Bandeja", widthDp = 360, heightDp = 800)
+@Preview(name = "Review inbox", widthDp = 360, heightDp = 800)
 @Composable
 private fun ReviewInboxPreview() {
     HealthifyTheme {
@@ -226,13 +226,13 @@ private fun ReviewInboxPreview() {
     }
 }
 
-@Preview(name = "PR13 · Cargando", widthDp = 360, heightDp = 800)
+@Preview(name = "Review inbox - loading", widthDp = 360, heightDp = 800)
 @Composable
 private fun ReviewInboxLoadingPreview() {
     HealthifyTheme { ReviewInboxContent(state = ReviewInboxUiState(), onOpenItem = {}, onRetry = {}) }
 }
 
-@Preview(name = "PR13.V · Al día", widthDp = 360, heightDp = 800)
+@Preview(name = "Review inbox - all caught up", widthDp = 360, heightDp = 800)
 @Composable
 private fun ReviewInboxEmptyPreview() {
     HealthifyTheme {
@@ -240,7 +240,7 @@ private fun ReviewInboxEmptyPreview() {
     }
 }
 
-@Preview(name = "PR13 · Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Review inbox - offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun ReviewInboxOfflinePreview() {
     HealthifyTheme {
@@ -252,7 +252,7 @@ private fun ReviewInboxOfflinePreview() {
     }
 }
 
-@Preview(name = "PR13 · Error", widthDp = 360, heightDp = 800)
+@Preview(name = "Review inbox - error", widthDp = 360, heightDp = 800)
 @Composable
 private fun ReviewInboxErrorPreview() {
     HealthifyTheme {

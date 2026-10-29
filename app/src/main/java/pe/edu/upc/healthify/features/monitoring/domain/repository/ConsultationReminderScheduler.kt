@@ -2,15 +2,15 @@ package pe.edu.upc.healthify.features.monitoring.domain.repository
 
 import pe.edu.upc.healthify.features.monitoring.domain.entity.ConsultationReminder
 
-/** Avisos locales de las próximas consultas en este teléfono (no hay push: el teléfono los programa). */
+/** Local reminders for upcoming visits on this phone (there is no push: the phone schedules them). */
 interface ConsultationReminderScheduler {
 
-    /** Reemplaza todos los avisos programados por los de [reminders], del usuario [userId]. */
+    /** Replaces all scheduled reminders with [reminders], for user [userId]. */
     fun replaceAll(userId: Long, reminders: List<ConsultationReminder>)
 
-    /** Quita todos los avisos (sin sesión). */
+    /** Removes all reminders (signed out). */
     fun cancelAll()
 
-    /** Pide releer las consultas próximas en segundo plano, con red, y reprogramar los avisos. */
+    /** Asks to re-read upcoming visits in the background, with network, and reschedule the reminders. */
     fun requestRefresh()
 }

@@ -45,7 +45,7 @@ import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.StepLoad
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.viewmodel.ConsultationStepEvent
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.viewmodel.PublicationStepViewModel
 
-/** Acciones de EV-5. */
+/** Publication step actions. */
 data class PublicationActions(
     val onBack: () -> Unit = {},
     val onRetry: () -> Unit = {},
@@ -62,8 +62,8 @@ data class PublicationActions(
 )
 
 /**
- * EV-5 · Paso 4 Indicaciones y publicación (+ EV-5.E error al publicar). «Publicar y cerrar consulta» publica la nueva
- * versión (reemplaza la vigente, NC-7) y cierra la consulta.
+ * Step 4, guidelines and publication (plus the publish error). "Publish and close consultation" publishes the new
+ * version (it replaces the current one) and closes the consultation.
  */
 @Composable
 fun PublicationStepScreen(
@@ -183,7 +183,7 @@ private fun GuidelinesCard(state: PublicationUiState, actions: PublicationAction
             horizontalArrangement = Arrangement.spacedBy(dimens.space8),
             verticalArrangement = Arrangement.spacedBy(dimens.space8),
         ) {
-            // Las sugeridas van primero; luego el resto del catálogo.
+            // Suggested ones go first; then the rest of the catalog.
             val ordered = state.suggested + PlanGuidelineCode.entries.filterNot { it in state.suggested }
             ordered.forEach { code ->
                 HealthifyFilterChip(
@@ -192,7 +192,7 @@ private fun GuidelinesCard(state: PublicationUiState, actions: PublicationAction
                     onSelectedChange = { actions.onGuidelineToggle(code) },
                 )
             }
-            // «Otra indicación» escrita por el profesional: se muestra tal cual; tocarla la quita.
+            // "Other guideline" written by the practitioner: shown as is; tapping it removes it.
             state.customGuidelines.forEach { text ->
                 HealthifyFilterChip(text = text, selected = true, onSelectedChange = { actions.onRemoveCustom(text) })
             }
@@ -232,7 +232,7 @@ private fun GuidelinesCard(state: PublicationUiState, actions: PublicationAction
     }
 }
 
-/** Mensaje opcional para el paciente (NC-9): lo verá con sus metas; es texto del profesional y no se traduce. */
+/** Optional message to the patient, shown with their targets; practitioner text, never translated. */
 @Composable
 private fun MessageCard(state: PublicationUiState, actions: PublicationActions) {
     val scheme = MaterialTheme.colorScheme
@@ -251,7 +251,7 @@ private fun MessageCard(state: PublicationUiState, actions: PublicationActions) 
     }
 }
 
-/** EV-5.E · «HUBO UN ERROR · No pudimos publicar el plan. Lo que escribiste no se perdió.» (sin culpar a nadie). */
+/** "SOMETHING WENT WRONG · We could not publish the plan. What you wrote was not lost." (blames no one). */
 @Composable
 private fun PublishFailedContent(isRetrying: Boolean, onRetry: () -> Unit, modifier: Modifier = Modifier) {
     val dimens = HealthifyTheme.dimens
@@ -275,7 +275,7 @@ private fun PublishFailedContent(isRetrying: Boolean, onRetry: () -> Unit, modif
     }
 }
 
-@Preview(name = "EV-5 · Indicaciones y publicación", widthDp = 360, heightDp = 800)
+@Preview(name = "Guidelines and publication", widthDp = 360, heightDp = 800)
 @Composable
 private fun PublicationStepPreview() {
     HealthifyTheme {
@@ -301,7 +301,7 @@ private fun PublicationStepPreview() {
     }
 }
 
-@Preview(name = "EV-5.E · Error al publicar", widthDp = 360, heightDp = 800)
+@Preview(name = "Guidelines and publication - publish error", widthDp = 360, heightDp = 800)
 @Composable
 private fun PublicationFailedPreview() {
     HealthifyTheme {
@@ -312,7 +312,7 @@ private fun PublicationFailedPreview() {
     }
 }
 
-@Preview(name = "EV-5 · Otra indicación", widthDp = 360, heightDp = 800)
+@Preview(name = "Guidelines and publication - other guideline", widthDp = 360, heightDp = 800)
 @Composable
 private fun PublicationCustomPreview() {
     HealthifyTheme {

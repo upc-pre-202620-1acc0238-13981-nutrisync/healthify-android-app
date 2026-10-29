@@ -6,7 +6,7 @@ import pe.edu.upc.healthify.features.nutritionalcare.domain.repository.PlanVersi
 import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.PatientId
 import javax.inject.Inject
 
-/** PT4.1 · Versiones del plan, la más reciente primero. Solo de consulta. */
+/** Plan versions, newest first. Read-only. */
 class GetPlanVersionsUseCase @Inject constructor(
     private val repository: PlanVersionRepository,
 ) {

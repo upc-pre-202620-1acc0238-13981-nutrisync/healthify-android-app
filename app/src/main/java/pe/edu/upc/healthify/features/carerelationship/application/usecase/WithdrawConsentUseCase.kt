@@ -8,11 +8,11 @@ import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.Patient
 import javax.inject.Inject
 
 /**
- * PT23 · Retirar el consentimiento del vínculo activo (F28). Sin justificación (*No Justification Required*).
+ * Withdraws consent from the active care link. No reason needed (*No Justification Required*).
  *
- * Sin consentimiento vigente falla con `Forbidden(NoActiveConsent)` y el dispositivo deja de considerar activo el
- * vínculo (la pantalla sigue a PT24 igual). DECISIÓN PT23: si `/care-links/active` responde 404 no hay ningún
- * vínculo con consentimiento, que es la misma situación que `NoActiveConsent`.
+ * Without current consent it fails with `Forbidden(NoActiveConsent)` and the device stops treating the care link as
+ * active (the screen still moves on to the withdrawn screen). A 404 from `/care-links/active` means there is no
+ * consented care link, which is the same situation as `NoActiveConsent`.
  */
 class WithdrawConsentUseCase @Inject constructor(
     private val careLinkRepository: CareLinkRepository,

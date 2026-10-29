@@ -5,7 +5,7 @@ import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.PlanGuid
 import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.ReviewItemId
 import java.time.Instant
 
-/** En qué quedó una propuesta (`PlanProposalStatus`). Solo [PROPOSED] se puede aceptar. */
+/** Where a proposal ended up (`PlanProposalStatus`). Only [PROPOSED] can be accepted. */
 enum class PlanProposalStatus(val code: String) {
     PROPOSED("Proposed"),
     ACCEPTED_AS_IS("AcceptedAsIs"),
@@ -14,18 +14,18 @@ enum class PlanProposalStatus(val code: String) {
     ;
 
     companion object {
-        /** Un estado desconocido se lee como ya decidido: la app no ofrece aceptar algo que no entiende. */
+        /** An unknown status reads as decided: the app never offers to accept something it does not understand. */
         fun fromCode(code: String?): PlanProposalStatus =
             entries.firstOrNull { it.code.equals(code?.trim(), ignoreCase = true) } ?: DISMISSED
     }
 }
 
 /**
- * Plan que la IA propone ante una desviación sostenida (`PlanAdjustmentProposalResource`, IA-8 + NC-10). Leerlo nunca
- * cambia el plan: el único camino a una versión nueva es que el profesional la acepte.
+ * Plan the AI proposes after a sustained deviation (`PlanAdjustmentProposalResource`). Reading it never changes
+ * the plan: the only way to a new version is for the practitioner to accept it.
  *
- * @param title y [rationale] vienen en el idioma del profesional; [patientMessage] en el del paciente (X-2).
- * @param addedGuidelines y [removedGuidelines] son códigos del catálogo cerrado (la IA no puede devolver otros).
+ * @param title and [rationale] come in the practitioner's language; [patientMessage] in the patient's.
+ * @param addedGuidelines and [removedGuidelines] are codes from the closed catalog (the AI cannot return others).
  */
 data class PlanAdjustmentProposal(
     val reviewItemId: ReviewItemId,
@@ -48,29 +48,29 @@ data class PlanAdjustmentProposal(
     val canBeAccepted: Boolean get() = status == PlanProposalStatus.PROPOSED
 
     /**
-     * Indicaciones del catálogo con que queda la versión si se acepta tal cual: las vigentes menos las quitadas más las
-     * agregadas (las propias del profesional se conservan siempre en el backend y no se editan aquí).
+     * Catalog guidelines the version ends up with if accepted as is: the current ones minus the removed plus the
+     * added (the practitioner's custom ones are always kept by the backend and are not edited here).
      */
     fun resultingGuidelines(current: Collection<PlanGuidelineCode>): Set<PlanGuidelineCode> =
         (current.filterNot { it in removedGuidelines } + addedGuidelines).toCollection(LinkedHashSet())
 }
 
-/** Lo que responde `GET /review-items/{id}/plan-proposal`. */
+/** What `GET /review-items/{id}/plan-proposal` returns. */
 sealed interface PlanProposalLookup {
     data class Ready(val proposal: PlanAdjustmentProposal) : PlanProposalLookup
 
-    /** `202` + `Retry-After`: se está generando. */
+    /** `202` + `Retry-After`: being generated. */
     data class Generating(val retryAfterSeconds: Int) : PlanProposalLookup {
         init {
             require(retryAfterSeconds > 0) { "Retry-After is positive" }
         }
     }
 
-    /** `404`: no hay propuesta (IA apagada, sin consentimiento, proveedor caído o salida rechazada) → PR14 sin IA. */
+    /** `404`: no proposal (AI off, no consent, provider down or output rejected) → the item opens without AI. */
     data object None : PlanProposalLookup
 }
 
-/** «Resolver» de PR14.IA (tal cual) o «Asignar plan ajustado» de PR14.IA-A (con ediciones). */
+/** "Resolve" on the AI proposal (as is) or "Assign adjusted plan" when adjusting it (with edits). */
 sealed interface PlanAcceptance {
     data object AsIs : PlanAcceptance
 
@@ -78,10 +78,10 @@ sealed interface PlanAcceptance {
 }
 
 /**
- * Ediciones de PR14.IA-A. Solo se validan contra el piso calórico en el backend (`422 PlanProposalOutOfSafetyBounds`);
- * aquí se exige que las metas sean positivas, que es lo mínimo que el backend acepta.
+ * Edits made when adjusting the AI proposal. Only the backend checks them against the calorie floor
+ * (`422 PlanProposalOutOfSafetyBounds`); here the targets must be positive, the minimum the backend accepts.
  *
- * @param guidelines lista **completa** de indicaciones del catálogo que deja el profesional.
+ * @param guidelines the **complete** list of catalog guidelines the practitioner keeps.
  */
 data class ProposalEdits(
     val targets: Targets,
@@ -93,13 +93,13 @@ data class ProposalEdits(
     }
 }
 
-/** El ítem quedó resuelto y la versión [planVersion] es la vigente (`PlanProposalAcceptanceResource`). */
+/** The item is resolved and version [planVersion] is the current one (`PlanProposalAcceptanceResource`). */
 data class AcceptedProposal(val reviewItem: ReviewItem, val planVersion: Int)
 
-/** Campo de PR14.IA-A con un valor que no sirve. */
+/** A field of the adjust form with an invalid value. */
 enum class ProposalEditField { ENERGY, PROTEIN, CARB, FAT, MESSAGE }
 
-/** Validación del formulario de PR14.IA-A (fail fast antes de enviar). */
+/** Validation of the adjust form (fail fast before sending). */
 sealed interface ProposalEditValidation {
     data class Valid(val edits: ProposalEdits) : ProposalEditValidation
     data class Invalid(val fields: Set<ProposalEditField>) : ProposalEditValidation
@@ -137,7 +137,7 @@ sealed interface ProposalEditValidation {
             )
         }
 
-        /** «1 650», «1650», «62,5» o «62.5»; `null` si no es un número positivo. */
+        /** "1 650", "1650", "62,5" or "62.5"; `null` if it is not a positive number. */
         internal fun parsePositive(text: String): Double? {
             val normalized = text.filterNot { it.isWhitespace() || it == ' ' || it == ' ' }.replace(',', '.')
             return normalized.toDoubleOrNull()?.takeIf { it > 0 && it.isFinite() }

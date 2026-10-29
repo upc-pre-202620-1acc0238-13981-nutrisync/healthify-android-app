@@ -2,7 +2,7 @@ package pe.edu.upc.healthify.features.nutritionalcare.infrastructure.remote.dto
 
 import kotlinx.serialization.Serializable
 
-/** `PatientBaselineSummaryResource` (RM-2). */
+/** `PatientBaselineSummaryResource`. */
 @Serializable
 data class BaselineSummaryDto(
     val biologicalSex: String? = null,
@@ -33,7 +33,7 @@ data class SinceLastConsultationDto(
     val compliance: ComplianceRatioDto? = null,
 )
 
-/** `PatientSummaryResource` (RM-2). */
+/** `PatientSummaryResource`. */
 @Serializable
 data class PatientSummaryDto(
     val patientId: Long,
@@ -90,7 +90,7 @@ data class ReferralSummaryDto(
 @Serializable
 data class PractitionerFollowUpSectionDto(val referrals: List<ReferralSummaryDto> = emptyList())
 
-/** `PractitionerPatientRecordResource` (RM-4): `PatientRecordResource` + lo del profesional. */
+/** `PractitionerPatientRecordResource`: `PatientRecordResource` plus the practitioner-only data. */
 @Serializable
 data class PractitionerRecordDto(
     val patientId: Long,
@@ -106,7 +106,7 @@ data class PractitionerRecordDto(
 @Serializable
 data class GuidelineItemDto(val code: String? = null, val custom: String? = null)
 
-/** `NutritionPlanResource` (PAC-4). */
+/** `NutritionPlanResource`. */
 @Serializable
 data class NutritionPlanDto(
     val planId: Long,
@@ -122,7 +122,7 @@ data class NutritionPlanDto(
     val patientMessage: String? = null,
 )
 
-/** `NutritionalAssessmentResource` (PAC-3 · detalle de una evaluación). Solo los campos que se muestran. */
+/** `NutritionalAssessmentResource` (assessment detail). Only the fields that are shown. */
 @Serializable
 data class NutritionalAssessmentDto(
     val assessmentId: Long,

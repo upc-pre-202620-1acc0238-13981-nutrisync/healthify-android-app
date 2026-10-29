@@ -4,9 +4,9 @@ import pe.edu.upc.healthify.features.monitoring.domain.valueobject.ComplianceOut
 import java.time.LocalDate
 
 /**
- * Cómo va un día del paciente (`GET …/daily-compliance?date=`): el resultado y la energía registrada **confirmada**
- * ese día (F21 suma solo estimaciones confirmadas). Un día que el backend aún no evaluó es [ComplianceOutcome.UNLOGGED]
- * con 0 kcal: «Todavía no registraste nada hoy».
+ * How a patient's day is going (`GET …/daily-compliance?date=`): the outcome and the **confirmed** energy logged
+ * that day (only confirmed estimates are summed). A day the backend has not evaluated yet is [ComplianceOutcome.UNLOGGED]
+ * with 0 kcal: "You haven't logged anything today yet".
  */
 data class DailyProgress(
     val date: LocalDate,
@@ -25,8 +25,8 @@ data class DailyProgress(
 }
 
 /**
- * Resumen de un rango de días (`DailyComplianceRangeResource.summary`, MA-6). [totalDays] cuenta los días de
- * calendario; los días sin registro están en [unloggedDays] y nunca restan.
+ * Summary of a range of days (`DailyComplianceRangeResource.summary`). [totalDays] counts calendar
+ * days; days without logs are in [unloggedDays] and never count against the patient.
  */
 data class ComplianceSummary(
     val metDays: Int,

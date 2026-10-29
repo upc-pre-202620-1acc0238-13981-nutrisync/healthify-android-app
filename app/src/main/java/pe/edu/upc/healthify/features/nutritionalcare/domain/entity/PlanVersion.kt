@@ -6,11 +6,11 @@ import pe.edu.upc.healthify.features.intake.domain.valueobject.PlanGuideline
 import java.time.Instant
 
 /**
- * Una versión publicada del plan, vista por el paciente (`PatientPlanVersionResource`, NC-8). El recurso es propio del
- * paciente: nunca trae diagnóstico, base de cálculo ni motivo de ajuste del profesional.
+ * A published plan version, as the patient sees it (`PatientPlanVersionResource`). The resource belongs to the
+ * patient: it never includes the diagnosis, calculation basis or the practitioner's adjustment reason.
  *
- * PT4.1 lista el número, la fecha, la energía y cuál está vigente; al tocar una versión se ve su detalle (metas,
- * indicaciones, restricciones, cambios y mensaje), solo de consulta.
+ * The list shows the number, date, energy and which one is current; tapping a version shows its detail (targets,
+ * guidelines, restrictions, changes and message), read-only.
  */
 data class PlanVersion(
     val version: Int,
@@ -31,5 +31,5 @@ data class PlanVersion(
     }
 }
 
-/** PT4.1: la más reciente primero (el backend ya las ordena así; se reordena por si acaso). */
+/** Newest first (the backend already sorts them this way; they are re-sorted just in case). */
 fun List<PlanVersion>.newestFirst(): List<PlanVersion> = sortedByDescending { it.version }

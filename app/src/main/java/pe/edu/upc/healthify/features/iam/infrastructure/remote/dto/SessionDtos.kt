@@ -3,8 +3,8 @@ package pe.edu.upc.healthify.features.iam.infrastructure.remote.dto
 import kotlinx.serialization.Serializable
 
 /**
- * `NavigationShellResource(SessionId, RoleClaim, NavigationShell, IsActive)`. `navigationShell` es `PatientShell`,
- * `PractitionerShell` o `null` mientras no se eligió ninguno.
+ * `NavigationShellResource(SessionId, RoleClaim, NavigationShell, IsActive)`. `navigationShell` is `PatientShell`,
+ * `PractitionerShell` or `null` while none has been chosen.
  */
 @Serializable
 data class NavigationShellDto(
@@ -14,7 +14,7 @@ data class NavigationShellDto(
     val isActive: Boolean = false,
 )
 
-/** `ChangePreferredLanguageResource(Language)` (IAM-3): `es` o `en`. */
+/** `ChangePreferredLanguageResource(Language)`: `es` or `en`. */
 @Serializable
 data class ChangePreferredLanguageRequestDto(
     val language: String,

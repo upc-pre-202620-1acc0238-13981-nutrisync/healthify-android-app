@@ -7,7 +7,7 @@ import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
-/** Envía la cola de pendientes (PT19, PT12, PT14.O). Lo programa [WorkManagerSyncScheduler]. */
+/** Sends the pending queue (diary entries and self weigh-ins). Scheduled by [WorkManagerSyncScheduler]. */
 @HiltWorker
 class PendingSyncWorker @AssistedInject constructor(
     @Assisted appContext: Context,

@@ -1,6 +1,6 @@
 package pe.edu.upc.healthify.features.iam.domain.valueobject
 
-/** Idioma preferido de la cuenta (IAM-3). El backend solo acepta `es` y `en`; `es` es el valor por defecto. */
+/** Preferred account language. The backend only accepts `es` and `en`; `es` is the default. */
 enum class PreferredLanguage(val code: String) {
     SPANISH("es"),
     ENGLISH("en"),

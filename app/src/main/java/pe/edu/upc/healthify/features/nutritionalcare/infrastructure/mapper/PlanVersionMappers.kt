@@ -7,7 +7,7 @@ import pe.edu.upc.healthify.features.intake.domain.valueobject.PlanGuideline
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.PlanVersion
 import pe.edu.upc.healthify.features.nutritionalcare.infrastructure.remote.dto.PlanVersionDto
 
-/** `null` si la versión rompe una invariante (fecha ilegible, versión o energía no positivas): no se muestra. */
+/** `null` if the version breaks an invariant (unreadable date, non-positive version or energy): it is not shown. */
 fun PlanVersionDto.toDomainOrNull(): PlanVersion? {
     val published = publishedAt.toInstantOrNull() ?: return null
     if (version <= 0 || energyKcal <= 0) return null

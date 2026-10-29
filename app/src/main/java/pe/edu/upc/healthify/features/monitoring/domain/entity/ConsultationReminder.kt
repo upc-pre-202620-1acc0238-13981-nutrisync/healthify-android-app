@@ -4,11 +4,11 @@ import java.time.Duration
 import java.time.Instant
 
 /**
- * Aviso local de una consulta agendada, para el paciente y para su nutricionista: un día antes y una hora antes. Solo
- * lleva la hora y, para el nutricionista, el nombre del paciente; nunca datos clínicos.
+ * Local reminder for a scheduled visit, for the patient and their nutritionist: a day before and an hour before. It
+ * only carries the time and, for the nutritionist, the patient's name; never clinical data.
  *
- * @param forPractitioner el aviso es para el nutricionista (si no, para el paciente).
- * @param patientFullName el paciente de la consulta (solo en los avisos del nutricionista).
+ * @param forPractitioner the reminder is for the nutritionist (otherwise for the patient).
+ * @param patientFullName the visit's patient (only in the nutritionist's reminders).
  */
 data class ConsultationReminder(
     val followUpId: Long,
@@ -16,17 +16,17 @@ data class ConsultationReminder(
     val forPractitioner: Boolean = false,
     val patientFullName: String? = null,
 ) {
-    /** Los avisos que todavía no pasaron, el más próximo primero. */
+    /** Reminders that have not passed yet, soonest first. */
     fun triggersAfter(now: Instant): List<ReminderTrigger> =
         LEADS.map { ReminderTrigger(it, scheduledFor.minus(it)) }
             .filter { it.at.isAfter(now) }
             .sortedBy { it.at }
 
     companion object {
-        /** Con cuánta anticipación se avisa. */
+        /** How far ahead the reminder fires. */
         val LEADS: List<Duration> = listOf(Duration.ofHours(24), Duration.ofHours(1))
     }
 }
 
-/** Un aviso de [ConsultationReminder]: [lead] antes de la consulta, a las [at]. */
+/** One [ConsultationReminder] reminder: [lead] before the visit, at [at]. */
 data class ReminderTrigger(val lead: Duration, val at: Instant)

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- API ≤ 30. Datos de salud y tokens cifrados con una clave del Keystore: nunca se respaldan. -->
+<!-- API ≤ 30. Health data and tokens encrypted with a Keystore key: never backed up. -->
 <full-backup-content>
     <exclude domain="root" path="." />
     <exclude domain="file" path="." />

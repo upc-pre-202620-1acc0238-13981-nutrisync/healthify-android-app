@@ -38,8 +38,8 @@ object NetworkModule {
     }
 
     /**
-     * Cliente base: idioma, logging de debug y timeouts. Lo comparten los dos clientes de abajo, así que
-     * reutilizan el pool de conexiones y el dispatcher.
+     * Base client: language, debug logging and timeouts. The two clients below share it, so
+     * they reuse the connection pool and the dispatcher.
      */
     @Provides
     @Singleton
@@ -55,7 +55,7 @@ object NetworkModule {
         .writeTimeout(READ_WRITE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
         .build()
 
-    /** Cliente autenticado: bearer en cada petición y renovación del par ante 401 (IAM-4). */
+    /** Authenticated client: bearer on every request and renewal of the token pair on a 401. */
     @Provides
     @Singleton
     fun provideOkHttpClient(
@@ -63,7 +63,7 @@ object NetworkModule {
         authInterceptor: AuthInterceptor,
         tokenRefreshAuthenticator: TokenRefreshAuthenticator,
     ): OkHttpClient = baseClient.newBuilder()
-        .apply { interceptors().add(1, authInterceptor) } // después de Accept-Language, antes del logging
+        .apply { interceptors().add(1, authInterceptor) } // after Accept-Language, before logging
         .authenticator(tokenRefreshAuthenticator)
         .build()
 
@@ -71,7 +71,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient, json: Json): Retrofit = retrofit(okHttpClient, json)
 
-    /** Para los endpoints anónimos de Iam (sign-up, sign-in, token-refreshes): sin bearer ni authenticator. */
+    /** For the anonymous Iam endpoints (sign-up, sign-in, token-refreshes): no bearer or authenticator. */
     @Provides
     @Singleton
     @AnonymousApi
@@ -84,8 +84,8 @@ object NetworkModule {
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .build()
 
-    // Generosos: las funciones de IA del backend tienen timeout de 20 s + un reintento, y la foto del plato
-    // (PT6, multipart) sube por redes móviles lentas.
+    // Generous: the backend AI features have a 20 s timeout + one retry, and the meal photo
+    // (multipart) uploads over slow mobile networks.
     private const val CONNECT_TIMEOUT_SECONDS = 30L
     private const val READ_WRITE_TIMEOUT_SECONDS = 60L
 }
@@ -93,7 +93,7 @@ object NetworkModule {
 @Module
 @InstallIn(SingletonComponent::class)
 interface NetworkBindingsModule {
-    /** Declara el set para que release (sin interceptores de debug) compile con un set vacío. */
+    /** Declares the set so release (without debug interceptors) compiles with an empty set. */
     @Multibinds
     @DebugInterceptors
     fun debugInterceptors(): Set<Interceptor>

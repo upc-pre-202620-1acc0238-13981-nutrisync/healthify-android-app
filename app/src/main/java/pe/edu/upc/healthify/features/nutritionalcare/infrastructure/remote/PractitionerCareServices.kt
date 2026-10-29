@@ -25,10 +25,10 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-/** NC-1 · datos base (solo `Practitioner`; `403` sin vínculo activo). */
+/** Baseline (`Practitioner` only; `403` without an active link). */
 interface PatientBaselineService {
 
-    /** `404 BaselineNotFound` antes de registrarlos (PAC-0). */
+    /** `404 BaselineNotFound` before it is recorded. */
     @GET("patients/{patientId}/baseline")
     suspend fun get(@Path("patientId") patientId: Long): PatientBaselineDto
 
@@ -40,14 +40,14 @@ interface PatientBaselineService {
     suspend fun update(@Path("patientId") patientId: Long, @Body body: PatientBaselineRequestDto): PatientBaselineDto
 }
 
-/** NC-2 a NC-7 · la consulta guiada (solo `Practitioner`). */
+/** The guided consultation (`Practitioner` only). */
 interface ConsultationService {
 
     /** `201` · `409 ConsultationAlreadyInProgress` · `422 BaselineRequired`. */
     @POST("patients/{patientId}/consultations")
     suspend fun start(@Path("patientId") patientId: Long, @Body body: StartConsultationRequestDto): ConsultationDto
 
-    /** `404 ConsultationNotFound` si no hay una en curso. */
+    /** `404 ConsultationNotFound` if none is in progress. */
     @GET("patients/{patientId}/consultations/in-progress")
     suspend fun getInProgress(@Path("patientId") patientId: Long): ConsultationDto
 
@@ -72,7 +72,7 @@ interface ConsultationService {
         @Body body: TargetProposalRequestDto,
     ): TargetProposalDto
 
-    /** `400 OverrideReasonRequired` si se escriben valores propios sin razón. */
+    /** `400 OverrideReasonRequired` if own values are entered without a reason. */
     @PUT("consultations/{consultationId}/targets")
     suspend fun prescribeTargets(
         @Path("consultationId") consultationId: Long,
@@ -88,7 +88,7 @@ interface ConsultationService {
         @Body body: PublicationRequestDto,
     ): ConsultationDto
 
-    /** Con la misma `Idempotency-Key` el backend devuelve el mismo resultado: nunca publica dos versiones. */
+    /** With the same `Idempotency-Key` the backend returns the same result: it never publishes two versions. */
     @POST("consultations/{consultationId}/publication")
     suspend fun publish(
         @Path("consultationId") consultationId: Long,
@@ -96,12 +96,12 @@ interface ConsultationService {
         @Body body: PublicationRequestDto,
     ): ConsultationDto
 
-    /** `204` · `403` si no es quien la lleva · `404` · `409` si ya no está en curso. */
+    /** `204` · `403` if the caller does not own it · `404` · `409` if it is no longer in progress. */
     @DELETE("consultations/{consultationId}")
     suspend fun discard(@Path("consultationId") consultationId: Long)
 }
 
-/** Vistas del paciente para el profesional (RM-2, RM-4, PAC-4). `403` sin vínculo activo. */
+/** Patient views for the practitioner. `403` without an active link. */
 interface PractitionerPatientService {
 
     @GET("patients/{patientId}/summary")
@@ -113,7 +113,7 @@ interface PractitionerPatientService {
     @GET("patients/{patientId}/nutrition-plans")
     suspend fun getPlans(@Path("patientId") patientId: Long): List<NutritionPlanDto>
 
-    /** Solo el profesional que registró la evaluación · `403` si es de otro · `404` si no existe. */
+    /** Only the practitioner who recorded the assessment · `403` if it is someone else's · `404` if missing. */
     @GET("nutritional-assessments/{assessmentId}")
     suspend fun getAssessment(@Path("assessmentId") assessmentId: Long): NutritionalAssessmentDto
 }

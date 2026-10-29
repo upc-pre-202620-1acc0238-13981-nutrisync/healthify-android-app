@@ -35,8 +35,8 @@ import java.util.Locale
 import javax.inject.Inject
 
 /**
- * PT14 «Confirmar porción» → PT8 de una entrada «Por confirmar» (F16): confirma la propuesta o la ajusta (otro plato
- * u otros gramos). El momento ya declarado no se toca (*Declared Local Timestamp Never Rewritten*).
+ * "Confirm portion" on a diary entry left "To confirm": confirms the proposal or adjusts it (another dish
+ * or other grams). The moment already declared is not touched (*Declared Local Timestamp Never Rewritten*).
  */
 @HiltViewModel
 class ConfirmEntryViewModel @Inject constructor(
@@ -127,7 +127,7 @@ class ConfirmEntryViewModel @Inject constructor(
         _state.update { it.copy(form = it.form.answerPlan(inPlan)) }
     }
 
-    /** IN-8 · la sugerencia de «¿Estaba en tu plan?» para el plato y los gramos que se van a confirmar. */
+    /** The "Was it in your plan?" suggestion for the dish and grams about to be confirmed. */
     private fun requestPlanFit() {
         val pid = patientId ?: return
         val current = _state.value

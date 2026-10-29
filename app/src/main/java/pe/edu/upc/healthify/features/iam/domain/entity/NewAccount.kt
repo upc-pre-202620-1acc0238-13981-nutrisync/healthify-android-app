@@ -5,7 +5,7 @@ import pe.edu.upc.healthify.features.iam.domain.valueobject.Password
 import pe.edu.upc.healthify.features.iam.domain.valueobject.PersonName
 import pe.edu.upc.healthify.features.iam.domain.valueobject.UserRole
 
-/** Una cuenta por crear (S3, F1). Registrarse no da acceso a nada: el acceso clínico llega con el vínculo. */
+/** An account to create. Signing up grants access to nothing: clinical access comes with the care link. */
 data class NewAccount(
     val name: PersonName,
     val email: EmailAddress,
@@ -13,7 +13,7 @@ data class NewAccount(
     val role: UserRole,
 )
 
-/** Un campo del formulario de registro con un problema, con el código del backend que le corresponde. */
+/** A sign-up form field with a problem, with its matching backend code. */
 sealed interface SignUpProblem {
     data class GivenNames(val problem: PersonName.Problem) : SignUpProblem
     data class FamilyNames(val problem: PersonName.Problem) : SignUpProblem
@@ -28,13 +28,13 @@ sealed interface SignUpProblem {
     data object RoleNotDeclared : SignUpProblem
 }
 
-/** Resultado de validar el formulario de registro: la cuenta lista para enviar o todos sus problemas. */
+/** Result of validating the sign-up form: the account ready to send, or all its problems. */
 sealed interface SignUpValidation {
     data class Valid(val account: NewAccount) : SignUpValidation
     data class Invalid(val problems: Set<SignUpProblem>) : SignUpValidation
 }
 
-/** Valida el formulario completo con las reglas de los value objects (las mismas del backend). */
+/** Validates the whole form with the value object rules (the same as the backend's). */
 fun validateNewAccount(
     givenNames: String,
     familyNames: String,

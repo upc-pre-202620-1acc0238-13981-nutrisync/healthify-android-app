@@ -124,7 +124,7 @@ class ManualMealViewModelTest {
         selectQuinua()
         viewModel.onPortionChange("150")
         viewModel.onPlanAnswer(true)
-        // Reloj fijo: 2026-10-07T13:00Z → hace 3 días.
+        // Fixed clock: 2026-10-07T13:00Z → 3 days ago.
         viewModel.onMealTimeSelected(LocalDateTime.parse("2026-10-04T12:00:00"))
 
         assertEquals(LocalTimestamp.Validity.TOO_OLD, viewModel.state.value.form.mealTimeError)

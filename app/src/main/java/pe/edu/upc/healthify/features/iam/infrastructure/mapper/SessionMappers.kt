@@ -13,7 +13,7 @@ import pe.edu.upc.healthify.features.iam.infrastructure.remote.dto.SignInRespons
 private const val ROLE_PATIENT = "Patient"
 private const val ROLE_PRACTITIONER = "Practitioner"
 
-/** Rol del backend (`Patient`/`Practitioner`). Un rol desconocido es un contrato roto: falla rápido. */
+/** Backend role (`Patient`/`Practitioner`). An unknown role is a broken contract: fail fast. */
 internal fun String.toUserRole(): UserRole = when {
     equals(ROLE_PATIENT, ignoreCase = true) -> UserRole.PATIENT
     equals(ROLE_PRACTITIONER, ignoreCase = true) -> UserRole.PRACTITIONER
@@ -26,11 +26,11 @@ internal fun UserRole.toCode(): String = when (this) {
 }
 
 /**
- * @throws IllegalArgumentException si la respuesta no forma un usuario válido.
+ * @throws IllegalArgumentException if the response does not form a valid user.
  */
 fun SignInResponseDto.toDomain(): SessionUser {
     val email = EmailAddress(email)
-    // DECISIÓN IAM-1: una cuenta sin nombres (anterior a IAM-1) usa la parte local del correo, como el backend.
+    // An account without names (created before names were required) uses the email local part, like the backend.
     val given = givenNames?.takeIf { it.isNotBlank() } ?: email.value.substringBefore('@')
     return SessionUser(
         id = UserId(userId),
@@ -43,7 +43,7 @@ fun SignInResponseDto.toDomain(): SessionUser {
 }
 
 /**
- * @throws IllegalArgumentException si la fila guardada ya no forma un usuario válido.
+ * @throws IllegalArgumentException if the stored row no longer forms a valid user.
  */
 fun SessionUserEntity.toDomain(): SessionUser = SessionUser(
     id = UserId(userId),

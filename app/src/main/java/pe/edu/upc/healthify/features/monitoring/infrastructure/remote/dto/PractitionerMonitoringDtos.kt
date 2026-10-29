@@ -38,7 +38,7 @@ data class PanelDiaryEntryDto(
     val foodName: String? = null,
 )
 
-/** `PatientMonitoringPanelResource` (RM-3). */
+/** `PatientMonitoringPanelResource`. */
 @Serializable
 data class PatientMonitoringPanelDto(
     val date: String,
@@ -49,6 +49,6 @@ data class PatientMonitoringPanelDto(
     val lastClinicalMeasurement: PanelClinicalMeasurementDto? = null,
 )
 
-/** `MonitoringSummaryResource` (IA-5). */
+/** `MonitoringSummaryResource`. */
 @Serializable
 data class MonitoringSummaryDto(val text: String? = null)

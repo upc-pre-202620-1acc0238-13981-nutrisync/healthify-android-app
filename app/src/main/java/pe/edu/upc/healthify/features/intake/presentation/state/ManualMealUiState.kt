@@ -5,15 +5,15 @@ import pe.edu.upc.healthify.features.intake.domain.entity.MealLogOutcome
 import java.time.LocalDate
 
 /**
- * PT9 Buscar alimento (+ PT9.K teclado), PT10 No encontrado, PT10.1 Encontrado y PT10.3 No se pudo registrar.
+ * Food search (and keyboard), not found, found and could not log.
  *
- * @param searchedTerm el término de [results] (`null` = todavía no se buscó: no se muestra «No lo encontramos»).
- * @param localOnly el servidor no respondió: «Estás sin conexión: solo buscamos en tu catálogo guardado.».
- * @param foodError «Elige un alimento de la lista.» o «No encontramos este alimento…» (422 del backend).
+ * @param searchedTerm the term behind [results] (`null` = nothing searched yet: "We could not find it" is not shown).
+ * @param localOnly the server did not answer: "You are offline: we only searched your saved catalog.".
+ * @param foodError "Pick a food from the list." or "We could not find this food…" (backend 422).
  */
 data class ManualMealUiState(
     val today: LocalDate,
-    /** Día en que se creó la cuenta: el selector del día no ofrece días anteriores. */
+    /** The day the account was created: the day picker does not offer earlier days. */
     val earliestDay: LocalDate? = null,
     val form: MealFormState,
     val pickFoodOnly: Boolean = false,
@@ -28,7 +28,7 @@ data class ManualMealUiState(
     val saveFailed: Boolean = false,
     val isOffline: Boolean = false,
 ) {
-    /** PT10 · el estado vacío de la búsqueda. */
+    /** The search's empty state. */
     val notFound: Boolean get() = searchedTerm != null && !isSearching && results.isEmpty()
 
     enum class FoodError { NOT_CHOSEN, NOT_RESOLVED }
@@ -37,6 +37,6 @@ data class ManualMealUiState(
 sealed interface ManualMealEvent {
     data class Logged(val outcome: MealLogOutcome) : ManualMealEvent
 
-    /** Modo «elegir alimento» (PT8): vuelve con el alimento elegido. */
+    /** "Pick a food" mode (from the photo confirmation): returns with the picked food. */
     data class FoodPicked(val referenceFoodId: Long, val name: String) : ManualMealEvent
 }

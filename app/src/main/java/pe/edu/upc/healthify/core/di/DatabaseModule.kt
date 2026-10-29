@@ -43,7 +43,7 @@ interface SyncBindingsModule {
     @Binds
     fun bindSyncScheduler(impl: WorkManagerSyncScheduler): SyncScheduler
 
-    /** Cada feature aporta su sender con `@Binds @IntoSet`; mientras no haya ninguno, el set queda vacío. */
+    /** Each feature contributes its sender with `@Binds @IntoSet`; while there are none, the set stays empty. */
     @Multibinds
     fun pendingOperationSenders(): Set<PendingOperationSender>
 }

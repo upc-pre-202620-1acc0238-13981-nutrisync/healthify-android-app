@@ -52,38 +52,38 @@ import pe.edu.upc.healthify.features.monitoring.presentation.state.AgendaRow
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.screen.ReviewInboxScreen
 import java.time.Instant
 
-/** Lo que el shell del nutricionista abre en el grafo raíz (pantallas completas sobre él). */
+/** What the practitioner shell opens in the root graph (full screens over it). */
 data class PractitionerShellCallbacks(
-    /** PR1 «Invitar paciente» → PR2. */
+    /** Patients "Invite patient" → invitation screen. */
     val onInvitePatient: () -> Unit,
-    /** PR1 → ficha del paciente (PAC-0 o PAC-1 según tenga datos base). */
+    /** Patients → patient record (its first tab depends on whether there is baseline data). */
     val onOpenPatient: (patientId: Long, careLinkId: Long, fullName: String) -> Unit,
-    /** PR13 → PR14 / PR14.IA. */
+    /** Inbox → review item (manual or AI). */
     val onOpenReviewItem: (reviewItemId: Long) -> Unit = {},
-    /** PR17.0 «Agendar consulta» → PR17. */
+    /** Calendar "Schedule appointment" → scheduling. */
     val onScheduleFollowUp: () -> Unit = {},
-    /** PR17.0 «Reprogramar» → PR17 con la consulta prellenada. */
+    /** Calendar "Reschedule" → scheduling with the appointment prefilled. */
     val onRescheduleFollowUp: (AgendaRow) -> Unit = {},
-    /** Menú «Catálogo de alimentos» → PR15. */
+    /** "Food catalog" menu item → food catalog. */
     val onOpenFoodCatalog: () -> Unit = {},
-    /** Menú «Ajustes» → PR20 (pantalla completa del grafo raíz, con «Atrás»). */
+    /** "Settings" menu item → practitioner settings (full screen in the root graph, with "Back"). */
     val onOpenSettings: () -> Unit = {},
-    /** Menú «Cerrar sesión» → PR20.1. */
+    /** "Sign out" menu item → sign-out confirmation. */
     val onSignOut: () -> Unit = {},
 )
 
-/** Snackbar que otra pantalla pide al volver al shell (y la pestaña que se abre para mostrarlo). */
+/** Snackbar another screen requests on return to the shell (and the tab opened to show it). */
 sealed interface PractitionerShellMessage {
-    /** PR13.1 · «Señal resuelta. Ana Flores ya no aparece en tu bandeja.» */
+    /** "Signal resolved; the patient no longer appears in your inbox." */
     data class SignalResolved(val patientName: String?) : PractitionerShellMessage
 
-    /** PR17.0-S · «Consulta agendada: jue 18 sept., 10:00» (o reprogramada). */
+    /** "Appointment scheduled: Thu 18 Sep, 10:00" (or rescheduled). */
     data class FollowUpScheduled(val scheduledFor: Instant, val rescheduled: Boolean) : PractitionerShellMessage
 
-    /** PR18 · el alta volvió a PR1. */
+    /** The discharge returned to Patients. */
     data class PatientDischarged(val patientName: String) : PractitionerShellMessage
 
-    /** Valor para el `SavedStateHandle` del shell (solo texto). */
+    /** Value for the shell's `SavedStateHandle` (text only). */
     fun encode(): String = when (this) {
         is SignalResolved -> "$SIGNAL_RESOLVED${patientName.orEmpty()}"
         is FollowUpScheduled -> "${if (rescheduled) FOLLOW_UP_RESCHEDULED else FOLLOW_UP_SCHEDULED}${scheduledFor.epochSecond}"
@@ -110,9 +110,9 @@ sealed interface PractitionerShellMessage {
 }
 
 /**
- * Shell del nutricionista: NavigationBar Pacientes (PR1) · Bandeja (PR13) · Agenda (PR17.0) con su propio NavHost y
- * el menú principal (PR1.D, ☰ de las pestañas) que abre desde la derecha. Los Snackbars de vuelta (PR13.1, PR17.0-S,
- * alta) se muestran sobre la NavigationBar.
+ * Practitioner shell: NavigationBar Patients · Inbox · Calendar with its own NavHost and the main menu (☰ on the
+ * tabs) that opens from the right. The return snackbars (signal resolved, appointment scheduled, discharge) show
+ * above the NavigationBar.
  */
 @Composable
 fun PractitionerShellScreen(
@@ -146,7 +146,7 @@ fun PractitionerShellScreen(
     }
     val cancelledText = stringResource(R.string.agenda_cancelled)
 
-    // Cada destino del menú es una pantalla del grafo raíz: el menú se cierra antes de abrirla.
+    // Every menu destination is a root graph screen: the menu closes before opening it.
     val fromMenu = { action: () -> Unit ->
         viewModel.onCloseMenu()
         action()
@@ -194,14 +194,14 @@ fun PractitionerShellScreen(
     }
 }
 
-/** Texto del Snackbar de [message] en el idioma de la app. */
+/** Snackbar text for [message] in the app language. */
 @Composable
 private fun messageText(message: PractitionerShellMessage): String = when (message) {
     is PractitionerShellMessage.SignalResolved -> message.patientName
         ?.let { stringResource(R.string.shell_signal_resolved, it) }
         ?: stringResource(R.string.shell_signal_resolved_generic)
     is PractitionerShellMessage.FollowUpScheduled -> {
-        // «jue 18 sept.» en minúscula dentro de la frase.
+        // «jue 18 sept.» in lowercase inside the sentence.
         val locale = currentLocale()
         val day = message.scheduledFor.weekdayDayMonthText().replaceFirstChar { it.lowercase(locale) }
         stringResource(
@@ -236,7 +236,7 @@ fun PractitionerShellContent(
             PractitionerMenuContent(
                 fullName = state.fullName,
                 avatarInitial = state.avatarInitial,
-                // El menú solo se abre desde las pestañas, que no son ítems del menú.
+                // The menu only opens from the tabs, which are not menu items.
                 selected = null,
                 onSelect = actions.onMenuItem,
                 onSignOut = actions.onSignOut,
@@ -255,7 +255,7 @@ fun PractitionerShellContent(
                     .weight(1f),
             ) {
                 content()
-                // Sobre la acción fija de la pestaña (88 dp del Figma: botón de 56 dp + 16 dp arriba y abajo).
+                // Above the tab's pinned action (88 dp in the Figma: 56 dp button + 16 dp above and below).
                 HealthifySnackbarHost(
                     hostState = snackbarHostState,
                     modifier = Modifier
@@ -268,7 +268,7 @@ fun PractitionerShellContent(
     }
 }
 
-@Preview(name = "Shell nutricionista", widthDp = 360, heightDp = 800)
+@Preview(name = "Practitioner shell", widthDp = 360, heightDp = 800)
 @Composable
 private fun PractitionerShellContentPreview() {
     HealthifyTheme {
@@ -282,7 +282,7 @@ private fun PractitionerShellContentPreview() {
     }
 }
 
-@Preview(name = "PR1.D · Menú principal", widthDp = 360, heightDp = 800)
+@Preview(name = "Practitioner main menu", widthDp = 360, heightDp = 800)
 @Composable
 private fun PractitionerShellMenuPreview() {
     HealthifyTheme {

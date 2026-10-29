@@ -19,18 +19,18 @@ import pe.edu.upc.healthify.features.intake.infrastructure.local.WeightTrendCach
 import pe.edu.upc.healthify.features.intake.infrastructure.local.WeightTrendCacheEntity
 
 /**
- * Base de datos compartida de la app. Cada contexto aporta sus entities y DAOs desde su
- * `infrastructure/local` y los registra aquí; sus módulos Hilt exponen el DAO con `db.xxxDao()`.
+ * Shared app database. Each context contributes its entities and DAOs from its
+ * `infrastructure/local` and registers them here; its Hilt modules expose the DAO with `db.xxxDao()`.
  *
- * Al cambiar el esquema: subir [version], agregar una `Migration` en `DatabaseModule` (la cola de pendientes
- * no se puede perder con una migración destructiva) y versionar el JSON que se genera en `app/schemas/`.
- * Las tablas nuevas sin cambios en las existentes usan `AutoMigration`.
+ * When the schema changes: bump [version], add a `Migration` in `DatabaseModule` (the pending queue
+ * must never be lost to a destructive migration) and commit the JSON generated in `app/schemas/`.
+ * New tables that leave the existing ones unchanged use `AutoMigration`.
  *
- * - v2 (sesión 5): `active_targets_cache` (metas vigentes offline, PT3.O/PT4).
- * - v3 (sesión 6): `diary_day_cache` (PT14.O), `pending_meal_photos` (IN-7 sin conexión) y `local_food_catalog`
- *   (PT9 offline).
- * - v4 (sesión 7): `weight_trend_cache` (PT13 sin conexión).
- * - v5: `session_user.created_at` (fecha de creación de la cuenta: límite del diario PT14 y del selector del día).
+ * - v2: `active_targets_cache` (current targets offline).
+ * - v3: `diary_day_cache`, `pending_meal_photos` (meal photos taken offline) and `local_food_catalog`
+ *   (food search offline).
+ * - v4: `weight_trend_cache` (weight trend offline).
+ * - v5: `session_user.created_at` (account creation date: lower bound of the diary and the day picker).
  */
 @Database(
     entities = [

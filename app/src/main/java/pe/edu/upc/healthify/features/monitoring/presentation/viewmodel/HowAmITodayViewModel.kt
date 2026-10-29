@@ -17,7 +17,7 @@ import pe.edu.upc.healthify.features.monitoring.application.usecase.GetTodayProg
 import pe.edu.upc.healthify.features.monitoring.presentation.state.HowAmITodayUiState
 import javax.inject.Inject
 
-/** PT15 · Cómo voy hoy: el resultado del día del teléfono (Met / Exceeded / Short / Unlogged). */
+/** How am I doing today: the outcome for the phone's day (Met / Exceeded / Short / Unlogged). */
 @HiltViewModel
 class HowAmITodayViewModel @Inject constructor(
     private val observeCurrentUser: ObserveCurrentUserUseCase,

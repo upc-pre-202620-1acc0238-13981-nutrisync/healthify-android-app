@@ -13,41 +13,41 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 
-/** Vínculo asistencial del lado del paciente (§5.2). */
+/** Patient-side care link. */
 interface CareLinkService {
 
-    /** Vínculo **con consentimiento** del paciente; `404 CareLinkNotFound` si no hay ninguno. */
+    /** The patient's **consented** care link; `404 CareLinkNotFound` if there is none. */
     @GET("patients/{patientId}/care-links/active")
     suspend fun getActiveCareLink(@Path("patientId") patientId: Long): CareLinkDto
 
-    /** Un vínculo por id, también inactivo o cerrado (lo leen sus dos participantes). */
+    /** A care link by id, even inactive or closed (both participants can read it). */
     @GET("care-links/{careLinkId}")
     suspend fun getCareLink(@Path("careLinkId") careLinkId: Long): CareLinkDto
 
-    /** F5 · `201` con el vínculo nuevo, todavía sin consentimiento. */
+    /** `201` with the new care link, still without consent. */
     @POST("invitations/redemption")
     suspend fun redeemInvitation(@Body body: RedeemInvitationRequestDto): CareLinkDto
 
-    /** F6 · `200` con el vínculo ya activo. */
+    /** `200` with the now active care link. */
     @POST("care-links/{careLinkId}/consent")
     suspend fun grantConsent(@Path("careLinkId") careLinkId: Long, @Body body: GrantConsentRequestDto): CareLinkDto
 
-    /** F28 · `204`. */
+    /** `204`. */
     @DELETE("care-links/{careLinkId}/consent")
     suspend fun withdrawConsent(@Path("careLinkId") careLinkId: Long)
 
-    /** CR-2 · `204` · `403` sin vínculo activo · `409` vínculo cerrado. Pedir el estado actual no cambia nada. */
+    /** `204` · `403` without an active care link · `409` closed care link. Requesting the current state changes nothing. */
     @PUT("care-links/{careLinkId}/ai-processing-consent")
     suspend fun changeAiProcessingConsent(
         @Path("careLinkId") careLinkId: Long,
         @Body body: ChangeAiProcessingConsentRequestDto,
     )
 
-    /** F12 / CR-3 · si el paciente vio la última versión publicada. */
+    /** Whether the patient saw the latest published version. */
     @GET("care-links/{careLinkId}/targets-read-status")
     suspend fun getTargetsReadStatus(@Path("careLinkId") careLinkId: Long): TargetsReadStatusDto
 
-    /** F12 · `200` con el vínculo · `422 NoPendingTargetsVersion` si no había nada pendiente. */
+    /** `200` with the care link · `422 NoPendingTargetsVersion` if nothing was pending. */
     @POST("care-links/{careLinkId}/targets-acknowledgement")
     suspend fun acknowledgeActiveTargets(
         @Path("careLinkId") careLinkId: Long,

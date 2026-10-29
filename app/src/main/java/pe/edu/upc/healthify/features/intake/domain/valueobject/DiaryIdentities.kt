@@ -9,7 +9,7 @@ value class DiaryEntryId(val value: Long) {
     }
 }
 
-/** Id del análisis de una foto (`MealPhotoAnalysisResource.analysisId`, Guid; vence a las 24 h). */
+/** Id of a photo analysis (`MealPhotoAnalysisResource.analysisId`, Guid; expires after 24 h). */
 @JvmInline
 value class MealPhotoAnalysisId(val value: String) {
     init {
@@ -25,8 +25,8 @@ value class MealPhotoAnalysisId(val value: String) {
 }
 
 /**
- * Un alimento del catálogo tal como lo usa el diario: su id (lo resuelve FoodCatalog) y el nombre que se muestra.
- * Intake no conoce los nutrientes: el backend los toma del catálogo.
+ * A catalog food as the diary uses it: its id (FoodCatalog resolves it) and the name that is shown.
+ * Intake does not know the nutrients: the backend takes them from the catalog.
  */
 data class MealFood(val referenceFoodId: Long, val name: String) {
     init {
@@ -35,7 +35,7 @@ data class MealFood(val referenceFoodId: Long, val name: String) {
     }
 }
 
-/** Cómo se registró la entrada. [OFF_PLAN] es solo de filas históricas (antes de IN-1, sin alimento). */
+/** How the entry was logged. [OFF_PLAN] only appears on historical rows logged without a food. */
 enum class EntryProvenance(val code: String) {
     PHOTO("Photo"),
     MANUAL("Manual"),

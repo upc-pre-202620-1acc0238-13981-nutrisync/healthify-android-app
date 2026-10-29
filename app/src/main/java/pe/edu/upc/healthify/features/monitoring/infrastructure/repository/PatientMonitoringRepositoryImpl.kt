@@ -45,7 +45,7 @@ class PatientMonitoringRepositoryImpl @Inject constructor(
     override suspend fun getConsistencyIndex(patientId: PatientId): Result<ConsistencyIndex?> {
         val result = apiCall { service.getConsistencyIndex(patientId.value) }
         val error = result.domainErrorOrNull()
-        // F23: «todavía no hay índice» no es un error para el paciente; simplemente no hay tarjeta.
+        // "No index yet" is not an error for the patient; there is simply no card.
         if (error is DomainError.Validation && error.code == CODE_BOTH_SERIES_REQUIRED) return Result.success(null)
         return result.map { it.toDomain() }
     }
@@ -59,7 +59,7 @@ class PatientMonitoringRepositoryImpl @Inject constructor(
         return result.mapCatching<NextFollowUp?, _> { it.toDomain() }.invalidAsUnexpected(result)
     }
 
-    /** Un recurso que rompe una invariante del dominio se reporta como respuesta inesperada, no como excepción. */
+    /** A resource that breaks a domain invariant is reported as an unexpected response, not as an exception. */
     private fun <T> Result<T>.invalidAsUnexpected(original: Result<*>): Result<T> =
         if (isFailure && original.isSuccess) domainFailure(DomainError.Unexpected(CODE_INVALID_RESOURCE)) else this
 

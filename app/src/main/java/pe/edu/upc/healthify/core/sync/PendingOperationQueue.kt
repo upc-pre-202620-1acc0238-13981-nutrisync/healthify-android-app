@@ -9,8 +9,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Cola offline genérica. La usan los repositorios de las features (diario, autopesajes) desde
- * su infrastructure: encolan lo registrado sin conexión y [PendingSyncWorker] lo envía cuando hay red.
+ * Generic offline queue. The feature repositories (diary, self weigh-ins) use it from their
+ * infrastructure: they queue what was recorded offline and [PendingSyncWorker] sends it when there is network.
  */
 @Singleton
 class PendingOperationQueue @Inject constructor(
@@ -19,8 +19,8 @@ class PendingOperationQueue @Inject constructor(
 ) {
 
     /**
-     * Guarda la operación y pide una sincronización. Devuelve el `clientEntryId`, que la feature debe incluir
-     * en su [payload] si el endpoint lo pide en el cuerpo. Encolar dos veces el mismo id no la duplica.
+     * Stores the operation and requests a sync. Returns the `clientEntryId`, which the feature must include
+     * in its [payload] if the endpoint expects it in the body. Queuing the same id twice does not duplicate it.
      */
     suspend fun enqueue(
         type: String,
@@ -43,7 +43,7 @@ class PendingOperationQueue @Inject constructor(
         return clientEntryId
     }
 
-    /** Pendientes y rechazadas de un tipo, en el orden en que se registraron (PT19). */
+    /** Pending and rejected operations of one type, in the order they were recorded. */
     fun observe(ownerUserId: Long, type: String): Flow<List<PendingOperation>> =
         dao.observe(ownerUserId, type).map { entities -> entities.map { it.toModel() } }
 

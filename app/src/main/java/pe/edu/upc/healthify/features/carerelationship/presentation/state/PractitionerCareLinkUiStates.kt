@@ -10,9 +10,9 @@ import java.time.Instant
 import java.util.Locale
 
 /**
- * Una fila de PR1.
+ * A roster row.
  *
- * @param attention por qué requiere acción (el primer motivo por prioridad); `null` = al día.
+ * @param attention why the patient needs action (the first reason by priority); `null` = up to date.
  */
 data class RosterItem(
     val patientId: Long,
@@ -41,11 +41,11 @@ data class RosterItem(
 }
 
 /**
- * PR1 · Mi cartera, agrupada por acción. `patients = null` = todavía no se leyó; lista vacía = PR1.V. Sin conexión y
- * sin lectura = PR1.O. El buscador filtra en el teléfono, sin llamada nueva.
+ * My roster, grouped by action. `patients = null` = not read yet; empty list = empty state. Offline with
+ * no read = offline state. The search filters on the phone, without a new call.
  *
- * @param query lo escrito en «Buscar paciente…».
- * @param isUpToDateExpanded la fila «Al día» desplegada en su sitio.
+ * @param query what was typed in "Search patient…".
+ * @param isUpToDateExpanded the "Up to date" row expanded in place.
  */
 data class PatientRosterUiState(
     val isLoading: Boolean = true,
@@ -64,28 +64,28 @@ data class PatientRosterUiState(
             return patients.orEmpty().filter { term.isEmpty() || it.fullName.searchable().contains(term) }
         }
 
-    /** «Requieren acción»: ordenados por la prioridad de su motivo ([RosterAttention]); el resto, en el orden del backend. */
+    /** "Need action": sorted by the priority of their reason ([RosterAttention]); the rest, in backend order. */
     val needsAction: List<RosterItem> get() = matching.filter { it.attention != null }.sortedBy { it.attention?.ordinal }
 
-    /** «Al día»: sin pendientes. */
+    /** "Up to date": nothing pending. */
     val upToDate: List<RosterItem> get() = matching.filter { it.attention == null }
 
-    /** Hay cartera, pero nadie coincide con la búsqueda. */
+    /** There is a roster, but nobody matches the search. */
     val noSearchResults: Boolean get() = query.isNotBlank() && !patients.isNullOrEmpty() && matching.isEmpty()
 }
 
-/** «Ramírez» se encuentra escribiendo «ramirez»: sin mayúsculas ni tildes. */
+/** "Ramírez" is found by typing "ramirez": case- and accent-insensitive. */
 private fun String.searchable(): String =
     Normalizer.normalize(trim(), Normalizer.Form.NFD).replace(COMBINING_MARKS, "").lowercase(Locale.ROOT)
 
 private val COMBINING_MARKS = Regex("\\p{Mn}+")
 
-/** Por qué no se pudo generar el código de PR2 (textos de las Notas). */
+/** Why the invitation code could not be generated (texts from the design notes). */
 enum class InviteError { OFFLINE, EXPIRATION_REQUIRED, GENERIC }
 
 /**
- * PR2 · Generar invitación (+ PR2.L). El token vive solo en memoria mientras la pantalla está abierta: nunca se guarda
- * ni se vuelve a pedir.
+ * Generate invitation (plus its loading state). The token lives only in memory while the screen is open: it is
+ * never saved or requested again.
  */
 data class InvitePatientUiState(
     val validity: InvitationValidity = InvitationValidity.DEFAULT,

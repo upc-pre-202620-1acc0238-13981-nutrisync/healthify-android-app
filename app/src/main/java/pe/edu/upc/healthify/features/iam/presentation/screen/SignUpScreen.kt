@@ -47,11 +47,11 @@ import pe.edu.upc.healthify.features.iam.presentation.state.SignUpFieldErrors
 import pe.edu.upc.healthify.features.iam.presentation.state.SignUpUiState
 import pe.edu.upc.healthify.features.iam.presentation.viewmodel.SignUpViewModel
 
-// Medidas del frame «S3 · Registro».
+// Measurements of the "Sign-up" frame.
 private val LogoSize = DpSize(44.dp, 39.dp)
 private val GreenShapeOffsetY = 9.dp
 
-/** Acciones de S3 que la pantalla con estado conecta con el ViewModel. */
+/** Sign-up actions that the stateful screen wires to the ViewModel. */
 data class SignUpActions(
     val onGivenNamesChange: (String) -> Unit = {},
     val onFamilyNamesChange: (String) -> Unit = {},
@@ -64,7 +64,7 @@ data class SignUpActions(
     val onErrorDialogDismiss: () -> Unit = {},
 )
 
-/** S3 · Registro (Sin elegir / Paciente / Nutricionista · Carga · Sin conexión · S3.E · S3.K). */
+/** Sign-up (no role chosen / patient / practitioner · loading · offline · validation errors · keyboard). */
 @Composable
 fun SignUpScreen(
     onSignedIn: () -> Unit,
@@ -191,7 +191,7 @@ fun SignUpContent(
                     modifier = Modifier.fillMaxWidth(),
                 )
             } else if (!state.isSubmitting) {
-                // El frame «Carga» no muestra «Ya tengo cuenta» mientras se crea la cuenta.
+                // The "Loading" frame hides "I already have an account" while the account is being created.
                 HealthifyButton(
                     text = stringResource(R.string.sign_up_have_account),
                     onClick = actions.onSignIn,
@@ -303,19 +303,19 @@ private fun PersonName.Problem.messageRes(@StringRes requiredRes: Int): Int = wh
     PersonName.Problem.TOO_LONG -> R.string.sign_up_error_name_too_long
 }
 
-@Preview(name = "S3 · Registro — Sin elegir", widthDp = 360, heightDp = 800)
+@Preview(name = "Sign up - no role chosen", widthDp = 360, heightDp = 800)
 @Composable
 private fun SignUpUnselectedPreview() {
     HealthifyTheme { SignUpContent(state = SignUpUiState(), actions = SignUpActions()) }
 }
 
-@Preview(name = "S3 · Registro — Paciente", widthDp = 360, heightDp = 800)
+@Preview(name = "Sign up - patient", widthDp = 360, heightDp = 800)
 @Composable
 private fun SignUpPatientPreview() {
     HealthifyTheme { SignUpContent(state = SignUpUiState(role = UserRole.PATIENT), actions = SignUpActions()) }
 }
 
-@Preview(name = "S3 · Registro Nu — Carga", widthDp = 360, heightDp = 800)
+@Preview(name = "Sign up practitioner - loading", widthDp = 360, heightDp = 800)
 @Composable
 private fun SignUpLoadingPreview() {
     HealthifyTheme {
@@ -326,7 +326,7 @@ private fun SignUpLoadingPreview() {
     }
 }
 
-@Preview(name = "S3 · Registro Pa — Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Sign up patient - offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun SignUpOfflinePreview() {
     HealthifyTheme {
@@ -334,7 +334,7 @@ private fun SignUpOfflinePreview() {
     }
 }
 
-@Preview(name = "S3.E · Registro — errores de validación", widthDp = 360, heightDp = 800)
+@Preview(name = "Sign up - validation errors", widthDp = 360, heightDp = 800)
 @Composable
 private fun SignUpErrorsPreview() {
     HealthifyTheme {
@@ -349,7 +349,7 @@ private fun SignUpErrorsPreview() {
     }
 }
 
-@Preview(name = "S3 · Registro — error inesperado", widthDp = 360, heightDp = 800)
+@Preview(name = "Sign up - unexpected error", widthDp = 360, heightDp = 800)
 @Composable
 private fun SignUpServerErrorPreview() {
     HealthifyTheme {

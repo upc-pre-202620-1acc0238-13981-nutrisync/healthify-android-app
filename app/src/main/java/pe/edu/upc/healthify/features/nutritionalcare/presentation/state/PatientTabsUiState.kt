@@ -7,8 +7,8 @@ import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.PractitionerP
 import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.ConsultationStep
 
 /**
- * PAC-0 / PAC-1 / PAC-1.C · pestaña Resumen. `summary.baseline == null` es PAC-0; con consulta en curso, PAC-1.C. Nada
- * de esto se guarda en el teléfono: sin conexión y sin lectura previa se pide conexión.
+ * Summary tab. `summary.baseline == null` means no baseline yet; it may also carry a consultation in progress.
+ * None of this is stored on the phone: offline with no previous read, it asks for a connection.
  */
 data class PatientSummaryUiState(
     val isLoading: Boolean = true,
@@ -19,28 +19,28 @@ data class PatientSummaryUiState(
     val showStartError: Boolean = false,
 )
 
-/** Navegación pedida por las pestañas de la ficha del paciente. */
+/** Navigation requested by the patient profile tabs. */
 sealed interface PatientTabEvent {
-    /** EV-1 · registrar (PAC-0) o editar los datos base. */
+    /** Record or edit the baseline. */
     data class OpenBaseline(val editing: Boolean) : PatientTabEvent
 
-    /** EV-2 a EV-5 · el paso donde quedó la consulta. */
+    /** The step the consultation is on. */
     data class OpenConsultationStep(val step: ConsultationStep) : PatientTabEvent
 }
 
-/** PAC-3 · pestaña Expediente (con el diagnóstico activo, solo del profesional). */
+/** Record tab (with the active diagnosis, practitioner only). */
 data class PractitionerRecordUiState(
     val isLoading: Boolean = true,
     val isOffline: Boolean = false,
     val loadFailed: Boolean = false,
     val record: PractitionerPatientRecord? = null,
-    /** La evaluación abierta en su hoja de detalle; `null` sin hoja. */
+    /** The assessment open in its detail sheet; `null` with no sheet. */
     val evaluationSheet: EvaluationSheetState? = null,
 )
 
 /**
- * PAC-4 · pestaña Plan. [readStatus] dice si el paciente vio las metas publicadas («Ana las vio el mismo día»); si no
- * se pudo leer, esa línea no se muestra.
+ * Plan tab. [readStatus] tells whether the patient saw the published targets ("Ana saw them the same day"); if it
+ * could not be read, that line is hidden.
  */
 data class PatientPlanUiState(
     val isLoading: Boolean = true,

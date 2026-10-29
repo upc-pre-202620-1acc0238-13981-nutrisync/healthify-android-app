@@ -4,8 +4,8 @@ import pe.edu.upc.healthify.core.database.pending.PendingOperationDao
 import javax.inject.Inject
 
 /**
- * Envía la cola de la sesión activa, tipo por tipo y en lotes, con el [PendingOperationSender] de cada tipo.
- * Separado del worker para probarlo en la JVM.
+ * Sends the active session's queue, type by type and in batches, with each type's [PendingOperationSender].
+ * Kept apart from the worker so it can be tested on the JVM.
  */
 class PendingSyncEngine @Inject constructor(
     private val dao: PendingOperationDao,
@@ -17,18 +17,18 @@ class PendingSyncEngine @Inject constructor(
     private val sendersByType = senders.associateBy { it.type }
 
     suspend fun syncAll(): SyncRunResult {
-        // Sin sesión no se envía nada; al volver a entrar se pide otra sincronización.
+        // Without a session nothing is sent; signing in again requests another sync.
         val ownerUserId = activeUserIdProvider.activeUserId() ?: return SyncRunResult.Done
         var retry = false
         for (type in dao.pendingTypes(ownerUserId)) {
-            // Un tipo sin sender (p. ej. de una versión más nueva) queda en la cola sin bloquear al resto.
+            // A type without a sender (e.g. from a newer version) stays in the queue without blocking the rest.
             val sender = sendersByType[type] ?: continue
             if (!syncType(ownerUserId, sender)) retry = true
         }
         return if (retry) SyncRunResult.Retry else SyncRunResult.Done
     }
 
-    /** `true` si se vació la cola de ese tipo; `false` si quedó algo para reintentar. */
+    /** `true` if that type's queue was emptied; `false` if something was left to retry. */
     private suspend fun syncType(ownerUserId: Long, sender: PendingOperationSender): Boolean {
         while (true) {
             val batch = dao.pendingBatch(ownerUserId, sender.type, sender.maxBatchSize)
@@ -44,8 +44,8 @@ class PendingSyncEngine @Inject constructor(
                         syncEvents.notifyDelivered(sender.type)
                     }
                     ids.forEach { id -> result.rejected[id]?.let { reason -> dao.markRejected(id, reason) } }
-                    // Lo que el backend no reportó sigue pendiente: se reintenta en la próxima ejecución
-                    // (no en este bucle, que volvería a leer el mismo lote).
+                    // What the backend did not report stays pending: it is retried on the next run
+                    // (not in this loop, which would read the same batch again).
                     if (ids.any { it !in result.accepted && it !in result.rejected }) return false
                 }
             }

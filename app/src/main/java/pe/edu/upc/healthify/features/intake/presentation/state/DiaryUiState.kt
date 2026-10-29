@@ -8,14 +8,14 @@ import java.time.Instant
 import java.time.LocalDate
 
 /**
- * PT14 · Diario (+ PT14.V vacío, PT14.O sin conexión, PT14.L cargando).
+ * Diary (with its empty, offline and loading states).
  *
- * @param items lo que se ve del día elegido, ya ordenado (fotos por analizar, «Por confirmar», pendientes de enviar y
- *   el resto de la más reciente a la más antigua).
- * @param cachedAt el día viene de la copia del teléfono (sin conexión).
- * @param pendingCount comidas en la cola que todavía no se enviaron (de cualquier día): «Ver pendientes (2)».
- * @param showIdeasCard la card «¿No sabes qué comer?»: solo hoy y con la preferencia de ideas encendida (IA-3).
- * @param earliestDate día en que se creó la cuenta: el primer día del diario.
+ * @param items what is shown for the selected day, already sorted (photos to analyze, "To confirm", pending to send
+ *   and the rest from newest to oldest).
+ * @param cachedAt the day comes from the phone's copy (offline).
+ * @param pendingCount queued meals not sent yet (from any day): "See pending (2)".
+ * @param showIdeasCard the "Not sure what to eat?" card: only today and with the ideas preference on.
+ * @param earliestDate the day the account was created: the diary's first day.
  */
 data class DiaryUiState(
     val today: LocalDate,
@@ -32,18 +32,18 @@ data class DiaryUiState(
 ) {
     val canGoToNextDay: Boolean get() = selectedDate.isBefore(today)
 
-    /** No se retrocede antes del día en que se creó la cuenta (sin esa fecha todavía, sin límite). */
+    /** It does not go back before the day the account was created (with no such date yet, no limit). */
     val canGoToPreviousDay: Boolean get() = earliestDate == null || selectedDate.isAfter(earliestDate)
     val isToday: Boolean get() = selectedDate == today
 
-    /** PT14.V: el día se leyó (o hay pendientes) y no tiene nada. */
+    /** Empty state: the day was read (or there are pending items) and it has nothing. */
     val isEmpty: Boolean get() = !isLoading && hasDay && items.isEmpty()
 
-    /** Sin conexión y sin copia de ese día ni pendientes: «Este día no está guardado en tu teléfono». */
+    /** Offline with no copy of that day and no pending items: "This day is not saved on your phone". */
     val isOfflineWithoutCopy: Boolean get() = !isLoading && !hasDay && isOffline && items.isEmpty()
 }
 
-/** Una fila del diario. [key] es estable para `LazyColumn`. */
+/** One diary row. [key] is stable for `LazyColumn`. */
 sealed interface DiaryItem {
     val key: String
 
@@ -51,17 +51,17 @@ sealed interface DiaryItem {
         override val key: String get() = "entry-${entry.id.value}"
     }
 
-    /** Entradas registradas juntas desde una idea (IN-6): una sola card. */
+    /** Entries logged together from an idea: a single card. */
     data class MealGroup(val groupId: String, val entries: List<DiaryEntry>) : DiaryItem {
         override val key: String get() = "group-$groupId"
     }
 
-    /** En la cola del teléfono: «Pendiente de enviar» (o «No se envió» si el backend la rechazó). */
+    /** In the phone's queue: "Pending to send" (or "Not sent" if the backend rejected it). */
     data class Pending(val entry: PendingDiaryEntry) : DiaryItem {
         override val key: String get() = "pending-${entry.clientEntryId.value}"
     }
 
-    /** Foto tomada sin conexión que espera para analizarse. */
+    /** A photo taken offline that waits to be analyzed. */
     data class PendingPhoto(val photo: PendingMealPhoto) : DiaryItem {
         override val key: String get() = "photo-${photo.id}"
     }

@@ -11,7 +11,7 @@ import pe.edu.upc.healthify.core.designsystem.component.DrawerHeader
 import pe.edu.upc.healthify.core.designsystem.component.DrawerItem
 import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 
-/** Ítems del menú principal del paciente, en su orden. «Cerrar sesión» va aparte, tras el divisor. */
+/** Items of the patient's main menu, in order. "Sign out" is separate, after the divider. */
 enum class PatientMenuItem(@param:StringRes val labelRes: Int, val icon: ImageVector) {
     MyPlan(R.string.menu_my_plan, HealthifyIcons.Evaluation),
     MyConsultations(R.string.menu_my_consultations, HealthifyIcons.Calendar),
@@ -20,10 +20,10 @@ enum class PatientMenuItem(@param:StringRes val labelRes: Int, val icon: ImageVe
 }
 
 /**
- * Contenido del menú principal del paciente: encabezado, Mi plan · Mis consultas · Pendientes · Ajustes y, tras el
- * divisor, Cerrar sesión.
+ * Content of the patient's main menu: header, My plan · My appointments · Pending · Settings and, after the
+ * divider, Sign out.
  *
- * @param selected ítem de la pantalla actual (se resalta); `null` desde las pestañas, que no están en el menú.
+ * @param selected item of the current screen (highlighted); `null` from the tabs, which are not in the menu.
  */
 @Composable
 fun ColumnScope.PatientMenuContent(

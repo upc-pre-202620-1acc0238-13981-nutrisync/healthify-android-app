@@ -70,7 +70,7 @@ data class WeightTrendActions(
     val onRetry: () -> Unit = {},
 )
 
-/** PT13 · Tendencia de peso (+ PT13.1, PT13.V, PT13.L). Vive en la pestaña «Progreso» del shell. */
+/** Weight trend (with its Snackbar, empty and loading states). Lives in the shell's "Progress" tab. */
 @Composable
 fun WeightTrendScreen(
     onOpenMenu: () -> Unit,
@@ -186,7 +186,7 @@ fun WeightTrendContent(
             )
         }
         if (!state.isLoading) {
-            // «Registrar autopesaje»: siempre a mano (también sin conexión: se encola).
+            // "Log self weigh-in": always at hand (offline too: it gets queued).
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -222,7 +222,7 @@ private fun OfflineNotice(cachedAt: Instant?, isOffline: Boolean) {
     }
 }
 
-/** «Card · Tu semana (IA)»: contorno `tertiary`, insignia, titular de la IA tal cual y «Ver resumen de la semana ›». */
+/** The AI "Your week" card: `tertiary` outline, badge, the AI headline as is and "See week summary ›". */
 @Composable
 private fun WeeklySummaryCard(card: WeeklyCard, onClick: () -> Unit) {
     val dimens = HealthifyTheme.dimens
@@ -266,7 +266,7 @@ private fun WeeklySummaryCard(card: WeeklyCard, onClick: () -> Unit) {
     }
 }
 
-/** «Promedio de tus últimos autopesajes» + card con el gráfico, la explicación y el aviso de excluidos. */
+/** "Average of your latest self weigh-ins" + a card with the chart, the explanation and the excluded notice. */
 @Composable
 private fun TrendSection(trend: WeightTrend, weeks: Int, showExcluded: Boolean) {
     val dimens = HealthifyTheme.dimens
@@ -309,10 +309,10 @@ private fun TrendSection(trend: WeightTrend, weeks: Int, showExcluded: Boolean) 
 }
 
 /**
- * «Promedio móvil de 7 autopesajes que siguieron el protocolo. Resumen: subió 0,6 kg en 4 semanas.»
+ * "7-reading moving average of self weigh-ins that followed the protocol. Summary: up 0.6 kg in 4 weeks."
  *
- * DECISIÓN PT13: el frame dice «Promedio móvil de 7 días», pero `windowSize` del backend cuenta autopesajes, no
- * días; el texto dice lo que el número es. El resumen sale de `changeKgOverRange` (sobre la serie suavizada, IN-5).
+ * The design says "7-day moving average", but the backend's `windowSize` counts self weigh-ins, not
+ * days; the text says what the number is. The summary comes from `changeKgOverRange` (over the smoothed series).
  */
 @Composable
 private fun trendExplanation(trend: WeightTrend, weeks: Int): String {
@@ -326,7 +326,7 @@ private fun trendExplanation(trend: WeightTrend, weeks: Int): String {
     return "$window $summary"
 }
 
-/** PT13.L: skeleton sobre el gráfico y dos líneas. */
+/** Loading: skeleton over the chart and two lines. */
 @Composable
 private fun TrendSkeleton() {
     val dimens = HealthifyTheme.dimens
@@ -351,7 +351,7 @@ private val PreviewTrend = run {
     )
 }
 
-@Preview(name = "PT13 · Tendencia de peso", widthDp = 360, heightDp = 800)
+@Preview(name = "Weight trend", widthDp = 360, heightDp = 800)
 @Composable
 private fun WeightTrendPreview() {
     HealthifyTheme {
@@ -367,7 +367,7 @@ private fun WeightTrendPreview() {
     }
 }
 
-@Preview(name = "PT13.V · Aún sin tendencia", widthDp = 360, heightDp = 800)
+@Preview(name = "Weight trend - no trend yet", widthDp = 360, heightDp = 800)
 @Composable
 private fun WeightTrendEmptyPreview() {
     HealthifyTheme {
@@ -375,13 +375,13 @@ private fun WeightTrendEmptyPreview() {
     }
 }
 
-@Preview(name = "PT13.L · Cargando", widthDp = 360, heightDp = 800)
+@Preview(name = "Weight trend - loading", widthDp = 360, heightDp = 800)
 @Composable
 private fun WeightTrendLoadingPreview() {
     HealthifyTheme { WeightTrendContent(state = WeightTrendUiState(weeks = 4), actions = WeightTrendActions()) }
 }
 
-@Preview(name = "PT13 · Sin conexión (copia del teléfono)", widthDp = 360, heightDp = 800)
+@Preview(name = "Weight trend - offline (phone copy)", widthDp = 360, heightDp = 800)
 @Composable
 private fun WeightTrendOfflinePreview() {
     HealthifyTheme {
@@ -397,7 +397,7 @@ private fun WeightTrendOfflinePreview() {
     }
 }
 
-@Preview(name = "PT13 · Error", widthDp = 360, heightDp = 800)
+@Preview(name = "Weight trend - error", widthDp = 360, heightDp = 800)
 @Composable
 private fun WeightTrendErrorPreview() {
     HealthifyTheme {

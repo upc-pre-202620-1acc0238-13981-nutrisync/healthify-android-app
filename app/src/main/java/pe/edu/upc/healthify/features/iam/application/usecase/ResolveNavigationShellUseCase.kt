@@ -8,11 +8,11 @@ import pe.edu.upc.healthify.features.iam.domain.valueobject.NavigationShell
 import javax.inject.Inject
 
 /**
- * S5: el shell que la app monta para la sesión (`GET /sessions/{sessionId}/navigation-shell`, F2 paso 10).
+ * The shell the app mounts for the session (`GET /sessions/{sessionId}/navigation-shell`).
  *
- * DECISIÓN S5: si la sesión no tiene shell (la política de F2 falló, «`navigation-shell` devolvería un shell
- * nulo») o no hay conexión, se usa el shell del rol de la cuenta (`NavigationShell.ForRole`, la misma regla del
- * backend). Así un paciente que abre la app sin conexión llega a sus pantallas con caché (PT3.O).
+ * If the session has no shell (the sign-in shell policy failed, "`navigation-shell` would return a null
+ * shell") or there is no connection, the shell for the account's role is used (`NavigationShell.ForRole`, the same
+ * backend rule). That way a patient who opens the app offline reaches their cached screens.
  */
 class ResolveNavigationShellUseCase @Inject constructor(
     private val authenticationRepository: AuthenticationRepository,

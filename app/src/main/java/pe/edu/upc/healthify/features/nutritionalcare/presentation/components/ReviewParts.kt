@@ -35,8 +35,8 @@ import java.time.ZoneId
 private val ChipIconSize = 16.dp
 
 /**
- * Card de evidencia de PR14 / PR14.IA: chip «Desviación sostenida · recibido el 8 sept.» y la frase armada en la app.
- * Si la evidencia usa días registrados se aclara que los días sin registro no cuentan (nunca son incumplimiento).
+ * Evidence card of a review item: "Sustained deviation · received Sep 8" chip and the sentence built in the app.
+ * If the evidence uses logged days, it notes that days without logs do not count (never a miss).
  */
 @Composable
 fun ReviewEvidenceCard(header: ReviewItemHeader, modifier: Modifier = Modifier) {
@@ -76,7 +76,7 @@ fun ReviewEvidenceCard(header: ReviewItemHeader, modifier: Modifier = Modifier) 
     }
 }
 
-/** Avisos comunes de PR14, PR14.IA y PR14.IA-A. */
+/** Notices shared by the review item, AI proposal and adjust screens. */
 @Composable
 fun ReviewDialogHost(dialog: ReviewDialog?, onConfirm: () -> Unit, onDismiss: () -> Unit) {
     when (dialog) {
@@ -105,7 +105,7 @@ private fun InfoDialog(titleRes: Int, bodyRes: Int, confirmRes: Int, onConfirm: 
     )
 }
 
-/** Fila «etiqueta / valor» de la propuesta de IA (Energía diaria, Nueva indicación, Mensaje, Seguimiento). */
+/** "Label / value" row of the AI proposal (Daily energy, New guideline, Message, Follow-up). */
 @Composable
 fun ProposalRow(
     icon: ImageVector,
@@ -124,7 +124,7 @@ fun ProposalRow(
     }
 }
 
-@Preview(name = "PR14 · Card de evidencia", widthDp = 360, heightDp = 240)
+@Preview(name = "Review item - evidence card", widthDp = 360, heightDp = 240)
 @Composable
 private fun ReviewEvidenceCardPreview() {
     HealthifyTheme {

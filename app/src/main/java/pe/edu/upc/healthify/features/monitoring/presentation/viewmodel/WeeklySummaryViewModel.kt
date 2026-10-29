@@ -19,7 +19,7 @@ import pe.edu.upc.healthify.features.monitoring.domain.entity.WeeklySummaryAvail
 import pe.edu.upc.healthify.features.monitoring.presentation.state.WeeklySummaryUiState
 import javax.inject.Inject
 
-/** PT13.2 · el último resumen semanal con IA (IA-2). Al volver la conexión se vuelve a pedir. */
+/** The latest AI weekly summary. Requested again when the connection returns. */
 @HiltViewModel
 class WeeklySummaryViewModel @Inject constructor(
     private val observeCurrentUser: ObserveCurrentUserUseCase,

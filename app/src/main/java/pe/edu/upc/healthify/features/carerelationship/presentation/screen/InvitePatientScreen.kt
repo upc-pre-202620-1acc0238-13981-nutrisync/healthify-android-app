@@ -57,7 +57,7 @@ import pe.edu.upc.healthify.features.carerelationship.presentation.state.InviteP
 import pe.edu.upc.healthify.features.carerelationship.presentation.viewmodel.InvitePatientViewModel
 import java.time.Duration
 
-/** PR2 · Generar invitación (+ PR2.L). ‹ vuelve a PR1. */
+/** Generate invitation (plus its loading state). ‹ returns to the roster. */
 @Composable
 fun InvitePatientScreen(
     onBack: () -> Unit,
@@ -160,7 +160,7 @@ private fun InvitationBody(
                     contentDescription = stringResource(R.string.invite_qr_cd),
                 )
             }
-            // DECISIÓN PR2: «Válido 24h · un solo uso» del frame pasa a ser la cuenta regresiva de la vigencia.
+            // The design's "Valid 24h · single use" becomes the validity countdown.
             Text(
                 text = if (state.isExpired) {
                     stringResource(R.string.invite_expired)
@@ -196,7 +196,7 @@ private fun InvitationBody(
     }
 }
 
-/** Campo «Vence en» (52 dp del frame) que abre las vigencias disponibles. */
+/** "Expires in" field (52 dp in the design) that opens the available durations. */
 @Composable
 private fun ValiditySelector(
     selected: InvitationValidity,
@@ -269,7 +269,7 @@ private fun InviteError?.messageRes(): Int = when (this) {
     InviteError.GENERIC, null -> R.string.ds_error_state_body
 }
 
-/** «23:59:41» o, con más de un día, «6 d 23:59:41». */
+/** "23:59:41" or, with more than a day, "6 d 23:59:41". */
 @Composable
 private fun Duration?.countdownText(): String {
     val total = (this ?: Duration.ZERO).seconds.coerceAtLeast(0)
@@ -289,7 +289,7 @@ private const val SECONDS_PER_DAY = 86_400L
 
 private val previewToken = InvitationToken("Q2hhbmdlTWVQbGVhc2VUb2tlbjEyMzQ1Njc4OTA")
 
-@Preview(name = "PR2 · Generar invitación", widthDp = 360, heightDp = 800)
+@Preview(name = "Generate invitation", widthDp = 360, heightDp = 800)
 @Composable
 private fun InvitePatientPreview() {
     HealthifyTheme {
@@ -306,7 +306,7 @@ private fun InvitePatientPreview() {
     }
 }
 
-@Preview(name = "PR2.L · Generando código", widthDp = 360, heightDp = 800)
+@Preview(name = "Generate invitation - generating code", widthDp = 360, heightDp = 800)
 @Composable
 private fun InvitePatientLoadingPreview() {
     HealthifyTheme {
@@ -314,7 +314,7 @@ private fun InvitePatientLoadingPreview() {
     }
 }
 
-@Preview(name = "PR2 · Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Generate invitation - offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun InvitePatientOfflinePreview() {
     HealthifyTheme {

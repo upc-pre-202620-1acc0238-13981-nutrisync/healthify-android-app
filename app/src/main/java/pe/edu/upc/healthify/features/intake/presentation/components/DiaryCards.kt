@@ -38,12 +38,12 @@ import pe.edu.upc.healthify.features.intake.domain.valueobject.PlanAdherence
 import java.io.File
 import java.time.OffsetDateTime
 
-// Miniatura de la foto por analizar (sin frame propio: medida de un ícono grande de lista).
+// Thumbnail of the photo to analyze (no frame of its own: sized like a large list icon).
 private val PhotoThumbnailSize = 56.dp
 
 /**
- * «Card · Ceviche (por confirmar)» de PT14: la estimación de la foto todavía no cuenta. Muestra procedencia y
- * confianza siempre (*Confidence And Provenance Always Exposed*) y «Confirmar porción» (→ PT8).
+ * The "to confirm" diary card: the photo estimate does not count yet. It always shows origin and
+ * confidence (*Confidence And Provenance Always Exposed*) and "Confirm portion".
  */
 @Composable
 fun PendingConfirmationCard(entry: DiaryEntry, onConfirmPortion: (() -> Unit)?, modifier: Modifier = Modifier) {
@@ -81,7 +81,7 @@ fun PendingConfirmationCard(entry: DiaryEntry, onConfirmPortion: (() -> Unit)?, 
     }
 }
 
-/** Card de una entrada ya contada (PT14 «Avena con fruta · 250 g · 7:30 a. m.»). No tiene botón de borrar. */
+/** Card for an entry already counted ("Oatmeal with fruit · 250 g · 7:30 a.m."). It has no delete button. */
 @Composable
 fun DiaryEntryCard(entry: DiaryEntry, modifier: Modifier = Modifier) {
     ListEntryCard(title = entryTitle(entry), time = entry.localTimestamp.value, modifier = modifier) {
@@ -98,7 +98,7 @@ fun DiaryEntryCard(entry: DiaryEntry, modifier: Modifier = Modifier) {
     }
 }
 
-/** Comida registrada desde una idea (IN-6): sus alimentos en una sola card. */
+/** A meal logged from an idea: its foods in a single card. */
 @Composable
 fun MealGroupCard(entries: List<DiaryEntry>, modifier: Modifier = Modifier) {
     val dimens = HealthifyTheme.dimens
@@ -134,7 +134,7 @@ fun MealGroupCard(entries: List<DiaryEntry>, modifier: Modifier = Modifier) {
     }
 }
 
-/** PT14.O · una comida en la cola del teléfono: «Pendiente de enviar» (o rechazada al sincronizar). */
+/** A meal in the phone's queue: "Pending to send" (or rejected on sync). */
 @Composable
 fun PendingEntryCard(entry: PendingDiaryEntry, modifier: Modifier = Modifier) {
     val approximate = entry.provenance == EntryProvenance.PHOTO && !entry.confirmed
@@ -166,7 +166,7 @@ fun PendingEntryCard(entry: PendingDiaryEntry, modifier: Modifier = Modifier) {
     }
 }
 
-/** Foto tomada sin conexión: «Analizar ahora» (con red) o «Registrar a mano». */
+/** A photo taken offline: "Analyze now" (online) or "Log by hand". */
 @Composable
 fun PendingPhotoCard(
     photo: PendingMealPhoto,
@@ -224,7 +224,7 @@ fun PendingPhotoCard(
     }
 }
 
-/** Card de lista de 24 dp: título + hora, chips y una nota opcional. */
+/** 24 dp list card: title + time, chips and an optional note. */
 @Composable
 private fun ListEntryCard(
     title: String,
@@ -274,7 +274,7 @@ private fun ChipsRow(content: @Composable () -> Unit) {
     ) { content() }
 }
 
-/** «Foto · confianza 64%» (o «Foto» si una entrada vieja no trae confianza). */
+/** "Photo · confidence 64%" (or "Photo" if an old entry has no confidence). */
 @Composable
 private fun PhotoChip(confidence: Double?) {
     StatusChip(
@@ -287,7 +287,7 @@ private fun PhotoChip(confidence: Double?) {
     )
 }
 
-/** «Ceviche · 280 g aprox.» / «Lomo saltado · 320 g» / «Comida sin detalle» (fuera del plan histórica). */
+/** "Ceviche · 280 g approx." / "Lomo saltado · 320 g" / "Meal without details" (historical off-plan). */
 @Composable
 private fun entryTitle(entry: DiaryEntry): String {
     val name = entry.foodName ?: stringResource(R.string.diary_unknown_food)
@@ -295,7 +295,7 @@ private fun entryTitle(entry: DiaryEntry): String {
     return stringResource(R.string.format_separator_dot, name, gramsText(grams, approximate = entry.isPendingConfirmation))
 }
 
-/** Motivo de rechazo al sincronizar (PT19 · Validaciones). */
+/** Rejection reason on sync. */
 fun pendingRejectionRes(code: String?): Int = when (code) {
     "LocalTimestampCannotBeRewritten" -> R.string.pending_rejected_timestamp
     "ReferenceFoodNotResolved" -> R.string.pending_rejected_food
@@ -339,7 +339,7 @@ internal fun previewPending(name: String, time: String, rejection: String? = nul
     rejectionCode = rejection,
 )
 
-@Preview(name = "PT14 · cards del diario", widthDp = 360, heightDp = 800)
+@Preview(name = "Diary cards", widthDp = 360, heightDp = 800)
 @Composable
 private fun DiaryCardsPreview() {
     HealthifyTheme {

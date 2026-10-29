@@ -11,9 +11,9 @@ import pe.edu.upc.healthify.features.nutritionalcare.presentation.screen.Publica
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.screen.TargetsStepScreen
 
 /**
- * Argumentos que los ViewModels del lado del nutricionista leen del `SavedStateHandle` **por nombre de propiedad**.
- * Las pestañas de la ficha del paciente (PAC-1 a PAC-4) viven en la ruta de `features/main`
- * (`PractitionerPatientRoute`), que usa estos mismos nombres.
+ * Arguments the practitioner-side ViewModels read from `SavedStateHandle` **by property name**.
+ * The patient profile tabs live in the `features/main` route
+ * (`PractitionerPatientRoute`), which uses these same names.
  */
 object PatientArgs {
     const val PATIENT_ID = "patientId"
@@ -23,29 +23,29 @@ object PatientArgs {
 }
 
 /**
- * EV-1 · Datos base. [editing] `true` desde «Editar» (Resumen o EV-2): «Guardar y salir» vuelve a donde se abrió y no
- * ofrece iniciar la consulta.
+ * Baseline. [editing] `true` when opened from "Edit" (Summary or measurement step): "Save and exit" goes back to
+ * where it was opened and does not offer to start the consultation.
  */
 @Serializable
 data class BaselineRoute(val patientId: Long, val patientName: String, val editing: Boolean = false)
 
-/** EV-2 · Paso 1 Medición de hoy. */
+/** Step 1, today's measurement. */
 @Serializable
 data class ConsultationMeasurementRoute(val patientId: Long, val patientName: String)
 
-/** EV-3 · Paso 2 Diagnóstico. */
+/** Step 2, diagnosis. */
 @Serializable
 data class ConsultationDiagnosisRoute(val patientId: Long, val patientName: String)
 
-/** EV-4 · Paso 3 Metas. */
+/** Step 3, targets. */
 @Serializable
 data class ConsultationTargetsRoute(val patientId: Long, val patientName: String)
 
-/** EV-5 · Paso 4 Indicaciones y publicación (+ EV-5.E). */
+/** Step 4, guidelines and publication (including the publish error). */
 @Serializable
 data class ConsultationPublicationRoute(val patientId: Long, val patientName: String)
 
-/** La ruta del paso [step] de la consulta de [patientId]. */
+/** The route of step [step] of [patientId]'s consultation. */
 fun consultationStepRoute(step: ConsultationStep, patientId: Long, patientName: String): Any = when (step) {
     ConsultationStep.MEASUREMENT -> ConsultationMeasurementRoute(patientId, patientName)
     ConsultationStep.DIAGNOSIS -> ConsultationDiagnosisRoute(patientId, patientName)
@@ -54,26 +54,26 @@ fun consultationStepRoute(step: ConsultationStep, patientId: Long, patientName: 
 }
 
 /**
- * Callbacks de EV-1 a EV-5. El grafo raíz decide el back stack: entre pasos «‹» vuelve al anterior (no borra lo
- * guardado) y salir de la consulta vuelve a la ficha del paciente, que muestra PAC-1.C.
+ * Callbacks for the baseline and the consultation steps. The root graph owns the back stack: between steps "‹" goes
+ * back to the previous one (keeping what was saved) and leaving returns to the patient profile, showing it in progress.
  */
 data class ConsultationNavigationCallbacks(
     val onBack: () -> Unit,
-    /** EV-1 «Guardar e iniciar consulta»: reemplaza EV-1 por el paso en que quedó la consulta. */
+    /** Baseline "Save and start consultation": replaces the baseline with the step the consultation is on. */
     val onBaselineSavedStartConsultation: (route: Any) -> Unit,
-    /** Avanzar al paso siguiente (se apila). */
+    /** Go to the next step (pushed). */
     val onOpenStep: (route: Any) -> Unit,
-    /** «‹» en EV-3, EV-4 o EV-5: al paso anterior (si no está debajo, lo pone en lugar del actual). */
+    /** "‹" on steps 2 to 4: to the previous step (if it is not below, it replaces the current one). */
     val onPreviousStep: (previousRoute: Any) -> Unit,
-    /** EV-2.S «Salir y continuar después»: vuelve a la ficha del paciente. */
+    /** "Exit and continue later": back to the patient profile. */
     val onExitConsultation: () -> Unit,
-    /** EV-2 «Editar» datos base. */
+    /** "Edit" baseline from the measurement step. */
     val onEditBaseline: (route: Any) -> Unit,
-    /** EV-5 publicado: vuelve a la ficha y muestra PAC-1-S1 «Plan publicado». */
+    /** Plan published: back to the profile, which shows "Plan published". */
     val onPublished: () -> Unit,
 )
 
-/** EV-1 a EV-5 en el grafo raíz (pantallas completas sobre la ficha del paciente). */
+/** Baseline and consultation steps in the root graph (full screens over the patient profile). */
 fun NavGraphBuilder.consultationDestinations(callbacks: ConsultationNavigationCallbacks) {
     composable<BaselineRoute> {
         BaselineScreen(

@@ -52,7 +52,7 @@ class IntakeDomainTest {
     fun `guideline items read the catalog code first`() {
         assertEquals(PlanGuideline.Catalog(GuidelineCode.REDUCE_SALT), PlanGuideline.of("ReduceSalt", null))
         assertEquals(PlanGuideline.Custom("Caminar 20 min"), PlanGuideline.of(null, " Caminar 20 min "))
-        // X-2: un código desconocido se muestra tal cual.
+        // An unknown code is shown as is.
         assertEquals(PlanGuideline.Custom("SleepEarly"), PlanGuideline.of("SleepEarly", null))
         assertNull(PlanGuideline.of(null, " "))
     }

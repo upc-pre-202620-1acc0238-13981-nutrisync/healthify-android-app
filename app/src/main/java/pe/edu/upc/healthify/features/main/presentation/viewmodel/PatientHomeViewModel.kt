@@ -35,13 +35,14 @@ import java.time.Clock
 import javax.inject.Inject
 
 /**
- * PT3 · Inicio. Compone cuatro contextos con sus use cases: las metas vigentes y lo que queda hoy de cada macro
- * (Intake, las metas con copia offline), cómo va hoy, la semana registrada, el índice de consistencia y la próxima
- * consulta (Monitoring) y si hay metas nuevas sin revisar (CareRelationship). Las metas mandan: sin ellas la pantalla es PT3.V; lo demás se pinta a medida que llega y,
- * si falla, simplemente no aparece (nunca bloquea Inicio).
+ * Home. Combines four contexts through their use cases: the current targets and what is left of each macro today
+ * (Intake, targets with an offline copy), how today is going, the logged week, the consistency index and the next
+ * appointment (Monitoring), and whether there are new unreviewed targets (CareRelationship). Targets lead: without
+ * them the screen shows the first-time state; the rest is drawn as it arrives and, if it fails, simply does not
+ * show (it never blocks Home).
  *
- * Se refresca al crearse, al volver a la pantalla ([onScreenResumed]), al recuperar la conexión y cuando el backend
- * acepta comidas de la cola.
+ * Refreshes on creation, on returning to the screen ([onScreenResumed]), when the connection comes back and when
+ * the backend accepts meals from the queue.
  */
 @HiltViewModel
 class PatientHomeViewModel @Inject constructor(
@@ -66,11 +67,11 @@ class PatientHomeViewModel @Inject constructor(
     private var refreshJob: Job? = null
     private var firstResumeSkipped = false
 
-    /** MA-7: hay un aviso de consistencia que el paciente aún no vio; se acusa una sola vez al pintarlo. */
+    /** There is a consistency notice the patient has not seen yet; it is acknowledged once, when drawn. */
     private var consistencyPromptPending = false
     private var consistencyAckInFlight = false
 
-    /** PT3.M «Más tarde»: no se vuelve a ofrecer la misma versión mientras viva Inicio. */
+    /** "Later" on the targets changed notice: the same version is not offered again while Home is alive. */
     private var dismissedChangedVersion: Int? = null
 
     init {
@@ -91,13 +92,13 @@ class PatientHomeViewModel @Inject constructor(
                 if (online && wasOffline) refresh()
             }
         }
-        // Comidas de la cola aceptadas por el backend: cambian las kcal de hoy y el hueco de registro (PT18). Al volver
-        // la conexión la lectura suele llegar antes que el envío, así que se relee al aceptarse.
+        // Queued meals accepted by the backend: they change today's kcal and the logging gap. When the
+        // connection comes back the reading usually arrives before the upload, so it is read again on acceptance.
         viewModelScope.launch { observeSyncedDiaryEntries().collect { refresh() } }
         refresh()
     }
 
-    /** Al volver a Inicio (p. ej. desde PT4 tras «Ya las revisé»). La primera vez ya cargó `init`. */
+    /** On returning to Home (e.g. from My plan after "I've reviewed them"). The first load already ran in `init`. */
     fun onScreenResumed() {
         if (!firstResumeSkipped) {
             firstResumeSkipped = true
@@ -106,20 +107,20 @@ class PatientHomeViewModel @Inject constructor(
         refresh()
     }
 
-    /** La tarjeta «Algo no cuadra» se pintó: MA-7 registra que el paciente la vio (antes de cualquier escalación). */
+    /** The "Something doesn't add up" card was drawn: records that the patient saw it (before any escalation). */
     fun onConsistencyCardShown() {
         if (!consistencyPromptPending || consistencyAckInFlight) return
         consistencyAckInFlight = true
         viewModelScope.launch {
             val user = observeCurrentUser().first()
             val acknowledged = user != null && acknowledgeConsistencyPrompt(user.id.value).isSuccess
-            // Si falló, se reintenta la próxima vez que se pinte la tarjeta.
+            // If it failed, it is retried the next time the card is drawn.
             if (acknowledged) consistencyPromptPending = false
             consistencyAckInFlight = false
         }
     }
 
-    /** PT3.M «Más tarde» (y también al ir a PT4 con «Ver mis metas nuevas»). */
+    /** "Later" on the targets changed notice (also when going to My plan with "See my new targets"). */
     fun onTargetsChangedDismissed() {
         dismissedChangedVersion = _state.value.targetsChangedVersion ?: return
         _state.update { it.copy(targetsChangedVersion = null) }
@@ -151,25 +152,25 @@ class PatientHomeViewModel @Inject constructor(
                 isLoading = false,
                 targets = targets?.toHomeTargets(),
                 cachedAt = found?.savedAt?.takeIf { found.fromCache },
-                // Nota PT3 «Error cache → mismo copy que Vacío».
+                // Design note: "cache error → same copy as empty".
                 hasNoTargets = targets == null,
             )
         }
-        // PT18 se calcula en línea; sin conexión queda el último aviso calculado (el recordatorio es local).
+        // The logging gap is computed online; offline the last computed notice stays (the reminder is local).
         if (targets == null || found.fromCache) return
         val gap = detectLoggingGap(uid, targets.validFrom.atZone(clock.zone).toLocalDate()).getOrNull()
         if (gap != null) _state.update { it.copy(showLoggingGapCard = gap) }
     }
 
     private suspend fun loadToday(uid: Long) {
-        // Sin red se conserva lo último leído hoy (si había); el día solo se calcula en línea.
+        // Offline, the last reading from today is kept (if any); the day is only computed online.
         getTodayProgress(uid).onSuccess { progress ->
             _state.update { it.copy(consumedKcal = progress.observedEnergyKcal, todayOutcome = progress.outcome) }
         }
     }
 
     private suspend fun loadMacrosLeft(uid: Long) {
-        // Sin red (o sin metas) se conserva lo último leído; sin lectura el medidor muestra las metas en gramos.
+        // Offline (or without targets) the last reading is kept; without a reading the gauge shows the targets in grams.
         getDailyIntake(uid).onSuccess { intake ->
             _state.update {
                 it.copy(macrosLeft = HomeMacros(intake.remainingProteinG, intake.remainingCarbG, intake.remainingFatG))
@@ -197,7 +198,7 @@ class PatientHomeViewModel @Inject constructor(
 
     private suspend fun loadTargetsChanged(uid: Long) {
         val pending = getTargetsReadStatus(uid).getOrNull()?.versionAwaitingReview
-        // DECISIÓN PT3.M: «Tu nutricionista ajustó tus metas» solo desde la versión 2; la primera se acusa en PT4.
+        // "Your practitioner adjusted your targets" only from version 2 on; the first one is acknowledged in My plan.
         val offer = pending?.takeIf { it >= FIRST_ADJUSTED_VERSION && it != dismissedChangedVersion }
         _state.update { it.copy(targetsChangedVersion = offer) }
     }

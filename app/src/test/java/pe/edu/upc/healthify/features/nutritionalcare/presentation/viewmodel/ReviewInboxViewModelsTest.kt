@@ -84,7 +84,7 @@ class ReviewInboxViewModelsTest {
         connectivityObserver = connectivity,
     )
 
-    // ----- PR13 -----
+    // ----- Review inbox -----
 
     @Test
     fun `PR13 lists the open items and is up to date when empty`() {
@@ -105,7 +105,7 @@ class ReviewInboxViewModelsTest {
         assertTrue(viewModel.state.value.needsConnection)
     }
 
-    // ----- PR14 -----
+    // ----- Review item -----
 
     @Test
     fun `PR14 without an answer shows Responde Si o No and sends nothing`() {
@@ -162,7 +162,7 @@ class ReviewInboxViewModelsTest {
         assertTrue(inbox.resolutions.isEmpty())
     }
 
-    // ----- PR14.IA: 202 → 200 y aceptación -----
+    // ----- Plan proposal: 202 → 200 and acceptance -----
 
     @Test
     fun `PR14 IA shows generating while the backend answers 202 and the proposal when it answers 200`() = runTest {
@@ -238,7 +238,7 @@ class ReviewInboxViewModelsTest {
         assertEquals(ReviewDialog.ALREADY_RESOLVED, viewModel.state.value.dialog)
     }
 
-    // ----- PR14.IA-A -----
+    // ----- Adjusting the plan from the proposal -----
 
     private fun currentPlan(vararg codes: PlanGuidelineCode) = PlanHistory(
         listOf(

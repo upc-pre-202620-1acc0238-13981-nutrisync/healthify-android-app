@@ -33,7 +33,7 @@ import pe.edu.upc.healthify.features.carerelationship.presentation.state.Pending
 import pe.edu.upc.healthify.features.carerelationship.presentation.state.PendingConsentUiState
 import pe.edu.upc.healthify.features.carerelationship.presentation.viewmodel.PendingConsentViewModel
 
-/** PT2.1 · Vínculo pendiente de consentimiento: sin consentimiento la app no muestra datos clínicos. */
+/** Care link pending consent: without consent the app shows no clinical data. */
 @Composable
 fun PendingConsentScreen(
     onReviewConsent: (careLinkId: Long) -> Unit,
@@ -123,13 +123,13 @@ fun PendingConsentContent(
     }
 }
 
-@Preview(name = "PT2.1 · Vínculo pendiente de consentimiento", widthDp = 360, heightDp = 800)
+@Preview(name = "Care link pending consent", widthDp = 360, heightDp = 800)
 @Composable
 private fun PendingConsentPreview() {
     HealthifyTheme { PendingConsentContent(state = PendingConsentUiState(), onReviewConsent = {}, onSignOut = {}) }
 }
 
-@Preview(name = "PT2.1 · Cerrando sesión", widthDp = 360, heightDp = 800)
+@Preview(name = "Pending consent - signing out", widthDp = 360, heightDp = 800)
 @Composable
 private fun PendingConsentSigningOutPreview() {
     HealthifyTheme {

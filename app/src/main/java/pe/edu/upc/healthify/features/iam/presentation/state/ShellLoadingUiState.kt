@@ -3,24 +3,24 @@ package pe.edu.upc.healthify.features.iam.presentation.state
 import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.PatientLinkStatus
 import pe.edu.upc.healthify.features.iam.domain.valueobject.NavigationShell
 
-/** Adónde entra la persona después de S5. */
+/** Where the person goes after loading. */
 enum class ShellDestination {
-    /** PT1 · paciente sin vínculo. */
+    /** Patient without a care link. */
     PatientScanInvitation,
 
-    /** PT2.1 · paciente con vínculo pendiente de consentimiento. */
+    /** Patient with a care link awaiting consent. */
     PatientPendingConsent,
 
-    /** PT3 · paciente con vínculo activo (shell del paciente). */
+    /** Patient with an active care link (patient shell). */
     PatientHome,
 
-    /** PR1 · nutricionista (shell del nutricionista). */
+    /** Practitioner (practitioner shell). */
     PractitionerHome,
 }
 
 /**
- * Regla de S5: el shell manda; dentro del shell del paciente, el estado del vínculo elige la pantalla
- * (registrarse no da acceso: sin vínculo activo no se muestran datos clínicos).
+ * Loading rule: the shell decides; inside the patient shell, the care link status picks the screen
+ * (signing up grants no access: without an active care link no clinical data is shown).
  */
 fun selectShellDestination(shell: NavigationShell, linkStatus: PatientLinkStatus?): ShellDestination =
     when (shell) {
@@ -32,7 +32,7 @@ fun selectShellDestination(shell: NavigationShell, linkStatus: PatientLinkStatus
         }
     }
 
-/** S5 · Cargando (Normal / Error). */
+/** Loading (Normal / Error). */
 data class ShellLoadingUiState(
     val isError: Boolean = false,
     val isRetrying: Boolean = false,
@@ -41,6 +41,6 @@ data class ShellLoadingUiState(
 sealed interface ShellLoadingEvent {
     data class Navigate(val destination: ShellDestination) : ShellLoadingEvent
 
-    /** No hay usuario guardado (no debería pasar al venir de S1/S3/S4): vuelve a S2. */
+    /** No stored user (should not happen right after sign-up or sign-in): goes back to the start. */
     data object NavigateToWelcome : ShellLoadingEvent
 }

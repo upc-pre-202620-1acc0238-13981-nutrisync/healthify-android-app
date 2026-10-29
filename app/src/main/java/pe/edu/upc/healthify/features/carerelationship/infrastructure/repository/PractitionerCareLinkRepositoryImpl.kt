@@ -15,7 +15,7 @@ import java.time.Instant
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
-/** Los mappers van dentro de `apiCall`: una respuesta ilegible se lee como `Unexpected("MALFORMED_RESPONSE")`. */
+/** Mappers run inside `apiCall`: an unreadable response becomes `Unexpected("MALFORMED_RESPONSE")`. */
 class PractitionerCareLinkRepositoryImpl @Inject constructor(
     private val service: PractitionerCareLinkService,
 ) : PractitionerCareLinkRepository {

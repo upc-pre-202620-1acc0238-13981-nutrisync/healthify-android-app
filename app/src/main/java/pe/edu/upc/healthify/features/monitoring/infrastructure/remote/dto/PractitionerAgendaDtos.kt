@@ -2,7 +2,7 @@ package pe.edu.upc.healthify.features.monitoring.infrastructure.remote.dto
 
 import kotlinx.serialization.Serializable
 
-/** `ScheduledFollowUpResource` (read model *Practitioner Agenda*, MA-2). */
+/** `ScheduledFollowUpResource` (read model *Practitioner Agenda*). */
 @Serializable
 data class ScheduledFollowUpDto(
     val followUpId: Long,
@@ -28,7 +28,7 @@ data class ScheduleFollowUpRequestDto(
     val modality: String,
 )
 
-/** `RescheduleFollowUpResource`: la preparación enviada reemplaza a la anterior. */
+/** `RescheduleFollowUpResource`: the sent preparation replaces the previous one. */
 @Serializable
 data class RescheduleFollowUpRequestDto(val scheduledFor: String, val preparation: List<String>)
 

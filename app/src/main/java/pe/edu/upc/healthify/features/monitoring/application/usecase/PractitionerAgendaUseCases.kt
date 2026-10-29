@@ -13,7 +13,7 @@ import java.time.Clock
 import java.time.Instant
 import javax.inject.Inject
 
-/** PR17.0 · «Próximas consultas»: las agendadas (`state=Scheduled`) desde ahora, la más cercana primero. */
+/** "Upcoming visits": the scheduled ones (`state=Scheduled`) from now on, nearest first. */
 class GetUpcomingFollowUpsUseCase @Inject constructor(
     private val repository: PractitionerAgendaRepository,
     private val clock: Clock,
@@ -24,8 +24,8 @@ class GetUpcomingFollowUpsUseCase @Inject constructor(
 }
 
 /**
- * PR17 «Agendar». El momento ya llega validado como futuro ([pe.edu.upc.healthify.features.monitoring.domain.entity.FollowUpMoment]);
- * si entre validar y enviar pasó la hora, se rechaza en el teléfono con el mismo código que el backend.
+ * "Schedule". The moment arrives already validated as future ([pe.edu.upc.healthify.features.monitoring.domain.entity.FollowUpMoment]);
+ * if the time passed between validating and sending, the phone rejects it with the same code as the backend.
  */
 class ScheduleFollowUpUseCase @Inject constructor(
     private val repository: PractitionerAgendaRepository,
@@ -39,7 +39,7 @@ class ScheduleFollowUpUseCase @Inject constructor(
         }
 }
 
-/** PR17 en modo reprogramar (desde una consulta de PR17.0): mismo paciente, otro momento futuro. */
+/** Reschedule mode (from an Agenda visit): same patient, another future moment. */
 class RescheduleFollowUpUseCase @Inject constructor(
     private val repository: PractitionerAgendaRepository,
     private val clock: Clock,
@@ -52,7 +52,7 @@ class RescheduleFollowUpUseCase @Inject constructor(
         }
 }
 
-/** PR17.0 «Cancelar consulta» (no es un juicio sobre el paciente ni cierra el vínculo, MA-5). */
+/** "Cancel visit" (not a judgment of the patient and does not close the care link). */
 class CancelFollowUpUseCase @Inject constructor(
     private val repository: PractitionerAgendaRepository,
 ) {
@@ -60,12 +60,12 @@ class CancelFollowUpUseCase @Inject constructor(
         repository.cancel(followUpId, reason)
 }
 
-/** PR16 «Registrar». */
+/** Record a referral. */
 class RecordReferralUseCase @Inject constructor(
     private val repository: PractitionerAgendaRepository,
 ) {
     suspend operator fun invoke(referral: NewReferral): Result<Unit> = repository.recordReferral(referral)
 }
 
-/** Código del backend para un momento que no está en el futuro (MA-5). */
+/** Backend code for a moment that is not in the future. */
 const val SCHEDULED_FOR_MUST_BE_IN_FUTURE = "ScheduledForMustBeInFuture"

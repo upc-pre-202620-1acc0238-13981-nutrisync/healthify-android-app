@@ -74,7 +74,7 @@ data class ScheduleFollowUpActions(
     val onBackToForm: () -> Unit = {},
 )
 
-/** PR17 · Agendar consulta (+ PR17.E fecha no futura, PR17.2 no se pudo agendar) y reprogramar. */
+/** Schedule a visit (with the non-future-date and could-not-schedule states) and reschedule. */
 @Composable
 fun ScheduleFollowUpScreen(
     onBack: () -> Unit,
@@ -120,7 +120,7 @@ fun ScheduleFollowUpContent(
     val dimens = HealthifyTheme.dimens
     SystemBarsAppearance(darkBackground = false)
     if (state.failed) {
-        // PR17.2: lo escrito se conserva; «Volver a intentarlo» vuelve al formulario.
+        // What was written is kept; "Try again" returns to the form.
         FailureState(
             title = stringResource(R.string.schedule_failed_title),
             text = stringResource(R.string.schedule_failed_body),
@@ -239,7 +239,7 @@ private fun MomentCard(state: ScheduleFollowUpUiState, actions: ScheduleFollowUp
     }
 }
 
-/** «¿Cómo debe prepararse?» (MA-2): el paciente lo ve en PT25.1. */
+/** "How should they prepare?": the patient sees it on the preparation screen. */
 @Composable
 private fun PreparationCard(state: ScheduleFollowUpUiState, actions: ScheduleFollowUpActions) {
     val dimens = HealthifyTheme.dimens
@@ -315,7 +315,7 @@ private fun PatientPickerContent(state: ScheduleFollowUpUiState, onSelect: (Pati
     }
 }
 
-/** Texto corto del chip de preparación para el profesional («En ayunas»); el paciente ve la indicación completa. */
+/** Short preparation chip text for the practitioner ("Fasting"); the patient sees the full instruction. */
 private val PreparationCode.chipRes: Int
     get() = when (this) {
         PreparationCode.FASTING -> R.string.schedule_preparation_fasting
@@ -331,13 +331,13 @@ private val previewState = ScheduleFollowUpUiState(
     preparation = setOf(PreparationCode.FASTING, PreparationCode.LIGHT_CLOTHING, PreparationCode.BRING_BLOOD_TESTS),
 )
 
-@Preview(name = "PR17 · Agendar consulta", widthDp = 360, heightDp = 800)
+@Preview(name = "Schedule visit", widthDp = 360, heightDp = 800)
 @Composable
 private fun ScheduleFollowUpPreview() {
     HealthifyTheme { ScheduleFollowUpContent(state = previewState, today = previewToday, actions = ScheduleFollowUpActions()) }
 }
 
-@Preview(name = "PR17.E · Fecha no futura", widthDp = 360, heightDp = 800)
+@Preview(name = "Date not in the future", widthDp = 360, heightDp = 800)
 @Composable
 private fun ScheduleFollowUpNotFuturePreview() {
     HealthifyTheme {
@@ -349,7 +349,7 @@ private fun ScheduleFollowUpNotFuturePreview() {
     }
 }
 
-@Preview(name = "PR17.2 · No se pudo agendar", widthDp = 360, heightDp = 800)
+@Preview(name = "Could not schedule", widthDp = 360, heightDp = 800)
 @Composable
 private fun ScheduleFollowUpFailedPreview() {
     HealthifyTheme {
@@ -357,7 +357,7 @@ private fun ScheduleFollowUpFailedPreview() {
     }
 }
 
-@Preview(name = "PR17 · Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun ScheduleFollowUpOfflinePreview() {
     HealthifyTheme {
@@ -365,7 +365,7 @@ private fun ScheduleFollowUpOfflinePreview() {
     }
 }
 
-@Preview(name = "PR17 · Elegir paciente", widthDp = 360, heightDp = 360)
+@Preview(name = "Pick patient", widthDp = 360, heightDp = 360)
 @Composable
 private fun PatientPickerPreview() {
     HealthifyTheme {

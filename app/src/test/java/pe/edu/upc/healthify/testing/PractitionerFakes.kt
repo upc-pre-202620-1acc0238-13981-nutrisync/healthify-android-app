@@ -60,7 +60,7 @@ import java.time.LocalDate
 
 const val PATIENT_ID = 7L
 
-/** `SavedStateHandle` con los argumentos de las rutas del nutricionista (por nombre de propiedad). */
+/** `SavedStateHandle` with the practitioner route arguments (by property name). */
 fun patientArgs(editing: Boolean? = null, careLinkId: Long? = 4) = SavedStateHandle(
     buildMap {
         put("patientId", PATIENT_ID)
@@ -231,7 +231,7 @@ fun consultation(
     publishedPlanVersion = null,
 )
 
-/** Como lo devuelve el backend en una consulta en curso: pendiente hasta publicar (NC-7). */
+/** As the backend returns it during an ongoing consultation: pending until published. */
 fun issuedDiagnosis(
     code: DiagnosisCode = DiagnosisCode.OVERWEIGHT_GRADE_I,
     source: DiagnosisSource = DiagnosisSource.PRACTITIONER_SELECTED,
@@ -241,7 +241,7 @@ fun issuedDiagnosis(
 fun prescribedTargets(overridden: Boolean = false) =
     ConsultationTargets(sampleBasis, sampleTargets, sampleTargets, overridden, if (overridden) "Su ritmo" else null)
 
-/** Respuestas programables por paso; registra lo que se envió. */
+/** Programmable responses per step; records what was sent. */
 class FakeConsultationRepository : ConsultationRepository {
     var startResult: Result<Consultation> = Result.success(consultation())
     var inProgressResult: Result<Consultation?> = Result.success(consultation())
@@ -257,7 +257,7 @@ class FakeConsultationRepository : ConsultationRepository {
     var guidelinesResult: Result<GuidelineSuggestions> = Result.success(GuidelineSuggestions(emptyList(), isFromAi = false))
     var draftResult: Result<Consultation> = Result.success(consultation())
 
-    /** Una respuesta por intento de publicar; la última se repite. */
+    /** One response per publish attempt; the last one repeats. */
     var publishResults: List<Result<Consultation>> = listOf(Result.success(consultation(isInProgress = false)))
 
     val starts = mutableListOf<Long?>()

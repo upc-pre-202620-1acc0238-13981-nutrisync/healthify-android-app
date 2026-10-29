@@ -24,11 +24,11 @@ import java.time.Clock
 import javax.inject.Inject
 
 /**
- * PR2 · Generar invitación. Al entrar emite un código con la vigencia por defecto (24 h, como el frame); la cuenta
- * regresiva se recalcula cada segundo con el reloj del teléfono. «Generar otro código» emite uno nuevo: el anterior
- * sigue valiendo hasta que vence.
+ * Generate invitation. On entry it issues a code with the default validity (24 h, as in the design); the
+ * countdown is recomputed every second with the phone's clock. "Generate another code" issues a new one: the previous
+ * one stays valid until it expires.
  *
- * DECISIÓN PR2: cambiar «Vence en» emite un código nuevo con esa vigencia (el ya mostrado no se puede cambiar).
+ * Changing "Expires in" issues a new code with that validity (the one already shown cannot change).
  */
 @HiltViewModel
 class InvitePatientViewModel @Inject constructor(
@@ -49,7 +49,7 @@ class InvitePatientViewModel @Inject constructor(
             connectivityObserver.isOnline.collect { online -> _state.update { it.copy(isOffline = !online) } }
         }
         viewModelScope.launch {
-            // Sin conexión al entrar no se intenta: se muestra el error de las Notas.
+            // Offline on entry, no attempt is made: the error from the design notes is shown.
             if (connectivityObserver.isOnline.first()) {
                 generate()
             } else {
@@ -58,7 +58,7 @@ class InvitePatientViewModel @Inject constructor(
         }
     }
 
-    /** «Generar otro código» y reintento tras un error. */
+    /** "Generate another code" and retry after an error. */
     fun onGenerateAnother() = generate()
 
     fun onValidityChange(validity: InvitationValidity) {

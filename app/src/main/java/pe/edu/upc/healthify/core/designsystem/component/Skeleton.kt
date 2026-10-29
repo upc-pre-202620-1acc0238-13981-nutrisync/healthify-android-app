@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import pe.edu.upc.healthify.R
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 
-// Medidas de las variantes del Skeleton del Figma.
+// Figma Skeleton variant measurements.
 private val LineHeight = 16.dp
 private val SmallLineHeight = 12.dp
 private val CardTitleHeight = 20.dp
@@ -48,7 +48,7 @@ private val AvatarSize = 40.dp
 private const val PULSE_MIN_ALPHA = 0.4f
 private const val PULSE_DURATION_MS = 900
 
-/** Línea: [lines] bloques de texto de 16 dp. */
+/** Line: [lines] 16 dp text blocks. */
 @Composable
 fun SkeletonLine(modifier: Modifier = Modifier, lines: Int = 2) {
     SkeletonContainer(modifier = modifier, padded = false) {
@@ -56,7 +56,7 @@ fun SkeletonLine(modifier: Modifier = Modifier, lines: Int = 2) {
     }
 }
 
-/** Tarjeta: título, bloque de contenido y pie. */
+/** Card: title, content block and footer. */
 @Composable
 fun SkeletonCard(modifier: Modifier = Modifier) {
     SkeletonContainer(modifier = modifier) {
@@ -66,7 +66,7 @@ fun SkeletonCard(modifier: Modifier = Modifier) {
     }
 }
 
-/** Ítem de lista: avatar circular y dos líneas. */
+/** List item: circular avatar and two lines. */
 @Composable
 fun SkeletonListItem(modifier: Modifier = Modifier) {
     val dimens = HealthifyTheme.dimens
@@ -94,7 +94,7 @@ fun SkeletonListItem(modifier: Modifier = Modifier) {
     }
 }
 
-/** Gráfico: área del gráfico y leyenda. */
+/** Chart: chart area and legend. */
 @Composable
 fun SkeletonChart(modifier: Modifier = Modifier) {
     SkeletonContainer(modifier = modifier) {
@@ -103,7 +103,7 @@ fun SkeletonChart(modifier: Modifier = Modifier) {
     }
 }
 
-/** Bloque suelto del Skeleton (`surfaceContainerHigh`) para armar placeholders propios de una pantalla. */
+/** Loose Skeleton block (`surfaceContainerHigh`) to build a screen's own placeholders. */
 @Composable
 fun SkeletonBlock(
     height: Dp,
@@ -148,8 +148,8 @@ private fun SkeletonContainer(
 }
 
 /**
- * Pulso de opacidad del placeholder. Respeta «reducir movimiento» (escala de animación del sistema en 0):
- * en ese caso queda estático. TalkBack lo anuncia una sola vez como «Cargando».
+ * Placeholder opacity pulse. Honors "reduce motion" (system animation scale at 0):
+ * in that case it stays static. TalkBack announces it once as "Loading".
  */
 @Composable
 private fun SkeletonPulse(modifier: Modifier, content: @Composable () -> Unit) {
@@ -179,7 +179,7 @@ private fun SkeletonPulse(modifier: Modifier, content: @Composable () -> Unit) {
     }
 }
 
-@Preview(name = "Skeleton · Línea / Tarjeta / ListItem / Gráfico", widthDp = 360, heightDp = 720)
+@Preview(name = "Skeleton · Line / Card / ListItem / Chart", widthDp = 360, heightDp = 720)
 @Composable
 private fun SkeletonPreview() {
     ComponentPreview {

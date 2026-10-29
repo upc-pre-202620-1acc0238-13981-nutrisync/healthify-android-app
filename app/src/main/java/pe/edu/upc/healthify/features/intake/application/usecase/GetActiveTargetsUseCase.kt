@@ -8,7 +8,7 @@ import java.time.Clock
 import java.time.LocalDate
 import javax.inject.Inject
 
-/** PT3 / PT4: metas vigentes, desde el backend o, sin conexión, desde la copia del teléfono. */
+/** Active targets, from the backend or, when offline, from the phone's copy. */
 class GetActiveTargetsUseCase @Inject constructor(
     private val repository: ActiveTargetsRepository,
 ) {
@@ -16,7 +16,7 @@ class GetActiveTargetsUseCase @Inject constructor(
         repository.getActiveTargets(PatientId(patientUserId))
 }
 
-/** PT3 «Medidor del día»: lo registrado hoy y lo que queda de cada meta (IN-9). */
+/** The daily gauge: what was logged today and what is left of each target. */
 class GetDailyIntakeUseCase @Inject constructor(
     private val repository: ActiveTargetsRepository,
     private val clock: Clock,

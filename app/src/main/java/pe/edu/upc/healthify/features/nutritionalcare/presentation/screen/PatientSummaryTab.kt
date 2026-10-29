@@ -71,7 +71,7 @@ import pe.edu.upc.healthify.features.nutritionalcare.presentation.viewmodel.Pati
 import java.time.Instant
 import java.time.LocalDate
 
-/** «GESTIÓN» de PAC-1: agendar (PR17), registrar derivación (PR16) y dar de alta (PR18), pantallas del grafo raíz. */
+/** The summary's "MANAGEMENT" section: schedule, record a referral and discharge, screens in the root graph. */
 data class SummaryManagementActions(
     val onSchedule: () -> Unit = {},
     val onReferral: () -> Unit = {},
@@ -79,8 +79,8 @@ data class SummaryManagementActions(
 )
 
 /**
- * PAC-0 / PAC-1 / PAC-1.C · pestaña Resumen de la ficha del paciente. [onNavigate] recibe la ruta de EV-1 o del paso de
- * la consulta; [onOpenFollowUp] cambia a la pestaña Seguimiento («Tendencia · 4 semanas»).
+ * Summary tab of the patient profile. [onNavigate] gets the route of the baseline or of the consultation
+ * step; [onOpenFollowUp] switches to the Follow-up tab ("Trend · 4 weeks").
  */
 @Composable
 fun PatientSummaryTab(
@@ -112,7 +112,7 @@ fun PatientSummaryTab(
     }
 }
 
-/** La ruta de EV-1 o del paso de la consulta que pide una pestaña. */
+/** The route of the baseline or consultation step a tab asks for. */
 fun PatientTabEvent.toRoute(patientId: Long, patientName: String): Any = when (this) {
     is PatientTabEvent.OpenBaseline -> BaselineRoute(patientId, patientName, editing)
     is PatientTabEvent.OpenConsultationStep -> consultationStepRoute(step, patientId, patientName)
@@ -161,7 +161,7 @@ fun PatientSummaryContent(
     }
 }
 
-/** Lo común de las pestañas de la ficha: contenido con scroll y, si hay, la acción fija abajo. */
+/** What the profile tabs share: scrolling content and, if any, the action pinned at the bottom. */
 @Composable
 fun PatientTabLayout(
     modifier: Modifier = Modifier,
@@ -189,7 +189,7 @@ fun PatientTabLayout(
     }
 }
 
-/** «Necesitas conexión»: la ficha del paciente no se guarda en el teléfono (como PR1.O). */
+/** "You need a connection": the patient profile is not stored on the phone (like the caseload). */
 @Composable
 fun NeedsConnection(onRetry: () -> Unit) {
     EmptyState(
@@ -229,7 +229,7 @@ private fun ColumnScope.SummaryBody(
     ManagementSection(management, enabled = !isOffline)
 }
 
-/** PAC-0 · «Aún no tiene datos base». */
+/** "No baseline yet". */
 @Composable
 private fun NoBaselineState() {
     val dimens = HealthifyTheme.dimens
@@ -251,7 +251,7 @@ private fun NoBaselineState() {
     }
 }
 
-/** PAC-1.C · «Consulta en curso · Paso 1 de 4 · Medición de hoy · se guardó hoy». */
+/** "Consultation in progress · Step 1 of 4 · Today's measurement · saved today". */
 @Composable
 private fun InProgressCard(inProgress: ConsultationInProgress) {
     SectionCard {
@@ -305,7 +305,7 @@ private fun BaselineCard(baseline: BaselineSummary, onEdit: () -> Unit, enabled:
     }
 }
 
-/** «DESDE LA ÚLTIMA CONSULTA»: tendencia del autopesaje (nunca el peso de un día) y cumplimiento. */
+/** "SINCE THE LAST CONSULTATION": self-weigh-in trend (never a single day's weight) and adherence. */
 @Composable
 private fun SinceLastConsultationSection(since: SinceLastConsultation, onOpenFollowUp: () -> Unit) {
     val dimens = HealthifyTheme.dimens
@@ -345,11 +345,11 @@ private fun SinceLastConsultationSection(since: SinceLastConsultation, onOpenFol
 
 private const val LAST_WEEK_DAYS = 7
 
-/** «GESTIÓN»: agendar (PR17), derivar (PR16) y dar de alta (PR18). */
+/** "MANAGEMENT": schedule, refer and discharge. */
 @Composable
 private fun ManagementSection(actions: SummaryManagementActions, enabled: Boolean) {
     val dimens = HealthifyTheme.dimens
-    // Sin conexión ninguna de las tres se puede enviar: se ven deshabilitadas.
+    // Offline none of the three can be sent: they show disabled.
     Column(
         modifier = if (enabled) Modifier else Modifier.alpha(DISABLED_ALPHA),
         verticalArrangement = Arrangement.spacedBy(dimens.space8),
@@ -391,7 +391,7 @@ private val previewSummary = PatientSummary(
     sinceLastConsultation = SinceLastConsultation(LocalDate.parse("2026-09-30"), -0.3, 4, ComplianceRatio(5, 7)),
 )
 
-@Preview(name = "PAC-1 · Resumen", widthDp = 360, heightDp = 800)
+@Preview(name = "Summary", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientSummaryPreview() {
     HealthifyTheme {
@@ -406,7 +406,7 @@ private fun PatientSummaryPreview() {
     }
 }
 
-@Preview(name = "PAC-1.C · Consulta en curso", widthDp = 360, heightDp = 800)
+@Preview(name = "Summary - consultation in progress", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientSummaryInProgressPreview() {
     HealthifyTheme {
@@ -430,7 +430,7 @@ private fun PatientSummaryInProgressPreview() {
     }
 }
 
-@Preview(name = "PAC-0 · Sin datos base", widthDp = 360, heightDp = 800)
+@Preview(name = "Summary - no baseline", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientSummaryNoBaselinePreview() {
     HealthifyTheme {
@@ -448,7 +448,7 @@ private fun PatientSummaryNoBaselinePreview() {
     }
 }
 
-@Preview(name = "PAC · Cargando", widthDp = 360, heightDp = 800)
+@Preview(name = "Summary - loading", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientSummaryLoadingPreview() {
     HealthifyTheme {
@@ -463,7 +463,7 @@ private fun PatientSummaryLoadingPreview() {
     }
 }
 
-@Preview(name = "PAC · Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Summary - offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientSummaryOfflinePreview() {
     HealthifyTheme {
@@ -478,7 +478,7 @@ private fun PatientSummaryOfflinePreview() {
     }
 }
 
-@Preview(name = "PAC · Error", widthDp = 360, heightDp = 800)
+@Preview(name = "Summary - error", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientSummaryErrorPreview() {
     HealthifyTheme {

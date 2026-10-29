@@ -8,12 +8,12 @@ import pe.edu.upc.healthify.features.intake.domain.valueobject.PlanGuideline
 import java.time.Instant
 
 /**
- * «Mis metas del día» (`ActiveTargetsResource`): la versión del plan vigente tal como le llega al paciente. Se guarda
- * en el dispositivo para verla sin conexión (*Cache Survives Offline*).
+ * "My targets for the day" (`ActiveTargetsResource`): the active plan version as the patient receives it. It is
+ * stored on the device so it can be seen offline (*Cache Survives Offline*).
  *
- * @param validFrom desde cuándo rige (se muestra como «Publicado el …»).
- * @param restrictions códigos de la lista cerrada y, al final, las restricciones legadas (texto libre).
- * @param patientMessage mensaje del nutricionista para esta versión (NC-9); texto de una persona, nunca se traduce.
+ * @param validFrom when it takes effect (shown as "Published on …").
+ * @param restrictions codes from the closed list and, at the end, the legacy free-text restrictions.
+ * @param patientMessage the nutritionist's message for this version; written by a person, never translated.
  */
 data class ActiveTargets(
     val patientId: PatientId,
@@ -32,10 +32,10 @@ data class ActiveTargets(
 }
 
 /**
- * Resultado de pedir las metas vigentes.
+ * Result of asking for the active targets.
  *
- * @param targets `null` si el paciente todavía no tiene metas publicadas (PT3.V).
- * @param savedAt cuándo se guardó la copia del dispositivo; solo si [fromCache] (PT3.O «actualizadas hoy 8:10»).
+ * @param targets `null` if the patient has no published targets yet.
+ * @param savedAt when the device copy was saved; only if [fromCache] ("updated today 8:10").
  */
 data class ActiveTargetsLookup(
     val targets: ActiveTargets?,

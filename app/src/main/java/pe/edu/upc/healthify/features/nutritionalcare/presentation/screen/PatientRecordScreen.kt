@@ -81,12 +81,12 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlin.math.abs
 
-// Avatar del nutricionista del Figma.
+// Nutritionist avatar from Figma.
 private val AvatarSize = 48.dp
 
 /**
- * PT20 · Mi expediente (+ PT20.L), pestaña «Expediente» del shell. Solo lo propio del paciente: nunca diagnóstico,
- * base de cálculo, IMC ni su categoría (RM-4, regla ética 1).
+ * My record (plus loading and empty states), the shell's "Record" tab. Only the patient's own data: never the
+ * diagnosis, calculation basis, BMI or its category (ethics rule 1).
  */
 @Composable
 fun PatientRecordScreen(
@@ -176,7 +176,7 @@ private fun ColumnScope.RecordBody(
     PlanSection(record.plan, record.openReferrals, onOpenReferrals)
 }
 
-/** «Card · Mi nutricionista». Sin datos (el contexto no respondió): la sección queda vacía. */
+/** "My nutritionist" card. Without data (the context did not respond): the section stays empty. */
 @Composable
 private fun PractitionerCard(practitioner: RecordPractitioner?) {
     val dimens = HealthifyTheme.dimens
@@ -193,7 +193,7 @@ private fun PractitionerCard(practitioner: RecordPractitioner?) {
                 Icon(imageVector = HealthifyIcons.Person, contentDescription = null, tint = scheme.onPrimaryContainer)
             }
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(dimens.space4)) {
-                // DECISIÓN PT20: el frame rotula «Tu nutricionista»; con el nombre del read model se muestra el nombre.
+                // The frame labels it "Your nutritionist"; when the read model has the name, the name is shown.
                 Text(
                     text = practitioner?.fullName ?: stringResource(R.string.record_practitioner_title),
                     style = MaterialTheme.typography.titleMedium,
@@ -214,7 +214,7 @@ private fun PractitionerCard(practitioner: RecordPractitioner?) {
     }
 }
 
-/** «Card · Mis consultas» → PT25 (también sin próxima consulta: muestra las anteriores). */
+/** "My consultations" card → the consultations list (also without a next consultation: it shows past ones). */
 @Composable
 private fun ConsultationsCard(next: RecordNextFollowUp?, onOpen: () -> Unit) {
     val dimens = HealthifyTheme.dimens
@@ -241,7 +241,7 @@ private fun ConsultationsCard(next: RecordNextFollowUp?, onOpen: () -> Unit) {
     }
 }
 
-/** «MIS NÚMEROS»: cada número que falta se muestra como «—»; sin ninguno, la sección vacía de PT20.L. */
+/** "MY NUMBERS": each missing number shows as "—"; with none, the empty section state. */
 @Composable
 private fun MyNumbersSection(numbers: MyNumbers) {
     val dimens = HealthifyTheme.dimens
@@ -279,7 +279,7 @@ private fun MyNumbersSection(numbers: MyNumbers) {
     }
 }
 
-/** Un día sin registro no es incumplimiento (regla ética 3): solo se cuentan los días cumplidos, sin rojo. */
+/** A day without logs is not a miss (ethics rule 3): only met days are counted, no red. */
 @Composable
 private fun ComplianceCard(compliance: RecordCompliance?, modifier: Modifier) {
     NumberCard(
@@ -293,7 +293,7 @@ private fun ComplianceCard(compliance: RecordCompliance?, modifier: Modifier) {
     )
 }
 
-/** Medición de la consulta (nunca un autopesaje, regla ética 6). */
+/** Consultation measurement (never a self-weigh-in, ethics rule 6). */
 @Composable
 private fun ClinicalWeightCard(weight: RecordClinicalWeight?, locale: Locale, modifier: Modifier) {
     NumberCard(
@@ -334,8 +334,8 @@ private fun NumberCard(
 }
 
 /**
- * «MI PLAN» (indicaciones y restricciones traducidas; lo escrito por el nutricionista, tal cual) y «Derivaciones». Con
- * derivaciones activas, la tarjeta abre su detalle (especialidad, fecha y motivo).
+ * "MY PLAN" (guidelines and restrictions translated; what the nutritionist wrote, as is) and "Referrals". With
+ * active referrals, the card opens their detail (specialty, date and reason).
  */
 @Composable
 private fun PlanSection(plan: RecordPlan?, openReferrals: List<RecordReferral>, onOpenReferrals: () -> Unit) {
@@ -434,7 +434,7 @@ private fun RecordCard(
     }
 }
 
-/** «Card · Mis medidas» de PT20.L: una sección vacía no tumba el resto. */
+/** "My measurements" card: an empty section does not break the rest. */
 @Composable
 private fun EmptySectionCard(title: String, text: String) {
     val dimens = HealthifyTheme.dimens
@@ -446,7 +446,7 @@ private fun EmptySectionCard(title: String, text: String) {
     }
 }
 
-/** «jueves 18 sept.» / «Thursday, Sep 18». */
+/** "jueves 18 sept." / "Thursday, Sep 18". */
 @Composable
 private fun weekdayDayMonth(instant: Instant): String {
     val locale = currentLocale()
@@ -454,13 +454,13 @@ private fun weekdayDayMonth(instant: Instant): String {
     return DateTimeFormatter.ofPattern(pattern, locale).format(instant.atZone(ZoneId.systemDefault()))
 }
 
-/** «3 mar.» / «Mar 3». */
+/** "3 mar." / "Mar 3". */
 private fun shortDayMonth(instant: Instant, locale: Locale): String {
     val pattern = if (locale.language == Locale.ENGLISH.language) "MMM d" else "d MMM"
     return DateTimeFormatter.ofPattern(pattern, locale).format(instant.atZone(ZoneId.systemDefault()))
 }
 
-/** «−0,3 kg/sem» / «+0.2 kg/wk»: con signo tipográfico. */
+/** "−0,3 kg/sem" / "+0.2 kg/wk": with the typographic sign. */
 @Composable
 private fun slopeText(kgPerWeek: Double, locale: Locale): String {
     val sign = when {
@@ -495,7 +495,7 @@ private val PreviewRecord = PatientOwnRecord(
     referrals = emptyList(),
 )
 
-@Preview(name = "PT20 · Mi expediente", widthDp = 360, heightDp = 800)
+@Preview(name = "My record", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientRecordPreview() {
     HealthifyTheme {
@@ -503,7 +503,7 @@ private fun PatientRecordPreview() {
     }
 }
 
-@Preview(name = "PT20.L · Sección vacía", widthDp = 360, heightDp = 800)
+@Preview(name = "My record - empty section", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientRecordEmptySectionPreview() {
     HealthifyTheme {
@@ -518,13 +518,13 @@ private fun PatientRecordEmptySectionPreview() {
     }
 }
 
-@Preview(name = "PT20.L · Cargando", widthDp = 360, heightDp = 800)
+@Preview(name = "My record - loading", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientRecordLoadingPreview() {
     HealthifyTheme { PatientRecordContent(state = PatientRecordUiState(), onRetry = {}, onOpenMyConsultations = {}) }
 }
 
-@Preview(name = "PT20 · Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "My record - offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientRecordOfflinePreview() {
     HealthifyTheme {
@@ -536,7 +536,7 @@ private fun PatientRecordOfflinePreview() {
     }
 }
 
-@Preview(name = "PT20 · Error", widthDp = 360, heightDp = 800)
+@Preview(name = "My record - error", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientRecordErrorPreview() {
     HealthifyTheme {

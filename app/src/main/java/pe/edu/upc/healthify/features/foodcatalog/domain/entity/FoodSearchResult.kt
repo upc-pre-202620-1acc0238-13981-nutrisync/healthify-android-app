@@ -3,11 +3,11 @@ package pe.edu.upc.healthify.features.foodcatalog.domain.entity
 import pe.edu.upc.healthify.features.foodcatalog.domain.valueobject.FoodSearchTerm
 
 /**
- * Resultado de una búsqueda local-first (PT9, F14b): primero el catálogo guardado en el teléfono, después lo que
- * agregó el servidor.
+ * Result of a local-first search: first the catalog saved on the phone, then what the server
+ * added.
  *
- * @param serverPending todavía se espera la respuesta del servidor (la lista puede crecer).
- * @param localOnly el servidor no respondió (sin conexión): solo hay resultados del catálogo guardado (PT10 offline).
+ * @param serverPending the server response is still pending (the list may grow).
+ * @param localOnly the server did not answer (offline): only results from the saved catalog.
  */
 data class FoodSearchResult(
     val term: FoodSearchTerm,
@@ -23,10 +23,10 @@ data class FoodSearchResult(
     val isEmpty: Boolean get() = foods.isEmpty()
 
     companion object {
-        /** Máximo de resultados que se muestran (el mismo `max` que se pide al servidor). */
+        /** Maximum number of results shown (the same `max` requested from the server). */
         const val MAX_RESULTS = 25
 
-        /** Los locales primero (ya ordenados), después los del servidor que el teléfono no tenía. */
+        /** Local results first (already sorted), then the server ones the phone did not have. */
         fun merge(local: List<ReferenceFood>, remote: List<ReferenceFood>): List<ReferenceFood> {
             val seen = local.map { it.id }.toMutableSet()
             return (local + remote.filter { seen.add(it.id) }).take(MAX_RESULTS)

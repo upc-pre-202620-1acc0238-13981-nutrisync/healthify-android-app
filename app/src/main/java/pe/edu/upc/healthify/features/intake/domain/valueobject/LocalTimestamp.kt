@@ -6,17 +6,17 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 
 /**
- * Momento en que el paciente dice que comió («¿Cuándo comiste?»), con el offset del teléfono. Lo declara el
- * paciente y **nadie lo reescribe**: ni la app al reenviar, ni el backend (*Declared Local Timestamp Never
- * Rewritten*). Por eso se conserva el valor exacto, offset incluido.
+ * The moment the patient says they ate ("When did you eat?"), with the phone's offset. The patient declares it
+ * and **nobody rewrites it**: not the app when resending, not the backend (*Declared Local Timestamp Never
+ * Rewritten*). That is why the exact value is kept, offset included.
  *
- * Regla de la ventana retroactiva (F15–F17, `Intake:RetroactiveLoggingWindowHours` = 48): un registro nuevo no puede
- * ser de hace más de 48 h ni del futuro. La sincronización offline no aplica la ventana (F20): lo encolado se
- * [restore]a sin volver a validarla.
+ * Retroactive window rule (`Intake:RetroactiveLoggingWindowHours` = 48): a new log cannot be more than 48 h old
+ * or in the future. The offline sync does not apply the window: queued entries are [restore]d without
+ * validating it again.
  */
 class LocalTimestamp private constructor(val value: OffsetDateTime) {
 
-    /** El día clínico del registro: el del reloj del teléfono cuando se declaró. */
+    /** The clinical day of the log: the one on the phone's clock when it was declared. */
     val localDate: LocalDate get() = value.toLocalDate()
 
     val instant: Instant get() = value.toInstant()
@@ -30,10 +30,10 @@ class LocalTimestamp private constructor(val value: OffsetDateTime) {
     enum class Validity { VALID, TOO_OLD, IN_FUTURE }
 
     companion object {
-        /** `Intake:RetroactiveLoggingWindowHours` del backend. */
+        /** The backend's `Intake:RetroactiveLoggingWindowHours`. */
         val RETROACTIVE_WINDOW: Duration = Duration.ofHours(48)
 
-        /** Tolerancia para la hora elegida «ahora» mientras el paciente completa el formulario. */
+        /** Tolerance for a time picked as "now" while the patient fills in the form. */
         private val FUTURE_TOLERANCE: Duration = Duration.ofMinutes(5)
 
         fun validate(value: OffsetDateTime, now: Instant): Validity {
@@ -45,13 +45,13 @@ class LocalTimestamp private constructor(val value: OffsetDateTime) {
             }
         }
 
-        /** Un registro nuevo (PT8, PT10.1, PT14.5). @throws IllegalArgumentException fuera de la ventana. */
+        /** A new log. @throws IllegalArgumentException outside the window. */
         fun forNewEntry(value: OffsetDateTime, now: Instant): LocalTimestamp {
             require(validate(value, now) == Validity.VALID) { "A new entry must be within the last 48 h" }
             return LocalTimestamp(value)
         }
 
-        /** Un momento ya declarado (cola offline, backend): se respeta tal cual. */
+        /** A moment already declared (offline queue, backend): it is kept as is. */
         fun restore(value: OffsetDateTime): LocalTimestamp = LocalTimestamp(value)
     }
 }

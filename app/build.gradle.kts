@@ -26,8 +26,8 @@ android {
 
     buildTypes {
         debug {
-            // Puerto del perfil "http" de healthify-platform (Properties/launchSettings.json).
-            // 10.0.2.2 es el host visto desde el emulador.
+            // Port of the healthify-platform "http" profile (Properties/launchSettings.json).
+            // 10.0.2.2 is the host as seen from the emulator.
             buildConfigField("String", "BASE_URL", "\"https://platform.healthify.lat/api/v1/\"")
         }
         release {
@@ -40,7 +40,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
-        // java.time (fechas clínicas y de consultas) con minSdk 24.
+        // java.time (clinical and consultation dates) with minSdk 24.
         isCoreLibraryDesugaringEnabled = true
     }
     buildFeatures {
@@ -48,16 +48,16 @@ android {
         buildConfig = true
     }
     lint {
-        // Las versiones están fijadas a propósito a las de EasySneaker.
-        // Se suben juntas y a mano, no por aviso de lint.
+        // Versions are pinned on purpose to EasySneaker's.
+        // They are bumped together and by hand, not on a lint warning.
         disable += setOf("AndroidGradlePluginVersion", "GradleDependency")
     }
     androidResources {
-        // values/ = español (ver src/main/res/resources.properties), values-en/ = inglés.
+        // values/ = Spanish (see src/main/res/resources.properties), values-en/ = English.
         generateLocaleConfig = true
     }
     bundle {
-        // PT21.I cambia el idioma dentro de la app: los dos idiomas tienen que venir en el APK base.
+        // The in-app language switch needs both languages in the base APK.
         language {
             enableSplit = false
         }
@@ -65,7 +65,7 @@ android {
 }
 
 ksp {
-    // Esquemas de Room versionados para escribir migraciones (AppDatabase, core/database).
+    // Versioned Room schemas for writing migrations (AppDatabase, core/database).
     arg("room.schemaLocation", "$projectDir/schemas")
 }
 
@@ -83,7 +83,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-    // Navigation (rutas type-safe @Serializable)
+    // Navigation (type-safe @Serializable routes)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
 
@@ -94,23 +94,23 @@ dependencies {
     implementation(libs.androidx.hilt.work)
     ksp(libs.androidx.hilt.compiler)
 
-    // Red
+    // Network
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.kotlinx.serialization)
     implementation(libs.okhttp)
     debugImplementation(libs.okhttp.logging)
 
-    // Persistencia
+    // Persistence
     implementation(libs.room.runtime)
     ksp(libs.room.compiler)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.tink.android)
 
-    // Imágenes
+    // Images
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
 
-    // Cámara, QR y trabajo en segundo plano
+    // Camera, QR and background work
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)

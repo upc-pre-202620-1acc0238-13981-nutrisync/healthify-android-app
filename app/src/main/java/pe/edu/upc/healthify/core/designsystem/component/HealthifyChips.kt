@@ -22,8 +22,8 @@ import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 
 /**
- * «Filtro» del Figma (PT25.2): chip de selección múltiple. Seleccionado = `primaryContainer`, borde `primary` y check;
- * sin seleccionar = borde `outline`. Visual de 38 dp con área táctil de 48 dp.
+ * Figma "Filter": multi-select chip. Selected = `primaryContainer`, `primary` border and check;
+ * unselected = `outline` border. 38 dp visual with a 48 dp touch target.
  */
 @Composable
 fun HealthifyFilterChip(
@@ -63,7 +63,7 @@ fun HealthifyFilterChip(
     }
 }
 
-/** «Etiqueta» del Figma (PT20 Mi plan): texto con borde `outline`, solo lectura. */
+/** Figma "Tag" (My plan): text with an `outline` border, read-only. */
 @Composable
 fun HealthifyTag(text: String, modifier: Modifier = Modifier) {
     val dimens = HealthifyTheme.dimens
@@ -78,7 +78,7 @@ fun HealthifyTag(text: String, modifier: Modifier = Modifier) {
     )
 }
 
-@Preview(name = "Filtro · Etiqueta", widthDp = 360)
+@Preview(name = "Filter · Tag", widthDp = 360)
 @Composable
 private fun ChipsPreview() {
     ComponentPreview {

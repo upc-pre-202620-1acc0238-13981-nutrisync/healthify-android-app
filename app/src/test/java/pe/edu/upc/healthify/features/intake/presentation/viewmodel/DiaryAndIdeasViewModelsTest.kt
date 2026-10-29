@@ -94,7 +94,7 @@ class DiaryAndIdeasViewModelsTest {
         )
     }
 
-    // ----- PT14 · Diario -----
+    // ----- Diary -----
 
     @Test
     fun `PT14 shows the day with the entry to confirm first and the ideas card`() {
@@ -141,11 +141,11 @@ class DiaryAndIdeasViewModelsTest {
         connectivity.online.value = false
         diaryViewModel.state.value
 
-        // Vuelve la conexión: el día se relee antes de que la cola llegue al servidor.
+        // The connection comes back: the day is reloaded before the queue reaches the server.
         connectivity.online.value = true
         assertEquals(listOf(DiaryItem.Pending::class), diaryViewModel.state.value.items.map { it::class })
 
-        // La cola se envía: la comida sale de la cola y ya está en el servidor.
+        // The queue is sent: the meal leaves the queue and is now on the server.
         serverEntries += entry(9, "08:00", confirmed = true)
         diary.pendingEntries.value = emptyList()
         diary.synced.tryEmit(Unit)
@@ -233,7 +233,7 @@ class DiaryAndIdeasViewModelsTest {
         assertTrue(diaryViewModel.state.value.items.none { it is DiaryItem.PendingPhoto })
     }
 
-    // ----- PT14.4 / PT14.5 · Ideas -----
+    // ----- Ideas -----
 
     @Test
     fun `PT14_4 shows the ideas and «Ver otras ideas» excludes the ones seen`() {

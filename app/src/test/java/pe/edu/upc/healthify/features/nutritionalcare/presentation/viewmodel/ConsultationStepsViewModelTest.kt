@@ -60,7 +60,7 @@ class ConsultationStepsViewModelTest {
     private val connectivity = FakeConnectivityObserver()
     private val getInProgress = GetConsultationInProgressUseCase(consultations)
 
-    // ----- EV-2 · Medición -----
+    // ----- Measurement -----
 
     private fun measurementViewModel() = MeasurementStepViewModel(
         savedStateHandle = patientArgs(),
@@ -220,7 +220,7 @@ class ConsultationStepsViewModelTest {
         assertFalse(viewModel.state.value.load.loadFailed)
     }
 
-    // ----- EV-3 · Diagnóstico -----
+    // ----- Diagnosis -----
 
     private fun diagnosisViewModel() = DiagnosisStepViewModel(
         savedStateHandle = patientArgs(),
@@ -333,7 +333,7 @@ class ConsultationStepsViewModelTest {
         viewModel.events.test { assertEquals(ConsultationStepEvent.Back, awaitItem()) }
     }
 
-    // ----- EV-4 · Metas -----
+    // ----- Targets -----
 
     private fun targetsViewModel() = TargetsStepViewModel(
         savedStateHandle = patientArgs(),
@@ -373,7 +373,7 @@ class ConsultationStepsViewModelTest {
 
     @Test
     fun `EV-4 without a diagnosis goes back to step 2`() = runTest {
-        // NC-7: si la medición se repitió, el backend descarta el diagnóstico y la consulta llega sin él.
+        // If the measurement was redone, the backend drops the diagnosis and the consultation arrives without it.
         consultations.inProgressResult = Result.success(consultation(ConsultationStep.DIAGNOSIS, savedMeasurement()))
         val viewModel = targetsViewModel()
 
@@ -459,7 +459,7 @@ class ConsultationStepsViewModelTest {
         assertFalse(viewModel.state.value.showParameters)
     }
 
-    // ----- EV-5 · Publicación -----
+    // ----- Publishing -----
 
     private fun publicationViewModel() = PublicationStepViewModel(
         savedStateHandle = patientArgs(),
@@ -532,7 +532,7 @@ class ConsultationStepsViewModelTest {
         assertEquals(1, keys.size)
         assertEquals(3, consultations.publications.size)
         assertEquals(setOf(PlanRestrictionCode.VEGAN), consultations.publications.last().first.restrictions)
-        // Lo escrito se guardó como borrador antes de publicar: no se pierde.
+        // What was typed was saved as a draft before publishing, so nothing is lost.
         assertEquals(setOf(PlanRestrictionCode.VEGAN), consultations.drafts.first().restrictions)
     }
 

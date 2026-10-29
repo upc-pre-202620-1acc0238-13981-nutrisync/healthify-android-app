@@ -8,32 +8,32 @@ import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.Invitat
 import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.PatientId
 import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.PatientLinkStatus
 
-/** Vínculo asistencial del paciente con sesión (§5.2 CareRelationship). */
+/** The signed-in patient's care link. */
 interface CareLinkRepository {
 
     /**
-     * Estado del vínculo del paciente. Sin conexión devuelve el último estado conocido en el dispositivo; si nunca
-     * se supo, falla con `DomainError.Network`.
+     * The patient's care link status. Offline it returns the last state known on the device; if it was never
+     * known, it fails with `DomainError.Network`.
      */
     suspend fun getPatientLinkStatus(patientId: PatientId): Result<PatientLinkStatus>
 
     /**
-     * Recuerda el vínculo recién creado al canjear una invitación (PT1) mientras espera el consentimiento: el backend
-     * no tiene una lectura del vínculo pendiente por paciente (`/care-links/active` solo devuelve vínculos con
-     * consentimiento), así que se consulta luego por su id con `GET /care-links/{careLinkId}`.
+     * Remembers the care link created when redeeming an invitation while it waits for consent: the backend
+     * has no per-patient read of the pending care link (`/care-links/active` only returns consented care
+     * links), so it is read later by id with `GET /care-links/{careLinkId}`.
      */
     suspend fun rememberPendingCareLink(patientId: PatientId, careLinkId: CareLinkId)
 
-    /** El vínculo pendiente que este dispositivo recuerda (PT2.1 → PT2), o `null`. */
+    /** The pending care link this device remembers, or `null`. */
     suspend fun pendingCareLinkId(patientId: PatientId): CareLinkId?
 
     /**
-     * `POST /invitations/redemption` (F5). [replaceActiveLink] revoca el vínculo sin cerrar en el mismo commit
-     * (CR-1); solo se manda en `true` tras la confirmación de PT21.V.
+     * `POST /invitations/redemption`. [replaceActiveLink] revokes the open care link in the same commit;
+     * it is only sent as `true` after the patient confirms switching nutritionists.
      */
     suspend fun redeemInvitation(token: InvitationToken, replaceActiveLink: Boolean): Result<CareLink>
 
-    /** `POST /care-links/{careLinkId}/consent` (F6, CR-2). Devuelve el vínculo ya activo. */
+    /** `POST /care-links/{careLinkId}/consent`. Returns the now active care link. */
     suspend fun grantConsent(
         patientId: PatientId,
         careLinkId: CareLinkId,
@@ -41,21 +41,21 @@ interface CareLinkRepository {
         aiProcessingGranted: Boolean,
     ): Result<CareLink>
 
-    /** `GET /patients/{patientId}/care-links/active`: el vínculo con consentimiento (`404 CareLinkNotFound` si no hay). */
+    /** `GET /patients/{patientId}/care-links/active`: the consented care link (`404 CareLinkNotFound` if none). */
     suspend fun getActiveCareLink(patientId: PatientId): Result<CareLink>
 
-    /** `DELETE /care-links/{careLinkId}/consent` (F28): revoca el vínculo y apaga la IA. */
+    /** `DELETE /care-links/{careLinkId}/consent`: revokes the care link and turns AI off. */
     suspend fun withdrawConsent(patientId: PatientId, careLinkId: CareLinkId): Result<Unit>
 
-    /** `PUT /care-links/{careLinkId}/ai-processing-consent` (CR-2, PT21.IA): el consentimiento aparte de la IA. */
+    /** `PUT /care-links/{careLinkId}/ai-processing-consent`: the separate AI consent. */
     suspend fun changeAiProcessingConsent(careLinkId: CareLinkId, granted: Boolean): Result<Unit>
 
-    /** Guarda en el dispositivo que el paciente ya no tiene vínculo (PT23 sin consentimiento vigente). */
+    /** Saves on the device that the patient no longer has a care link (withdrawal without current consent). */
     suspend fun markLinkClosed(patientId: PatientId)
 
-    /** `GET /care-links/{careLinkId}/targets-read-status` (F12, CR-3). */
+    /** `GET /care-links/{careLinkId}/targets-read-status`. */
     suspend fun getTargetsReadStatus(careLinkId: CareLinkId): Result<TargetsReadStatus>
 
-    /** `POST /care-links/{careLinkId}/targets-acknowledgement` (F12): «Ya las revisé». */
+    /** `POST /care-links/{careLinkId}/targets-acknowledgement`: "I've reviewed them". */
     suspend fun acknowledgeActiveTargets(careLinkId: CareLinkId, planVersion: Int): Result<Unit>
 }

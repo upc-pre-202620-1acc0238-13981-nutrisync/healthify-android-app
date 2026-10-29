@@ -27,16 +27,16 @@ import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 import pe.edu.upc.healthify.core.designsystem.theme.elevation
 
 /**
- * SnackbarHost con el Snackbar del Figma. Va en el `snackbarHost` del Scaffold (aparece sobre la
- * NavigationBar). Mostrar con `hostState.showSnackbar(message, actionLabel)`: la duración por defecto
- * (`SnackbarDuration.Short`) son los 4 s del Figma.
+ * SnackbarHost with the Figma Snackbar. It goes in the Scaffold's `snackbarHost` (it shows above the
+ * NavigationBar). Show it with `hostState.showSnackbar(message, actionLabel)`: the default duration
+ * (`SnackbarDuration.Short`) matches the Figma's 4 s.
  */
 @Composable
 fun HealthifySnackbarHost(hostState: SnackbarHostState, modifier: Modifier = Modifier) {
     SnackbarHost(hostState = hostState, modifier = modifier) { data -> HealthifySnackbar(data) }
 }
 
-/** Snackbar del Figma para un [SnackbarData] de un [SnackbarHost]. */
+/** Figma Snackbar for a [SnackbarData] from a [SnackbarHost]. */
 @Composable
 fun HealthifySnackbar(data: SnackbarData, modifier: Modifier = Modifier) {
     HealthifySnackbarContent(
@@ -48,8 +48,8 @@ fun HealthifySnackbar(data: SnackbarData, modifier: Modifier = Modifier) {
 }
 
 /**
- * Snackbar del Figma (`inverseSurface`, radio 4 dp, Elevation/3): «Simple» o «ConAcción» (acción de
- * 48 dp en `inversePrimary`).
+ * Figma Snackbar (`inverseSurface`, 4 dp radius, Elevation/3): "Simple" or "WithAction" (48 dp action
+ * in `inversePrimary`).
  */
 @Composable
 fun HealthifySnackbarContent(
@@ -97,7 +97,7 @@ fun HealthifySnackbarContent(
     }
 }
 
-@Preview(name = "Snackbar · Simple / ConAcción", widthDp = 360)
+@Preview(name = "Snackbar · Simple / WithAction", widthDp = 360)
 @Composable
 private fun SnackbarPreview() {
     ComponentPreview {

@@ -4,9 +4,9 @@ import pe.edu.upc.healthify.features.iam.domain.valueobject.Password
 import pe.edu.upc.healthify.features.iam.domain.valueobject.PasswordResetToken
 
 /**
- * IAM-2. Datos para fijar una contraseña nueva con el token que dio la verificación del código. La contraseña sigue
- * las reglas de registro ([Password]): el backend responde `WeakPassword` con las mismas, y `PasswordReuseNotAllowed`
- * si es la actual.
+ * Data to set a new password with the token returned by the code verification. The password follows
+ * the sign-up rules ([Password]): the backend answers `WeakPassword` with the same rules, and `PasswordReuseNotAllowed`
+ * if it is the current one.
  */
 data class PasswordReset(
     val token: PasswordResetToken,

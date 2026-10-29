@@ -44,28 +44,28 @@ import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 
 /**
- * Tipo de dato del campo: decide el teclado (y en [Password] el enmascarado con botón de mostrar).
+ * Field data type: picks the keyboard (and for [Password], the masking with a show button).
  */
 enum class HealthifyTextFieldType { Text, Name, Email, Password, Number, Decimal, Phone }
 
-// Alto del campo «Lines=Multi» del Figma.
+// Height of the Figma "Lines=Multi" field.
 private val MultiLineFieldMinHeight = 112.dp
 private const val MULTI_LINE_MIN_LINES = 3
 
 /**
- * TextField del Figma: etiqueta visible arriba (nunca solo placeholder), campo de 56 dp con borde y
- * texto de ayuda o error debajo (el error lleva ícono).
+ * Figma TextField: visible label on top (never placeholder only), 56 dp outlined field and
+ * helper or error text below (the error has an icon).
  *
- * Estados: Enabled (vacío, con [placeholder]), Focused (borde `primary` 2 dp), Filled, Error ([errorText]
- * no nulo: borde y mensaje en `error`) y Disabled.
+ * States: Enabled (empty, with [placeholder]), Focused (2 dp `primary` border), Filled, Error ([errorText]
+ * not null: border and message in `error`) and Disabled.
  *
- * @param isError estado Error sin mensaje (p. ej. la contraseña de S4.1, cuyo mensaje va en el correo).
- * @param singleLine `false` = variante «Lines=Multi» (mín. 112 dp, teclado de texto con saltos de línea).
- * @param labelColor color de la etiqueta sobre fondos oscuros (PR18); `null` = `onSurface`.
- * @param trailingIcon ícono final opcional (48 dp táctil). En [HealthifyTextFieldType.Password] se ignora
- *   y se muestra el botón de mostrar/ocultar.
- * @param suffix unidad al final del campo («kg», «cm», «%»), Label/Large en `onSurfaceVariant`. Va como texto con
- *   16 dp de margen final, sin la caja táctil de [trailingIcon], para que no se corte en campos angostos.
+ * @param isError Error state without a message (e.g. the sign-in password, whose message goes under the email).
+ * @param singleLine `false` = "Lines=Multi" variant (min. 112 dp, text keyboard with line breaks).
+ * @param labelColor label color on dark backgrounds; `null` = `onSurface`.
+ * @param trailingIcon optional trailing icon (48 dp touch target). Ignored for [HealthifyTextFieldType.Password],
+ *   which shows the show/hide button.
+ * @param suffix unit at the end of the field («kg», «cm», «%»), Label/Large in `onSurfaceVariant`. It goes as text
+ *   with a 16 dp end margin, without the [trailingIcon] touch box, so it does not get cut off in narrow fields.
  */
 @Composable
 fun HealthifyTextField(
@@ -153,7 +153,7 @@ internal fun HealthifyTextFieldImpl(
     val trailing: (@Composable () -> Unit)? = if (isPassword) {
         {
             HealthifyIconButton(
-                // Ojo abierto = «mostrar»; ojo tachado = «ocultar» (la contraseña ya se ve).
+                // Open eye = "show"; crossed eye = "hide" (the password is already visible).
                 icon = if (passwordVisible) HealthifyIcons.VisibilityOff else HealthifyIcons.Visibility,
                 contentDescription = stringResource(
                     if (passwordVisible) R.string.ds_hide_password else R.string.ds_show_password,
@@ -227,7 +227,7 @@ internal fun HealthifyTextFieldImpl(
                         innerTextField()
                     }
                     if (suffix != null) {
-                        // El texto con peso se mide al final: la unidad siempre conserva su ancho y no se corta.
+                        // The weighted text is measured last: the unit always keeps its width and is never cut off.
                         Text(
                             text = suffix,
                             style = MaterialTheme.typography.labelLarge,
@@ -356,19 +356,19 @@ private fun TextFieldStates(singleLine: Boolean) {
     )
 }
 
-@Preview(name = "TextField · una línea (Enabled/Focused/Filled/Error/Disabled)", widthDp = 360, heightDp = 800)
+@Preview(name = "TextField · single line (Enabled/Focused/Filled/Error/Disabled)", widthDp = 360, heightDp = 800)
 @Composable
 private fun TextFieldSinglePreview() {
     ComponentPreview { TextFieldStates(singleLine = true) }
 }
 
-@Preview(name = "TextField · multilínea", widthDp = 360, heightDp = 1000)
+@Preview(name = "TextField · multiline", widthDp = 360, heightDp = 1000)
 @Composable
 private fun TextFieldMultiPreview() {
     ComponentPreview { TextFieldStates(singleLine = false) }
 }
 
-@Preview(name = "TextField · con unidad (media columna)", widthDp = 360)
+@Preview(name = "TextField · with unit (half column)", widthDp = 360)
 @Composable
 private fun TextFieldSuffixPreview() {
     ComponentPreview {
@@ -402,7 +402,7 @@ private fun TextFieldSuffixPreview() {
     }
 }
 
-@Preview(name = "TextField · contraseña", widthDp = 360)
+@Preview(name = "TextField · password", widthDp = 360)
 @Composable
 private fun TextFieldPasswordPreview() {
     ComponentPreview {

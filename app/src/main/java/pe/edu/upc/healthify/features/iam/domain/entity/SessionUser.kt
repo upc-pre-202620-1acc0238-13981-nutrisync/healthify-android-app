@@ -7,7 +7,7 @@ import pe.edu.upc.healthify.features.iam.domain.valueobject.SessionId
 import pe.edu.upc.healthify.features.iam.domain.valueobject.UserId
 import pe.edu.upc.healthify.features.iam.domain.valueobject.UserRole
 
-/** La persona con sesión en este dispositivo. Los tokens nunca forman parte del dominio. */
+/** The person signed in on this device. Tokens are never part of the domain. */
 data class SessionUser(
     val id: UserId,
     val email: EmailAddress,

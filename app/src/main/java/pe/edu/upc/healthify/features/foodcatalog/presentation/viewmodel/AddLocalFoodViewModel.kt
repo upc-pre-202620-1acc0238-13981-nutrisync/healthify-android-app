@@ -26,8 +26,8 @@ sealed interface AddLocalFoodEvent {
 }
 
 /**
- * PR15.1 · Agregar alimento local (platos peruanos que el catálogo externo no trae). Un alimento local nunca se
- * sobrescribe con una importación. Es soporte técnico del registro del paciente, no un dato clínico.
+ * Add local food (Peruvian dishes the external catalog lacks). An import never overwrites a
+ * local food. It is technical support for patient logging, not clinical data.
  */
 @HiltViewModel
 class AddLocalFoodViewModel @Inject constructor(
@@ -65,7 +65,7 @@ class AddLocalFoodViewModel @Inject constructor(
 
     fun onServerErrorDismissed() = _state.update { it.copy(showServerError = false) }
 
-    /** «Guardar alimento» (o «Reintentar»). */
+    /** "Save food" (or "Retry"). */
     fun onSave() {
         val current = _state.value
         if (current.isSaving) return

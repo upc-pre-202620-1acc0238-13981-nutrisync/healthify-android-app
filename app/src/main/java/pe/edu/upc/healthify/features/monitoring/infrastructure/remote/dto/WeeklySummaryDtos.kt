@@ -2,7 +2,7 @@ package pe.edu.upc.healthify.features.monitoring.infrastructure.remote.dto
 
 import kotlinx.serialization.Serializable
 
-/** `WeeklySummaryFactsResource` (IA-2). */
+/** `WeeklySummaryFactsResource`. */
 @Serializable
 data class WeeklySummaryFactsDto(
     val metDays: Int = 0,
@@ -12,7 +12,7 @@ data class WeeklySummaryFactsDto(
     val weightChangeKg: Double? = null,
 )
 
-/** `WeeklySummaryResource` (IA-2). */
+/** `WeeklySummaryResource`. */
 @Serializable
 data class WeeklySummaryDto(
     val weekStart: String,

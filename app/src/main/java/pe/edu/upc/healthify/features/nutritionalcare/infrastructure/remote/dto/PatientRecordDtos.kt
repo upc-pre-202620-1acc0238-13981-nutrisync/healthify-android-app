@@ -3,8 +3,8 @@ package pe.edu.upc.healthify.features.nutritionalcare.infrastructure.remote.dto
 import kotlinx.serialization.Serializable
 
 /**
- * `PatientOwnRecordResource` (RM-4): solo las secciones propias del paciente que PT20 dibuja. El resto de
- * `PatientRecordResource` (identidad, series, consistencia) se ignora.
+ * `PatientOwnRecordResource`: only the patient's own sections the record screen draws. The rest of
+ * `PatientRecordResource` (identity, series, consistency) is ignored.
  */
 @Serializable
 data class PatientOwnRecordDto(

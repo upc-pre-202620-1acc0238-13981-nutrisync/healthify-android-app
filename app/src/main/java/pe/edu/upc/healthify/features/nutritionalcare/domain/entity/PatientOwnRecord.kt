@@ -5,9 +5,9 @@ import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
 /**
- * PT20 · Mi expediente (`PatientOwnRecordResource`, RM-4): el expediente que el paciente ve de sí mismo. Por diseño
- * del backend **nunca** trae diagnóstico, base de cálculo, IMC ni su categoría (regla ética 1). Cada sección puede
- * venir vacía (un contexto que no respondió) sin tumbar el resto.
+ * My record (`PatientOwnRecordResource`): the record the patient sees about themselves. By backend design it
+ * **never** includes the diagnosis, calculation basis, BMI or its category (ethics rule 1). Each section can
+ * come back empty (a context that did not respond) without breaking the rest.
  */
 data class PatientOwnRecord(
     val practitioner: RecordPractitioner?,
@@ -16,18 +16,18 @@ data class PatientOwnRecord(
     val plan: RecordPlan?,
     val referrals: List<RecordReferral>,
 ) {
-    /** «Derivaciones»: solo las abiertas («Sin derivaciones activas» si no hay). */
+    /** "Referrals": only the open ones ("No active referrals" if none). */
     val openReferrals: List<RecordReferral> get() = referrals.filter { it.isOpen }
 }
 
-/** «Tu nutricionista»: el nombre tal cual, desde cuándo lo acompaña y si el vínculo está vigente. */
+/** "Your nutritionist": the name as is, since when they follow the patient and whether the link is active. */
 data class RecordPractitioner(
     val fullName: String?,
     val linkedSince: Instant?,
     val isActive: Boolean,
 )
 
-/** «Mis consultas · Próxima: …». */
+/** "My consultations · Next: …". */
 data class RecordNextFollowUp(
     val followUpId: Long,
     val scheduledFor: Instant,
@@ -37,7 +37,7 @@ data class RecordNextFollowUp(
     }
 }
 
-/** «MIS NÚMEROS»: cada número puede faltar (sin plan, sin días evaluados, sin medición clínica, sin tendencia). */
+/** "MY NUMBERS": any number can be missing (no plan, no evaluated days, no clinical measurement, no trend). */
 data class MyNumbers(
     val energyTargetKcal: Int?,
     val planVersion: Int?,
@@ -59,8 +59,8 @@ data class MyNumbers(
 }
 
 /**
- * «Mi cumplimiento 5 de 7 días»: días con la meta cumplida sobre los días del rango. Un día sin registro no cuenta como
- * incumplido (regla ética 3): el backend ya lo excluye de [met] y la UI nunca lo pinta como falla.
+ * "My adherence 5 of 7 days": days with the target met over the days in the range. A day without logs does not count
+ * as missed (ethics rule 3): the backend already leaves it out of [met] and the UI never shows it as a failure.
  */
 data class RecordCompliance(
     val from: LocalDate,
@@ -73,11 +73,11 @@ data class RecordCompliance(
         require(total >= 0 && met in 0..total) { "Met days are between 0 and the total" }
     }
 
-    /** Días del rango («Últimos 7 días»). */
+    /** Days in the range ("Last 7 days"). */
     val rangeDays: Int get() = (ChronoUnit.DAYS.between(from, to) + 1).toInt()
 }
 
-/** «Peso clínico · Evaluación del 3 mar.»: la última medición de una consulta (nunca un autopesaje). */
+/** "Clinical weight · Assessment of Mar 3": the latest measurement from a consultation (never a self-weigh-in). */
 data class RecordClinicalWeight(
     val kg: Double,
     val takenAt: Instant,
@@ -88,8 +88,8 @@ data class RecordClinicalWeight(
 }
 
 /**
- * «MI PLAN»: códigos del plan tal cual llegan (la app los traduce en la presentación). Una indicación es `code` del
- * catálogo o `custom` escrito por el nutricionista.
+ * "MY PLAN": plan codes as they arrive (the app translates them in the presentation layer). A guideline is a catalog
+ * `code` or `custom` text written by the nutritionist.
  */
 data class RecordPlan(
     val guidelines: List<RecordGuideline>,
@@ -105,7 +105,7 @@ data class RecordGuideline(val code: String?, val custom: String?) {
     }
 }
 
-/** Una derivación a otra especialidad. La especialidad la escribió el nutricionista: se muestra tal cual. */
+/** A referral to another specialty. The nutritionist wrote the specialty: it is shown as is. */
 data class RecordReferral(
     val id: Long,
     val specialty: String,

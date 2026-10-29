@@ -1,8 +1,8 @@
 package pe.edu.upc.healthify.features.iam.domain.valueobject
 
 /**
- * IAM-2. Token que devuelve el backend al verificar el código: fija la contraseña nueva una sola vez y vence en unos
- * minutos. Vive solo en memoria; nunca se guarda ni se loguea.
+ * Token the backend returns when the code is verified: sets the new password once and expires within a few
+ * minutes. Lives in memory only; never stored or logged.
  */
 @JvmInline
 value class PasswordResetToken(val value: String) {

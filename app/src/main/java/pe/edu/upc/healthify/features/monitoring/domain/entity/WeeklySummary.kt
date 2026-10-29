@@ -4,8 +4,8 @@ import java.time.Instant
 import java.time.LocalDate
 
 /**
- * Las cifras de la semana, calculadas sin IA (MA-6, IN-5). Un día sin registro **no** cuenta como meta incumplida
- * (`unloggedDays` es aparte de `metDays`).
+ * The week's figures, computed without AI. A day without logs does **not** count as a missed goal
+ * (`unloggedDays` is separate from `metDays`).
  */
 data class WeeklySummaryFacts(
     val metDays: Int,
@@ -24,11 +24,11 @@ data class WeeklySummaryFacts(
 }
 
 /**
- * Resumen semanal con IA (IA-2, PT13 «Tu semana», PT13.2). Lo escribe la IA cada lunes a partir del diario de la semana
- * anterior, ya en el idioma del lector; se muestra **tal cual** (no se traduce en la app).
+ * AI weekly summary (the "Your week" card and screen). The AI writes it every Monday from the previous week's diary,
+ * already in the reader's language; it is shown **as is** (the app does not translate it).
  *
- * @param wentWell «LO QUE SALIÓ BIEN»: de 1 a 3 viñetas.
- * @param watchOut «EN QUÉ FIJARTE»: hasta 2, en tono de invitación.
+ * @param wentWell "What went well": 1 to 3 bullets.
+ * @param watchOut "What to watch": up to 2, phrased as an invitation.
  */
 data class WeeklySummary(
     val weekStart: LocalDate,
@@ -46,17 +46,17 @@ data class WeeklySummary(
     }
 }
 
-/** Qué hay para la card «Tu semana» y PT13.2. */
+/** What is available for the "Your week" card and screen. */
 sealed interface WeeklySummaryAvailability {
 
     data class Ready(val summary: WeeklySummary) : WeeklySummaryAvailability
 
-    /** PT13.2.V «Aún no hay resumen»: `404 NotEnoughData` (pocos días registrados o aún no generado). */
+    /** "No summary yet": `404 NotEnoughData` (few days logged or not generated yet). */
     data object NotYet : WeeklySummaryAvailability
 
     /**
-     * La función está apagada para este paciente o sin consentimiento de IA (`403`), o la IA del servidor está apagada
-     * (`503 AiFeatureDisabled`): la card no aparece.
+     * The feature is off for this patient or there is no AI consent (`403`), or the server's AI is off
+     * (`503 AiFeatureDisabled`): the card does not appear.
      */
     data object Off : WeeklySummaryAvailability
 }

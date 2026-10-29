@@ -1,20 +1,20 @@
 package pe.edu.upc.healthify.core.network.auth
 
 /**
- * Puerto para canjear el refresh token (`POST /authentication/token-refreshes`, IAM-4). Lo implementa el
- * contexto `iam` en su infrastructure, con un cliente HTTP sin [TokenRefreshAuthenticator] (sin recursión).
+ * Port to redeem the refresh token (`POST /authentication/token-refreshes`). Implemented by the
+ * `iam` context in its infrastructure, with an HTTP client without [TokenRefreshAuthenticator] (no recursion).
  */
 fun interface TokenRefresher {
     suspend fun refresh(refreshToken: String): TokenRefreshResult
 }
 
 sealed interface TokenRefreshResult {
-    /** `200`: el par nuevo. El refresh token rota en cada uso. */
+    /** `200`: the new pair. The refresh token rotates on every use. */
     data class Refreshed(val accessToken: String, val refreshToken: String) : TokenRefreshResult
 
-    /** `401` (`RefreshTokenInvalid`): vencido, revocado por sign-out o reusado. La sesión terminó. */
+    /** `401` (`RefreshTokenInvalid`): expired, revoked by sign-out or reused. The session is over. */
     data object Rejected : TokenRefreshResult
 
-    /** Sin red, timeout o `5xx`: no se sabe si la sesión sigue viva, así que no se cierra. */
+    /** No network, timeout or `5xx`: whether the session is still alive is unknown, so it is not closed. */
     data object Unavailable : TokenRefreshResult
 }

@@ -32,7 +32,7 @@ import pe.edu.upc.healthify.testing.FakeSessionRepository
 import pe.edu.upc.healthify.testing.MainDispatcherRule
 import java.time.LocalDate
 
-/** PT20 · Mi expediente (RM-4): cada sección que no se puede leer queda vacía sin tumbar el resto. */
+/** My record: each section that cannot be read stays empty without breaking the rest. */
 class PatientRecordTest {
 
     @get:Rule

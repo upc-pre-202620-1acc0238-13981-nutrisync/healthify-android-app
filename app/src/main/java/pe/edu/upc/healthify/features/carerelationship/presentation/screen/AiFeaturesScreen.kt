@@ -58,7 +58,7 @@ data class AiFeaturesActions(
     val onDismissConsent: () -> Unit = {},
 )
 
-/** PT21.IA · Ajustes — Funciones con IA. Se llega desde PT21 «Funciones con IA». */
+/** Settings - AI features. Opened from "AI features" in Settings. */
 @Composable
 fun AiFeaturesScreen(
     onBack: () -> Unit,
@@ -156,7 +156,7 @@ fun AiFeaturesContent(
     }
 }
 
-/** Sin el consentimiento de IA (CR-2) ninguna función funciona: se ofrece activarlo (coherente con PT2). */
+/** Without AI consent no feature works: offer to grant it (consistent with the consent screen). */
 @Composable
 private fun ConsentCard(state: AiFeaturesUiState, onActivate: () -> Unit) {
     val dimens = HealthifyTheme.dimens
@@ -199,7 +199,7 @@ private fun FeaturesCard(state: AiFeaturesUiState, onToggle: (AiFeature, Boolean
         ) {
             AiFeature.entries.forEachIndexed { index, feature ->
                 if (index > 0) CardDivider()
-                // La descripción va dentro de la fila, bajo el título y alineada con él (como en Recordatorios).
+                // The description sits inside the row, under the title and aligned with it (as in Reminders).
                 HealthifySwitchRow(
                     label = stringResource(feature.titleRes),
                     supportingText = stringResource(feature.descriptionRes),
@@ -236,7 +236,7 @@ private val PreviewAllOn = AiPreferences(
     mealPhotoRecognitionEnabled = false,
 )
 
-@Preview(name = "PT21.IA · Funciones con IA", widthDp = 360, heightDp = 800)
+@Preview(name = "AI features", widthDp = 360, heightDp = 800)
 @Composable
 private fun AiFeaturesPreview() {
     HealthifyTheme {
@@ -244,7 +244,7 @@ private fun AiFeaturesPreview() {
     }
 }
 
-@Preview(name = "PT21.IA · Sin consentimiento de IA", widthDp = 360, heightDp = 800)
+@Preview(name = "AI features - no AI consent", widthDp = 360, heightDp = 800)
 @Composable
 private fun AiFeaturesNoConsentPreview() {
     HealthifyTheme {
@@ -252,7 +252,7 @@ private fun AiFeaturesNoConsentPreview() {
     }
 }
 
-@Preview(name = "PT21.IA · Activar consentimiento", widthDp = 360, heightDp = 800)
+@Preview(name = "AI features - grant consent", widthDp = 360, heightDp = 800)
 @Composable
 private fun AiFeaturesConsentDialogPreview() {
     HealthifyTheme {
@@ -263,7 +263,7 @@ private fun AiFeaturesConsentDialogPreview() {
     }
 }
 
-@Preview(name = "PT21.IA · Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "AI features - offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun AiFeaturesOfflinePreview() {
     HealthifyTheme {
@@ -274,7 +274,7 @@ private fun AiFeaturesOfflinePreview() {
     }
 }
 
-@Preview(name = "PT21.IA · Cargando", widthDp = 360, heightDp = 800)
+@Preview(name = "AI features - loading", widthDp = 360, heightDp = 800)
 @Composable
 private fun AiFeaturesLoadingPreview() {
     HealthifyTheme { AiFeaturesContent(state = AiFeaturesUiState(), actions = AiFeaturesActions(onBack = {})) }

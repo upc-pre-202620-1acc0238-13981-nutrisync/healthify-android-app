@@ -13,7 +13,7 @@ import pe.edu.upc.healthify.navigation.AppNavHost
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    // PT21.I: antes de Android 13 el idioma elegido en la app se aplica aquí (después lo hace el sistema).
+    // Before Android 13 the language chosen in the app is applied here (after that the system does it).
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(AndroidAppLanguageSetter.wrap(newBase))
     }

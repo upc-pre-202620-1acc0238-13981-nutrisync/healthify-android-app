@@ -25,19 +25,19 @@ import pe.edu.upc.healthify.features.monitoring.presentation.state.AgendaUiState
 import javax.inject.Inject
 
 sealed interface AgendaEvent {
-    /** «Reprogramar» → PR17 con la consulta prellenada. */
+    /** "Reschedule" -> the schedule form with the visit prefilled. */
     data class OpenReschedule(val row: AgendaRow) : AgendaEvent
 
-    /** Snackbar «Consulta cancelada». */
+    /** "Visit cancelled" Snackbar. */
     data object Cancelled : AgendaEvent
 }
 
 /**
- * PR17.0 · Agenda: las consultas agendadas desde ahora. Se relee al volver a la pestaña (PR17.0-S tras agendar) y al
- * volver la conexión.
+ * Agenda: the visits scheduled from now on. Re-read on returning to the tab (Snackbar after scheduling) and when the
+ * connection returns.
  *
- * DECISIÓN PR17.0: el frame no dice qué hace tocar una consulta (tiene chevron); abre una hoja con «Reprogramar» y
- * «Cancelar consulta» (MA-5). Cancelar pide confirmación y no cierra el vínculo.
+ * The frame does not say what tapping a visit does (it has a chevron); it opens a sheet with "Reschedule" and
+ * "Cancel visit". Cancelling asks for confirmation and does not close the care link.
  */
 @HiltViewModel
 class PractitionerAgendaViewModel @Inject constructor(
@@ -93,7 +93,7 @@ class PractitionerAgendaViewModel @Inject constructor(
         it.copy(dialog = null, selected = if (it.dialog == AgendaDialog.CONFIRM_CANCEL) it.selected else null)
     }
 
-    /** «Sí, cancelar» (o «Reintentar» tras un fallo de red/servidor). */
+    /** "Yes, cancel" (or "Retry" after a network/server failure). */
     fun onCancelConfirmed() {
         val row = _state.value.selected ?: return
         if (_state.value.isCancelling) return

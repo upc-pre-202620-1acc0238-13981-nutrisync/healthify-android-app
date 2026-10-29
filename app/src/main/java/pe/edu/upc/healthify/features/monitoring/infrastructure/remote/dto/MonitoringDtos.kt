@@ -2,7 +2,7 @@ package pe.edu.upc.healthify.features.monitoring.infrastructure.remote.dto
 
 import kotlinx.serialization.Serializable
 
-/** `DailyComplianceResource` (forma de lista, `?date=`). */
+/** `DailyComplianceResource` (list form, `?date=`). */
 @Serializable
 data class DailyComplianceDto(
     val date: String,
@@ -13,7 +13,7 @@ data class DailyComplianceDto(
     val entryCount: Int = 0,
 )
 
-/** `DailyComplianceRangeResource` (MA-6, `?from=&to=`). */
+/** `DailyComplianceRangeResource` (`?from=&to=`). */
 @Serializable
 data class DailyComplianceRangeDto(
     val from: String,
@@ -38,7 +38,7 @@ data class ComplianceSummaryDto(
     val totalDays: Int = 0,
 )
 
-/** `ConsistencyIndexResource` (F23, MA-7). Solo los campos que la app usa; el resto se ignora. */
+/** `ConsistencyIndexResource`. Only the fields the app uses; the rest are ignored. */
 @Serializable
 data class ConsistencyIndexDto(
     val patientId: Long,
@@ -46,7 +46,7 @@ data class ConsistencyIndexDto(
     val patientPromptPending: Boolean = false,
 )
 
-/** `PatientFollowUpResource` (MA-3). */
+/** `PatientFollowUpResource`. */
 @Serializable
 data class PatientFollowUpDto(
     val followUpId: Long,

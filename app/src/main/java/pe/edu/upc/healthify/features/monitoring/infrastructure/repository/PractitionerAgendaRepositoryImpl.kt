@@ -22,7 +22,7 @@ import retrofit2.HttpException
 import java.time.Instant
 import javax.inject.Inject
 
-/** Agendar, mover o cancelar una consulta reprograma también los avisos locales de las próximas consultas. */
+/** Scheduling, moving or cancelling a visit also reschedules the local reminders for upcoming visits. */
 class PractitionerAgendaRepositoryImpl @Inject constructor(
     private val service: PractitionerAgendaService,
     private val reminderScheduler: ConsultationReminderScheduler,

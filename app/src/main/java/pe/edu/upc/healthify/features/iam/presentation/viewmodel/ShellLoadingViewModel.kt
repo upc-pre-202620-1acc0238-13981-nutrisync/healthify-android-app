@@ -26,9 +26,9 @@ import pe.edu.upc.healthify.features.iam.presentation.state.selectShellDestinati
 import javax.inject.Inject
 
 /**
- * S5 · Cargando. Compone Iam (shell de la sesión) y CareRelationship (estado del vínculo del paciente).
- * Nota S5: «si la selección de shell no responde, se reintenta en silencio; si persiste, se muestra este estado
- * con Reintentar».
+ * Loading. Combines Iam (the session shell) and CareRelationship (the patient's care link status).
+ * Design note: "if shell selection does not respond, retry silently; if it persists, show this state
+ * with Retry".
  */
 @HiltViewModel
 class ShellLoadingViewModel @Inject constructor(
@@ -72,7 +72,7 @@ class ShellLoadingViewModel @Inject constructor(
         }
     }
 
-    /** `null` si algo falló (se reintenta o se muestra el error). */
+    /** `null` if something failed (it is retried or the error is shown). */
     private suspend fun resolveDestination(user: SessionUser): ShellDestination? {
         val shell = resolveNavigationShell(user).getOrElse { return null }
         val linkStatus: PatientLinkStatus? = if (shell == NavigationShell.PATIENT) {

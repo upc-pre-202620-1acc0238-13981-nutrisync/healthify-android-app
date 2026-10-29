@@ -3,9 +3,9 @@ package pe.edu.upc.healthify.features.carerelationship.presentation.state
 import androidx.annotation.StringRes
 import pe.edu.upc.healthify.R
 
-/** Validaciones de PT1 (frame «Notas»), por `extensions.code` del canje (F5). Ningún mensaje culpa al paciente. */
+/** Scan screen validations (design "Notes" frame), by the redeem `extensions.code`. No message blames the patient. */
 enum class ScanInvitationError(@param:StringRes val messageRes: Int) {
-    /** `InvitationNotValid` (400) o un QR que no tiene forma de invitación. */
+    /** `InvitationNotValid` (400) or a QR code that does not look like an invitation. */
     InvalidFormat(R.string.scan_invitation_error_invalid),
 
     /** `InvitationNotFound` (404). */
@@ -20,31 +20,31 @@ enum class ScanInvitationError(@param:StringRes val messageRes: Int) {
     /** `PatientCannotSelfLink` (403). */
     SelfLink(R.string.scan_invitation_error_self_link),
 
-    /** `PatientAlreadyHasActiveLink` (409): se escaneó sin pasar por PT21.V. */
+    /** `PatientAlreadyHasActiveLink` (409): scanned without going through the switch nutritionist dialog. */
     AlreadyLinked(R.string.scan_invitation_error_already_linked),
 
-    /** `AlreadyLinkedToThisPractitioner` (409, CR-1): desde PT21.V, el código es del mismo nutricionista. */
+    /** `AlreadyLinkedToThisPractitioner` (409): from the switch dialog, the code belongs to the same nutritionist. */
     SamePractitioner(R.string.scan_invitation_error_same_practitioner),
 
-    /** Sin conexión al enviar. */
+    /** Offline when sending. */
     Network(R.string.error_network),
 
-    /** Cualquier otra respuesta (5xx, 403 sin código…). */
+    /** Any other response (5xx, 403 without a code…). */
     Unexpected(R.string.ds_error_state_body),
 }
 
-/** Permiso de cámara: aún sin resolver, concedido o denegado (PT1.M). */
+/** Camera permission: not resolved yet, granted or denied. */
 enum class CameraPermissionState { Unknown, Granted, Denied }
 
 /**
- * PT1 · Escanear invitación (+ PT1.M permiso de cámara).
+ * Scan invitation (plus the camera permission prompt).
  *
- * @param isRedeeming «Buscando el código…»: el QR se está canjeando y la lectura se pausa.
- * @param error mensaje de la última lectura rechazada; se quita al leer un código distinto.
- * @param showNoCameraDialog DECISIÓN PT1: «No tengo cámara disponible» no tiene frame ni otro camino (PR2 solo
- *   muestra el QR); abre un aviso informativo.
- * @param showSignOutDialog DECISIÓN PT1: cuando PT1 es la primera pantalla (S5, PT24), «atrás» ofrece cerrar sesión
- *   con el modal de PT21.1; si no, quien no tiene invitación no podría salir de su cuenta.
+ * @param isRedeeming "Looking for the code…": the QR code is being redeemed and scanning is paused.
+ * @param error message of the last rejected scan; cleared when a different code is read.
+ * @param showNoCameraDialog "I have no camera available" has no design or alternative path (the invite screen only
+ *   shows the QR code); it opens an informational notice.
+ * @param showSignOutDialog when this is the first screen (entry routing, after withdrawal), "back" offers to sign out
+ *   with the sign-out modal; otherwise someone without an invitation could not leave their account.
  */
 data class ScanInvitationUiState(
     val replaceActiveLink: Boolean = false,
@@ -56,7 +56,7 @@ data class ScanInvitationUiState(
     val showSignOutDialog: Boolean = false,
     val isSigningOut: Boolean = false,
 ) {
-    /** La cámara analiza solo con permiso, con red y sin un canje en curso. */
+    /** The camera analyzes only with permission, a connection and no redeem in progress. */
     val isScanning: Boolean
         get() = cameraPermission == CameraPermissionState.Granted && !isRedeeming && !isOffline
 }

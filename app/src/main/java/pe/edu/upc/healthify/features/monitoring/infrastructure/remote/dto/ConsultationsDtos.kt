@@ -2,7 +2,7 @@ package pe.edu.upc.healthify.features.monitoring.infrastructure.remote.dto
 
 import kotlinx.serialization.Serializable
 
-/** `PatientConsultationsOverviewResource` (RM-5). */
+/** `PatientConsultationsOverviewResource`. */
 @Serializable
 data class ConsultationsOverviewDto(
     val patientId: Long,
@@ -39,7 +39,7 @@ data class PastConsultationDto(
     val planVersion: Int? = null,
 )
 
-/** `PreVisitCheckInResource` (MA-4). */
+/** `PreVisitCheckInResource`. */
 @Serializable
 data class PreVisitCheckInDto(
     val followUpId: Long,
@@ -66,7 +66,7 @@ data class SubmitCheckInRequestDto(
     val questions: List<CheckInQuestionInputDto>,
 )
 
-/** `CheckInQuestionInputResource`: `aiGenerationId` y `language` solo para `AiSuggested`. */
+/** `CheckInQuestionInputResource`: `aiGenerationId` and `language` only for `AiSuggested`. */
 @Serializable
 data class CheckInQuestionInputDto(
     val text: String,
@@ -75,7 +75,7 @@ data class CheckInQuestionInputDto(
     val language: String? = null,
 )
 
-/** `SuggestedQuestionsResource` (IA-4). */
+/** `SuggestedQuestionsResource`. */
 @Serializable
 data class SuggestedQuestionsDto(
     val questions: List<SuggestedQuestionDto> = emptyList(),

@@ -4,10 +4,10 @@ import pe.edu.upc.healthify.core.designsystem.component.UiText
 import java.time.Instant
 
 /**
- * PT4.1 · Versiones anteriores (solo de consulta). Sin conexión no hay lista: `plan-versions` no se guarda en el
- * teléfono (la versión vigente sí, en PT4).
+ * Previous versions (read-only). Offline there is no list: `plan-versions` is not stored on the
+ * phone (the current version is, for My plan).
  *
- * @param selectedVersion la versión cuyo detalle está abierto (hoja inferior); `null` sin detalle.
+ * @param selectedVersion the version whose detail is open (bottom sheet); `null` with no detail.
  */
 data class PlanVersionsUiState(
     val isLoading: Boolean = true,
@@ -22,8 +22,8 @@ data class PlanVersionsUiState(
 }
 
 /**
- * Una versión publicada lista para pintar, en la lista y en su detalle (paciente PT4.1 y nutricionista PAC-4). Los
- * códigos van como [UiText] traducibles y lo escrito por el nutricionista como `UiText.Raw`.
+ * A published version ready to render, in the list and its detail (for the patient and the nutritionist). The
+ * codes go as translatable [UiText] and what the nutritionist wrote as `UiText.Raw`.
  */
 data class PlanVersionItem(
     val version: Int,

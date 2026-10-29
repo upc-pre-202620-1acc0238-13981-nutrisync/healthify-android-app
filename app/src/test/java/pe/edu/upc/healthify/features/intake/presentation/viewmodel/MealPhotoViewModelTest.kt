@@ -78,7 +78,6 @@ class MealPhotoViewModelTest {
         )
     }
 
-    /** PT5 → PT6 → PT6.1 → PT7. */
     private fun takeAndUsePhoto() {
         viewModel.onCameraPermissionResult(true)
         viewModel.onPhotoCaptured(PHOTO)
@@ -143,7 +142,7 @@ class MealPhotoViewModelTest {
         val form = viewModel.state.value.form
         assertEquals(false, form.inPlan)
         assertEquals(listOf(shellfish), form.planSuggestion?.violatedRestrictions)
-        // El día de la comida viaja con la foto para pesar lo que queda hoy.
+        // The meal's day travels with the photo so the analysis can weigh what is left of today.
         assertEquals(listOf(LocalDate.parse("2026-10-07")), photos.analyzedDates)
 
         viewModel.onConfirmProposal()

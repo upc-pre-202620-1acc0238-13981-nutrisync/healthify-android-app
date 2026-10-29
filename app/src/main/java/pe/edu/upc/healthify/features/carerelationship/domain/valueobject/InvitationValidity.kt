@@ -4,8 +4,8 @@ import java.time.Duration
 import java.time.Instant
 
 /**
- * «Vence en» de PR2. El backend pide una fecha de expiración futura (`ExpirationDateRequired`); la app ofrece
- * vigencias fijas. DECISIÓN PR2: 1 hora, 24 horas (la del frame, por defecto) y 7 días.
+ * "Expires in" on the invite screen. The backend asks for a future expiration date (`ExpirationDateRequired`); the
+ * app offers fixed durations: 1 hour, 24 hours (the design's value, the default) and 7 days.
  */
 enum class InvitationValidity(val duration: Duration) {
     ONE_HOUR(Duration.ofHours(1)),

@@ -7,11 +7,11 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Renueva el par de tokens **una sola vez** aunque varias peticiones reciban 401 a la vez.
+ * Renews the token pair **only once** even if several requests get a 401 at the same time.
  *
- * Todas pasan por un [Mutex]. La primera canjea el refresh token; las demás, al entrar, ven que el access token
- * guardado ya no es el que les falló y reutilizan el nuevo sin otra llamada. (El backend tiene una gracia de 30 s
- * para reintentar el mismo refresh, pero fuera de ella el reúso termina la sesión: no se arriesga.)
+ * They all go through a [Mutex]. The first one redeems the refresh token; the others, once inside, see that the
+ * stored access token is no longer the one that failed for them and reuse the new one without another call. (The
+ * backend gives a 30 s grace period to retry the same refresh, but outside it reuse ends the session: no risk taken.)
  */
 @Singleton
 class TokenRefreshCoordinator @Inject constructor(
@@ -23,11 +23,11 @@ class TokenRefreshCoordinator @Inject constructor(
     private val mutex = Mutex()
 
     /**
-     * Devuelve el access token con el que reintentar la petición que falló con [failedAccessToken], o `null` si
-     * no hay sesión que renovar (cerrada o expirada).
+     * Returns the access token to retry the request that failed with [failedAccessToken], or `null` if
+     * there is no session to renew (signed out or expired).
      *
-     * @throws TokenRefreshUnavailableException si el backend no se pudo alcanzar: la petición original falla como
-     *   error de red y la sesión se conserva (sin conexión no se pierde la sesión ni la cola de pendientes).
+     * @throws TokenRefreshUnavailableException if the backend could not be reached: the original request fails as a
+     *   network error and the session is kept (being offline loses neither the session nor the pending queue).
      */
     suspend fun refreshAfter(failedAccessToken: String): String? = mutex.withLock {
         val current = tokenStore.accessToken()
@@ -49,5 +49,5 @@ class TokenRefreshCoordinator @Inject constructor(
     }
 }
 
-/** Es una [IOException] para que OkHttp la propague y `apiCall` la lea como `DomainError.Network`. */
+/** An [IOException] so OkHttp propagates it and `apiCall` reads it as `DomainError.Network`. */
 class TokenRefreshUnavailableException : IOException("Token refresh unavailable")

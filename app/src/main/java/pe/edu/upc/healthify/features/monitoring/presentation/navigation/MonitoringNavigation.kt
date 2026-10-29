@@ -11,19 +11,19 @@ import pe.edu.upc.healthify.features.monitoring.presentation.screen.HowAmITodayS
 import pe.edu.upc.healthify.features.monitoring.presentation.screen.MyConsultationsScreen
 import pe.edu.upc.healthify.features.monitoring.presentation.screen.WeeklySummaryScreen
 
-/** PT15 · Cómo voy hoy. */
+/** How am I doing today. */
 @Serializable
 data object HowAmITodayRoute
 
-/** PT16 · Algo no cuadra (solo desde la tarjeta de PT3, con alerta activa). */
+/** Something doesn't add up (only from the home card, with an active alert). */
 @Serializable
 data object ConsistencyNoticeRoute
 
-/** PT17 · Qué pasa si esto sigue así. */
+/** What happens if this keeps up. */
 @Serializable
 data object ConsistencyEscalationInfoRoute
 
-/** PT25.1 · Tu consulta — cómo prepararte (desde «Próxima consulta» de PT3). */
+/** Your visit - how to prepare (from the home "Next visit" row). */
 @Serializable
 data class FollowUpPreparationRoute(val followUpId: Long) {
     companion object {
@@ -31,11 +31,11 @@ data class FollowUpPreparationRoute(val followUpId: Long) {
     }
 }
 
-/** PT25 · Mis consultas (desde PT20 «Mis consultas» y PT25.1 «Ver mis consultas»). */
+/** My visits (from the profile's "My visits" and the preparation screen's "See my visits"). */
 @Serializable
 data object MyConsultationsRoute
 
-/** PT25.2 · Cuéntale cómo te fue (desde PT25 «Responder» o PT25.3 «Editar mi respuesta»). */
+/** Tell them how it went (from My visits "Reply" or the sent reply's "Edit my reply"). */
 @Serializable
 data class CheckInRoute(val followUpId: Long) {
     companion object {
@@ -43,25 +43,25 @@ data class CheckInRoute(val followUpId: Long) {
     }
 }
 
-/** PT13.2 · Tu semana — resumen con IA (desde la card de PT13). */
+/** Your week - AI summary (from the "Your week" card). */
 @Serializable
 data object WeeklySummaryRoute
 
 data class MonitoringNavigationCallbacks(
     val onBack: () -> Unit,
-    /** PT16 «Revisar mi diario» → pestaña Diario del shell (PT14). */
+    /** "Review my diary" -> the shell's Diary tab. */
     val onReviewDiary: () -> Unit,
-    /** PT16 → PT17 (se apila). */
+    /** -> "What happens if this keeps up" (pushed on top). */
     val onOpenEscalationInfo: () -> Unit,
-    /** PT25.1 «Ver mis consultas» → PT25. */
+    /** "See my visits" -> My visits. */
     val onOpenMyConsultations: () -> Unit,
-    /** PT25 → PT25.2. */
+    /** My visits -> the check-in form. */
     val onOpenCheckIn: (followUpId: Long) -> Unit,
-    /** PT25 consulta anterior → PT4.1 con el detalle de la versión que se publicó en ella. */
+    /** Past visit -> the plan screen showing the version published in it. */
     val onOpenPlanVersion: (version: Int) -> Unit,
 )
 
-/** Destinos del paciente de MonitoringAdherence en el grafo raíz (pantallas completas sobre el shell). */
+/** Patient destinations of MonitoringAdherence in the root graph (full screens over the shell). */
 fun NavGraphBuilder.monitoringDestinations(callbacks: MonitoringNavigationCallbacks) {
     composable<HowAmITodayRoute> { HowAmITodayScreen(onBack = callbacks.onBack) }
     composable<ConsistencyNoticeRoute> {
@@ -83,6 +83,6 @@ fun NavGraphBuilder.monitoringDestinations(callbacks: MonitoringNavigationCallba
             onOpenPlanVersion = callbacks.onOpenPlanVersion,
         )
     }
-    // PT25.2 (y PT25.2.E dentro de la misma pantalla): al enviar vuelve a PT25, que relee y muestra PT25.3.
+    // On send, the check-in form (and its error state) returns to My visits, which re-reads and shows the reply.
     composable<CheckInRoute> { CheckInScreen(onBack = callbacks.onBack, onSubmitted = callbacks.onBack) }
 }

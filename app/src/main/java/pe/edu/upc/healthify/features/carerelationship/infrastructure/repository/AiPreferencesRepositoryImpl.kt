@@ -17,8 +17,8 @@ import pe.edu.upc.healthify.features.carerelationship.infrastructure.remote.dto.
 import javax.inject.Inject
 
 /**
- * Servidor primero; sin conexión, la última lectura (así la card de ideas y la cámara se deciden igual offline).
- * Un `401`/`403`/`404` es una respuesta del servidor («no hay IA para este paciente»): se guarda como apagada.
+ * Server first; offline, the last read (so the ideas card and the camera behave the same offline).
+ * A `401`/`403`/`404` is a server answer ("no AI for this patient"): it is saved as off.
  */
 class AiPreferencesRepositoryImpl @Inject constructor(
     private val service: AiPreferencesService,

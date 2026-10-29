@@ -201,7 +201,7 @@ class PractitionerCareLinkViewModelsTest {
         assertEquals(RosterAttention.OPEN_REVIEW, patient.attention)
     }
 
-    // ----- PR2 · Generar invitación -----
+    // ----- Generate invitation -----
 
     private fun inviteViewModel() = InvitePatientViewModel(
         issueInvitation = IssueInvitationUseCase(repository, fixedClock()),

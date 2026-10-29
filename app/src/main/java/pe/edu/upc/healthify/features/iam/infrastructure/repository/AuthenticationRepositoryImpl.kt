@@ -37,7 +37,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
         val user = try {
             response.toDomain()
         } catch (_: IllegalArgumentException) {
-            // La respuesta no forma un usuario válido (p. ej. un rol desconocido): contrato roto, no se guarda nada.
+            // The response does not form a valid user (e.g. an unknown role): broken contract, nothing is stored.
             return domainFailure(DomainError.Unexpected(MALFORMED_RESPONSE))
         }
         localDataSource.save(user, accessToken = response.token, refreshToken = response.refreshToken)

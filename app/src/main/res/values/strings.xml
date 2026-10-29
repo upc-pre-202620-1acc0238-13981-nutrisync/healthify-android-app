@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="es">
     <string name="app_name" translatable="false">Healthify</string>
 
-    <!-- Errores genéricos (DomainError). Las pantallas usan sus propios textos del mockup según el código. -->
+    <!-- Generic errors (DomainError). Screens use their own mockup texts based on the code. -->
     <string name="error_network">No hay conexión. Revisa tu internet e inténtalo de nuevo.</string>
     <string name="error_unauthorized">Tu sesión terminó. Vuelve a ingresar.</string>
     <string name="error_forbidden">No tienes acceso a esta información.</string>
@@ -10,7 +10,7 @@
     <string name="error_conflict">Esto ya cambió. Actualiza e inténtalo de nuevo.</string>
     <string name="error_validation">Revisa los datos e inténtalo de nuevo.</string>
     <string name="error_unexpected">Algo salió mal. Inténtalo de nuevo en unos minutos.</string>
-    <!-- Sistema de diseño (core/designsystem/component) -->
+    <!-- Design system (core/designsystem/component) -->
     <string name="ds_cd_back">Volver</string>
     <string name="ds_cd_close">Cerrar</string>
     <string name="ds_cd_loading">Cargando</string>
@@ -27,7 +27,7 @@
     <string name="ds_offline_queueable">Sin conexión. Lo que registres se guarda y se enviará solo.</string>
     <string name="ds_offline_requires_network">Sin conexión. Necesitas conexión para continuar.</string>
 
-    <!-- Chips de estado -->
+    <!-- Status chips -->
     <string name="status_chip_pending_confirmation">Por confirmar</string>
     <string name="status_chip_pending_sync">Pendiente</string>
     <string name="status_chip_confirmed">Confirmada</string>
@@ -35,12 +35,12 @@
     <string name="status_chip_manual">Manual</string>
     <string name="status_chip_off_plan">Fuera del plan</string>
 
-    <!-- Barra de navegación -->
+    <!-- Navigation bar -->
     <string name="nav_home">Inicio</string>
     <string name="nav_diary">Diario</string>
     <string name="nav_progress">Progreso</string>
     <string name="nav_record">Expediente</string>
-    <!-- Menú principal del paciente -->
+    <!-- Patient main menu -->
     <string name="menu_cd_open">Abrir menú</string>
     <string name="menu_role_patient">Paciente</string>
     <string name="menu_my_plan">Mi plan</string>
@@ -48,19 +48,19 @@
     <string name="menu_pending">Pendientes</string>
     <string name="menu_settings">Ajustes</string>
     <string name="menu_sign_out">Cerrar sesión</string>
-    <!-- Menú principal del nutricionista (Ajustes y Cerrar sesión usan los textos del paciente) -->
+    <!-- Practitioner main menu (Settings and Sign out reuse the patient texts) -->
     <string name="menu_role_practitioner">Nutricionista</string>
     <string name="menu_food_catalog">Catálogo de alimentos</string>
     <string name="nav_patients">Pacientes</string>
     <string name="nav_inbox">Bandeja</string>
     <string name="nav_agenda">Agenda</string>
 
-    <!-- Marca -->
+    <!-- Brand -->
     <string name="brand_logo_cd">Healthify</string>
     <string name="common_close">Cerrar</string>
     <string name="common_understood">Entendido</string>
 
-    <!-- S2 · Bienvenida -->
+    <!-- Welcome -->
     <string name="welcome_chip_goal_label">Meta de hoy</string>
     <string name="welcome_chip_goal_value">1 260 / 1 850 kcal</string>
     <string name="welcome_chip_meal_label">Comida registrada</string>
@@ -73,7 +73,7 @@
     <string name="welcome_create_account">Crear cuenta</string>
     <string name="welcome_have_account">Ya tengo cuenta</string>
 
-    <!-- S3 · Registro -->
+    <!-- Sign up -->
     <string name="sign_up_title">CREAR CUENTA</string>
     <string name="sign_up_subtitle">Así vas a entrar a Healthify</string>
     <string name="sign_up_given_names">Nombres</string>
@@ -103,7 +103,7 @@
     <string name="sign_up_error_password">Necesita mayúscula, minúscula, número y símbolo, y al menos 8 caracteres</string>
     <string name="sign_up_error_role">Elige si eres paciente o nutricionista</string>
 
-    <!-- S4 · Login único -->
+    <!-- Single sign-in -->
     <string name="sign_in_title">INICIAR SESIÓN</string>
     <string name="sign_in_subtitle">Entra con tu correo. Te llevaremos a tu espacio según tu tipo de cuenta.</string>
     <string name="sign_in_password_placeholder">Tu contraseña</string>
@@ -115,7 +115,7 @@
     <string name="sign_in_locked_title">Tu cuenta está bloqueada temporalmente</string>
     <string name="sign_in_locked_body">Por seguridad, tras 5 intentos fallidos. Inténtalo más tarde o recupera tu contraseña.</string>
 
-    <!-- IAM-2 · Recuperar contraseña -->
+    <!-- Reset password -->
     <string name="forgot_password_title">RECUPERAR CONTRASEÑA</string>
     <string name="forgot_password_email_subtitle">Escribe el correo de tu cuenta y te enviaremos un código de 6 dígitos.</string>
     <string name="forgot_password_email_error">Escribe un correo válido</string>
@@ -142,27 +142,27 @@
     <string name="forgot_password_done_body">Ya puedes iniciar sesión con tu contraseña nueva. Por seguridad, cerramos tu sesión en los demás dispositivos.</string>
     <string name="forgot_password_go_to_sign_in">Iniciar sesión</string>
 
-    <!-- S5 · Cargando -->
+    <!-- Loading -->
     <string name="shell_loading_text">Preparando tu espacio…</string>
 
-    <!-- S6 · Sesión expirada -->
+    <!-- Session expired -->
     <string name="session_expired_title">TU SESIÓN VENCIÓ</string>
     <string name="session_expired_body">Por tu seguridad cerramos tu sesión. Lo que ya registraste está a salvo.</string>
     <string name="session_expired_offline">En cuanto tengas conexión, vuelve a iniciar sesión.</string>
 
-    <!-- Pantallas aún sin implementar (shells) -->
+    <!-- Screens not implemented yet (shells) -->
     <string name="placeholder_body">Esta sección estará disponible muy pronto.</string>
     <string name="placeholder_sign_out">Cerrar sesión</string>
-    <!-- Ajustes (provisional hasta PT21): accesos a PT21.V y PT23 -->
+    <!-- Settings (temporary): entries to switching nutritionist and withdrawing consent -->
     <string name="settings_switch_practitioner">Vincularme con otro nutricionista</string>
     <string name="settings_withdraw_consent">Retirar mi consentimiento</string>
 
-    <!-- PT21.1 · Cerrar sesión (modal) -->
+    <!-- Sign out (modal) -->
     <string name="sign_out_dialog_title">¿CERRAR SESIÓN?</string>
     <string name="sign_out_dialog_body">Tendrás que volver a ingresar tu correo y contraseña. Tus registros y tus metas quedan guardados.</string>
     <string name="sign_out_dialog_confirm">Cerrar sesión</string>
 
-    <!-- PT1 · Escanear invitación -->
+    <!-- Scan invitation -->
     <string name="scan_invitation_title">ESCANEA TU CÓDIGO</string>
     <string name="scan_invitation_prompt">Pídele el código QR a tu nutricionista</string>
     <string name="scan_invitation_hint">Solo puedes entrar si tu nutricionista te invita</string>
@@ -183,7 +183,7 @@
     <string name="no_camera_dialog_title">SIN CÁMARA</string>
     <string name="no_camera_dialog_body">Para vincularte hay que leer con la cámara el código QR que te muestra tu nutricionista. Si este teléfono no tiene cámara, entra con tu cuenta desde otro teléfono para escanearlo.</string>
 
-    <!-- PT2 · Consentimiento y alcance -->
+    <!-- Consent and scope -->
     <string name="consent_title">ANTES DE EMPEZAR</string>
     <string name="consent_intro">Vas a compartir esto con tu nutricionista</string>
     <string name="consent_section_share">QUÉ COMPARTES</string>
@@ -217,18 +217,18 @@
     <string name="consent_error_scan_action">Escanear un código</string>
     <string name="consent_error_home_action">Ir a mi inicio</string>
 
-    <!-- PT2.1 · Vínculo pendiente de consentimiento -->
+    <!-- Link waiting for consent -->
     <string name="pending_consent_title">TU VÍNCULO</string>
     <string name="pending_consent_heading">Tu vínculo está pendiente</string>
     <string name="pending_consent_body">Ya te vinculaste con tu nutricionista, pero todavía no compartes datos. Mientras no des tu consentimiento, no verá nada y no tendrás metas.</string>
     <string name="pending_consent_review">Revisar y dar mi consentimiento</string>
 
-    <!-- PT21.V · Vincularme con otro nutricionista -->
+    <!-- Link with another nutritionist -->
     <string name="switch_practitioner_title">¿CAMBIAR DE NUTRICIONISTA?</string>
     <string name="switch_practitioner_body">Si aceptas la invitación de otro nutricionista, te desvincularemos automáticamente de tu nutricionista actual. Tu diario y tus autopesajes se conservan.</string>
     <string name="switch_practitioner_scan">Escanear invitación</string>
 
-    <!-- PT23 · Retirar consentimiento -->
+    <!-- Withdraw consent -->
     <string name="withdraw_consent_title">RETIRAR CONSENTIMIENTO</string>
     <string name="withdraw_consent_body">Tu nutricionista dejará de ver tu información. Esto cierra tu vínculo de cuidado con él o ella.</string>
     <string name="withdraw_consent_no_reason">No necesitas darnos ninguna razón.</string>
@@ -241,7 +241,7 @@
     <string name="withdraw_consent_inactive_body">Tu consentimiento ya no está vigente.</string>
     <string name="withdraw_consent_inactive_action">Continuar</string>
 
-    <!-- PT24 · Consentimiento retirado -->
+    <!-- Consent withdrawn -->
     <string name="consent_withdrawn_title_top">CONSENTIMIENTO</string>
     <string name="consent_withdrawn_title_bottom">RETIRADO</string>
     <string name="consent_withdrawn_glyph" translatable="false">✓</string>
@@ -249,14 +249,14 @@
     <string name="consent_withdrawn_next">Si quieres empezar con otro nutricionista, pídele un código de invitación nuevo.</string>
     <string name="consent_withdrawn_done">Listo</string>
 
-    <!-- Formatos compartidos (números con el Locale actual) -->
+    <!-- Shared formats (numbers with the current Locale) -->
     <string name="format_kcal">%1$s kcal</string>
     <string name="format_grams">%1$s g</string>
     <string name="format_separator_dot">%1$s · %2$s</string>
     <string name="macro_protein">Proteína</string>
     <string name="macro_fat">Grasa</string>
 
-    <!-- PT3 · Inicio -->
+    <!-- Home -->
     <string name="home_greeting">Hola, %1$s</string>
     <string name="home_title">HOY</string>
     <string name="home_register_meal">Registrar comida</string>
@@ -270,23 +270,23 @@
     <string name="home_cached_on">Metas guardadas en tu teléfono · actualizadas el %1$s</string>
     <string name="home_empty_title">Todavía sin metas</string>
     <string name="home_empty_body">Tu nutricionista las publicará después de tu consulta. Mientras tanto, ya puedes registrar lo que comes.</string>
-    <!-- PT3 · aviso «Algo no cuadra» -->
+    <!-- Home · "Something does not add up" notice -->
     <string name="home_consistency_title">Algo no cuadra</string>
     <string name="home_consistency_body">Tu tendencia y tus registros no coinciden del todo. ¿Lo revisamos juntos?</string>
-    <!-- PT18 · Te extrañamos por acá -->
+    <!-- We miss you -->
     <string name="home_gap_body">Hace unos días que no registras nada. ¿Quieres ponerte al día?</string>
     <string name="home_gap_action">Registrar ahora</string>
     <string name="home_energy_exceeded_title">Mañana es otro día</string>
     <string name="home_energy_exceeded_body">Hoy ya pasaste tu meta de energía. No pasa nada: si te provoca algo más, elige opciones ligeras para lo que queda del día.</string>
     <string name="home_notice_expand">Ver mensaje completo</string>
     <string name="home_notice_collapse">Ver menos</string>
-    <!-- PT3.M · Tus metas cambiaron -->
+    <!-- Your targets changed -->
     <string name="home_targets_changed_title">TUS METAS CAMBIARON</string>
     <string name="home_targets_changed_body">Tu nutricionista ajustó tus metas (versión %1$d). Revísalas cuando quieras: nada cambia en tu diario.</string>
     <string name="home_targets_changed_primary">Ver mis metas nuevas</string>
     <string name="home_targets_changed_later">Más tarde</string>
 
-    <!-- PT15 · Cómo voy hoy -->
+    <!-- How I am doing today -->
     <string name="today_title">CÓMO VOY HOY</string>
     <string name="today_outcome_met">Hoy tu registro está dentro de tus metas.</string>
     <string name="today_outcome_exceeded">Hoy registraste un poco más de lo previsto.</string>
@@ -299,18 +299,18 @@
     <string name="today_offline_title">Sin conexión</string>
     <string name="today_offline_body">Tu indicador del día se calcula en línea. Lo verás cuando vuelvas a tener conexión; tus registros siguen guardándose.</string>
 
-    <!-- PT16 · Algo no cuadra -->
+    <!-- Something does not add up -->
     <string name="consistency_title">ALGO NO CUADRA</string>
     <string name="consistency_body">Notamos que tu tendencia de peso y lo que registras van por caminos distintos. ¿Lo revisamos juntos? A veces es una comida sin registrar o un pesaje fuera de protocolo.</string>
     <string name="consistency_review_diary">Revisar mi diario</string>
     <string name="consistency_what_it_means">¿Qué significa esto?</string>
-    <!-- PT17 · Qué pasa si esto sigue así -->
+    <!-- What happens if this keeps up -->
     <string name="consistency_escalation_title">SI ESTO CONTINÚA</string>
     <string name="consistency_escalation_body">Si esta señal se mantiene por unas semanas, tu nutricionista recibirá un aviso para conversarlo contigo en tu próxima consulta.</string>
     <string name="consistency_escalation_note">Esto no cambia tus metas por sí solo: solo abre una conversación.</string>
     <string name="consistency_escalation_ok">Entendido</string>
 
-    <!-- PT4 · Mi plan -->
+    <!-- My plan -->
     <string name="my_plan_title">MI PLAN</string>
     <string name="my_plan_version_current">Plan versión %1$d · vigente</string>
     <string name="my_plan_published">Publicado el %1$s por tu nutricionista</string>
@@ -322,7 +322,7 @@
     <string name="my_plan_changes">QUÉ CAMBIÓ EN ESTA VERSIÓN</string>
     <string name="my_plan_message">MENSAJE DE TU NUTRICIONISTA</string>
     <string name="my_plan_acknowledge">Ya las revisé</string>
-    <!-- Catálogo de indicaciones (NC-6) -->
+    <!-- Guideline catalog -->
     <string name="guideline_prioritize_vegetables">Prioriza vegetales</string>
     <string name="guideline_drink_2l_water">Toma 2 L de agua al día</string>
     <string name="guideline_avoid_sugary_drinks">Evita bebidas azucaradas</string>
@@ -330,7 +330,7 @@
     <string name="guideline_reduce_salt">Reduce la sal</string>
     <string name="guideline_eat_every_3_to_4_hours">Come cada 3 a 4 horas</string>
     <string name="guideline_protein_and_vegetables_at_dinner">Cena con proteína y vegetales</string>
-    <!-- Lista cerrada de restricciones (NC-6) -->
+    <!-- Closed list of restrictions -->
     <string name="restriction_lactose_free">Sin lactosa</string>
     <string name="restriction_gluten_free">Sin gluten</string>
     <string name="restriction_vegan">Vegano</string>
@@ -339,7 +339,7 @@
     <string name="restriction_shellfish_free">Sin mariscos</string>
     <string name="restriction_kosher">Kosher</string>
     <string name="restriction_halal">Halal</string>
-    <!-- «Qué cambió en esta versión» (NC-8) -->
+    <!-- "What changed in this version" -->
     <string name="plan_change_guideline_added">Se agregó «%1$s».</string>
     <string name="plan_change_guideline_removed">Se quitó «%1$s».</string>
     <string name="plan_change_restriction_added">Se agregó la restricción «%1$s».</string>
@@ -351,7 +351,7 @@
     <string name="macro_carb_inline">carbohidrato</string>
     <string name="macro_fat_inline">grasa</string>
 
-    <!-- PT4.1 · Versiones anteriores -->
+    <!-- Previous versions -->
     <string name="plan_versions_title">VERSIONES</string>
     <string name="plan_versions_item">Versión %1$d</string>
     <string name="plan_versions_current">Vigente</string>
@@ -361,9 +361,9 @@
     <string name="plan_versions_empty_title">Todavía sin versiones</string>
     <string name="plan_versions_empty_body">Tu nutricionista publicará tu plan después de tu consulta.</string>
 
-    <!-- PT25.1 · Tu consulta (ruta reservada; la pantalla llega con PT25) -->
+    <!-- Your consultation (reserved route) -->
     <string name="follow_up_preparation_title">TU CONSULTA</string>
-    <!-- PT14 · Diario -->
+    <!-- Diary -->
     <string name="diary_title">TU DIARIO</string>
     <string name="diary_date_today">Hoy, %1$s</string>
     <string name="diary_date_yesterday">Ayer, %1$s</string>
@@ -402,7 +402,7 @@
     <string name="diary_pending_photo_analyze">Analizar ahora</string>
     <string name="diary_pending_photo_manual">Registrar a mano</string>
 
-    <!-- PT5–PT8 · Registro por foto (IN-7) -->
+    <!-- Photo logging -->
     <string name="meal_photo_camera_title">FOTO DE TU PLATO</string>
     <string name="meal_photo_hint">Encuadra el plato completo con buena luz</string>
     <string name="meal_photo_cd_capture">Tomar la foto</string>
@@ -475,7 +475,7 @@
     <string name="meal_time_done">Listo</string>
     <string name="food_not_resolved">No encontramos este alimento en el catálogo. Elige otro, por favor.</string>
 
-    <!-- PT9 / PT10 · Registro a mano -->
+    <!-- Logging by hand -->
     <string name="manual_title">REGISTRAR A MANO</string>
     <string name="manual_pick_title">ELIGE EL ALIMENTO</string>
     <string name="manual_search_label">Buscar alimento</string>
@@ -497,7 +497,7 @@
     <string name="manual_choose_food">Elige un alimento de la lista.</string>
     <string name="manual_save_failed_body">Revisa tu conexión e inténtalo de nuevo. Lo que elegiste no se perdió.</string>
 
-    <!-- PT14.4 / PT14.5 · Ideas con IA -->
+    <!-- AI ideas -->
     <string name="ideas_title">IDEAS PARA HOY</string>
     <string name="ideas_detail_title">IDEA PARA HOY</string>
     <string name="ideas_loading">Preparando ideas para ti…</string>
@@ -538,7 +538,7 @@
     <string name="ideas_rate_limited_title">Ya pediste varias ideas</string>
     <string name="ideas_rate_limited_body">Llegaste al límite de ideas con IA por ahora. Podrás pedir más un poco más tarde; mientras, tu diario sigue funcionando.</string>
 
-    <!-- PT19 · Pendientes por sincronizar -->
+    <!-- Pending sync -->
     <string name="pending_title">PENDIENTES</string>
     <string name="pending_status">pendiente de enviar</string>
     <string name="pending_footer">Se enviarán automáticamente cuando tengas conexión</string>
@@ -550,7 +550,7 @@
     <string name="pending_rejected_generic">No pudimos enviar este registro. Se conserva en tu teléfono.</string>
     <string name="settings_pending_sync">Pendientes por sincronizar</string>
 
-    <!-- PT12 · Autopesaje -->
+    <!-- Self weigh-in -->
     <string name="self_weigh_in_title">AUTOPESAJE</string>
     <string name="self_weigh_in_weight_label">Peso (kg)</string>
     <string name="self_weigh_in_weight_placeholder">Ej. 68.4</string>
@@ -566,7 +566,7 @@
     <string name="self_weigh_in_failed_title">HUBO UN ERROR</string>
     <string name="self_weigh_in_failed_body">No pudimos guardar tu autopesaje. Lo que escribiste no se perdió.</string>
 
-    <!-- PT13 · Tendencia de peso -->
+    <!-- Weight trend -->
     <string name="weight_trend_title">TU TENDENCIA</string>
     <string name="weight_trend_section">Promedio de tus últimos autopesajes</string>
     <plurals name="weight_trend_window">
@@ -601,7 +601,7 @@
     <string name="weight_trend_chart_description">Gráfico de tu tendencia de peso, del %1$s al %2$s.</string>
     <string name="format_kg">%1$s kg</string>
 
-    <!-- PT13 card «Tu semana» y PT13.2 · Resumen semanal con IA -->
+    <!-- Weight trend "Your week" card and AI weekly summary -->
     <string name="weekly_card_badge">Resumen con IA</string>
     <string name="weekly_card_title">Tu semana</string>
     <string name="weekly_card_action">Ver resumen de la semana</string>
@@ -617,11 +617,11 @@
     <string name="weekly_offline_title">Sin conexión</string>
     <string name="weekly_offline_body">Tu resumen de la semana se verá cuando vuelva la conexión.</string>
 
-    <!-- PT19 · autopesajes en la cola -->
+    <!-- Pending sync · queued weigh-ins -->
     <string name="pending_weigh_in">Autopesaje · %1$s</string>
     <string name="pending_rejected_weight">Este peso parece fuera de rango y no se envió. Puedes registrarlo de nuevo.</string>
 
-    <!-- PT20 · Mi expediente -->
+    <!-- My record -->
     <string name="record_title">MI EXPEDIENTE</string>
     <string name="record_offline_title">Sin conexión</string>
     <string name="record_offline_body">Tu expediente no está disponible sin conexión. Vuelve a intentarlo cuando tengas conexión.</string>
@@ -668,7 +668,7 @@
     <string name="record_referrals_title">Derivaciones</string>
     <string name="record_referrals_none">Sin derivaciones activas</string>
 
-    <!-- PT25 · Mis consultas · PT25.1 · PT25.2 · PT25.3 -->
+    <!-- My consultations -->
     <string name="consultations_title">MIS CONSULTAS</string>
     <string name="consultations_next_title">Próxima consulta</string>
     <string name="consultation_when">%1$s · %2$s</string>
@@ -743,7 +743,7 @@
     <string name="check_in_not_scheduled_title">ESTA CONSULTA CAMBIÓ</string>
     <string name="check_in_not_scheduled_body">Tu nutricionista movió o canceló esta consulta. Revisa Mis consultas para ver la próxima.</string>
 
-    <!-- PT21 · Ajustes · PT21.1 · PT21.I · PT21.IA -->
+    <!-- Settings (sign out, language, AI features) -->
     <string name="settings_title">AJUSTES</string>
     <string name="settings_account">Mi cuenta</string>
     <string name="settings_reminders">Recordatorios</string>
@@ -785,7 +785,7 @@
     <string name="ai_features_save_failed">No pudimos guardar el cambio. Inténtalo de nuevo.</string>
     <string name="ai_features_save_offline">Necesitas conexión para cambiar esto.</string>
 
-    <!-- PT22 · Recordatorios · PT22.M -->
+    <!-- Reminders -->
     <string name="reminders_title">RECORDATORIOS</string>
     <string name="reminders_weigh_in">Recordarme el autopesaje</string>
     <string name="reminders_meals">Recordarme registrar comidas</string>
@@ -802,7 +802,7 @@
     <string name="reminder_meals_title">Tu diario</string>
     <string name="reminder_meals_text">Un buen momento para registrar lo que comiste.</string>
 
-    <!-- Sesión 9 · nutricionista: comunes -->
+    <!-- Practitioner: common -->
     <string name="text_separator" translatable="false">" · "</string>
     <string name="list_separator">", "</string>
     <string name="bullet_line">• %1$s</string>
@@ -833,7 +833,7 @@
     <string name="saved_yesterday">se guardó ayer</string>
     <string name="saved_on">se guardó el %1$s</string>
 
-    <!-- PR1 · Mi cartera -->
+    <!-- My roster -->
     <string name="roster_title">MIS PACIENTES</string>
     <string name="roster_invite">Invitar paciente</string>
     <string name="roster_empty_title">Sin pacientes aún</string>
@@ -842,7 +842,7 @@
     <string name="roster_offline_body">Tu cartera y los datos de tus pacientes no se guardan en el teléfono. Vuelve a intentarlo cuando tengas conexión.</string>
     <string name="patient_new_chip">Nuevo ingreso</string>
 
-    <!-- PR2 · Generar invitación -->
+    <!-- Generate invitation -->
     <string name="invite_title">INVITAR PACIENTE</string>
     <string name="invite_instructions">Muéstrale este código a tu paciente para que lo escanee desde su teléfono, aquí en consulta.</string>
     <string name="invite_expires_in_label">Vence en</string>
@@ -860,7 +860,7 @@
     <string name="invite_error_offline">Necesitas conexión para generar una invitación.</string>
     <string name="invite_error_expiration_required">Elige cuándo vence este código.</string>
 
-    <!-- PAC · ficha del paciente -->
+    <!-- Patient file -->
     <string name="patient_tab_summary">Resumen</string>
     <string name="patient_tab_follow_up">Seguimiento</string>
     <string name="patient_tab_record">Expediente</string>
@@ -875,7 +875,7 @@
     <string name="patient_snackbar_referral_registered">Derivación a %1$s registrada.</string>
     <string name="patient_snackbar_view">Ver</string>
 
-    <!-- PAC-0 / PAC-1 · Resumen -->
+    <!-- Patient file · Summary -->
     <string name="summary_no_baseline_title">Aún no tiene datos base</string>
     <string name="summary_no_baseline_body">Regístralos una sola vez: fecha de nacimiento, sexo, talla y antecedentes. Con ellos se calculan la edad, el IMC y las metas.</string>
     <string name="summary_register_baseline">Registrar datos base</string>
@@ -896,7 +896,7 @@
     <string name="summary_referral">Registrar derivación</string>
     <string name="summary_discharge">Dar de alta</string>
 
-    <!-- PAC-2 · Seguimiento -->
+    <!-- Patient file · Follow-up -->
     <string name="follow_up_this_week">Esta semana</string>
     <string name="follow_up_legend_met">Dentro de metas</string>
     <string name="follow_up_legend_exceeded">Por encima</string>
@@ -920,7 +920,7 @@
     <string name="follow_up_last_measurement">Última medición clínica</string>
     <string name="follow_up_read_only">Solo lectura: no puedes escribir ni corregir entradas del diario.</string>
 
-    <!-- PAC-3 · Expediente -->
+    <!-- Patient file · Record -->
     <string name="record_pr_clinical_weight">Peso clínico</string>
     <string name="record_pr_weight_delta">%1$s kg desde %2$s</string>
     <string name="record_pr_no_measurement">Aún sin medición</string>
@@ -941,7 +941,7 @@
     <string name="record_pr_first_evaluation">primera evaluación</string>
     <string name="record_pr_waist_value">cintura %1$s cm</string>
 
-    <!-- PAC-4 · Plan -->
+    <!-- Patient file · Plan -->
     <string name="plan_active_targets">Metas vigentes</string>
     <string name="plan_version_chip">Versión %1$d</string>
     <string name="plan_kcal_per_day">kcal / día</string>
@@ -960,7 +960,7 @@
     <string name="plan_empty_title">Aún sin plan</string>
     <string name="plan_empty_body">El plan se publica al cerrar la consulta guiada.</string>
 
-    <!-- EV · consulta guiada (comunes y códigos) -->
+    <!-- Guided consultation (common texts and codes) -->
     <string name="consultation_title">CONSULTA DE HOY</string>
     <string name="consultation_step_header">Paso %1$d de %2$d · %3$s</string>
     <string name="consultation_step_measurement">Medición de hoy</string>
@@ -1011,7 +1011,7 @@
     <string name="equation_fao_who_unu">FAO/OMS/UNU</string>
     <string name="equation_katch_mcardle">Katch-McArdle</string>
 
-    <!-- EV-1 · Datos base -->
+    <!-- Consultation · Baseline -->
     <string name="baseline_title">DATOS BASE</string>
     <string name="baseline_intro">Se registran una sola vez. Puedes editarlos después desde la pestaña Resumen.</string>
     <string name="baseline_birth_date">Fecha de nacimiento</string>
@@ -1029,7 +1029,7 @@
     <string name="baseline_save_and_exit">Guardar y salir</string>
     <string name="baseline_save">Guardar cambios</string>
 
-    <!-- EV-2 · Medición de hoy -->
+    <!-- Consultation · Today's measurement -->
     <string name="measurement_subtitle">Solo lo que cambia entre consultas. Lo demás viene de los datos base.</string>
     <string name="measurement_check_in_title">Antes de la consulta, %1$s contó</string>
     <string name="measurement_check_in_sent">Enviado el %1$s desde su app.</string>
@@ -1074,7 +1074,7 @@
     <string name="measurement_triglycerides_range">De 20 a 2000 mg/dL.</string>
     <string name="measurement_continue">Continuar a diagnóstico</string>
 
-    <!-- EV-3 · Diagnóstico -->
+    <!-- Consultation · Diagnosis -->
     <string name="diagnosis_subtitle">Solo para tu expediente profesional. El paciente no lo verá.</string>
     <string name="diagnosis_ai_badge">Sugerencia de IA</string>
     <string name="diagnosis_rule_badge">Sugerencia según el IMC</string>
@@ -1087,7 +1087,7 @@
     <string name="diagnosis_required">Elige un diagnóstico para continuar.</string>
     <string name="diagnosis_continue">Continuar a metas</string>
 
-    <!-- EV-4 · Metas -->
+    <!-- Consultation · Targets -->
     <string name="targets_subtitle">Se calculan solas con los datos base y la medición de hoy.</string>
     <string name="targets_calculated_with">Calculado con</string>
     <string name="targets_proposed">Metas propuestas</string>
@@ -1117,7 +1117,7 @@
     <string name="targets_override_reason_required">Escribe la razón del cambio: queda en el expediente.</string>
     <string name="targets_override_save">Guardar y continuar</string>
 
-    <!-- EV-5 · Indicaciones y publicación -->
+    <!-- Consultation · Guidelines and publication -->
     <string name="publication_restrictions">Restricciones</string>
     <string name="publication_choose_several">Puedes elegir varias.</string>
     <string name="publication_guidelines">Indicaciones</string>
@@ -1158,7 +1158,7 @@
         <item quantity="other">Autopesaje · %1$d semanas</item>
     </plurals>
 
-    <!-- Sesión 10 · nutricionista: bandeja, agenda, derivación, alta, catálogo y ajustes (PR13–PR20) -->
+    <!-- Practitioner: inbox, agenda, referral, discharge, catalog and settings -->
     <string name="common_saving">Guardando…</string>
     <string name="common_try_again">Volver a intentarlo</string>
     <string name="practitioner_offline_title">Necesitas conexión</string>
@@ -1348,12 +1348,12 @@
 
     <string name="practitioner_sign_out_body">Tendrás que volver a ingresar tu correo y contraseña. Tus pacientes y sus datos quedan guardados.</string>
 
-    <!-- Detalle de una versión del plan (PT4.1 / PAC-4) -->
+    <!-- Plan version detail -->
     <string name="plan_version_detail_published">Publicada el %1$s</string>
     <string name="plan_version_detail_changes">Qué cambió en esta versión</string>
     <string name="plan_version_detail_message_to_patient">Mensaje al paciente</string>
 
-    <!-- Detalle de evaluación y derivaciones (PAC-3 / PT20) -->
+    <!-- Assessment and referral detail -->
     <string name="evaluation_detail_title">Evaluación</string>
     <string name="referral_detail_open">En curso</string>
     <string name="referral_detail_closed">Cerrada</string>
@@ -1362,7 +1362,7 @@
     <string name="referral_detail_reason">Motivo</string>
     <string name="referral_detail_no_reason">Sin motivo registrado.</string>
 
-    <!-- Avisos locales de la próxima consulta -->
+    <!-- Local notices for the next consultation -->
     <string name="consultation_reminder_channel_name">Consultas</string>
     <string name="consultation_reminder_channel_description">Avisos antes de cada consulta agendada.</string>
     <string name="consultation_reminder_patient_title_day">Tu consulta es mañana</string>
@@ -1374,7 +1374,7 @@
     <string name="consultation_reminder_practitioner_text_no_name">Con tu paciente a las %1$s.</string>
     <string name="consultation_reminder_public_text">Abre la app para ver los detalles.</string>
 
-    <!-- PT3 · Medidor del día y Tu semana -->
+    <!-- Home · Daily gauge and Your week -->
     <string name="home_gauge_left_today">te quedan hoy</string>
     <string name="home_gauge_target_today">tu meta de hoy</string>
     <string name="home_gauge_target_met">Meta de hoy cumplida</string>
@@ -1395,7 +1395,7 @@
     <string name="home_week_day_logged">%1$s, con registro</string>
     <string name="home_week_day_unlogged">%1$s, sin registro</string>
 
-    <!-- PR1 · Mis pacientes agrupada por acción -->
+    <!-- My patients grouped by action -->
     <string name="roster_search">Buscar paciente</string>
     <string name="roster_search_placeholder">Buscar paciente…</string>
     <string name="roster_needs_action">Requieren acción · %1$d</string>

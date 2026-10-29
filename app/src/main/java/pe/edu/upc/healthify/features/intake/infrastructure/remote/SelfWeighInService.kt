@@ -11,18 +11,18 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-/** Autopesajes y tendencia (IntakeBodyResponse, §5.5). Solo `Patient`. */
+/** Self weigh-ins and trend (IntakeBodyResponse). `Patient` only. */
 interface SelfWeighInService {
 
-    /** F19 · `201` · `400 ImplausibleWeightValue` fuera de 20–400 kg. */
+    /** `201` · `400 ImplausibleWeightValue` outside 20–400 kg. */
     @POST("self-weigh-ins")
     suspend fun record(@Body body: RecordSelfWeighInRequestDto): SelfWeighInDto
 
-    /** IN-4 · idempotente por `clientEntryId`; cada lectura se reporta en `entries`. */
+    /** Idempotent by `clientEntryId`; each reading is reported in `entries`. */
     @POST("self-weigh-ins/synchronization")
     suspend fun synchronize(@Body body: SyncSelfWeighInsRequestDto): SelfWeighInSyncOutcomeDto
 
-    /** IN-5 · `?weeks=` 1–52 · `404 WeightTrendNotFound` mientras no hay tendencia. */
+    /** `?weeks=` 1–52 · `404 WeightTrendNotFound` while there is no trend. */
     @GET("patients/{patientId}/weight-trend")
     suspend fun getWeightTrend(
         @Path("patientId") patientId: Long,

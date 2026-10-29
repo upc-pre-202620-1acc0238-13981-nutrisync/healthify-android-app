@@ -43,12 +43,12 @@ sealed interface ScheduleFollowUpEvent {
 }
 
 /**
- * PR17 · Agendar consulta (+ PR17.E, PR17.2) y reprogramar desde la Agenda. La fecha y hora deben ser futuras: se valida
- * en el teléfono con [FollowUpMoment] antes de enviar y el backend lo vuelve a validar (`400 ScheduledForMustBeInFuture`;
- * los backends anteriores a MA-5 respondían `404 ScheduledFollowUpNotFound`, que se lee igual).
+ * Schedule a visit (with its validation and error states) and reschedule from the Agenda. Date and time must be in
+ * the future: checked on the phone with [FollowUpMoment] before sending and again by the backend
+ * (`400 ScheduledForMustBeInFuture`; older backends answered `404 ScheduledFollowUpNotFound`, read the same way).
  *
- * DECISIÓN PR17: la modalidad no aparece en el frame; se agenda presencial (default del backend). Sin paciente fijo, el
- * campo «Paciente» elige de la cartera (vínculos activos). Sin conexión o con un error del servidor → PR17.2.
+ * The frame has no modality field, so visits are scheduled in person (the backend default). Without a fixed patient,
+ * the "Patient" field picks from the roster (active care links). Offline or on a server error -> the error state.
  */
 @HiltViewModel
 class ScheduleFollowUpViewModel @Inject constructor(
@@ -103,10 +103,10 @@ class ScheduleFollowUpViewModel @Inject constructor(
         it.copy(preparation = if (selected) it.preparation + code else it.preparation - code)
     }
 
-    /** PR17.2 «Volver a intentarlo»: vuelve al formulario con lo escrito. */
+    /** Error "Try again": returns to the form with what was written. */
     fun onBackToForm() = _state.update { it.copy(failed = false) }
 
-    /** «Agendar». */
+    /** "Schedule". */
     fun onSubmit() {
         val current = _state.value
         if (current.isSaving) return
@@ -142,7 +142,7 @@ class ScheduleFollowUpViewModel @Inject constructor(
             when {
                 error is DomainError.Validation && error.code == SCHEDULED_FOR_MUST_BE_IN_FUTURE ->
                     it.copy(momentError = ScheduleMomentError.NOT_IN_FUTURE)
-                // Backend anterior a MA-5: una fecha pasada era 404 ScheduledFollowUpNotFound (nunca se muestra el 404).
+                // Older backends answered a past date with 404 ScheduledFollowUpNotFound (the 404 is never shown).
                 !rescheduling && error is DomainError.NotFound && error.code == SCHEDULED_FOLLOW_UP_NOT_FOUND ->
                     it.copy(momentError = ScheduleMomentError.NOT_IN_FUTURE)
                 error is DomainError.Conflict && error.code == PATIENT_ALREADY_HAS_FOLLOW_UP ->
@@ -180,7 +180,7 @@ class ScheduleFollowUpViewModel @Inject constructor(
             .mapNotNull(PreparationCode::fromCode)
             .toSet()
         val fixed = patientId > 0
-        // Al reprogramar, la fecha y la hora anteriores se dejan como punto de partida (en la zona del teléfono).
+        // When rescheduling, the previous date and time are the starting point (in the phone's time zone).
         val previous = scheduledFor.takeIf { followUpId > 0 && it > 0 }
             ?.let { Instant.ofEpochSecond(it).atZone(clock.zone) }
         return ScheduleFollowUpUiState(

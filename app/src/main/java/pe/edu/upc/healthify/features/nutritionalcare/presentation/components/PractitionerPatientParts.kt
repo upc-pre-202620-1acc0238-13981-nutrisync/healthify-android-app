@@ -26,8 +26,8 @@ import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 
 /**
- * «Card · Paciente» de la ficha: inicial, nombre, «Plan versión 3 · en tu cartera desde…» y el chip «Vigente» o
- * «Nuevo ingreso» (sin datos base o sin plan).
+ * The profile's "Patient card": initial, name, "Plan version 3 · in your caseload since…" and the "Current" or
+ * "New patient" chip (no baseline or no plan).
  */
 @Composable
 fun PatientHeaderCard(
@@ -66,12 +66,12 @@ fun PatientHeaderCard(
     }
 }
 
-/** «5 de 7 días». Un día sin registro no cuenta como incumplimiento: solo no suma. */
+/** "5 of 7 days". A day without logs does not count as a miss: it just does not add up. */
 @Composable
 fun complianceText(ratio: ComplianceRatio): String =
     pluralStringResource(R.plurals.days_of_total, ratio.total, ratio.met, ratio.total)
 
-/** «−0,3 kg/sem» (con el signo menos tipográfico). */
+/** "−0.3 kg/wk" (with the typographic minus sign). */
 @Composable
 fun slopeText(kgPerWeek: Double): String {
     val sign = when {
@@ -82,7 +82,7 @@ fun slopeText(kgPerWeek: Double): String {
     return stringResource(R.string.unit_kg_per_week, sign + decimalText(abs(kgPerWeek)))
 }
 
-/** «se guardó hoy» / «se guardó ayer» / «se guardó el 3 sept.». */
+/** "saved today" / "saved yesterday" / "saved on Sep 3". */
 @Composable
 fun savedWhenText(at: Instant, zone: ZoneId = ZoneId.systemDefault()): String {
     val date = at.atZone(zone).toLocalDate()
@@ -94,7 +94,7 @@ fun savedWhenText(at: Instant, zone: ZoneId = ZoneId.systemDefault()): String {
     }
 }
 
-/** «3 sept.» en el idioma de la app. */
+/** "Sep 3" in the app language. */
 @Composable
 fun shortDateText(date: LocalDate): String =
     DateTimeFormatter.ofPattern(stringResource(R.string.pattern_day_month), currentLocale()).format(date)

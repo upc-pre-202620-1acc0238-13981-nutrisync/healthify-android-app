@@ -15,9 +15,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 
 /**
- * Al entrar al shell, pide una vez el permiso de notificaciones (Android 13+) para los avisos de las próximas consultas.
- * Si se niega no se insiste: el sistema deja de mostrar el diálogo tras dos negativas y el paciente puede darlo después
- * desde Recordatorios (PT22).
+ * On entering the shell, asks once for the notification permission (Android 13+) for upcoming appointment reminders.
+ * If denied it does not insist: the system stops showing the dialog after two denials and the patient can grant it
+ * later from Reminders.
  */
 @Composable
 fun NotificationPermissionRequest() {

@@ -113,7 +113,7 @@ class PractitionerCareInfrastructureTest {
         assertEquals(ActivityLevel.MODERATE, measurement.activityLevel)
         assertEquals(4, measurement.habits?.mealsPerDay)
         assertEquals(DiagnosisSource.AI_SUGGESTION_ACCEPTED, consultation.diagnosis?.source)
-        // NC-7: en una consulta en curso el diagnóstico del paso 2 llega pendiente hasta publicar.
+        // During an ongoing consultation the step 2 diagnosis stays pending until it is published.
         assertTrue(consultation.diagnosis!!.isPending)
         assertTrue(consultation.targets!!.isOverridden)
         assertEquals(Targets(1700.0, 120.0, 180.0, 55.0), consultation.targets?.prescribed)

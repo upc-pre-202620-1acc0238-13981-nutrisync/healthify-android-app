@@ -51,15 +51,15 @@ import java.util.Locale
 import javax.inject.Inject
 
 /**
- * Registro por foto (IN-7, F41): PT5 Cámara → PT6 Previsualización → PT6.1 «Viendo tu foto…» → PT7 propuesta
- * (PT7.2 / PT7.3) → PT8 ajustar. Compone CareRelationship (si la foto con IA está disponible) e Intake.
+ * Photo logging: camera → preview → "Looking at your photo…" → proposal (or its errors) → adjustment.
+ * Composes CareRelationship (whether AI photo is available) and Intake.
  *
- * - Sin consentimiento de IA, sin la preferencia «Reconocer comidas por foto» o con la IA apagada (`403
- *   AiConsentRequired` / `503 AiFeatureDisabled`) → registrar a mano (PT9).
- * - Sin conexión al analizar → la foto queda guardada en el teléfono para analizarla al volver la red.
- * - Nada se guarda en el diario hasta confirmar; al confirmar viaja `analysisId` + `clientEntryId` (uno por foto,
- *   el mismo en cada reintento).
- * - La foto se borra del teléfono al registrar, al elegir registrar a mano o al descartarla.
+ * - Without AI consent, without the meal photo recognition switch on, or with the AI off (`403
+ *   AiConsentRequired` / `503 AiFeatureDisabled`) → log by hand.
+ * - Offline when analyzing → the photo is saved on the phone to analyze it when the network returns.
+ * - Nothing is stored in the diary until confirmed; confirming sends `analysisId` + `clientEntryId` (one per photo,
+ *   the same on every retry).
+ * - The photo is deleted from the phone on logging, on choosing to log by hand or on discarding it.
  */
 @HiltViewModel
 class MealPhotoViewModel @Inject constructor(
@@ -87,7 +87,7 @@ class MealPhotoViewModel @Inject constructor(
     private val clientEntryId = ClientEntryId.random()
     private var patientId: Long? = null
 
-    /** La foto ya quedó guardada como pendiente (no se borra al salir sin registrarla). */
+    /** The photo was already saved as pending (it is not deleted when leaving without logging it). */
     private var photoIsPending = false
 
     init {
@@ -128,7 +128,7 @@ class MealPhotoViewModel @Inject constructor(
         }
     }
 
-    // ----- PT5 · Cámara -----
+    // ----- Camera -----
 
     fun onCameraPermissionResult(granted: Boolean) {
         _state.update {
@@ -144,7 +144,7 @@ class MealPhotoViewModel @Inject constructor(
                 step = MealPhotoStep.PREVIEW,
                 photoPath = path,
                 isCapturing = false,
-                // «¿Cuándo comiste?» propuesto: el momento de la foto.
+                // Proposed "When did you eat?": the moment of the photo.
                 form = it.form.copy(mealTime = OffsetDateTime.now(clock).truncatedTo(ChronoUnit.MINUTES)),
             )
         }
@@ -152,7 +152,7 @@ class MealPhotoViewModel @Inject constructor(
 
     fun onCaptureFailed() = _state.update { it.copy(isCapturing = false, captureFailed = true) }
 
-    /** PT5 «Registrar a mano en su lugar» / PT5.M / PT7.3 / sin conexión «Registrar a mano». */
+    /** "Log by hand instead" from the camera, the permission dialog, the estimate error or offline. */
     fun onRegisterManually() {
         viewModelScope.launch {
             discardCurrentPhoto(force = true)
@@ -160,9 +160,9 @@ class MealPhotoViewModel @Inject constructor(
         }
     }
 
-    // ----- PT6 · Previsualización -----
+    // ----- Preview -----
 
-    /** PT6 «Tomar otra vez» / PT7.3 «Tomar otra foto». */
+    /** "Retake" / "Take another photo". */
     fun onRetake() {
         viewModelScope.launch {
             discardCurrentPhoto(force = true)
@@ -172,7 +172,7 @@ class MealPhotoViewModel @Inject constructor(
         }
     }
 
-    /** PT6 «Usar esta foto» → PT6.1. */
+    /** "Use this photo" → analysis. */
     fun onUsePhoto() {
         viewModelScope.launch { analyze() }
     }
@@ -190,7 +190,7 @@ class MealPhotoViewModel @Inject constructor(
                     analysis = analysis,
                     selectedAlternative = null,
                     adjustFood = analysis.food,
-                    // IN-8: un plato nuevo trae su sugerencia preseleccionada; la respuesta de otra foto no se arrastra.
+                    // A new dish brings its suggestion preselected; the answer from another photo is not carried over.
                     form = it.form.copy(portionText = gramsInput(analysis.estimatedGrams), planAnsweredByPatient = false)
                         .withPlanSuggestion(analysis.planFit),
                 )
@@ -201,7 +201,7 @@ class MealPhotoViewModel @Inject constructor(
         when {
             error == DomainError.Network -> keepPhotoForLater(pid, path)
             error.isAiUnavailable() -> {
-                // La IA está apagada o el paciente no la consintió: la comida se registra a mano.
+                // The AI is off or the patient did not consent to it: the meal is logged by hand.
                 discardCurrentPhoto(force = true)
                 _events.send(MealPhotoEvent.OpenManual)
             }
@@ -222,7 +222,7 @@ class MealPhotoViewModel @Inject constructor(
         _state.update { it.copy(step = MealPhotoStep.SAVED_OFFLINE) }
     }
 
-    /** Pantalla de error de la estimación: «Volver a intentarlo». */
+    /** Estimate error screen: "Try again". */
     fun onRetryAnalysis() {
         if (_state.value.failure == AnalysisFailure.UNUSABLE_PHOTO || _state.value.failure == AnalysisFailure.EXPIRED) {
             onRetake()
@@ -231,9 +231,9 @@ class MealPhotoViewModel @Inject constructor(
         }
     }
 
-    // ----- PT7 · Estimación propuesta -----
+    // ----- Proposed estimate -----
 
-    /** Elige una alternativa (o vuelve a la propuesta con `null`). */
+    /** Picks an alternative (or goes back to the proposal with `null`). */
     fun onAlternativeSelected(index: Int?) {
         val analysis = _state.value.analysis ?: return
         val alternative = index?.let { analysis.selectableAlternatives.getOrNull(it) }
@@ -252,7 +252,7 @@ class MealPhotoViewModel @Inject constructor(
         _state.update { it.copy(form = it.form.answerPlan(inPlan)) }
     }
 
-    /** PT7 «Sí, es correcto»: la propuesta (o la alternativa elegida) tal cual. */
+    /** "Yes, that's right": the proposal (or the picked alternative) as is. */
     fun onConfirmProposal() {
         val current = _state.value
         val analysis = current.analysis ?: return
@@ -271,10 +271,10 @@ class MealPhotoViewModel @Inject constructor(
         save(analysis, confirmation, timestamp, adherence)
     }
 
-    /** PT7 «Ajustar gramos» → PT8. */
+    /** "Adjust grams" → adjustment. */
     fun onAdjust() = _state.update { it.copy(step = MealPhotoStep.ADJUST) }
 
-    // ----- PT8 · Confirmar o ajustar -----
+    // ----- Confirm or adjust -----
 
     fun onPortionChange(text: String) {
         _state.update { it.copy(form = it.form.copy(portionText = text, showPortionError = false)) }
@@ -300,7 +300,7 @@ class MealPhotoViewModel @Inject constructor(
         requestPlanFit()
     }
 
-    /** PT8 «¿No es este plato? Toca para cambiarlo.». */
+    /** "Not this dish? Tap to change it.". */
     fun onChangeFood() {
         viewModelScope.launch { _events.send(MealPhotoEvent.PickFood) }
     }
@@ -310,7 +310,7 @@ class MealPhotoViewModel @Inject constructor(
         requestPlanFit()
     }
 
-    /** IN-8 · en PT8 la sugerencia sigue al plato, la porción y el día que el paciente va eligiendo. */
+    /** The suggestion follows the dish, portion and day the patient is picking. */
     private fun requestPlanFit() {
         val pid = patientId ?: return
         val current = _state.value
@@ -319,7 +319,7 @@ class MealPhotoViewModel @Inject constructor(
         }
     }
 
-    /** PT8 «Confirmar». */
+    /** "Confirm". */
     fun onConfirmAdjustment() {
         val current = _state.value
         val analysis = current.analysis ?: return
@@ -333,7 +333,7 @@ class MealPhotoViewModel @Inject constructor(
         save(analysis, confirmation, requireNotNull(validation.timestamp), requireNotNull(validation.planAdherence))
     }
 
-    /** PT7.2 «Volver a intentarlo»: vuelve a la propuesta con lo elegido. */
+    /** "Try again" after a failed log: back to the proposal with what was picked. */
     fun onRetrySave() = _state.update { it.copy(step = MealPhotoStep.PROPOSAL) }
 
     private fun save(
@@ -379,7 +379,7 @@ class MealPhotoViewModel @Inject constructor(
         }
     }
 
-    /** El momento de la foto si sigue dentro de las 48 h; si no, abre PT8 con el error en «¿Cuándo comiste?». */
+    /** The photo's moment if still within 48 h; otherwise the adjustment opens with a "When did you eat?" error. */
     private fun timestampOrShowAdjust(): LocalTimestamp? {
         val mealTime = _state.value.form.mealTime
         val validity = LocalTimestamp.validate(mealTime, Instant.now(clock))
@@ -388,11 +388,11 @@ class MealPhotoViewModel @Inject constructor(
         return null
     }
 
-    // ----- Atrás -----
+    // ----- Back -----
 
     /**
-     * Atrás según el frame: de la previsualización a la cámara, de PT8 a PT7, y desde PT7 se sale dejando la comida
-     * «Por confirmar» (como dice la nota de PT7). En el resto se sale del flujo.
+     * Back as in the design: from the preview to the camera, from the adjustment to the estimate, and from the estimate
+     * it leaves the meal "To confirm" (as the estimate's note says). Anywhere else it leaves the flow.
      */
     fun onBack() {
         val current = _state.value
@@ -418,7 +418,7 @@ class MealPhotoViewModel @Inject constructor(
         _state.update { it.copy(isSaving = true) }
         viewModelScope.launch {
             val mealTime = current.form.mealTime
-            // Fuera de la ventana no se puede guardar «Por confirmar»: la foto queda pendiente en el teléfono.
+            // Outside the window "To confirm" cannot be saved: the photo stays pending on the phone.
             if (LocalTimestamp.validate(mealTime, Instant.now(clock)) == LocalTimestamp.Validity.VALID) {
                 val result = keepPhotoMealUnconfirmed(pid, analysis, LocalTimestamp.forNewEntry(mealTime, Instant.now(clock)), clientEntryId)
                 if (result.isSuccess) discardCurrentPhoto(force = true)
@@ -429,8 +429,8 @@ class MealPhotoViewModel @Inject constructor(
     }
 
     /**
-     * Borra la foto del teléfono. Sin [force], una foto guardada como pendiente (sin conexión) se conserva para
-     * analizarla después.
+     * Deletes the photo from the phone. Without [force], a photo saved as pending (offline) is kept to
+     * analyze it later.
      */
     private suspend fun discardCurrentPhoto(force: Boolean) {
         val path = _state.value.photoPath ?: return
@@ -449,7 +449,7 @@ class MealPhotoViewModel @Inject constructor(
         else -> false
     }
 
-    /** `403` (sin consentimiento o preferencia apagada) o `503 AiFeatureDisabled` (IA apagada en el servidor). */
+    /** `403` (no consent or preference off) or `503 AiFeatureDisabled` (AI off on the server). */
     private fun DomainError?.isAiUnavailable(): Boolean =
         this is DomainError.Forbidden || hasCode(CODE_AI_FEATURE_DISABLED)
 
@@ -459,7 +459,7 @@ class MealPhotoViewModel @Inject constructor(
         else -> AnalysisFailure.GENERIC
     }
 
-    /** Los gramos propuestos como texto editable («320», «62.5»). */
+    /** The proposed grams as editable text ("320", "62.5"). */
     private fun gramsInput(grams: Double): String =
         if (grams % 1.0 == 0.0) grams.toLong().toString() else String.format(Locale.ROOT, "%.1f", grams)
 

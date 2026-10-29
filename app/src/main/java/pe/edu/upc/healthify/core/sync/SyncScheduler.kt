@@ -9,15 +9,15 @@ import androidx.work.WorkManager
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-/** Pide que la cola de pendientes se envíe en cuanto haya red. */
+/** Requests that the pending queue be sent as soon as there is network. */
 fun interface SyncScheduler {
     fun requestSync()
 }
 
 /**
- * Trabajo único con restricción de red y backoff exponencial (30 s, 1 min, 2 min… hasta el máximo de
- * WorkManager). `APPEND_OR_REPLACE`: si ya hay una ejecución en curso, la nueva corre después y recoge lo que se
- * encoló mientras tanto.
+ * Unique work with a network constraint and exponential backoff (30 s, 1 min, 2 min… up to the
+ * WorkManager maximum). `APPEND_OR_REPLACE`: if a run is already in progress, the new one runs after it and picks
+ * up what was queued in the meantime.
  */
 class WorkManagerSyncScheduler @Inject constructor(
     private val workManager: WorkManager,

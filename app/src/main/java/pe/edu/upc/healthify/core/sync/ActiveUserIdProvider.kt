@@ -1,8 +1,8 @@
 package pe.edu.upc.healthify.core.sync
 
 /**
- * El usuario con sesión activa, o `null` si no hay. La cola solo envía lo que registró ese usuario.
- * Lo implementa `iam` en su infrastructure.
+ * The user with the active session, or `null` if there is none. The queue only sends what that user recorded.
+ * Implemented by `iam` in its infrastructure.
  */
 fun interface ActiveUserIdProvider {
     suspend fun activeUserId(): Long?

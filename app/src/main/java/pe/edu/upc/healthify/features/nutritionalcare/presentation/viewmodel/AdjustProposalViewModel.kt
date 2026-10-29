@@ -43,21 +43,21 @@ import java.util.Locale
 import javax.inject.Inject
 
 sealed interface AdjustProposalEvent {
-    /** Plan ajustado asignado: vuelve a la bandeja con «Señal resuelta». */
+    /** Adjusted plan assigned: back to the inbox with "Signal resolved". */
     data class Assigned(val patientName: String?) : AdjustProposalEvent
 
-    /** El ítem o la propuesta ya no están: vuelve a la bandeja. */
+    /** The item or proposal is gone: back to the inbox. */
     data object Close : AdjustProposalEvent
 }
 
 /**
- * PR14.IA-A · Ajustar el plan propuesto por IA. Todo viene prellenado con la propuesta: metas, indicaciones (las
- * vigentes con lo que la IA agrega y quita) y el mensaje para el paciente. «Asignar plan ajustado» la acepta con las
- * ediciones (`asIs = false`); el backend solo las valida contra el piso calórico (`422`).
+ * Adjust the AI-proposed plan. Everything comes prefilled from the proposal: targets, guidelines (the
+ * current ones with what the AI adds and removes) and the message to the patient. "Assign adjusted plan" accepts it
+ * with the edits (`asIs = false`); the backend only checks them against the calorie floor (`422`).
  *
- * DECISIÓN PR14.IA-A: el frame no dibuja todas las indicaciones; se ofrecen las 7 del catálogo como chips (las
- * propias del profesional se conservan siempre en el backend y no se tocan aquí). El mensaje para el paciente se puede
- * editar (≤ 500, NC-9).
+ * The frame does not draw every guideline, so the 7 catalog ones are offered as chips (the
+ * practitioner's custom ones are always kept by the backend and are not touched here). The message to the patient
+ * can be edited (≤ 500).
  */
 @HiltViewModel
 class AdjustProposalViewModel @Inject constructor(
@@ -103,7 +103,7 @@ class AdjustProposalViewModel @Inject constructor(
         it.copy(guidelines = if (selected) it.guidelines + code else it.guidelines - code)
     }
 
-    /** «Asignar plan ajustado». */
+    /** "Assign adjusted plan". */
     fun onAssign() {
         val current = _state.value
         if (current.isAssigning || current.isLoading) return
@@ -158,7 +158,7 @@ class AdjustProposalViewModel @Inject constructor(
                 _state.update { it.copy(isLoading = false, loadError = error.toLoadError()) }
                 return@launch
             }
-            // Las indicaciones vigentes salen del historial del plan; la propuesta solo dice qué agrega y qué quita.
+            // The current guidelines come from the plan history; the proposal only says what it adds and removes.
             val historyResult = getPlanHistory(item.patientId.value)
             val history = historyResult.getOrNull()
             if (history == null) {
@@ -218,7 +218,7 @@ class AdjustProposalViewModel @Inject constructor(
     }
 
     private companion object {
-        /** Valor editable: entero sin separador de miles («1650») o con un decimal en el idioma del teléfono. */
+        /** Editable value: an integer without thousands separator ("1650") or with one decimal in the phone locale. */
         fun formatNumber(value: Double): String =
             DecimalFormat("0.#", DecimalFormatSymbols.getInstance(Locale.getDefault())).format(value)
     }

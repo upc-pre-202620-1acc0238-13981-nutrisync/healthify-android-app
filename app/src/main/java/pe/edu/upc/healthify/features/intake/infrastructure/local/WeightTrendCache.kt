@@ -8,8 +8,8 @@ import androidx.room3.Query
 import androidx.room3.Upsert
 
 /**
- * Copia offline de la tendencia de peso (PT13 sin conexión, «disponible desde caché local»): el `WeightTrendResource`
- * tal como llegó (JSON). Una por paciente; el `404 WeightTrendNotFound` la borra.
+ * Offline copy of the weight trend ("available from local cache"): the `WeightTrendResource`
+ * as it arrived (JSON). One per patient; `404 WeightTrendNotFound` deletes it.
  */
 @Entity(tableName = "weight_trend_cache")
 data class WeightTrendCacheEntity(

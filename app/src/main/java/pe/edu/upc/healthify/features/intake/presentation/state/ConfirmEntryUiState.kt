@@ -4,11 +4,11 @@ import pe.edu.upc.healthify.features.intake.domain.valueobject.MealFood
 import java.time.LocalDate
 
 /**
- * PT8 de una entrada «Por confirmar» (F16).
+ * Confirmation of a diary entry left "To confirm".
  *
- * @param proposedFood / [proposedGrams] lo que propuso la IA (se conserva al lado de lo confirmado).
- * @param food el plato elegido (el propuesto u otro del catálogo).
- * @param showAlreadyConfirmed «Esta comida ya estaba confirmada.» (`409 EstimateAlreadyConfirmed`) → vuelve al diario.
+ * @param proposedFood / [proposedGrams] what the AI proposed (kept alongside what is confirmed).
+ * @param food the chosen dish (the proposed one or another from the catalog).
+ * @param showAlreadyConfirmed "This meal was already confirmed." (`409 EstimateAlreadyConfirmed`) → diary.
  */
 data class ConfirmEntryUiState(
     val today: LocalDate,
@@ -28,6 +28,6 @@ data class ConfirmEntryUiState(
 sealed interface ConfirmEntryEvent {
     data object PickFood : ConfirmEntryEvent
 
-    /** Confirmada (o ya lo estaba): vuelve al diario, que la muestra como «Confirmada por ti». */
+    /** Confirmed (or it already was): back to the diary, which shows it as "Confirmed by you". */
     data object Done : ConfirmEntryEvent
 }

@@ -4,11 +4,11 @@ import pe.edu.upc.healthify.core.designsystem.component.UiText
 import java.time.Instant
 
 /**
- * PT4 · Mi plan.
+ * My plan.
  *
- * @param plan la versión vigente; `null` mientras carga, si no hay metas ([hasNoTargets]) o si falló sin copia.
- * @param cachedAt cuándo se guardó la copia que se está mostrando (sin conexión); `null` si es del backend.
- * @param loadFailed error sin copia guardada: estado de error con «Reintentar».
+ * @param plan the current version; `null` while loading, without targets ([hasNoTargets]) or on failure with no copy.
+ * @param cachedAt when the copy being shown was saved (offline); `null` if it comes from the backend.
+ * @param loadFailed error with no saved copy: error state with "Retry".
  */
 data class MyPlanUiState(
     val isLoading: Boolean = true,
@@ -22,10 +22,10 @@ data class MyPlanUiState(
 )
 
 /**
- * La versión vigente lista para pintar: los códigos ya convertidos en [UiText] (traducibles) y los textos de una
- * persona como `UiText.Raw` (tal cual).
+ * The current version ready to render: codes already turned into [UiText] (translatable) and text written by a
+ * person as `UiText.Raw` (as is).
  *
- * @param proteinShare parte de la energía diaria que aporta cada macro (barras de «Metas de cada día»).
+ * @param proteinShare share of daily energy each macro provides (the "Daily targets" bars).
  */
 data class PlanDetails(
     val planVersion: Int,
@@ -43,10 +43,10 @@ data class PlanDetails(
     val patientMessage: String?,
 )
 
-/** Una línea de «Qué cambió en esta versión»; [secondary] = texto de apoyo («Las metas … no cambiaron»). */
+/** A line of "What changed in this version"; [secondary] = supporting text ("The targets … did not change"). */
 data class PlanChangeLine(val text: UiText, val secondary: Boolean)
 
 sealed interface MyPlanEvent {
-    /** «Ya las revisé» → PT3. */
+    /** "I've reviewed them" → Home. */
     data object NavigateBack : MyPlanEvent
 }

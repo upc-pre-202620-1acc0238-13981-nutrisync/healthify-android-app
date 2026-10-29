@@ -26,9 +26,9 @@ import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 
 /**
- * Variantes «Tipo» de Chip/Estado del Figma. Procedencia y confianza siempre visibles.
- * - [PendingConfirmation]: estimación de foto sin confirmar.
- * - [PendingSync]: en la cola offline, pendiente de enviar.
+ * "Type" variants of the Figma status chip (Chip/Estado). Source and confidence are always visible.
+ * - [PendingConfirmation]: unconfirmed photo estimate.
+ * - [PendingSync]: in the offline queue, waiting to be sent.
  */
 enum class StatusChipType(@param:StringRes val labelRes: Int) {
     PendingConfirmation(R.string.status_chip_pending_confirmation),
@@ -39,10 +39,10 @@ enum class StatusChipType(@param:StringRes val labelRes: Int) {
     OffPlan(R.string.status_chip_off_plan),
 }
 
-// Alto del Chip/Estado del Figma.
+// Height of the Figma status chip.
 private val StatusChipMinHeight = 28.dp
 
-/** Etiqueta de estado no interactiva (Chip/Estado del Figma). */
+/** Non-interactive status label (Figma status chip). */
 @Composable
 fun StatusChip(
     type: StatusChipType,
@@ -81,7 +81,7 @@ private val StatusChipType.icon: ImageVector
         StatusChipType.OffPlan -> HealthifyIcons.Cutlery
     }
 
-@Preview(name = "Chip/Estado · todos los tipos", widthDp = 360)
+@Preview(name = "Status chip · all types", widthDp = 360)
 @Composable
 private fun StatusChipPreview() {
     ComponentPreview {

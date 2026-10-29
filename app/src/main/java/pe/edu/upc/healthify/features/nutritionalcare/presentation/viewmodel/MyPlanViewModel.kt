@@ -29,9 +29,9 @@ import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.PlanChan
 import javax.inject.Inject
 
 /**
- * PT4 · Mi plan. Compone tres contextos: las metas vigentes (Intake, con copia offline), si hay una versión sin
- * revisar (CareRelationship, `targets-read-status`) y el acuse «Ya las revisé» (`targets-acknowledgement`, F12).
- * Nunca muestra diagnóstico ni base de cálculo: `active-targets` no los trae.
+ * My plan. Combines three contexts: the current targets (Intake, with an offline copy), whether a version is
+ * unreviewed (CareRelationship, `targets-read-status`) and the "I've reviewed them" acknowledgement
+ * (`targets-acknowledgement`). It never shows the diagnosis or calculation basis: `active-targets` lacks them.
  */
 @HiltViewModel
 class MyPlanViewModel @Inject constructor(
@@ -48,7 +48,7 @@ class MyPlanViewModel @Inject constructor(
     private val _events = Channel<MyPlanEvent>(Channel.BUFFERED)
     val events: Flow<MyPlanEvent> = _events.receiveAsFlow()
 
-    /** Si no se pudo leer `targets-read-status` (sin red o error), «Ya las revisé» intenta el acuse igual. */
+    /** If `targets-read-status` could not be read (offline, error), "I've reviewed them" still tries to acknowledge. */
     private var readStatusKnown = false
     private var pendingVersion: Int? = null
 
@@ -57,7 +57,7 @@ class MyPlanViewModel @Inject constructor(
             connectivityObserver.isOnline.collect { online ->
                 val wasOffline = _state.value.isOffline
                 _state.update { it.copy(isOffline = !online) }
-                // Al volver la conexión se reemplaza la copia por las metas del backend.
+                // When the connection returns, the copy is replaced by the backend targets.
                 if (online && wasOffline && !_state.value.isLoading) load()
             }
         }
@@ -66,12 +66,12 @@ class MyPlanViewModel @Inject constructor(
 
     fun onRetry() = load()
 
-    /** «Ya las revisé» (F12). Sin nada pendiente o sin conexión, solo vuelve a Inicio (el acuse queda pendiente). */
+    /** "I've reviewed them". With nothing pending or offline, it just goes Home (the acknowledgement stays pending). */
     fun onAcknowledge() {
         val current = _state.value
         val plan = current.plan ?: return
         if (current.isAcknowledging) return
-        // DECISIÓN PT4: sin conexión el acuse no se encola (no es un dato del paciente); PT3.M volverá a avisar.
+        // Offline, the acknowledgement is not queued (it is not patient data); the home notice will show again.
         if (current.isOffline || (readStatusKnown && pendingVersion == null)) {
             viewModelScope.launch { _events.send(MyPlanEvent.NavigateBack) }
             return
@@ -119,7 +119,7 @@ class MyPlanViewModel @Inject constructor(
                     }
                 },
                 onFailure = {
-                    // Error sin copia guardada (con copia el repositorio ya la devolvió como éxito).
+                    // Error with no saved copy (with a copy, the repository already returned it as success).
                     _state.update { it.copy(isLoading = false, plan = null, loadFailed = true) }
                 },
             )
@@ -127,7 +127,7 @@ class MyPlanViewModel @Inject constructor(
     }
 }
 
-/** Metas vigentes → contenido de PT4: códigos a textos traducibles; restricciones legadas tal cual. */
+/** Current targets → My plan content: codes to translatable texts; legacy restrictions as is. */
 internal fun ActiveTargets.toPlanDetails(): PlanDetails = PlanDetails(
     planVersion = planVersion,
     publishedAt = validFrom,

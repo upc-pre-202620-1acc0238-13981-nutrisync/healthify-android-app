@@ -9,21 +9,22 @@ import pe.edu.upc.healthify.core.network.auth.AuthHeaders.bearerToken
 import javax.inject.Inject
 
 /**
- * Ante un `401` de una petición que llevó bearer, renueva el par (IAM-4) con [TokenRefreshCoordinator] y la
- * reintenta **una vez** con el access token nuevo. Si la renovación es rechazada devuelve `null`: la petición
- * termina con su 401 (→ `DomainError.Unauthorized`) y [SessionExpiryNotifier] ya emitió el evento hacia S6.
+ * On a `401` for a request that carried a bearer, renews the token pair with [TokenRefreshCoordinator] and
+ * retries it **once** with the new access token. If the renewal is rejected it returns `null`: the request
+ * ends with its 401 (→ `DomainError.Unauthorized`) and [SessionExpiryNotifier] has already emitted the event
+ * that opens the session expired screen.
  */
 class TokenRefreshAuthenticator @Inject constructor(
     private val coordinator: TokenRefreshCoordinator,
 ) : Authenticator {
 
     override fun authenticate(route: Route?, response: Response): Request? {
-        // Sin bearer (endpoints anónimos o sin sesión) un 401 no es de token vencido.
+        // Without a bearer (anonymous endpoints or no session) a 401 does not mean an expired token.
         val failedToken = response.request.bearerToken() ?: return null
-        // Ya se reintentó con un token renovado y volvió a fallar: no insistir.
+        // Already retried with a renewed token and it failed again: do not insist.
         if (response.priorResponse != null) return null
 
-        // OkHttp llama al Authenticator en sus hilos de red, nunca en el main thread.
+        // OkHttp calls the Authenticator on its network threads, never on the main thread.
         val newToken = runBlocking { coordinator.refreshAfter(failedToken) } ?: return null
         return response.request.newBuilder()
             .header(AuthHeaders.AUTHORIZATION, AuthHeaders.bearer(newToken))

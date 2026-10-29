@@ -34,11 +34,11 @@ import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
 /**
- * PT12 · Autopesaje. Sin conexión el autopesaje queda encolado con su `clientEntryId` y su hora local (IN-4) y se
- * vuelve a PT13 igual que con éxito («mismo toast, queda pendiente»).
+ * Self weigh-in. Offline the self weigh-in is queued with its `clientEntryId` and its local time and it
+ * goes back to the trend screen just like on success ("same toast, stays pending").
  *
- * DECISIÓN PT12: el backend no pone ventana a los autopesajes (F19 solo exige el momento); el teléfono aplica la de
- * 48 h que pide el frame («Puedes registrar hasta 48 h hacia atrás»), la misma regla de `LocalTimestamp` del diario.
+ * The backend puts no window on self weigh-ins (it only requires the moment); the phone applies the
+ * 48 h one the design asks for ("You can log up to 48 h back"), the same `LocalTimestamp` rule as the diary.
  */
 @HiltViewModel
 class SelfWeighInViewModel @Inject constructor(
@@ -60,7 +60,7 @@ class SelfWeighInViewModel @Inject constructor(
     private val _events = Channel<SelfWeighInEvent>(Channel.BUFFERED)
     val events: Flow<SelfWeighInEvent> = _events.receiveAsFlow()
 
-    /** Uno por autopesaje: los reintentos (PT12.2) y la cola reenvían el mismo y el backend no lo duplica. */
+    /** One per self weigh-in: retries and the queue resend the same one and the backend does not duplicate it. */
     private val clientEntryId = ClientEntryId.random()
 
     init {
@@ -97,7 +97,7 @@ class SelfWeighInViewModel @Inject constructor(
         }
     }
 
-    /** «Guardar»: aplica las reglas de los value objects y muestra todos los errores a la vez. */
+    /** "Save": applies the value object rules and shows all errors at once. */
     fun onSave() {
         val current = _state.value
         if (current.isSaving) return
@@ -126,7 +126,7 @@ class SelfWeighInViewModel @Inject constructor(
         )
     }
 
-    /** PT12.2 «Volver a intentarlo»: vuelve al formulario con lo escrito y lo intenta otra vez. */
+    /** "Try again": back to the form with what was typed, and tries again. */
     fun onRetry() {
         _state.update { it.copy(saveFailed = false) }
         onSave()
@@ -150,7 +150,7 @@ class SelfWeighInViewModel @Inject constructor(
             val error = result.domainErrorOrNull()
             _state.update {
                 when ((error as? DomainError.Validation)?.code) {
-                    // PT12.E: el backend tiene la última palabra sobre el rango.
+                    // The backend has the last word on the range.
                     CODE_IMPLAUSIBLE_WEIGHT -> it.copy(isSaving = false, weightError = WeightError.OUT_OF_RANGE)
                     else -> it.copy(isSaving = false, saveFailed = true)
                 }

@@ -20,8 +20,8 @@ import pe.edu.upc.healthify.features.monitoring.presentation.state.PatientFollow
 import javax.inject.Inject
 
 /**
- * PAC-2 · Seguimiento (RM-3) con el resumen con IA (IA-5) pedido en paralelo. Solo lectura. Si el resumen no llega
- * (sin consentimiento de IA del paciente, función apagada, cuota, error), la tarjeta no se muestra y el panel sigue.
+ * Patient follow-up tab, with the AI summary requested in parallel. Read-only. If the summary does not arrive
+ * (no patient AI consent, feature off, quota, error), the card is hidden and the panel still shows.
  */
 @HiltViewModel
 class PatientFollowUpViewModel @Inject constructor(
@@ -74,7 +74,7 @@ class PatientFollowUpViewModel @Inject constructor(
     }
 
     companion object {
-        /** Argumento de la ficha del paciente (`PractitionerPatientRoute.patientId`, por nombre de propiedad). */
+        /** Patient profile argument (`PractitionerPatientRoute.patientId`, by property name). */
         const val ARG_PATIENT_ID = "patientId"
     }
 }

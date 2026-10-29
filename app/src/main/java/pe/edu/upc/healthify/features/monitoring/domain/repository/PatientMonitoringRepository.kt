@@ -8,24 +8,24 @@ import pe.edu.upc.healthify.features.monitoring.domain.entity.NextFollowUp
 import pe.edu.upc.healthify.features.monitoring.domain.valueobject.PatientId
 import java.time.LocalDate
 
-/** Lecturas de MonitoringAdherence del lado del paciente (§5.6). Ninguna funciona sin conexión. */
+/** Patient-side MonitoringAdherence reads. None of them work offline. */
 interface PatientMonitoringRepository {
 
-    /** `GET …/daily-compliance?date=`: un día sin evaluar es `Unlogged` con 0 kcal. */
+    /** `GET …/daily-compliance?date=`: an unevaluated day is `Unlogged` with 0 kcal. */
     suspend fun getDailyProgress(patientId: PatientId, date: LocalDate): Result<DailyProgress>
 
-    /** `GET …/daily-compliance?from=&to=` (MA-6, máx. 31 días). */
+    /** `GET …/daily-compliance?from=&to=` (max. 31 days). */
     suspend fun getComplianceSummary(patientId: PatientId, from: LocalDate, to: LocalDate): Result<ComplianceSummary>
 
-    /** `GET …/daily-compliance?from=&to=` (MA-6): el resultado de cada día del rango que el backend evaluó. */
+    /** `GET …/daily-compliance?from=&to=`: the outcome of each day in the range that the backend evaluated. */
     suspend fun getComplianceDays(patientId: PatientId, from: LocalDate, to: LocalDate): Result<List<ComplianceDay>>
 
-    /** `GET …/consistency-index`; `null` si todavía no hay índice (`422 BothSeriesRequired`). */
+    /** `GET …/consistency-index`; `null` if there is no index yet (`422 BothSeriesRequired`). */
     suspend fun getConsistencyIndex(patientId: PatientId): Result<ConsistencyIndex?>
 
-    /** `POST …/consistency-index/prompt-acknowledgement` (MA-7): el paciente vio el aviso. */
+    /** `POST …/consistency-index/prompt-acknowledgement`: the patient saw the prompt. */
     suspend fun acknowledgeConsistencyPrompt(patientId: PatientId): Result<Unit>
 
-    /** `GET …/scheduled-follow-ups/next` (MA-3); `null` si no hay ninguna agendada (`404`). */
+    /** `GET …/scheduled-follow-ups/next`; `null` if none is scheduled (`404`). */
     suspend fun getNextFollowUp(patientId: PatientId): Result<NextFollowUp?>
 }

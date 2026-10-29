@@ -19,8 +19,8 @@ import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 import java.time.Instant
 
 /**
- * «Grupo · aviso» de PT3.O: banner «Sin conexión» (lo registrado se encola) y, si las metas vienen de la copia del
- * teléfono, desde cuándo («Metas guardadas en tu teléfono · actualizadas hoy 8:10 a. m.»).
+ * The offline notice group: an "Offline" banner (logs get queued) and, if the targets come from the phone's
+ * copy, since when ("Targets saved on your phone · updated today 8:10 a.m.").
  */
 @Composable
 fun CachedTargetsNotice(cachedAt: Instant?, modifier: Modifier = Modifier) {
@@ -40,7 +40,7 @@ fun CachedTargetsNotice(cachedAt: Instant?, modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(name = "PT3.O · Grupo aviso (metas desde caché)", widthDp = 360)
+@Preview(name = "Notice group (targets from cache)", widthDp = 360)
 @Composable
 private fun CachedTargetsNoticePreview() {
     HealthifyTheme { CachedTargetsNotice(cachedAt = Instant.now()) }

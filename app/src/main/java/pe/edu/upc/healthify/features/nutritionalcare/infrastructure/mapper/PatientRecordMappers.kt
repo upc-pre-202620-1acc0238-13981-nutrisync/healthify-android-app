@@ -18,8 +18,8 @@ import pe.edu.upc.healthify.features.nutritionalcare.infrastructure.remote.dto.R
 import kotlin.math.roundToInt
 
 /**
- * PT20 «una sección que falla queda vacía sin tumbar el resto»: cada sección se lee por separado y la que no se puede
- * interpretar queda vacía (`null`, lista vacía) en vez de hacer fallar todo el expediente.
+ * "A failing section stays empty without breaking the rest": each section is read separately, and one that cannot be
+ * parsed stays empty (`null`, empty list) instead of failing the whole record.
  */
 fun PatientOwnRecordDto.toDomain(): PatientOwnRecord = PatientOwnRecord(
     practitioner = practitioner?.let { dto ->
@@ -38,7 +38,7 @@ fun PatientOwnRecordDto.toDomain(): PatientOwnRecord = PatientOwnRecord(
     referrals = referrals.mapNotNull { it.toDomainOrNull() }.sortedByDescending { it.issuedAt },
 )
 
-/** Un número ilegible se omite (queda «—»), los demás se muestran. */
+/** An unreadable number is left out (shows "—"); the rest are shown. */
 fun RecordMyNumbersDto.toDomain(): MyNumbers = MyNumbers(
     energyTargetKcal = energyTargetKcal?.roundToInt()?.takeIf { it > 0 },
     planVersion = planVersion?.takeIf { it > 0 },
@@ -76,7 +76,7 @@ fun RecordReferralDto.toDomainOrNull(): RecordReferral? {
         id = referralId,
         specialty = specialty,
         issuedAt = issuedAt,
-        // Sin estado (recurso anterior a RM-4) = abierta, como el default del backend.
+        // No status (older resources) = open, like the backend default.
         isOpen = status == null || status == REFERRAL_STATUS_OPEN,
         reason = reason?.trim().orEmpty(),
         closedAt = closedAt?.toInstantOrNull(),

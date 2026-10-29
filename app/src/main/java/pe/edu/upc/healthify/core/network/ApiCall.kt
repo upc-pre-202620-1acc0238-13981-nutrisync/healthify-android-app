@@ -8,14 +8,14 @@ import retrofit2.HttpException
 import java.io.IOException
 
 /**
- * Ejecuta una llamada Retrofit y la convierte en `Result`. Úsalo en los `*RepositoryImpl`
- * (infrastructure) junto con el mapper DTO → dominio:
+ * Runs a Retrofit call and turns it into a `Result`. Use it in the `*RepositoryImpl`
+ * (infrastructure) together with the DTO → domain mapper:
  *
  * ```
  * override suspend fun getUser(id: UserId) = apiCall { service.getUser(id.value) }.map { it.toDomain() }
  * ```
  *
- * Nunca traga `CancellationException`.
+ * Never swallows `CancellationException`.
  */
 suspend fun <T> apiCall(block: suspend () -> T): Result<T> =
     try {

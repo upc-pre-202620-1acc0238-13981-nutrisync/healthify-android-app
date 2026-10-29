@@ -30,8 +30,8 @@ import pe.edu.upc.healthify.testing.careLink
 import pe.edu.upc.healthify.testing.failureOf
 
 /**
- * Cambio de nutricionista (CR-1): PT21.V → PT1 con `replaceActiveLink = true` → PT2 sobre el vínculo nuevo.
- * Solo PT21.V manda el flag; desde S5 o PT24 va en `false`.
+ * Switching practitioner: settings → QR scan with `replaceActiveLink = true` → consent on the new link.
+ * Only the switch from settings sends the flag; every other entry point sends `false`.
  */
 class SwitchPractitionerFlowTest {
 
@@ -71,7 +71,7 @@ class SwitchPractitionerFlowTest {
         assertTrue(scan.state.value.replaceActiveLink)
         assertTrue(careLinks.redemptions.single().replaceActiveLink)
         assertEquals(31L, newLinkId)
-        // El vínculo nuevo nace sin consentimiento: S5 lo trataría como pendiente (PT2.1) si se sale ahora.
+        // The new link starts without consent: the app would treat it as pending if the patient left now.
         assertEquals(CareLinkId(31), careLinks.pending[PatientId(12)])
 
         val consent = consentViewModel(ConsentRoute(newLinkId))

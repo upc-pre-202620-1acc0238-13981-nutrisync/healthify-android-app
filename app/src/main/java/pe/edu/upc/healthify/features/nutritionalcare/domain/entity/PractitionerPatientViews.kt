@@ -9,8 +9,8 @@ import java.time.Instant
 import java.time.LocalDate
 
 /**
- * `PatientSummaryResource` (RM-2): la pestaña Resumen (PAC-1). `baseline = null` es PAC-0 (aún sin datos base);
- * `consultationInProgress` no nulo es PAC-1.C.
+ * `PatientSummaryResource`: the Summary tab. `baseline = null` means there is no baseline yet;
+ * a non-null `consultationInProgress` means a consultation is in progress.
  */
 data class PatientSummary(
     val patientId: Long,
@@ -25,19 +25,19 @@ data class PatientSummary(
 ) {
     val hasBaseline: Boolean get() = baseline != null
 
-    /** «Nueva»: sin datos base o sin plan publicado (mismo criterio que la cartera, RM-1). */
+    /** "New": no baseline or no published plan (same rule as the caseload). */
     val isNew: Boolean get() = baseline == null || activePlanVersion == null
 }
 
-/** «Próxima consulta» del resumen. */
+/** The summary's "Next consultation". */
 data class SummaryFollowUp(val followUpId: Long, val scheduledFor: Instant)
 
-/** PAC-1.C · «Consulta en curso · Paso 1 de 4 · Medición de hoy · se guardó hoy». */
+/** "Consultation in progress · Step 1 of 4 · Today's measurement · saved today". */
 data class ConsultationInProgress(val id: ConsultationId, val step: ConsultationStep, val lastSavedAt: Instant)
 
 /**
- * «DESDE LA ÚLTIMA CONSULTA»: pendiente de la tendencia del autopesaje (nunca el peso de un día, regla ética 6) y días
- * dentro de metas sobre días del calendario (un día sin registro no es incumplimiento: solo no suma).
+ * "SINCE THE LAST CONSULTATION": slope of the self-weigh-in trend (never a single day's weight, ethics rule 6) and days
+ * within targets over calendar days (a day without logs is not a miss: it just does not add up).
  */
 data class SinceLastConsultation(
     val fromDate: LocalDate,
@@ -53,8 +53,8 @@ data class ComplianceRatio(val met: Int, val total: Int) {
 }
 
 /**
- * `PractitionerPatientRecordResource` (RM-4): la pestaña Expediente (PAC-3). Incluye el **diagnóstico activo**, que es
- * solo del profesional. Cada sección puede faltar si su contexto no respondió.
+ * `PractitionerPatientRecordResource`: the Record tab. It includes the **active diagnosis**, which is
+ * practitioner-only. Any section can be missing if its context did not respond.
  */
 data class PractitionerPatientRecord(
     val clinicalWeight: ClinicalWeightSummary?,
@@ -74,10 +74,10 @@ data class RecordActiveTargets(val planVersion: Int, val validFrom: Instant, val
 
 data class RecordComplianceWindow(val from: LocalDate, val to: LocalDate, val ratio: ComplianceRatio)
 
-/** «Sobrepeso grado I · 3 mar. 2026 · solo profesional». `code = null`: diagnóstico anterior a la lista cerrada. */
+/** "Overweight class I · Mar 3, 2026 · practitioner only". `code = null`: diagnosis older than the closed list. */
 data class RecordDiagnosis(val code: DiagnosisCode?, val statement: String, val issuedAt: Instant)
 
-/** Derivación (MA, F25): especialidad y motivo son texto del profesional; no se traducen. */
+/** Referral: specialty and reason are the practitioner's text; they are not translated. */
 data class ReferralSummary(
     val id: Long,
     val specialty: String,
@@ -87,7 +87,7 @@ data class ReferralSummary(
     val closedAt: Instant? = null,
 )
 
-/** «3 sept. 2026 · 74.2 kg · IMC 26.3 · cintura 88 cm» / «… · primera evaluación». */
+/** "Sep 3, 2026 · 74.2 kg · BMI 26.3 · waist 88 cm" / "… · first assessment". */
 data class RecordEvaluation(
     val assessmentId: Long,
     val takenAt: Instant,
@@ -98,8 +98,8 @@ data class RecordEvaluation(
 )
 
 /**
- * PAC-3 · detalle de una evaluación del expediente (`GET /nutritional-assessments/{id}`, solo del profesional que la
- * registró): la medición más reciente de la evaluación, con los datos base de ese momento.
+ * Detail of a record assessment (`GET /nutritional-assessments/{id}`, only for the practitioner who recorded
+ * it): the assessment's latest measurement, with the baseline at that time.
  */
 data class EvaluationDetail(
     val assessmentId: Long,
@@ -108,7 +108,7 @@ data class EvaluationDetail(
     val bmiCategory: DiagnosisCode?,
 )
 
-/** Una versión publicada del plan (PAC-4 «HISTORIAL DEL PLAN»). */
+/** A published plan version ("PLAN HISTORY" on the Plan tab). */
 data class NutritionPlanVersion(
     val version: Int,
     val isActive: Boolean,
@@ -119,24 +119,24 @@ data class NutritionPlanVersion(
     val patientMessage: String?,
 )
 
-/** Indicación de una versión: del catálogo (se traduce) o propia/legada (tal cual). */
+/** A version guideline: from the catalog (translated) or custom/legacy (as is). */
 sealed interface PlanGuidelineItem {
     data class Catalog(val code: PlanGuidelineCode) : PlanGuidelineItem
     data class Custom(val text: String) : PlanGuidelineItem
 }
 
-/** Restricción de una versión: de la lista cerrada (se traduce) o un texto anterior a la lista (tal cual). */
+/** A version restriction: from the closed list (translated) or text that predates the list (as is). */
 sealed interface PlanRestrictionItem {
     data class Catalog(val code: PlanRestrictionCode) : PlanRestrictionItem
     data class Legacy(val text: String) : PlanRestrictionItem
 }
 
-/** PAC-4: versiones publicadas, la vigente primero. */
+/** Published versions, the current one first. */
 data class PlanHistory(val versions: List<NutritionPlanVersion>) {
     val active: NutritionPlanVersion? get() = versions.firstOrNull { it.isActive }
 
     companion object {
-        /** Ordena de la más nueva a la más vieja. */
+        /** Sorts from newest to oldest. */
         fun of(versions: List<NutritionPlanVersion>): PlanHistory =
             PlanHistory(versions.sortedByDescending { it.version })
     }

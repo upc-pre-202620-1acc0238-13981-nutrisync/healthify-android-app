@@ -42,7 +42,7 @@ import pe.edu.upc.healthify.R
 import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 
-/** Destinos de la NavigationBar del paciente (Figma «NavigationBar/Paciente»). */
+/** Patient NavigationBar destinations (Figma "NavigationBar/Paciente"). */
 enum class PatientTab(@param:StringRes val labelRes: Int) {
     Home(R.string.nav_home),
     Diary(R.string.nav_diary),
@@ -50,35 +50,35 @@ enum class PatientTab(@param:StringRes val labelRes: Int) {
     Record(R.string.nav_record),
 }
 
-/** Destinos de la NavigationBar del nutricionista (Figma «NavigationBar/Nutricionista»). */
+/** Practitioner NavigationBar destinations (Figma "NavigationBar/Nutricionista"). */
 enum class PractitionerTab(@param:StringRes val labelRes: Int) {
     Patients(R.string.nav_patients),
     Inbox(R.string.nav_inbox),
     Agenda(R.string.nav_agenda),
 }
 
-/** Un destino genérico de [HealthifyNavigationBar]. */
+/** A generic [HealthifyNavigationBar] destination. */
 @Immutable
 data class NavigationBarEntry(val label: String, val icon: ImageVector)
 
-// Medidas de «NavigationBar/Item» del Figma.
+// Figma "NavigationBar/Item" measurements.
 private val NavigationBarHeight = 80.dp
 private val IndicatorSize = DpSize(64.dp, 32.dp)
 
-// Botón central «Registrar comida» del paciente: un rectángulo ámbar con dos rectángulos verdes que asoman detrás.
+// Patient's center "Log meal" button: an amber rectangle with two green rectangles peeking out behind it.
 private val CameraFrontSize = DpSize(48.dp, 36.dp)
 private val CameraFrontRadius = 11.dp
 private val CameraBackSize = DpSize(52.dp, 36.dp)
 private val CameraBackRadius = 12.dp
-// Cada rectángulo de atrás asoma 6 dp por su lado: (52 − 48) / 2 + 4 = 6.
+// Each back rectangle peeks out 6 dp on its side: (52 − 48) / 2 + 4 = 6.
 private val CameraBackOffset = 4.dp
 private val CameraIconSize = 22.dp
 
 /**
- * NavigationBar del Figma (80 dp + inset de navegación por gestos, que dibuja el sistema). El destino
- * activo lleva el indicador `primaryContainer` y la etiqueta en negrita.
+ * Figma NavigationBar (80 dp + the gesture navigation inset, drawn by the system). The active
+ * destination gets the `primaryContainer` indicator and a bold label.
  *
- * @param centerAction acción que no es un destino (el botón cámara del paciente); ocupa el centro de la barra.
+ * @param centerAction action that is not a destination (the patient's camera button); it takes the center of the bar.
  */
 @Composable
 fun HealthifyNavigationBar(
@@ -158,8 +158,8 @@ private fun NavigationBarDestination(
 }
 
 /**
- * NavigationBar del paciente: Inicio · Diario · [cámara] · Progreso · Expediente. La cámara no es una pestaña:
- * abre el registro de comida ([onRegisterMeal]).
+ * Patient NavigationBar: Home · Diary · [camera] · Progress · Record. The camera is not a tab:
+ * it opens meal logging ([onRegisterMeal]).
  */
 @Composable
 fun PatientNavigationBar(
@@ -180,7 +180,7 @@ fun PatientNavigationBar(
     )
 }
 
-/** Botón central «Registrar comida»: sin etiqueta, centrado en su espacio y con toda la celda como área táctil. */
+/** Center "Log meal" button: no label, centered in its slot, with the whole cell as touch target. */
 @Composable
 private fun RegisterMealNavButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     val scheme = MaterialTheme.colorScheme
@@ -218,7 +218,7 @@ private fun RegisterMealNavButton(onClick: () -> Unit, modifier: Modifier = Modi
     }
 }
 
-/** NavigationBar del nutricionista: Pacientes · Bandeja · Agenda (Ajustes se abre desde el menú principal). */
+/** Practitioner NavigationBar: Patients · Inbox · Agenda (Settings opens from the main menu). */
 @Composable
 fun PractitionerNavigationBar(
     selected: PractitionerTab,
@@ -251,7 +251,7 @@ private val PractitionerTab.icon: ImageVector
         PractitionerTab.Agenda -> HealthifyIcons.Agenda
     }
 
-@Preview(name = "NavigationBar/Paciente · Activo", widthDp = 360, heightDp = 460)
+@Preview(name = "NavigationBar/Patient · Active", widthDp = 360, heightDp = 460)
 @Composable
 private fun PatientNavigationBarPreview() {
     ComponentPreview {
@@ -261,7 +261,7 @@ private fun PatientNavigationBarPreview() {
     }
 }
 
-@Preview(name = "NavigationBar/Nutricionista · Activo", widthDp = 360, heightDp = 460)
+@Preview(name = "NavigationBar/Practitioner · Active", widthDp = 360, heightDp = 460)
 @Composable
 private fun PractitionerNavigationBarPreview() {
     ComponentPreview {

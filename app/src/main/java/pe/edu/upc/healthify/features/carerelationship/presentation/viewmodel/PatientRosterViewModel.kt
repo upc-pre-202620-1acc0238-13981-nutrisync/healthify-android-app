@@ -20,9 +20,9 @@ import pe.edu.upc.healthify.features.iam.application.usecase.ObserveCurrentUserU
 import javax.inject.Inject
 
 /**
- * PR1 · Mi cartera (+ PR1.L, PR1.V, PR1.O). La cartera no se guarda en el teléfono: sin conexión y sin una lectura
- * previa en memoria se muestra PR1.O. Se relee al volver a la pestaña y al volver la conexión. La búsqueda y la fila
- * «Al día» desplegada son solo de la pantalla: no piden nada al backend.
+ * My roster (plus loading, empty and offline states). The roster is not stored on the phone: offline and without a
+ * previous read in memory the offline state shows. It reloads on returning to the tab and when the connection comes
+ * back. The search and the expanded "Up to date" row are screen-only: they ask nothing from the backend.
  */
 @HiltViewModel
 class PatientRosterViewModel @Inject constructor(

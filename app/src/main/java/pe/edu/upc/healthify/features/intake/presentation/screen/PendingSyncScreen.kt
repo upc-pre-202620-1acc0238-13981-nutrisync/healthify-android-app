@@ -52,11 +52,11 @@ import pe.edu.upc.healthify.features.intake.presentation.state.PendingSyncUiStat
 import pe.edu.upc.healthify.features.intake.presentation.viewmodel.PendingSyncViewModel
 import java.time.OffsetDateTime
 
-// «Punto indicador» de PT19 (8 dp, `secondary`).
+// Indicator dot (8 dp, `secondary`).
 private val IndicatorSize = 8.dp
 private val SyncingIndicatorSize = 16.dp
 
-/** PT19 · Pendientes por sincronizar (+ PT19.V). */
+/** Pending to sync (and its empty state). */
 @Composable
 fun PendingSyncScreen(
     onBack: () -> Unit,
@@ -145,7 +145,7 @@ private fun SyncingRow() {
     }
 }
 
-/** «● Lomo saltado · 320 g / pendiente de enviar»: la hora local se muestra tal como se guardó. */
+/** "● Lomo saltado · 320 g / pending to send": the local time is shown as it was saved. */
 @Composable
 private fun PendingRow(entry: PendingDiaryEntry) {
     val dimens = HealthifyTheme.dimens
@@ -185,7 +185,7 @@ private fun PendingRow(entry: PendingDiaryEntry) {
     }
 }
 
-/** «● Autopesaje · 68,4 kg / pendiente de enviar»: el valor que escribió el paciente, con la hora tal como se guardó. */
+/** "● Self weigh-in · 68,4 kg / pending to send": the value the patient typed, with the time as it was saved. */
 @Composable
 private fun PendingWeighInRow(weighIn: PendingSelfWeighIn) {
     val dimens = HealthifyTheme.dimens
@@ -237,7 +237,7 @@ private fun weighInRejectionRes(code: String?): Int = when (code) {
     else -> pendingRejectionRes(code)
 }
 
-@Preview(name = "PT19 · Pendientes", widthDp = 360, heightDp = 800)
+@Preview(name = "Pending", widthDp = 360, heightDp = 800)
 @Composable
 private fun PendingSyncPreview() {
     HealthifyTheme {
@@ -265,7 +265,7 @@ private fun PendingSyncPreview() {
     }
 }
 
-@Preview(name = "PT19.V · Todo al día", widthDp = 360, heightDp = 800)
+@Preview(name = "Pending - all caught up", widthDp = 360, heightDp = 800)
 @Composable
 private fun PendingSyncEmptyPreview() {
     HealthifyTheme { PendingSyncContent(state = PendingSyncUiState(isLoading = false), onBack = {}) }

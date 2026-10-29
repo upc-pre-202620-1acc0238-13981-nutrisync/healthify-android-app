@@ -48,7 +48,7 @@ import pe.edu.upc.healthify.core.designsystem.theme.elevation
 import pe.edu.upc.healthify.features.iam.presentation.state.SessionExpiredUiState
 import pe.edu.upc.healthify.features.iam.presentation.viewmodel.SessionExpiredViewModel
 
-// Medidas de los frames «S6 · Sesión expirada» (Normal / Sin conexión).
+// Measurements of the "Session expired" frames (Normal / Offline).
 private val LogoSize = DpSize(64.dp, 57.dp)
 private val BadgeSizeNormal = 80.dp
 private val BadgeSizeOffline = 88.dp
@@ -58,7 +58,7 @@ private val ShackleRadius = 14.dp
 private val ShackleStroke = 5.dp
 private val ShackleBottomOverlap = 2.dp
 
-/** S6 · Sesión expirada (Normal / Sin conexión). Tono neutro: nunca dice por qué venció (regla ética). */
+/** Session expired (Normal / Offline). Neutral tone: never says why it expired (ethics rule). */
 @Composable
 fun SessionExpiredScreen(
     onSignIn: () -> Unit,
@@ -141,7 +141,7 @@ fun SessionExpiredContent(
     }
 }
 
-/** Candado de S6 dibujado como en el Figma (círculo, arco y cuerpo redondeado). */
+/** Session expired padlock drawn as in the Figma (circle, arc and rounded body). */
 @Composable
 private fun LockBadge(size: Dp, container: Color, lock: Color, elevated: Boolean, modifier: Modifier = Modifier) {
     val dimens = HealthifyTheme.dimens
@@ -178,13 +178,13 @@ private fun LockBadge(size: Dp, container: Color, lock: Color, elevated: Boolean
     }
 }
 
-@Preview(name = "S6 · Sesión expirada — Normal", widthDp = 360, heightDp = 800)
+@Preview(name = "Session expired - normal", widthDp = 360, heightDp = 800)
 @Composable
 private fun SessionExpiredPreview() {
     HealthifyTheme { SessionExpiredContent(state = SessionExpiredUiState(), onSignIn = {}) }
 }
 
-@Preview(name = "S6 · Sesión expirada — Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Session expired - offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun SessionExpiredOfflinePreview() {
     HealthifyTheme { SessionExpiredContent(state = SessionExpiredUiState(isOffline = true), onSignIn = {}) }

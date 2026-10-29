@@ -36,28 +36,28 @@ import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.ReviewLo
 import javax.inject.Inject
 
 sealed interface ReviewItemEvent {
-    /** Resuelto (con o sin plan asignado): vuelve a la bandeja con «Señal resuelta» (PR13.1). */
+    /** Resolved (with or without an assigned plan): back to the inbox with "Signal resolved". */
     data class Resolved(val patientName: String?) : ReviewItemEvent
 
-    /** PR14.IA «Ajustar» → PR14.IA-A. */
+    /** "Adjust" on the AI proposal → the adjust screen. */
     data class OpenAdjust(val reviewItemId: Long) : ReviewItemEvent
 
-    /** PR14 «Ajustar el plan ahora»: la ficha del paciente, como acción aparte (nunca automática). */
+    /** "Adjust the plan now": the patient profile, as a separate action (never automatic). */
     data class OpenPatient(val patientId: Long, val careLinkId: Long, val patientName: String) : ReviewItemEvent
 
-    /** El ítem ya no está: vuelve a la bandeja, que se relee. */
+    /** The item is gone: back to the inbox, which is reread. */
     data object Close : ReviewItemEvent
 }
 
 /**
- * PR14 · Resolver ítem (+ PR14.1) y PR14.IA · plan propuesto por IA. Compone NutritionalCare (bandeja y propuesta) con
- * CareRelationship (la cartera, para abrir la ficha desde «Ajustar el plan ahora»).
+ * Resolve item and the AI-proposed plan. Combines NutritionalCare (inbox and proposal) with
+ * CareRelationship (the caseload, to open the profile from "Adjust the plan now").
  *
- * DECISIÓN PR14.IA: además de «Ajustar» y «Resolver» (asignar tal cual), se ofrece «Resolver sin asignar este plan»,
- * que muestra el formulario de PR14: el backend lo permite (`/resolution` descarta la propuesta) y así la IA nunca es
- * el único camino para cerrar la señal. Mientras la propuesta se genera (`202`) se puede resolver sin esperarla.
- * DECISIÓN PR14: «Ajustar el plan ahora» abre la ficha del paciente (PR11 está fuera de uso); el ítem sigue abierto
- * y se resuelve después con «Sí».
+ * Besides "Adjust" and "Resolve" (assign as is), it offers "Resolve without assigning this plan",
+ * which shows the plain resolution form: the backend allows it (`/resolution` discards the proposal), so the AI is
+ * never the only way to close the signal. While the proposal is generating (`202`) the item can be resolved anyway.
+ * "Adjust the plan now" opens the patient profile (the old adjust screen is no longer used); the item stays open
+ * and is resolved later with "Yes".
  */
 @HiltViewModel
 class ReviewItemViewModel @Inject constructor(
@@ -98,10 +98,10 @@ class ReviewItemViewModel @Inject constructor(
 
     fun onNoteChange(note: String) = _state.update { it.copy(note = note) }
 
-    /** PR14.IA «Resolver sin asignar este plan» (o «Resolver sin esperar» mientras se genera). */
+    /** "Resolve without assigning this plan" (or "Resolve without waiting" while generating). */
     fun onResolveWithoutProposal() = _state.update { it.copy(showManualResolution = true) }
 
-    /** PR14 «Resolver»: decir si el plan se ajustó es obligatorio (PR14.1). */
+    /** "Resolve": saying whether the plan was adjusted is required. */
     fun onResolve() {
         val current = _state.value
         if (current.isBusy) return
@@ -126,7 +126,7 @@ class ReviewItemViewModel @Inject constructor(
         }
     }
 
-    /** PR14.IA «Resolver»: asigna el plan propuesto tal cual y lo publica (acción explícita del profesional). */
+    /** "Resolve" on the proposal: assigns the proposed plan as is and publishes it (explicit practitioner action). */
     fun onAcceptAsIs() {
         if (_state.value.isBusy || _state.value.proposal !is ProposalSection.Ready) return
         _state.update { it.copy(isAccepting = true) }
@@ -138,13 +138,13 @@ class ReviewItemViewModel @Inject constructor(
         }
     }
 
-    /** PR14.IA «Ajustar» → PR14.IA-A con todo prellenado. */
+    /** "Adjust" → the adjust screen with everything prefilled. */
     fun onAdjust() {
         if (_state.value.isBusy) return
         viewModelScope.launch { _events.send(ReviewItemEvent.OpenAdjust(reviewItemId)) }
     }
 
-    /** PR14 «Ajustar el plan ahora»: abre la ficha del paciente (el vínculo se busca en la cartera). */
+    /** "Adjust the plan now": opens the patient profile (the link is looked up in the caseload). */
     fun onAdjustPlanNow() {
         val current = item ?: return
         if (_state.value.isBusy) return
@@ -221,7 +221,7 @@ class ReviewItemViewModel @Inject constructor(
         }
     }
 
-    /** `202` → «la IA está preparando…» y se reintenta tras `Retry-After`; `404` o un fallo → PR14 normal. */
+    /** `202` → "the AI is preparing…" and retries after `Retry-After`; `404` or a failure → the plain review item. */
     private fun watchProposal() {
         proposalJob?.cancel()
         proposalJob = viewModelScope.launch {
@@ -243,7 +243,7 @@ class ReviewItemViewModel @Inject constructor(
             error is DomainError.Conflict && error.code == REVIEW_ITEM_NOT_SUSTAINED_DEVIATION ->
                 _state.update { it.copy(proposal = ProposalSection.NotOffered) }
             error is DomainError.Conflict -> showDialog(ReviewDialog.ALREADY_RESOLVED)
-            // La propuesta ya no está (purgada o descartada): PR14 sin IA.
+            // The proposal is gone (purged or discarded): the item opens without AI.
             error is DomainError.NotFound && error.code == PLAN_PROPOSAL_NOT_FOUND ->
                 _state.update { it.copy(proposal = ProposalSection.NotOffered) }
             error is DomainError.NotFound -> showDialog(ReviewDialog.NOT_AVAILABLE)

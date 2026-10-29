@@ -40,7 +40,7 @@ import pe.edu.upc.healthify.testing.nextFollowUp
 import pe.edu.upc.healthify.testing.suggestions
 import java.time.Instant
 
-/** PT25.2 · Cuéntale cómo te fue: envío, edición de la respuesta guardada y bloqueo a la hora de la consulta (MA-4). */
+/** Pre-consultation check-in: sending, editing the saved answer and locking at consultation time. */
 class CheckInViewModelTest {
 
     @get:Rule
@@ -135,7 +135,7 @@ class CheckInViewModelTest {
         assertEquals(PlanFeeling.HARD, state.feeling)
         assertEquals(setOf(CheckInDifficulty.CRAVINGS), state.difficulties)
         assertEquals("¿Qué hago con los antojos?", state.ownQuestion)
-        // La aceptada no se duplica con la sugerencia nueva del mismo texto.
+        // The accepted one is not duplicated by a new suggestion with the same text.
         assertEquals(listOf("How do I plan dinners?", "¿Puedo ajustar el plan?"), state.suggestions.map { it.text })
         assertEquals(listOf(true, false), state.suggestions.map { it.selected })
 
@@ -159,7 +159,7 @@ class CheckInViewModelTest {
         vm.onSubmit()
 
         assertTrue(consultations.submitted.isEmpty())
-        // Bloqueado: ni siquiera se piden sugerencias (cuentan para la cuota).
+        // Locked: suggestions are not even requested (they count toward the quota).
         assertTrue(consultations.suggestionRequests.isEmpty())
     }
 

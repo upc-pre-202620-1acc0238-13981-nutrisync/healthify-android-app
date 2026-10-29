@@ -35,18 +35,18 @@ import androidx.compose.ui.unit.dp
 import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 
-// Ícono «Check» del componente Segmento del Figma.
+// Check icon of the Figma "Segmento" component.
 private val SegmentCheckSize = 18.dp
 
 /**
- * SegmentedButton de selección única del Figma («Segmento»): rol, factor de actividad, peso de referencia,
- * tipo de déficit… Cada opción ocupa el mismo ancho, alto 48 dp, separación 8 dp.
+ * Figma single-choice SegmentedButton ("Segmento"): role, activity factor, reference weight,
+ * deficit type… Each option takes the same width, 48 dp tall, 8 dp gap.
  *
- * Si el texto de alguna opción no cabe en su parte de la fila (diálogos angostos, fuente grande, otro idioma), las
- * opciones se apilan a ancho completo en vez de partir las palabras.
+ * If an option's text does not fit in its share of the row (narrow dialogs, large font, another language), the
+ * options stack at full width instead of breaking words.
  *
- * @param selected `null` = ninguna opción elegida todavía.
- * @param isError borde `error` en las opciones no elegidas (p. ej. pregunta obligatoria sin responder).
+ * @param selected `null` = no option chosen yet.
+ * @param isError `error` border on the unchosen options (e.g. a required question left unanswered).
  */
 @Composable
 fun <T> SegmentedSelector(
@@ -78,12 +78,12 @@ fun <T> SegmentedSelector(
     )
 }
 
-/** Fila de partes iguales; si una opción no cabe en su parte, columna a ancho completo. */
+/** Row of equal shares; if an option does not fit in its share, a full-width column. */
 private fun rowOrColumnPolicy(gap: Dp) = MeasurePolicy { measurables, constraints ->
     val gapPx = gap.roundToPx()
     val count = measurables.size
     if (count == 0) return@MeasurePolicy layout(constraints.minWidth, constraints.minHeight) {}
-    // Sin ancho máximo (dentro de un scroll horizontal): cada parte mide lo que pide la opción más larga.
+    // No max width (inside a horizontal scroll): each share is as wide as the longest option needs.
     val width = if (constraints.hasBoundedWidth) {
         constraints.maxWidth
     } else {
@@ -110,7 +110,7 @@ private fun rowOrColumnPolicy(gap: Dp) = MeasurePolicy { measurables, constraint
     }
 }
 
-/** Una opción («Segmento») suelta, para filas que no encajan en [SegmentedSelector]. */
+/** A single option ("Segmento"), for rows that do not fit [SegmentedSelector]. */
 @Composable
 fun SegmentedOption(
     text: String,
@@ -166,9 +166,9 @@ fun SegmentedOption(
 }
 
 /**
- * Check + texto centrados. El check de la opción elegida solo se dibuja si cabe junto al texto: así elegir una opción
- * nunca reduce el espacio del texto ni lo parte letra por letra. El ancho intrínseco es el del texto (el check no
- * cuenta), para que [SegmentedSelector] decida la fila o la columna igual con o sin selección.
+ * Centered check + text. The chosen option's check is only drawn if it fits next to the text, so choosing an option
+ * never shrinks the text's space or breaks it letter by letter. The intrinsic width is the text's (the check does
+ * not count), so [SegmentedSelector] picks row or column the same way with or without a selection.
  */
 private class CheckAndLabelPolicy(private val showCheck: Boolean, private val gap: Dp) : MeasurePolicy {
 
@@ -208,7 +208,7 @@ private class CheckAndLabelPolicy(private val showCheck: Boolean, private val ga
         maxOf(measurables[0].minIntrinsicHeight(width), measurables[1].minIntrinsicHeight(width))
 }
 
-@Preview(name = "Segmento · Seleccionado × State", widthDp = 360)
+@Preview(name = "Segment · Selected × State", widthDp = 360)
 @Composable
 private fun SegmentedOptionPreview() {
     ComponentPreview {
@@ -223,7 +223,7 @@ private fun SegmentedOptionPreview() {
     }
 }
 
-@Preview(name = "SegmentedSelector · rol", widthDp = 360)
+@Preview(name = "SegmentedSelector · role", widthDp = 360)
 @Composable
 private fun SegmentedSelectorPreview() {
     ComponentPreview {
@@ -245,7 +245,7 @@ private fun SegmentedSelectorPreview() {
     }
 }
 
-@Preview(name = "SegmentedSelector · angosto (diálogo de PT8)", widthDp = 264)
+@Preview(name = "SegmentedSelector · narrow (dialog)", widthDp = 264)
 @Composable
 private fun SegmentedSelectorNarrowPreview() {
     ComponentPreview {

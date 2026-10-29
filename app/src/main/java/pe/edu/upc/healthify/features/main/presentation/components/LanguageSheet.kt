@@ -27,7 +27,7 @@ import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 import pe.edu.upc.healthify.features.iam.domain.valueobject.PreferredLanguage
 
-/** PT21.I / PR20.I · hoja «IDIOMA»: Español y English; la opción actual lleva el check. */
+/** "LANGUAGE" sheet: Español and English; the current option has the check mark. */
 @Composable
 internal fun ColumnScope.LanguageSheetContent(
     selected: PreferredLanguage,
@@ -60,7 +60,7 @@ internal fun ColumnScope.LanguageSheetContent(
                     horizontalArrangement = Arrangement.spacedBy(dimens.space8),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    // Cada idioma se nombra en su propio idioma (no se traduce).
+                    // Each language is named in its own language (not translated).
                     Text(
                         text = stringResource(language.labelRes),
                         style = MaterialTheme.typography.bodyLarge,

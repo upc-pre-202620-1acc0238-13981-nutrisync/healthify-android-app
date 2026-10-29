@@ -9,7 +9,7 @@ import pe.edu.upc.healthify.features.intake.domain.valueobject.PatientId
 import java.time.LocalDate
 import javax.inject.Inject
 
-/** PT14 · un día del diario (con la copia del teléfono sin conexión). */
+/** One diary day (with the phone's copy when offline). */
 class GetDiaryDayUseCase @Inject constructor(
     private val repository: DiaryRepository,
 ) {
@@ -17,7 +17,7 @@ class GetDiaryDayUseCase @Inject constructor(
         repository.getDiaryDay(PatientId(patientUserId), date)
 }
 
-/** PT14.O / PT19 · lo que espera en la cola del teléfono. */
+/** What is waiting in the phone's queue. */
 class ObservePendingDiaryEntriesUseCase @Inject constructor(
     private val repository: DiaryRepository,
 ) {
@@ -25,21 +25,21 @@ class ObservePendingDiaryEntriesUseCase @Inject constructor(
         repository.observePendingEntries(PatientId(patientUserId))
 }
 
-/** PT14 / PT3 · el backend aceptó comidas de la cola: hay que volver a leer el día. */
+/** The backend accepted queued meals: the day has to be read again. */
 class ObserveSyncedDiaryEntriesUseCase @Inject constructor(
     private val repository: DiaryRepository,
 ) {
     operator fun invoke(): Flow<Unit> = repository.syncedEntries
 }
 
-/** PT19 · pide enviar la cola ya (se envía sola al volver la red; esto solo la adelanta). */
+/** Asks to send the queue now (it sends itself when the network returns; this only brings it forward). */
 class RequestDiarySyncUseCase @Inject constructor(
     private val repository: DiaryRepository,
 ) {
     operator fun invoke() = repository.requestSync()
 }
 
-/** PT14.1 · el Snackbar del último registro. */
+/** The Snackbar for the latest log. */
 class ObserveLoggedMealNoticeUseCase @Inject constructor(
     private val repository: DiaryRepository,
 ) {

@@ -19,8 +19,8 @@ import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.PatientR
 import javax.inject.Inject
 
 /**
- * PT20 · el expediente propio (RM-4). Si falla toda la composición → error; si falla una sección, el backend (y el
- * mapper) la dejan vacía y el resto se muestra. Al volver a la pestaña y al volver la conexión se relee.
+ * The patient's own record. If the whole composition fails → error; if one section fails, the backend (and the
+ * mapper) leave it empty and the rest is shown. Reread on returning to the tab and when the connection returns.
  */
 @HiltViewModel
 class PatientRecordViewModel @Inject constructor(

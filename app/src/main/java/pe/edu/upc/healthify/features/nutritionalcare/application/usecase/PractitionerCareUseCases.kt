@@ -28,19 +28,19 @@ import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.Idempote
 import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.PatientId
 import javax.inject.Inject
 
-/** PAC-0 / PAC-1 / PAC-1.C · el resumen del paciente (RM-2). */
+/** The patient summary. */
 class GetPatientSummaryUseCase @Inject constructor(private val repository: PatientSummaryRepository) {
     suspend operator fun invoke(patientId: Long): Result<PatientSummary> = repository.getSummary(PatientId(patientId))
 }
 
-/** PAC-3 · el expediente del paciente visto por el profesional (RM-4, con el diagnóstico activo). */
+/** The patient record as the practitioner sees it, including the active diagnosis. */
 class GetPractitionerRecordUseCase @Inject constructor(private val repository: PractitionerRecordRepository) {
     suspend operator fun invoke(patientId: Long): Result<PractitionerPatientRecord> =
         repository.getRecord(PatientId(patientId))
 }
 
-/** PAC-4 · el historial del plan. */
-/** PAC-3 · una evaluación del expediente, al tocarla. */
+/** The plan history. */
+/** One record assessment, when tapped. */
 class GetEvaluationDetailUseCase @Inject constructor(private val repository: PractitionerRecordRepository) {
     suspend operator fun invoke(assessmentId: Long): Result<EvaluationDetail> = repository.getEvaluation(assessmentId)
 }
@@ -49,14 +49,14 @@ class GetPlanHistoryUseCase @Inject constructor(private val repository: Nutritio
     suspend operator fun invoke(patientId: Long): Result<PlanHistory> = repository.getHistory(PatientId(patientId))
 }
 
-/** EV-1 · los datos base guardados (`null` = todavía no tiene). */
+/** The saved baseline (`null` = none yet). */
 class GetPatientBaselineUseCase @Inject constructor(private val repository: PatientBaselineRepository) {
     suspend operator fun invoke(patientId: Long): Result<PatientBaseline?> = repository.get(PatientId(patientId))
 }
 
 /**
- * EV-1 · «Guardar…»: registra los datos base la primera vez y los edita después. Si al registrar el backend dice que
- * ya existían (`409 BaselineAlreadyRecorded`, p. ej. desde otro teléfono), se guardan como edición.
+ * "Save…": records the baseline the first time and edits it afterwards. If recording returns that it already
+ * existed (`409 BaselineAlreadyRecorded`, e.g. from another phone), it is saved as an edit.
  */
 class SavePatientBaselineUseCase @Inject constructor(private val repository: PatientBaselineRepository) {
     suspend operator fun invoke(patientId: Long, baseline: NewBaseline, alreadyRecorded: Boolean): Result<PatientBaseline> {
@@ -76,8 +76,8 @@ class SavePatientBaselineUseCase @Inject constructor(private val repository: Pat
 }
 
 /**
- * PAC-1 «Iniciar consulta» / PAC-1.C «Continuar consulta»: inicia la consulta o, si ya hay una en curso
- * (`409 ConsultationAlreadyInProgress`), la reanuda. Nunca hay dos consultas abiertas para un paciente.
+ * "Start consultation" / "Continue consultation": starts the consultation or, if one is already in progress
+ * (`409 ConsultationAlreadyInProgress`), resumes it. A patient never has two open consultations.
  */
 class StartOrResumeConsultationUseCase @Inject constructor(private val repository: ConsultationRepository) {
     suspend operator fun invoke(patientId: Long, scheduledFollowUpId: Long?): Result<Consultation> {
@@ -95,58 +95,58 @@ class StartOrResumeConsultationUseCase @Inject constructor(private val repositor
 }
 
 /**
- * EV-2 a EV-5 · lee la consulta en curso para **re-hidratar** el paso (reanudar después de salir o de cerrar la app).
- * `null` si ya no hay ninguna en curso (se publicó o se descartó).
+ * Reads the in-progress consultation to **rehydrate** a step (resume after leaving or closing the app).
+ * `null` if none is in progress anymore (it was published or discarded).
  */
 class GetConsultationInProgressUseCase @Inject constructor(private val repository: ConsultationRepository) {
     suspend operator fun invoke(patientId: Long): Result<Consultation?> = repository.getInProgress(PatientId(patientId))
 }
 
-/** EV-2 «Continuar a diagnóstico». */
+/** "Continue to diagnosis". */
 class RecordConsultationMeasurementUseCase @Inject constructor(private val repository: ConsultationRepository) {
     suspend operator fun invoke(consultationId: ConsultationId, measurement: NewMeasurement): Result<Consultation> =
         repository.recordMeasurement(consultationId, measurement)
 }
 
-/** EV-3 · la sugerencia (IA-6, o la regla del IMC). */
+/** The suggestion (AI, or the BMI rule). */
 class SuggestDiagnosisUseCase @Inject constructor(private val repository: ConsultationRepository) {
     suspend operator fun invoke(consultationId: ConsultationId): Result<DiagnosisSuggestion> =
         repository.suggestDiagnosis(consultationId)
 }
 
-/** EV-3 «Continuar a metas». */
+/** "Continue to targets". */
 class IssueConsultationDiagnosisUseCase @Inject constructor(private val repository: ConsultationRepository) {
     suspend operator fun invoke(consultationId: ConsultationId, choice: DiagnosisChoice): Result<Consultation> =
         repository.issueDiagnosis(consultationId, choice)
 }
 
-/** EV-4 · calcula (o recalcula con «Cambiar parámetros») la propuesta de metas. */
+/** Calculates (or recalculates with "Change parameters") the target proposal. */
 class ProposeConsultationTargetsUseCase @Inject constructor(private val repository: ConsultationRepository) {
     suspend operator fun invoke(consultationId: ConsultationId, parameters: TargetParameters? = null): Result<TargetProposal> =
         repository.proposeTargets(consultationId, parameters)
 }
 
-/** EV-4 «Aceptar metas» / «Escribir mis propios valores» (con razón obligatoria). */
+/** "Accept targets" / "Enter my own values" (reason required). */
 class PrescribeConsultationTargetsUseCase @Inject constructor(private val repository: ConsultationRepository) {
     suspend operator fun invoke(consultationId: ConsultationId, prescription: TargetPrescription): Result<Consultation> =
         repository.prescribeTargets(consultationId, prescription)
 }
 
-/** EV-5 · las indicaciones sugeridas (IA-7, o la tabla fija). */
+/** The suggested guidelines (AI, or the fixed table). */
 class SuggestGuidelinesUseCase @Inject constructor(private val repository: ConsultationRepository) {
     suspend operator fun invoke(consultationId: ConsultationId): Result<GuidelineSuggestions> =
         repository.suggestGuidelines(consultationId)
 }
 
-/** EV-5 · guarda el borrador para que lo elegido no se pierda aunque se cierre la app. */
+/** Saves the draft so the choices survive even if the app is closed. */
 class SavePublicationDraftUseCase @Inject constructor(private val repository: ConsultationRepository) {
     suspend operator fun invoke(consultationId: ConsultationId, publication: Publication): Result<Consultation> =
         repository.saveDraft(consultationId, publication)
 }
 
 /**
- * EV-5 «Publicar y cerrar consulta». El que llama conserva [idempotencyKey] y lo reusa en «Volver a intentarlo»
- * (EV-5.E): el backend devuelve el mismo resultado y no publica dos versiones.
+ * "Publish and close consultation". The caller keeps [idempotencyKey] and reuses it on "Try again": the backend
+ * returns the same result and never publishes two versions.
  */
 class PublishConsultationUseCase @Inject constructor(private val repository: ConsultationRepository) {
     suspend operator fun invoke(
@@ -156,7 +156,7 @@ class PublishConsultationUseCase @Inject constructor(private val repository: Con
     ): Result<Consultation> = repository.publish(consultationId, publication, idempotencyKey)
 }
 
-/** EV-2 «Borrar consulta» (se abrió por error): descarta la consulta en curso. */
+/** "Delete consultation" (opened by mistake): discards the in-progress consultation. */
 class DiscardConsultationUseCase @Inject constructor(private val repository: ConsultationRepository) {
     suspend operator fun invoke(consultationId: ConsultationId): Result<Unit> = repository.discard(consultationId)
 }

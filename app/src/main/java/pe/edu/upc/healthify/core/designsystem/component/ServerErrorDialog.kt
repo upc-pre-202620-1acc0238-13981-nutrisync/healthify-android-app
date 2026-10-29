@@ -6,8 +6,8 @@ import androidx.compose.ui.res.stringResource
 import pe.edu.upc.healthify.R
 
 /**
- * «Error de servidor genérico» («Reintentar» / «Cerrar») de las validaciones de S3, S4, PT2 y PT23. Usa los
- * textos del estado de error genérico del sistema de diseño (S5 · Error).
+ * "Generic server error" dialog ("Retry" / "Close") for the sign-up, sign-in, consent and consent withdrawal
+ * validations. Uses the texts of the design system's generic error state.
  */
 @Composable
 fun ServerErrorDialog(

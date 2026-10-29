@@ -32,21 +32,21 @@ import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 import pe.edu.upc.healthify.core.designsystem.theme.elevation
 
-/** Variantes «Style» del componente Card del Figma. */
+/** "Style" variants of the Figma Card component. */
 enum class ListCardStyle { Elevated, Filled, Outlined }
 
-// Medidas del componente Card del Figma.
+// Figma Card component measurements.
 private val ListCardMinHeight = 72.dp
 private val LeadingContainerSize = 40.dp
 
 /**
- * Contenedor «Card (contenedor)» del Figma: mismos tokens que [ListCard] para contenido libre (metas,
- * formularios). No agrega padding: el contenido define el suyo (normalmente 16 dp).
+ * Figma "Card (container)": same tokens as [ListCard], for free-form content (targets,
+ * forms). It adds no padding: the content sets its own (usually 16 dp).
  *
- * @param onClick si no es nulo, toda la tarjeta es el área táctil y muestra el color «Pressed».
- * @param shape radio de la card: 16 dp por defecto; las cards de lista del diario y las ideas usan 24 dp
+ * @param onClick if not null, the whole card is the touch target and shows the "Pressed" color.
+ * @param shape card radius: 16 dp by default; the diary list cards and the ideas use 24 dp
  *   (`MaterialTheme.shapes.extraLarge`).
- * @param borderColor contorno de 1 dp (p. ej. `tertiary` en las cards de IA); `null` = sin contorno propio.
+ * @param borderColor 1 dp outline (e.g. `tertiary` on AI cards); `null` = no outline of its own.
  */
 @Composable
 fun HealthifyCard(
@@ -114,8 +114,8 @@ internal fun HealthifyCardImpl(
 }
 
 /**
- * Card de lista del Figma (Elevated / Filled / Outlined): ícono inicial en círculo `primaryContainer`,
- * título, apoyo y chevron opcionales. Mín. 72 dp; toda la tarjeta es el área táctil.
+ * Figma list Card (Elevated / Filled / Outlined): leading icon in a `primaryContainer` circle,
+ * optional title, supporting text and chevron. Min. 72 dp; the whole card is the touch target.
  */
 @Composable
 fun ListCard(
@@ -220,7 +220,7 @@ private fun ListCardPreview() {
     }
 }
 
-@Preview(name = "Card · contenedor y sin ícono", widthDp = 360)
+@Preview(name = "Card · container and without icon", widthDp = 360)
 @Composable
 private fun HealthifyCardPreview() {
     ComponentPreview {

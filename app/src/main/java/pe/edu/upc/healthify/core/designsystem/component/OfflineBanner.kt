@@ -24,9 +24,9 @@ import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 
 /**
- * Variantes «Contexto» del Banner/SinConexión del Figma.
- * - [Queueable]: lo registrado se encola y se envía después (diario, autopesaje, fuera del plan).
- * - [RequiresNetwork]: la acción necesita red (registro, login, acciones del nutricionista).
+ * "Context" variants of the Figma offline banner (Banner/SinConexión).
+ * - [Queueable]: what is logged is queued and sent later (diary, self weigh-in, off-plan).
+ * - [RequiresNetwork]: the action needs network (sign-up, sign-in, practitioner actions).
  */
 enum class OfflineBannerType(@param:StringRes val messageRes: Int) {
     Queueable(R.string.ds_offline_queueable),
@@ -34,8 +34,8 @@ enum class OfflineBannerType(@param:StringRes val messageRes: Int) {
 }
 
 /**
- * Aviso persistente de conectividad bajo la TopAppBar (reemplaza al Toast «Sin conexión» del Figma).
- * Se anuncia a TalkBack al aparecer.
+ * Persistent connectivity notice under the TopAppBar (replaces the Figma's offline Toast).
+ * Announced to TalkBack when it appears.
  */
 @Composable
 fun OfflineBanner(type: OfflineBannerType, modifier: Modifier = Modifier) {
@@ -65,7 +65,7 @@ fun OfflineBanner(type: OfflineBannerType, modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(name = "Banner/SinConexión · Encolable / RequiereRed", widthDp = 360)
+@Preview(name = "Offline banner · Queueable / RequiresNetwork", widthDp = 360)
 @Composable
 private fun OfflineBannerPreview() {
     ComponentPreview {

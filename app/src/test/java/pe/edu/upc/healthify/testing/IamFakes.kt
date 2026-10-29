@@ -24,7 +24,7 @@ import pe.edu.upc.healthify.features.iam.domain.valueobject.UserId
 import pe.edu.upc.healthify.features.iam.domain.valueobject.UserRole
 import java.time.LocalDate
 
-/** `GET /users/{id}` → `CreatedAt`. Por defecto una cuenta antigua: no limita los días. */
+/** `GET /users/{id}` → `CreatedAt`. An old account by default, so it does not limit the days. */
 class FakeAccountRepository(
     var createdOn: Result<LocalDate> = Result.success(LocalDate.parse("2025-01-01")),
 ) : AccountRepository {
@@ -50,13 +50,13 @@ class FakeConnectivityObserver(online: Boolean = true) : ConnectivityObserver {
     override val isOnline: Flow<Boolean> = this.online
 }
 
-/** Respuestas programables; registra lo que se pidió. */
+/** Programmable responses; records what was requested. */
 class FakeAuthenticationRepository : AuthenticationRepository {
     var signUpResult: Result<Unit> = Result.success(Unit)
     var signInResult: Result<SessionUser> = Result.success(sessionUser())
     var signOutResult: Result<Unit> = Result.success(Unit)
 
-    /** Una respuesta por llamada a `getNavigationShell`; la última se repite. */
+    /** One response per call to `getNavigationShell`; the last one repeats. */
     var navigationShellResults: List<Result<NavigationShell?>> = listOf(Result.success(NavigationShell.PATIENT))
 
     val signUps = mutableListOf<NewAccount>()

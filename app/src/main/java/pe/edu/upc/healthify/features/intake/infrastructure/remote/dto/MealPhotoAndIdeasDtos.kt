@@ -2,7 +2,7 @@ package pe.edu.upc.healthify.features.intake.infrastructure.remote.dto
 
 import kotlinx.serialization.Serializable
 
-/** `MealPhotoAnalysisResource` (IN-7). */
+/** `MealPhotoAnalysisResource`. */
 @Serializable
 data class MealPhotoAnalysisDto(
     val analysisId: String,
@@ -15,7 +15,7 @@ data class MealPhotoAnalysisDto(
     val planFit: PlanFitDto? = null,
 )
 
-/** `MealPhotoAlternativeResource` (`referenceFoodId` solo si el catálogo local la resolvió). */
+/** `MealPhotoAlternativeResource` (`referenceFoodId` only if the local catalog resolved it). */
 @Serializable
 data class MealPhotoAlternativeDto(
     val name: String,
@@ -24,7 +24,7 @@ data class MealPhotoAlternativeDto(
     val planFit: PlanFitDto? = null,
 )
 
-/** `PlanFitResource` (IN-8): `InPlan`/`OffPlan` y por qué. */
+/** `PlanFitResource`: `InPlan`/`OffPlan` and why. */
 @Serializable
 data class PlanFitDto(
     val suggestedAdherence: String,
@@ -41,7 +41,7 @@ data class GenerateMealIdeasRequestDto(
     val excludeIdeaIds: List<String>? = null,
 )
 
-/** `MealIdeasResource` (IA-3). */
+/** `MealIdeasResource`. */
 @Serializable
 data class MealIdeasDto(
     val localDate: String,
@@ -67,7 +67,7 @@ data class MealIdeaDto(
     val why: String = "",
 )
 
-/** `MealIdeaIngredientResource` (`resolved = false` → no está en el catálogo, FC-2). */
+/** `MealIdeaIngredientResource` (`resolved = false` → not in the catalog). */
 @Serializable
 data class MealIdeaIngredientDto(
     val name: String,

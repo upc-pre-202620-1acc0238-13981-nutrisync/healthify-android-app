@@ -5,8 +5,8 @@ import pe.edu.upc.healthify.R
 import pe.edu.upc.healthify.core.common.error.DomainError
 
 /**
- * Texto genérico por tipo de error. Úsalo solo como respaldo: cada pantalla mapea primero los
- * códigos que su frame «Notas» documenta a sus propios strings del mockup.
+ * Generic text per error type. Use it only as a fallback: each screen first maps the codes
+ * its "Notes" frame documents to its own mockup strings.
  */
 @StringRes
 fun DomainError.genericMessageRes(): Int = when (this) {

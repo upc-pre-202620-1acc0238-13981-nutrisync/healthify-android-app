@@ -6,7 +6,7 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-/** Seguimiento de un paciente para su nutricionista (RM-3, IA-5). */
+/** A patient's follow-up for their nutritionist. */
 interface PractitionerMonitoringService {
 
     @GET("patients/{patientId}/monitoring-panel")
@@ -16,7 +16,7 @@ interface PractitionerMonitoringService {
         @Query("days") days: Int,
     ): PatientMonitoringPanelDto
 
-    /** Sin rango: los 7 días hasta ayer. */
+    /** No range: the 7 days up to yesterday. */
     @GET("patients/{patientId}/monitoring-summary")
     suspend fun getSummary(@Path("patientId") patientId: Long): MonitoringSummaryDto
 }

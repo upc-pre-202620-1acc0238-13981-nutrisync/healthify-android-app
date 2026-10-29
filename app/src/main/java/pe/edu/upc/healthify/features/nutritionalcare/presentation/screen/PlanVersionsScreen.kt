@@ -48,7 +48,7 @@ import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.PlanVers
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.viewmodel.PlanVersionsViewModel
 import java.time.Instant
 
-/** PT4.1 · Versiones anteriores del plan, solo de consulta. Tocar una versión abre su detalle. */
+/** Previous plan versions, read-only. Tapping a version opens its detail. */
 @Composable
 fun PlanVersionsScreen(
     onBack: () -> Unit,
@@ -176,7 +176,7 @@ private val previewVersions = listOf(
     PlanVersionItem(1, Instant.parse("2026-03-12T15:00:00Z"), 2000.0, isActive = false),
 )
 
-@Preview(name = "PT4.1 · Versiones anteriores", widthDp = 360, heightDp = 800)
+@Preview(name = "Previous versions", widthDp = 360, heightDp = 800)
 @Composable
 private fun PlanVersionsPreview() {
     HealthifyTheme {
@@ -188,13 +188,13 @@ private fun PlanVersionsPreview() {
     }
 }
 
-@Preview(name = "PT4.1 · Cargando", widthDp = 360, heightDp = 800)
+@Preview(name = "Previous versions - loading", widthDp = 360, heightDp = 800)
 @Composable
 private fun PlanVersionsLoadingPreview() {
     HealthifyTheme { PlanVersionsContent(state = PlanVersionsUiState(), onBack = {}, onRetry = {}) }
 }
 
-@Preview(name = "PT4.1 · Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Previous versions - offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun PlanVersionsOfflinePreview() {
     HealthifyTheme {
@@ -202,7 +202,7 @@ private fun PlanVersionsOfflinePreview() {
     }
 }
 
-@Preview(name = "PT4.1 · Error", widthDp = 360, heightDp = 800)
+@Preview(name = "Previous versions - error", widthDp = 360, heightDp = 800)
 @Composable
 private fun PlanVersionsErrorPreview() {
     HealthifyTheme {

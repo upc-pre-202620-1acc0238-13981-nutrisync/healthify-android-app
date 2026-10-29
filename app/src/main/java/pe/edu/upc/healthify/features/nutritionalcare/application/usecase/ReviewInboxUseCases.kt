@@ -13,7 +13,7 @@ import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.ReviewIt
 import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.ReviewItemState
 import javax.inject.Inject
 
-/** PR13 · los ítems abiertos de la bandeja (NC-11: `?state=Open`). */
+/** The open inbox items (`?state=Open`). */
 class GetOpenReviewItemsUseCase @Inject constructor(
     private val repository: ReviewInboxRepository,
 ) {
@@ -21,8 +21,8 @@ class GetOpenReviewItemsUseCase @Inject constructor(
 }
 
 /**
- * PR14 / PR14.IA · un ítem abierto. No hay `GET /review-items/{id}`: se busca en la bandeja abierta; `null` si ya no
- * está (resuelto o inexistente → «Este ítem ya no está disponible.»).
+ * One open item. There is no `GET /review-items/{id}`: it is looked up in the open inbox; `null` if it is gone
+ * (resolved or nonexistent → "This item is no longer available.").
  */
 class GetOpenReviewItemUseCase @Inject constructor(
     private val repository: ReviewInboxRepository,
@@ -31,7 +31,7 @@ class GetOpenReviewItemUseCase @Inject constructor(
         repository.getItems(ReviewItemState.OPEN).map { items -> items.firstOrNull { it.id.value == id } }
 }
 
-/** PR14 «Resolver»: exige decir si el plan se ajustó (la regla vive en [ReviewResolution]). */
+/** "Resolve": requires saying whether the plan was adjusted (the rule lives in [ReviewResolution]). */
 class ResolveReviewItemUseCase @Inject constructor(
     private val repository: ReviewInboxRepository,
 ) {
@@ -40,9 +40,9 @@ class ResolveReviewItemUseCase @Inject constructor(
 }
 
 /**
- * PR14.IA · espera la propuesta de la IA: emite [PlanProposalLookup.Generating] mientras el backend responde `202` y
- * reintenta después de `Retry-After`, hasta [maxAttempts] lecturas. Termina con la propuesta, con
- * [PlanProposalLookup.None] (`404`, o si se agotan los intentos: PR14 sin IA) o con el fallo de red/servidor.
+ * Waits for the AI proposal: emits [PlanProposalLookup.Generating] while the backend answers `202` and
+ * retries after `Retry-After`, up to [maxAttempts] reads. Ends with the proposal, with [PlanProposalLookup.None]
+ * (`404`, or when attempts run out: the item opens without AI) or with the network/server failure.
  */
 class AwaitPlanProposalUseCase @Inject constructor(
     private val repository: ReviewInboxRepository,
@@ -60,7 +60,7 @@ class AwaitPlanProposalUseCase @Inject constructor(
             emit(result)
             if (attempt < maxAttempts - 1) delay(lookup.retryAfterSeconds * MILLIS_PER_SECOND)
         }
-        // DECISIÓN PR14.IA: si después de ~30 s sigue generándose, se muestra PR14 sin IA (el ítem se resuelve igual).
+        // If it is still generating after ~30 s, the item opens without AI (it can be resolved all the same).
         emit(Result.success(PlanProposalLookup.None))
     }
 
@@ -70,7 +70,7 @@ class AwaitPlanProposalUseCase @Inject constructor(
     }
 }
 
-/** PR14.IA «Resolver» (tal cual) y PR14.IA-A «Asignar plan ajustado» (con ediciones). */
+/** "Resolve" (as is) and "Assign adjusted plan" (with edits). */
 class AcceptPlanProposalUseCase @Inject constructor(
     private val repository: ReviewInboxRepository,
 ) {

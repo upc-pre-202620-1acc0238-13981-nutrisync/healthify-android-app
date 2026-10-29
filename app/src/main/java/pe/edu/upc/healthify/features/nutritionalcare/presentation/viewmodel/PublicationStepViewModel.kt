@@ -32,15 +32,15 @@ import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.Publicat
 import javax.inject.Inject
 
 /**
- * EV-5 · Paso 4 Indicaciones y publicación (+ EV-5.E). Restricciones e indicaciones del catálogo como chips, «Otra
- * indicación» (texto del profesional, máx. 5) y un mensaje opcional para el paciente (NC-9).
+ * Step 4, guidelines and publication (plus the publish error). Catalog restrictions and guidelines as chips, "Other
+ * guideline" (practitioner text, max 5) and an optional message to the patient.
  *
- * - Re-hidrata el borrador guardado (`publication-draft`); sin borrador, las indicaciones sugeridas llegan marcadas
- *   (DECISIÓN EV-5: como el frame, que las muestra elegidas).
- * - El borrador se guarda al salir del paso con «‹» y antes de publicar, para que lo escrito no se pierda aunque se
- *   cierre la app.
- * - «Publicar y cerrar consulta» usa **una** `Idempotency-Key` por consulta (guardada en el `SavedStateHandle`): «Volver
- *   a intentarlo» (EV-5.E) la reenvía y el backend no publica dos versiones.
+ * - Rehydrates the saved draft (`publication-draft`); without a draft, the suggested guidelines arrive selected
+ *   (like the frame, which shows them chosen).
+ * - The draft is saved when leaving the step with "‹" and before publishing, so what was written survives even if
+ *   the app is closed.
+ * - "Publish and close consultation" uses **one** `Idempotency-Key` per consultation (kept in `SavedStateHandle`):
+ *   "Try again" resends it and the backend never publishes two versions.
  */
 @HiltViewModel
 class PublicationStepViewModel @Inject constructor(
@@ -63,7 +63,7 @@ class PublicationStepViewModel @Inject constructor(
 
     private var consultationId: ConsultationId? = null
 
-    /** Lo último que quedó guardado como borrador (no se reenvía si no cambió). */
+    /** The last state saved as a draft (not resent if unchanged). */
     private var lastSavedDraft: Publication? = null
 
     init {
@@ -83,7 +83,7 @@ class PublicationStepViewModel @Inject constructor(
         it.copy(guidelines = if (code in it.guidelines) it.guidelines - code else it.guidelines + code)
     }
 
-    /** «Otra indicación». */
+    /** "Other guideline". */
     fun onAddCustomClick() = _state.update { it.copy(showCustomField = true, customError = false) }
 
     fun onCustomDraftChange(text: String) = _state.update { it.copy(customDraft = text, customError = false) }
@@ -111,13 +111,13 @@ class PublicationStepViewModel @Inject constructor(
         it.copy(patientMessage = text, messageTooLong = text.trim().length > PatientMessage.MAX_LENGTH)
     }
 
-    /** «‹»: guarda el borrador (si cambió) y vuelve al paso 3. */
+    /** "‹": saves the draft (if changed) and goes back to step 3. */
     fun onBack() {
         val publication = currentPublication()
         val id = consultationId
         if (id != null && publication != null && publication != lastSavedDraft) {
             lastSavedDraft = publication
-            // Se guarda en segundo plano: salir del paso no espera a la red.
+            // Saved in the background: leaving the step does not wait for the network.
             viewModelScope.launch { saveDraft(id, publication) }
         }
         _events.trySend(ConsultationStepEvent.Back)
@@ -141,16 +141,16 @@ class PublicationStepViewModel @Inject constructor(
                     _state.update { it.copy(isPublishing = false) }
                     _events.send(ConsultationStepEvent.ConsultationClosed)
                 }
-                // EV-5.E: lo escrito sigue en pantalla y en el borrador.
+                // What was written stays on screen and in the draft.
                 else -> _state.update { it.copy(isPublishing = false, publishFailed = true) }
             }
         }
     }
 
-    /** EV-5.E «Volver a intentarlo»: misma `Idempotency-Key`. */
+    /** "Try again": same `Idempotency-Key`. */
     fun onRetryPublish() = onPublish()
 
-    /** Cerrar EV-5.E vuelve al formulario con todo lo escrito. */
+    /** Closing the publish error goes back to the form with everything written. */
     fun onPublishFailureDismissed() = _state.update { it.copy(publishFailed = false) }
 
     private fun idempotencyKey(): IdempotencyKey {
@@ -161,7 +161,7 @@ class PublicationStepViewModel @Inject constructor(
         return key
     }
 
-    /** `null` si el mensaje es demasiado largo (el campo lo marca). */
+    /** `null` if the message is too long (the field flags it). */
     private fun currentPublication(): Publication? {
         val state = _state.value
         if (state.messageTooLong) return null

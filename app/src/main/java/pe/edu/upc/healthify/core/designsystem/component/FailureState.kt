@@ -23,15 +23,15 @@ import androidx.compose.ui.unit.dp
 import pe.edu.upc.healthify.R
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 
-// «Grupo fijo» de PT7.2 / PT10.3 / PT14.4.E: círculo de 120 dp (error al 15 %) con uno de 84 dp (error) y «!».
+// Figma "fixed group" of the failure screens: a 120 dp circle (error at 15 %) holding an 84 dp one (error) and "!".
 private val OuterCircle = 120.dp
 private val InnerCircle = 84.dp
 private const val OUTER_ALPHA = 0.15f
 
 /**
- * Estado «no se pudo» a pantalla completa (PT7.2 «NO SE PUDO REGISTRAR», PT10.3, PT14.4.E «HUBO UN ERROR»): insignia
- * de error, título (Headline/Medium), texto que aclara que no se perdió nada y la acción principal (Filled). El tono
- * nunca culpa al paciente.
+ * Full-screen "could not" state (a meal that could not be logged, an AI ideas error): error badge, title
+ * (Headline/Medium), text that makes clear nothing was lost and the main action (Filled). The tone never
+ * blames the patient.
  */
 @Composable
 fun FailureState(

@@ -27,8 +27,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Tokens cifrados con AES-256-GCM (Tink). El keyset vive en SharedPreferences cifrado por una clave
- * maestra del Android Keystore; DataStore solo guarda el texto cifrado. Nunca se loguean.
+ * Tokens encrypted with AES-256-GCM (Tink). The keyset lives in SharedPreferences encrypted by a master
+ * key from the Android Keystore; DataStore only stores the ciphertext. They are never logged.
  */
 @Singleton
 class EncryptedSessionTokenStore @Inject constructor(
@@ -69,7 +69,7 @@ class EncryptedSessionTokenStore @Inject constructor(
         return try {
             aead().decryptFromString(stored, key.name)
         } catch (_: GeneralSecurityException) {
-            // Keyset rotado o datos corruptos (p. ej. reinstalación): la sesión ya no es recuperable.
+            // Rotated keyset or corrupt data (e.g. a reinstall): the session can no longer be recovered.
             clear()
             null
         } catch (_: IllegalArgumentException) {

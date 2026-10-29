@@ -8,15 +8,15 @@ import java.time.Instant
 import java.time.LocalDate
 
 /**
- * Una entrada del diario (`DiaryEntryResource`). **Nunca se borra** (*Diary Entry Never Deleted*): no hay forma de
- * quitarla, solo de confirmar su porción si quedó «Por confirmar».
+ * A diary entry (`DiaryEntryResource`). **It is never deleted** (*Diary Entry Never Deleted*): there is no way to
+ * remove it, only to confirm its portion if it was left "To confirm".
  *
- * La propuesta de la IA y lo que confirmó el paciente se guardan juntos (*Proposal Kept Alongside Confirmation*):
- * [proposedGrams] sobrevive a un [confirmedGrams] distinto.
+ * The AI proposal and what the patient confirmed are stored together (*Proposal Kept Alongside Confirmation*):
+ * [proposedGrams] survives a different [confirmedGrams].
  *
- * @param confidence de la estimación por foto, entre 0 y 1 (*Confidence Always Attached*).
- * @param isCountedTowardsTargets solo lo confirmado suma a las metas del día.
- * @param mealGroupId entradas registradas juntas (una idea de comida, IN-6): el diario las muestra como una comida.
+ * @param confidence of the photo estimate, between 0 and 1 (*Confidence Always Attached*).
+ * @param isCountedTowardsTargets only what is confirmed counts towards the day's targets.
+ * @param mealGroupId entries logged together (a meal idea): the diary shows them as one meal.
  */
 data class DiaryEntry(
     val id: DiaryEntryId,
@@ -39,20 +39,20 @@ data class DiaryEntry(
         require(confirmedGrams == null || confirmedGrams > 0) { "A confirmed portion must be positive" }
     }
 
-    /** Foto con propuesta que el paciente todavía no confirmó: «Por confirmar · Aún no cuenta para tus metas». */
+    /** A photo proposal not confirmed yet: "To confirm · Does not count towards your targets yet". */
     val isPendingConfirmation: Boolean
         get() = provenance == EntryProvenance.PHOTO && confirmedGrams == null && proposedGrams != null
 
-    /** Lo confirmado si existe; si no, la propuesta («280 g aprox.»). */
+    /** The confirmed amount if there is one; otherwise the proposal ("280 g approx."). */
     val displayedGrams: Double? get() = confirmedGrams ?: proposedGrams
 
     val isOffPlan: Boolean get() = planAdherence == PlanAdherence.OFF_PLAN || provenance == EntryProvenance.OFF_PLAN
 }
 
 /**
- * Un día del diario (PT14).
+ * One diary day.
  *
- * @param savedAt cuándo se guardó la copia del teléfono; solo si [fromCache] (sin conexión).
+ * @param savedAt when the phone's copy was saved; only if [fromCache] (offline).
  */
 data class DiaryDay(
     val date: LocalDate,
@@ -64,7 +64,7 @@ data class DiaryDay(
         require(!fromCache || savedAt != null) { "A cached day needs savedAt" }
     }
 
-    /** «Por confirmar» primero (piden una acción); después de la más reciente a la más antigua. */
+    /** "To confirm" first (they ask for an action); then from newest to oldest. */
     val orderedEntries: List<DiaryEntry>
         get() = entries.sortedWith(
             compareByDescending<DiaryEntry> { it.isPendingConfirmation }.thenByDescending { it.localTimestamp.instant },

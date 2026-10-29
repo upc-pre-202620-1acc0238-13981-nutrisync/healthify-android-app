@@ -12,7 +12,7 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-/** Bandeja de revisión del nutricionista (F27, F40, NC-10, NC-11). */
+/** The nutritionist's review inbox. */
 interface ReviewItemService {
 
     @GET("review-items")
@@ -25,8 +25,8 @@ interface ReviewItemService {
     ): ReviewItemDto
 
     /**
-     * `200` con la propuesta o `202` + `Retry-After` (cuerpo ProblemDetails sin código) mientras se genera: los dos son
-     * éxito para Retrofit, así que se lee el cuerpo crudo y el repositorio decide por el status.
+     * `200` with the proposal or `202` + `Retry-After` (ProblemDetails body without a code) while generating: both are
+     * success for Retrofit, so the raw body is read and the repository decides by status.
      */
     @GET("review-items/{reviewItemId}/plan-proposal")
     suspend fun getPlanProposal(@Path("reviewItemId") reviewItemId: Long): Response<JsonElement>

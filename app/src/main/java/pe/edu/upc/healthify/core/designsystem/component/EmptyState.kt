@@ -17,9 +17,9 @@ import androidx.compose.ui.unit.dp
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 
 /**
- * Estado vacío del Figma: bloque centrado con título (Title/Medium), texto de apoyo y acción opcional
- * (Tonal, ancho completo). Pasa `Modifier.fillMaxSize()` (o `weight`) para centrarlo en el área disponible.
- * Tono de invitación, nunca de reproche.
+ * Figma empty state: centered block with title (Title/Medium), supporting text and optional action
+ * (Tonal, full width). Pass `Modifier.fillMaxSize()` (or `weight`) to center it in the available area.
+ * Inviting tone, never reproachful.
  */
 @Composable
 fun EmptyState(
@@ -67,7 +67,7 @@ fun EmptyState(
     }
 }
 
-@Preview(name = "EmptyState · con y sin acción", widthDp = 360, heightDp = 520)
+@Preview(name = "EmptyState · with and without action", widthDp = 360, heightDp = 520)
 @Composable
 private fun EmptyStatePreview() {
     ComponentPreview {

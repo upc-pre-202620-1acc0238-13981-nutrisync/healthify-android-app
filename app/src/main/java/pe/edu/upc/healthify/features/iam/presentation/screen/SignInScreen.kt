@@ -41,11 +41,11 @@ import pe.edu.upc.healthify.features.iam.presentation.state.SignInEvent
 import pe.edu.upc.healthify.features.iam.presentation.state.SignInUiState
 import pe.edu.upc.healthify.features.iam.presentation.viewmodel.SignInViewModel
 
-// Medidas del frame «S4 · Login único».
+// Measurements of the "Single sign-in" frame.
 private val LogoSize = DpSize(56.dp, 50.dp)
 private val GreenShapeOffsetY = 75.dp
 
-/** Acciones de S4 que la pantalla con estado conecta con el ViewModel. */
+/** Sign-in actions that the stateful screen wires to the ViewModel. */
 data class SignInActions(
     val onEmailChange: (String) -> Unit = {},
     val onPasswordChange: (String) -> Unit = {},
@@ -56,7 +56,7 @@ data class SignInActions(
     val onErrorDialogDismiss: () -> Unit = {},
 )
 
-/** S4 · Login único (S4.1 credenciales incorrectas · S4.2 cuenta bloqueada · S4.3 teclado). */
+/** Single sign-in (wrong credentials · account locked · keyboard). */
 @Composable
 fun SignInScreen(
     onSignedIn: () -> Unit,
@@ -149,7 +149,7 @@ fun SignInContent(
             onValueChange = actions.onPasswordChange,
             label = stringResource(R.string.auth_password),
             placeholder = stringResource(R.string.sign_in_password_placeholder),
-            // S4.1: el borde de la contraseña también va en error; el mensaje se muestra una sola vez (en el correo).
+            // Wrong credentials: the password border also turns to error; the message shows only once (on the email).
             isError = credentialsError,
             type = HealthifyTextFieldType.Password,
             imeAction = ImeAction.Go,
@@ -181,7 +181,7 @@ fun SignInContent(
     }
 }
 
-/** «Aviso · cuenta bloqueada» de S4.2. */
+/** The "account locked" notice. */
 @Composable
 private fun AccountLockedNotice(modifier: Modifier = Modifier) {
     val dimens = HealthifyTheme.dimens
@@ -208,13 +208,13 @@ private fun AccountLockedNotice(modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(name = "S4 · Login único", widthDp = 360, heightDp = 800)
+@Preview(name = "Sign in", widthDp = 360, heightDp = 800)
 @Composable
 private fun SignInPreview() {
     HealthifyTheme { SignInContent(state = SignInUiState(), actions = SignInActions()) }
 }
 
-@Preview(name = "S4.1 · Login único — credenciales incorrectas", widthDp = 360, heightDp = 800)
+@Preview(name = "Sign in - wrong credentials", widthDp = 360, heightDp = 800)
 @Composable
 private fun SignInInvalidCredentialsPreview() {
     HealthifyTheme {
@@ -229,13 +229,13 @@ private fun SignInInvalidCredentialsPreview() {
     }
 }
 
-@Preview(name = "S4.2 · Login único — cuenta bloqueada", widthDp = 360, heightDp = 800)
+@Preview(name = "Sign in - account locked", widthDp = 360, heightDp = 800)
 @Composable
 private fun SignInLockedPreview() {
     HealthifyTheme { SignInContent(state = SignInUiState(error = SignInError.AccountLocked), actions = SignInActions()) }
 }
 
-@Preview(name = "S4 · Login único — cargando", widthDp = 360, heightDp = 800)
+@Preview(name = "Sign in - loading", widthDp = 360, heightDp = 800)
 @Composable
 private fun SignInLoadingPreview() {
     HealthifyTheme {
@@ -246,7 +246,7 @@ private fun SignInLoadingPreview() {
     }
 }
 
-@Preview(name = "S4 · Login único — sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Sign in - offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun SignInOfflinePreview() {
     HealthifyTheme { SignInContent(state = SignInUiState(isOffline = true), actions = SignInActions()) }

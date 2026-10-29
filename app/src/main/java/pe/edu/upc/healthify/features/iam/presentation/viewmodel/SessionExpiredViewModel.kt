@@ -11,7 +11,7 @@ import pe.edu.upc.healthify.core.common.connectivity.ConnectivityObserver
 import pe.edu.upc.healthify.features.iam.presentation.state.SessionExpiredUiState
 import javax.inject.Inject
 
-/** S6: estado final hasta que la persona toca «Iniciar sesión» (va a S4). Solo observa la conexión. */
+/** Final state until the person taps "Sign in" (goes to sign-in). Only observes the connection. */
 @HiltViewModel
 class SessionExpiredViewModel @Inject constructor(
     connectivityObserver: ConnectivityObserver,

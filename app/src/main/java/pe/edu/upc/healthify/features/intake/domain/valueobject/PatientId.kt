@@ -1,6 +1,6 @@
 package pe.edu.upc.healthify.features.intake.domain.valueobject
 
-/** Id del paciente en IntakeBodyResponse: es el `userId` de su cuenta (el backend lo compara con el token). */
+/** Patient id in IntakeBodyResponse: it is their account's `userId` (the backend compares it with the token). */
 @JvmInline
 value class PatientId(val value: Long) {
     init {

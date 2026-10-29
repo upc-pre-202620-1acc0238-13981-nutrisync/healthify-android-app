@@ -104,12 +104,12 @@ interface IntakeBindingsModule {
     @Binds
     fun bindMealPhotoEncoder(impl: AndroidMealPhotoEncoder): MealPhotoEncoder
 
-    /** Comidas encoladas sin conexión → `POST /diary-entries/synchronization` (F20). */
+    /** Meals queued offline → `POST /diary-entries/synchronization`. */
     @Binds
     @IntoSet
     fun bindDiaryEntrySyncSender(impl: DiaryEntrySyncSender): PendingOperationSender
 
-    /** Autopesajes encolados sin conexión → `POST /self-weigh-ins/synchronization` (IN-4). */
+    /** Self weigh-ins queued offline → `POST /self-weigh-ins/synchronization`. */
     @Binds
     @IntoSet
     fun bindSelfWeighInSyncSender(impl: SelfWeighInSyncSender): PendingOperationSender

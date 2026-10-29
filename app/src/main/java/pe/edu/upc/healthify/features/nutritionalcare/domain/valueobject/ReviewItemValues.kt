@@ -1,6 +1,6 @@
 package pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject
 
-/** Id de un ítem de la bandeja de revisión (`reviewItemId`). */
+/** Id of a review inbox item (`reviewItemId`). */
 @JvmInline
 value class ReviewItemId(val value: Long) {
     init {
@@ -8,7 +8,7 @@ value class ReviewItemId(val value: Long) {
     }
 }
 
-/** Filtro de `GET /review-items?state=` (NC-11): la bandeja pide los abiertos. */
+/** Filter for `GET /review-items?state=`: the inbox asks for the open ones. */
 enum class ReviewItemState(val code: String) {
     OPEN("Open"),
     RESOLVED("Resolved"),
@@ -20,8 +20,8 @@ enum class ReviewItemState(val code: String) {
 }
 
 /**
- * Qué señal abrió el ítem (`signalType`). Solo una desviación sostenida puede traer un plan propuesto por IA (NC-10).
- * Un tipo que esta versión no conoce se muestra tal cual (X-2: desconocido → `Custom`).
+ * Which signal opened the item (`signalType`). Only a sustained deviation can carry an AI-proposed plan.
+ * A type this version does not know is shown as is (unknown → `Custom`).
  */
 sealed interface SignalType {
     data object SustainedDeviation : SignalType
@@ -44,7 +44,7 @@ sealed interface SignalType {
     }
 }
 
-/** Hacia dónde se desvió la energía registrada respecto de la meta (`direction`). */
+/** Which way the logged energy deviated from the target (`direction`). */
 enum class DeviationDirection(val code: String) {
     ABOVE("Above"),
     BELOW("Below"),

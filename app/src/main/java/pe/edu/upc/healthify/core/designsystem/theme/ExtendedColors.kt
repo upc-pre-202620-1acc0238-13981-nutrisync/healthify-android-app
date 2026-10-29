@@ -4,7 +4,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
-/** Roles de color del Figma (colección «Color») que Material 3 no tiene. */
+/** Figma color roles ("Color" collection) that Material 3 does not have. */
 @Immutable
 data class HealthifyExtendedColors(
     val brandDecor: Color,

@@ -4,31 +4,31 @@ import pe.edu.upc.healthify.features.intake.domain.entity.MealIdea
 import pe.edu.upc.healthify.features.intake.domain.entity.MealIdeas
 import pe.edu.upc.healthify.features.intake.domain.entity.MealLogOutcome
 
-/** Por qué no hay ideas que mostrar (cada uno con su texto; nunca acusatorio). */
+/** Why there are no ideas to show (each with its own text; never accusing). */
 enum class MealIdeasFailure {
-    /** PT14.4.E · 5xx, 502 `AiOutputRejected`, 400 y cualquier otro error. */
+    /** 5xx, 502 `AiOutputRejected`, 400 and any other error. */
     GENERIC,
 
-    /** `422 NotEnoughRemaining`: «Ya cubriste tu energía de hoy». */
+    /** `422 NotEnoughRemaining`: "You already covered today's energy". */
     NOT_ENOUGH_REMAINING,
 
     /** `404 ActiveTargetsCacheNotFound`. */
     NO_TARGETS,
 
-    /** `503 AiFeatureDisabled` o `503 AiProviderUnavailable`: la IA no está disponible ahora. */
+    /** `503 AiFeatureDisabled` or `503 AiProviderUnavailable`: the AI is not available right now. */
     UNAVAILABLE,
 
-    /** `403 AiConsentRequired`: falta el permiso de IA o la función «Ideas» está apagada. */
+    /** `403 AiConsentRequired`: the AI permission is missing or the ideas feature is off. */
     NO_CONSENT,
 
-    /** `429 AiRateLimited` (cuota diaria) o `429 TooManyRequests` (muchas solicitudes de IA seguidas). */
+    /** `429 AiRateLimited` (daily quota) or `429 TooManyRequests` (too many AI requests in a row). */
     RATE_LIMITED,
 }
 
 /**
- * PT14.4 Ideas para hoy (+ PT14.4.E, PT14.4.O) y PT14.5 Detalle (si [selectedIdeaId] no es nulo).
+ * Ideas for today (with its error and offline states) and the idea detail (if [selectedIdeaId] is not null).
  *
- * @param isOffline sin conexión y sin ideas: PT14.4.O.
+ * @param isOffline offline and with no ideas.
  */
 data class MealIdeasUiState(
     val isLoading: Boolean = true,

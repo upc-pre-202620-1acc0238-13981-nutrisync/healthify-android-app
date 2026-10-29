@@ -27,9 +27,9 @@ import pe.edu.upc.healthify.features.iam.presentation.state.SignUpUiState
 import javax.inject.Inject
 
 /**
- * S3 · Registro. Valida con los value objects (mismas reglas que el backend) antes de enviar y traduce los
- * códigos del backend (`InvalidEmail`, `WeakPassword`, `NameRequired`, `RoleNotDeclared`, `InvalidRole`,
- * `EmailAlreadyTaken`) a los errores de cada campo de S3.E.
+ * Sign-up. Validates with the value objects (same rules as the backend) before sending and maps the
+ * backend codes (`InvalidEmail`, `WeakPassword`, `NameRequired`, `RoleNotDeclared`, `InvalidRole`,
+ * `EmailAlreadyTaken`) to each field's error.
  */
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
@@ -101,7 +101,7 @@ class SignUpViewModel @Inject constructor(
     private suspend fun onRegisterResult(result: RegisterResult) {
         when (result) {
             is RegisterResult.SignedIn -> _events.send(SignUpEvent.NavigateToShellLoading)
-            // DECISIÓN S3: la cuenta ya existe; volver a «Crear cuenta» respondería EmailAlreadyTaken. Se sigue en S4.
+            // The account already exists; "Create account" again would return EmailAlreadyTaken. Go on to sign-in.
             is RegisterResult.CreatedWithoutSession -> _events.send(SignUpEvent.NavigateToSignIn)
             is RegisterResult.Failed -> showError(result.error)
         }
@@ -148,7 +148,7 @@ class SignUpViewModel @Inject constructor(
     )
 
     private companion object {
-        // Códigos de `extensions.code` (docs/backend/CODIGOS-DE-ERROR.md, Iam · F1).
+        // `extensions.code` values (docs/backend/CODIGOS-DE-ERROR.md, sign-up).
         const val CODE_INVALID_EMAIL = "InvalidEmail"
         const val CODE_EMAIL_TAKEN = "EmailAlreadyTaken"
         const val CODE_WEAK_PASSWORD = "WeakPassword"

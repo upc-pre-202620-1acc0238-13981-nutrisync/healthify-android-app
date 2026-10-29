@@ -8,28 +8,28 @@ import pe.edu.upc.healthify.features.intake.domain.valueobject.PatientId
 import java.time.LocalDate
 
 /**
- * Foto del plato (IN-7). La foto **nunca** sale del teléfono con metadatos: antes de subirla se redimensiona a
- * ~1024 px, se comprime a JPEG y se le borra todo el EXIF/XMP/ICC/IPTC. Solo vive en `cacheDir` y se borra al
- * terminar.
+ * Dish photo. The photo **never** leaves the phone with metadata: before upload it is resized to ~1024 px,
+ * compressed to JPEG and stripped of all EXIF/XMP/ICC/IPTC. It only lives in `cacheDir` and is deleted when
+ * done.
  */
 interface MealPhotoRepository {
 
     /**
-     * `POST /patients/{pid}/meal-photo-analyses` (multipart `photo` y `localDate`). No borra [photoPath]: la foto sigue
-     * disponible para reintentar hasta que la pantalla la [discardPhoto]. Errores: `403 AiConsentRequired`, `413
+     * `POST /patients/{pid}/meal-photo-analyses` (multipart `photo` and `localDate`). Does not delete [photoPath]: the
+     * photo stays available for retries until the screen calls [discardPhoto]. Errors: `403 AiConsentRequired`, `413
      * PhotoTooLarge`, `422 PhotoNotRecognized`, `429 AiRateLimited`, `503 AiFeatureDisabled`/`AiProviderUnavailable`.
      *
-     * @param localDate el día de la comida: con él la sugerencia de plan (IN-8) pesa lo que queda hoy. Nunca va a la IA.
+     * @param localDate the day of the meal, so the plan suggestion weighs what is left today. Never sent to the AI.
      */
     suspend fun analyze(patientId: PatientId, photoPath: String, localDate: LocalDate?): Result<MealPhotoAnalysis>
 
-    /** Guarda la foto tomada sin conexión para analizarla al volver la red. */
+    /** Saves the photo taken offline to analyze it when the network returns. */
     suspend fun savePendingPhoto(patientId: PatientId, photoPath: String, capturedAt: LocalTimestamp): PendingMealPhoto
 
     fun observePendingPhotos(patientId: PatientId): Flow<List<PendingMealPhoto>>
 
     suspend fun getPendingPhoto(patientId: PatientId, id: String): PendingMealPhoto?
 
-    /** Olvida la foto pendiente (si la hay con ese archivo) y borra el archivo. */
+    /** Forgets the pending photo (if there is one with that file) and deletes the file. */
     suspend fun discardPhoto(photoPath: String)
 }

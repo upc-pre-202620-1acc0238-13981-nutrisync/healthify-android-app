@@ -43,10 +43,10 @@ import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.Referral
 import java.time.Instant
 
 /**
- * PAC-3 · detalle de una evaluación del expediente (solo del profesional): medidas, IMC con su categoría, actividad,
- * protocolo, hábitos y bioquímica de esa evaluación.
+ * Detail of a record assessment (practitioner only): measurements, BMI with its category, activity,
+ * protocol, habits and biochemistry of that assessment.
  *
- * DECISIÓN PAC-3: no hay frame de detalle; se muestra en el BottomSheet del sistema de diseño.
+ * There is no detail frame, so it is shown in the design system's BottomSheet.
  */
 @Composable
 fun EvaluationSheet(state: EvaluationSheetState, onRetry: () -> Unit, onDismiss: () -> Unit) {
@@ -137,8 +137,8 @@ private fun BiochemistryGroup(panel: BiochemistryPanel) {
 }
 
 /**
- * Detalle de las derivaciones (expediente del paciente y del nutricionista): especialidad, fecha, estado y motivo. La
- * especialidad y el motivo son texto del profesional; no se traducen.
+ * Referral detail (patient's and nutritionist's record): specialty, date, status and reason. The
+ * specialty and reason are the practitioner's text; they are not translated.
  */
 @Composable
 fun ReferralSheet(referrals: List<ReferralDetailItem>, onDismiss: () -> Unit) {
@@ -227,7 +227,7 @@ private fun DetailGroup(title: String? = null, content: @Composable ColumnScope.
     }
 }
 
-/** «Peso ····· 74,2 kg». */
+/** "Weight ····· 74.2 kg". */
 @Composable
 private fun DetailRow(label: String, value: String) {
     val scheme = MaterialTheme.colorScheme
@@ -262,7 +262,7 @@ private val previewEvaluation = EvaluationDetail(
     bmiCategory = DiagnosisCode.OVERWEIGHT_GRADE_I,
 )
 
-@Preview(name = "PAC-3 · Detalle de evaluación", widthDp = 360)
+@Preview(name = "Assessment detail", widthDp = 360)
 @Composable
 private fun EvaluationSheetPreview() {
     HealthifyTheme {
@@ -270,7 +270,7 @@ private fun EvaluationSheetPreview() {
     }
 }
 
-@Preview(name = "PAC-3 · Detalle de derivación", widthDp = 360)
+@Preview(name = "Referral detail", widthDp = 360)
 @Composable
 private fun ReferralSheetPreview() {
     HealthifyTheme {

@@ -50,7 +50,7 @@ fun aiPreferences(photo: Boolean = true, ideas: Boolean = true, consent: Boolean
 )
 
 class FakeAiPreferencesRepository(var preferences: AiPreferences = aiPreferences()) : AiPreferencesRepository {
-    /** `null` = acepta y devuelve lo pedido. */
+    /** `null` = accepts and returns what was requested. */
     var updateResult: Result<AiPreferences>? = null
     val updates = mutableListOf<AiPreferences>()
 
@@ -94,7 +94,7 @@ fun planFit(
     remainingKcal = 590.0,
 )
 
-/** Sugerencias de plan programables (IN-8); por defecto no hay plan publicado (sin sugerencia). */
+/** Programmable plan suggestions; by default there is no published plan (no suggestion). */
 class FakePlanFitRepository : PlanFitRepository {
     var result: Result<PlanFit> = failureOf(DomainError.NotFound("ActiveTargetsCacheNotFound"))
     val requests = mutableListOf<Triple<Long, Double, LocalDate?>>()
@@ -105,7 +105,7 @@ class FakePlanFitRepository : PlanFitRepository {
     }
 }
 
-/** Respuestas programables de la foto; registra qué se analizó, guardó y borró. */
+/** Programmable photo responses; records what was analyzed, saved and deleted. */
 class FakeMealPhotoRepository : MealPhotoRepository {
     var analyzeResults: List<Result<MealPhotoAnalysis>> = listOf(Result.success(mealPhotoAnalysis()))
     val analyzed = mutableListOf<String>()
@@ -137,7 +137,7 @@ class FakeMealPhotoRepository : MealPhotoRepository {
     }
 }
 
-/** Diario programable; registra cada registro. */
+/** Programmable diary; records every entry. */
 class FakeDiaryRepository : DiaryRepository {
     var dayResult: (LocalDate) -> Result<DiaryDay> = { Result.success(DiaryDay(it, emptyList())) }
     var logResult: Result<MealLogOutcome> = Result.success(MealLogOutcome.LOGGED)
@@ -157,7 +157,7 @@ class FakeDiaryRepository : DiaryRepository {
 
     override fun observePendingEntries(patientId: PatientId): Flow<List<PendingDiaryEntry>> = pendingEntries
 
-    /** `tryEmit(Unit)` simula que el backend aceptó comidas de la cola. */
+    /** `tryEmit(Unit)` simulates the backend accepting queued meals. */
     val synced = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     override val syncedEntries: Flow<Unit> = synced
 

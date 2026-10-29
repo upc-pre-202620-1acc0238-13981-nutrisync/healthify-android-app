@@ -6,7 +6,7 @@ import pe.edu.upc.healthify.features.iam.domain.repository.AppLanguageRepository
 import pe.edu.upc.healthify.features.iam.domain.valueobject.PreferredLanguage
 import javax.inject.Inject
 
-/** El idioma por app del teléfono, el mismo que viaja en `Accept-Language`. */
+/** The phone's per-app language, the same one sent in `Accept-Language`. */
 class AndroidAppLanguageRepository @Inject constructor(
     private val provider: AppLanguageProvider,
     private val setter: AppLanguageSetter,
