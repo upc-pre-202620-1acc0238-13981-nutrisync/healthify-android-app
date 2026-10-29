@@ -20,3 +20,16 @@ Each distributed build takes the workflow run number as its `versionCode`.
 | `KEYSTORE_PASSWORD` | Keystore password |
 | `KEY_ALIAS` | Key alias |
 | `KEY_PASSWORD` | Key password |
+
+### Signing a release build locally
+
+Create `keystore.properties` at the project root (it is ignored by git):
+
+```properties
+KEYSTORE_FILE=C:/path/to/healthify-upload.jks
+KEYSTORE_PASSWORD=...
+KEY_ALIAS=healthify
+KEY_PASSWORD=...
+```
+
+Without it, `assembleRelease` still builds, unsigned.
