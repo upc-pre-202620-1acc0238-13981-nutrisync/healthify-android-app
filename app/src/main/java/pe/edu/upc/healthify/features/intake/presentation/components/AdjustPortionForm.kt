@@ -25,12 +25,12 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 
 /**
- * PT8 · «Card (contenedor) · Ajustar porción» + «¿Estaba en tu plan?» + «Confirmar». Lo usan el flujo por foto y
- * «Confirmar porción» de una entrada del diario. Ningún juicio sobre la porción: la propuesta y lo confirmado se
- * guardan juntos.
+ * The "Adjust portion" card + "Was it in your plan?" + "Confirm". Used by the photo flow and by "Confirm
+ * portion" on a diary entry. No judgement about the portion: the proposal and what is confirmed are stored
+ * together.
  *
- * @param proposedGrams lo que propuso la IA («Lo que propusimos: 320 g. Ambos valores quedan guardados.»).
- * @param timeLocked el momento ya se registró y no se reescribe (entrada existente).
+ * @param proposedGrams what the AI proposed ("What we proposed: 320 g. Both values are kept.").
+ * @param timeLocked the moment was already logged and is not rewritten (existing entry).
  */
 @Composable
 fun AdjustPortionForm(
@@ -102,7 +102,7 @@ fun AdjustPortionForm(
     }
 }
 
-@Preview(name = "PT8 · Ajustar porción", widthDp = 360, heightDp = 800)
+@Preview(name = "Adjust portion", widthDp = 360, heightDp = 800)
 @Composable
 private fun AdjustPortionFormPreview() {
     HealthifyTheme {

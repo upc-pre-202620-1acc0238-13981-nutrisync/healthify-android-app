@@ -63,7 +63,7 @@ data class SelfWeighInActions(
     val onRetry: () -> Unit = {},
 )
 
-/** PT12 · Autopesaje (+ PT12.E, PT12.2). Se abre desde PT13 «Registrar autopesaje». */
+/** Self weigh-in (with its out-of-range and save error states). Opened from "Log self weigh-in" on the trend screen. */
 @Composable
 fun SelfWeighInScreen(
     onBack: () -> Unit,
@@ -98,7 +98,7 @@ fun SelfWeighInContent(state: SelfWeighInUiState, actions: SelfWeighInActions, m
     val dimens = HealthifyTheme.dimens
     SystemBarsAppearance(darkBackground = false)
     if (state.saveFailed) {
-        // PT12.2 · pantalla de error sin barra superior (como el frame); lo escrito no se pierde.
+        // Error screen without a top bar (as in the design); what was typed is not lost.
         Box(
             modifier = modifier
                 .fillMaxSize()
@@ -149,7 +149,7 @@ fun SelfWeighInContent(state: SelfWeighInUiState, actions: SelfWeighInActions, m
                         WeightError.OUT_OF_RANGE -> stringResource(R.string.self_weigh_in_weight_out_of_range)
                         null -> null
                     },
-                    // PT12.E: teclado decimal.
+                    // Decimal keyboard.
                     type = HealthifyTextFieldType.Decimal,
                     imeAction = ImeAction.Done,
                     keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
@@ -190,7 +190,7 @@ fun SelfWeighInContent(state: SelfWeighInUiState, actions: SelfWeighInActions, m
                 }
             }
         }
-        // «Acciones»: botón fijo (sube con el teclado, como PT12.E).
+        // "Actions": pinned button (rises with the keyboard, as in the design).
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -222,13 +222,13 @@ private val PreviewState = SelfWeighInUiState(
     weighedAt = OffsetDateTime.parse("2026-09-09T07:30:00-05:00"),
 )
 
-@Preview(name = "PT12 · Autopesaje", widthDp = 360, heightDp = 800)
+@Preview(name = "Self weigh-in", widthDp = 360, heightDp = 800)
 @Composable
 private fun SelfWeighInPreview() {
     HealthifyTheme { SelfWeighInContent(PreviewState, SelfWeighInActions()) }
 }
 
-@Preview(name = "PT12.E · Fuera de rango", widthDp = 360, heightDp = 800)
+@Preview(name = "Self weigh-in - out of range", widthDp = 360, heightDp = 800)
 @Composable
 private fun SelfWeighInOutOfRangePreview() {
     HealthifyTheme {
@@ -239,7 +239,7 @@ private fun SelfWeighInOutOfRangePreview() {
     }
 }
 
-@Preview(name = "PT12 · Guardando sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Self weigh-in - saving offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun SelfWeighInOfflinePreview() {
     HealthifyTheme {
@@ -250,7 +250,7 @@ private fun SelfWeighInOfflinePreview() {
     }
 }
 
-@Preview(name = "PT12.2 · Error al guardar", widthDp = 360, heightDp = 800)
+@Preview(name = "Self weigh-in - save error", widthDp = 360, heightDp = 800)
 @Composable
 private fun SelfWeighInFailedPreview() {
     HealthifyTheme { SelfWeighInContent(PreviewState.copy(saveFailed = true), SelfWeighInActions()) }

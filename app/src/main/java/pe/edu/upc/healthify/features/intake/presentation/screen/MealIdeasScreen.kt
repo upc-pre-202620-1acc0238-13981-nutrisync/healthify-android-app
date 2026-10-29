@@ -74,7 +74,7 @@ data class MealIdeasActions(
     val onDismissErrors: () -> Unit = {},
 )
 
-/** PT14.4 Ideas para hoy (+ PT14.4.E, PT14.4.O) y PT14.5 Detalle. */
+/** Ideas for today (with its error and offline states) and the idea detail. */
 @Composable
 fun MealIdeasScreen(
     onBack: () -> Unit,
@@ -111,7 +111,7 @@ fun MealIdeasContent(state: MealIdeasUiState, actions: MealIdeasActions, modifie
     when {
         idea != null && ideas != null -> IdeaDetail(idea, state, actions, modifier)
         state.failure == MealIdeasFailure.GENERIC -> {
-            // PT14.4.E · sin barra superior, como el frame.
+            // Error state without a top bar, as in the design.
             SystemBarsAppearance(darkBackground = false)
             Box(
                 modifier = modifier
@@ -207,7 +207,7 @@ private fun ColumnScope.IdeasListBody(state: MealIdeasUiState, actions: MealIdea
     }
 }
 
-/** «Preparando tus ideas…»: la IA tarda unos segundos, así que el skeleton va con un indicador que se mueve. */
+/** "Preparing your ideas…": the AI takes a few seconds, so the skeleton comes with a moving indicator. */
 @Composable
 private fun LoadingIdeas() {
     val dimens = HealthifyTheme.dimens
@@ -231,7 +231,7 @@ private fun LoadingIdeas() {
     }
 }
 
-/** «Caben en lo que te queda hoy (590 kcal) y no llevan mariscos.». */
+/** "They fit what you have left today (590 kcal) and contain no seafood.". */
 private fun introText(ideas: MealIdeas): UiText {
     val restrictions = restrictionsPhrase(ideas.restrictions)
     return if (restrictions == null) {
@@ -241,7 +241,7 @@ private fun introText(ideas: MealIdeas): UiText {
     }
 }
 
-/** «Card · Ideas (IA)»: una fila por idea (nombre, kcal y proteína) separadas por divisores. */
+/** The AI ideas card: one row per idea (name, kcal and protein) separated by dividers. */
 @Composable
 private fun IdeasCard(ideas: List<MealIdea>, onSelect: (String) -> Unit) {
     val dimens = HealthifyTheme.dimens
@@ -283,7 +283,7 @@ private fun IdeasCard(ideas: List<MealIdea>, onSelect: (String) -> Unit) {
     }
 }
 
-// ----- PT14.5 · Detalle -----
+// ----- Idea detail -----
 
 @Composable
 private fun IdeaDetail(idea: MealIdea, state: MealIdeasUiState, actions: MealIdeasActions, modifier: Modifier) {
@@ -342,7 +342,7 @@ private fun IdeaDetail(idea: MealIdea, state: MealIdeasUiState, actions: MealIde
                     }
                 }
                 if (idea.why.isNotBlank()) {
-                    // Texto de la IA: ya llega en el idioma del lector.
+                    // AI text: it already arrives in the reader's language.
                     Section(title = stringResource(R.string.ideas_why)) {
                         Text(text = idea.why, style = MaterialTheme.typography.bodyMedium, color = scheme.onSurface)
                     }
@@ -447,13 +447,13 @@ private val PreviewIdeas = MealIdeas(
     ),
 )
 
-@Preview(name = "PT14.4 · Ideas para hoy", widthDp = 360, heightDp = 800)
+@Preview(name = "Ideas for today", widthDp = 360, heightDp = 800)
 @Composable
 private fun MealIdeasPreview() {
     HealthifyTheme { MealIdeasContent(MealIdeasUiState(isLoading = false, ideas = PreviewIdeas), MealIdeasActions()) }
 }
 
-@Preview(name = "PT14.5 · Idea — detalle", widthDp = 360, heightDp = 800)
+@Preview(name = "Idea - detail", widthDp = 360, heightDp = 800)
 @Composable
 private fun MealIdeaDetailPreview() {
     HealthifyTheme {
@@ -461,7 +461,7 @@ private fun MealIdeaDetailPreview() {
     }
 }
 
-@Preview(name = "PT14.4.E · no se pudieron preparar", widthDp = 360, heightDp = 800)
+@Preview(name = "Ideas - could not prepare", widthDp = 360, heightDp = 800)
 @Composable
 private fun MealIdeasErrorPreview() {
     HealthifyTheme {
@@ -469,13 +469,13 @@ private fun MealIdeasErrorPreview() {
     }
 }
 
-@Preview(name = "PT14.4.O · sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Ideas - offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun MealIdeasOfflinePreview() {
     HealthifyTheme { MealIdeasContent(MealIdeasUiState(isLoading = false, isOffline = true), MealIdeasActions()) }
 }
 
-@Preview(name = "PT14.4 · cargando", widthDp = 360, heightDp = 800)
+@Preview(name = "Ideas - loading", widthDp = 360, heightDp = 800)
 @Composable
 private fun MealIdeasLoadingPreview() {
     HealthifyTheme { MealIdeasContent(MealIdeasUiState(), MealIdeasActions()) }

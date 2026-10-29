@@ -30,12 +30,12 @@ import pe.edu.upc.healthify.features.monitoring.domain.entity.WeeklySummaryAvail
 import javax.inject.Inject
 
 /**
- * PT13 · Tendencia de peso, en la pestaña «Progreso». Compone Intake (tendencia, copia offline y aviso del último
- * autopesaje) y Monitoring (card «Tu semana», IA-2).
+ * Weight trend, on the "Progress" tab. Composes Intake (trend, offline copy and the latest self weigh-in's
+ * message) and Monitoring (the "Your week" card).
  *
- * DECISIÓN PT13: la card «Tu semana» aparece con resumen (titular de la IA) o sin él todavía (PT13.2.V); con la
- * función apagada (`403`/`503 AiFeatureDisabled`), sin conexión o con error, no aparece (el resumen no se guarda en el
- * teléfono).
+ * The "Your week" card shows with a summary (the AI headline) or without one yet; with the
+ * feature off (`403`/`503 AiFeatureDisabled`), offline or on error, it does not show (the summary is not stored on the
+ * phone).
  */
 @HiltViewModel
 class WeightTrendViewModel @Inject constructor(
@@ -76,7 +76,7 @@ class WeightTrendViewModel @Inject constructor(
                     if (online && wasOffline) load()
                 }
             }
-            // Al volver la conexión la lectura suele llegar antes que el envío de la cola: se relee al aceptarse.
+            // When the connection returns the read usually arrives before the queue is sent: it re-reads once accepted.
             launch { observeSyncedSelfWeighIns().collect { load() } }
             load()
         }
@@ -84,7 +84,7 @@ class WeightTrendViewModel @Inject constructor(
 
     fun onRetry() = load()
 
-    /** Al volver a la pestaña: un autopesaje sincronizado mientras tanto pudo mover la tendencia. */
+    /** On returning to the tab: a self weigh-in synced in the meantime may have moved the trend. */
     fun onResume() {
         if (!resumedOnce) {
             resumedOnce = true
@@ -107,7 +107,7 @@ class WeightTrendViewModel @Inject constructor(
                     result.isSuccess -> state.copy(
                         isLoading = false,
                         trend = lookup?.takeIf { it.canBeDrawn },
-                        // 404 WeightTrendNotFound o menos de 2 puntos en el rango: mismo copy de PT13.V.
+                        // 404 WeightTrendNotFound or fewer than 2 points in the range: same copy as the empty state.
                         hasNoTrend = lookup == null || !lookup.canBeDrawn,
                         weeklyCard = weeklyCard,
                     )

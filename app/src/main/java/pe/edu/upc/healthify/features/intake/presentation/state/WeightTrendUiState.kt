@@ -5,10 +5,10 @@ import pe.edu.upc.healthify.features.intake.domain.entity.WeightTrend
 import java.time.Instant
 
 /**
- * PT13 · Tendencia de peso (+ PT13.1 Snackbar, PT13.V, PT13.L). Nunca lleva un «peso de hoy»: solo la serie suavizada.
+ * Weight trend (with its Snackbar, empty and loading states). Never a "today's weight": only the smoothed series.
  *
- * @param trend la tendencia con al menos 2 puntos en el rango (si no, [hasNoTrend]).
- * @param weeklyCard la card «Tu semana» (IA-2); `null` = no aparece (apagada, sin conexión o con error).
+ * @param trend the trend with at least 2 points in the range (otherwise [hasNoTrend]).
+ * @param weeklyCard the "Your week" card; `null` = not shown (off, offline or with an error).
  */
 data class WeightTrendUiState(
     val isLoading: Boolean = true,
@@ -19,27 +19,27 @@ data class WeightTrendUiState(
     val weeklyCard: WeeklyCard? = null,
     val weeks: Int,
 ) {
-    /** PT13.V (o `404 WeightTrendNotFound`, mismo copy). */
+    /** Empty state (or `404 WeightTrendNotFound`, same copy). */
     val isEmpty: Boolean get() = !isLoading && hasNoTrend
 
-    /** Sin conexión y sin copia en el teléfono: no hay nada que dibujar. */
+    /** Offline with no copy on the phone: there is nothing to draw. */
     val isOfflineWithoutCopy: Boolean get() = !isLoading && isOffline && trend == null && !hasNoTrend && loadFailed
 
-    /** «Algunos registros no siguieron el protocolo…» (IN-5). */
+    /** "Some readings did not follow the protocol…". */
     val showExcluded: Boolean get() = (trend?.excludedReadingsCount ?: 0) > 0
 
     val cachedAt: Instant? get() = trend?.takeIf { it.fromCache }?.savedAt
 }
 
-/** La card «Tu semana» de PT13, ya decidida (el titular de la IA va tal cual). */
+/** The "Your week" card, already decided (the AI headline goes as is). */
 sealed interface WeeklyCard {
     data class Ready(val headline: String) : WeeklyCard
 
-    /** PT13.2.V: todavía no hay resumen; la card invita y abre el estado vacío. */
+    /** There is no summary yet; the card invites the patient and opens the empty state. */
     data object NotYet : WeeklyCard
 }
 
 sealed interface WeightTrendEvent {
-    /** PT13.1 «Autopesaje guardado. No se muestra el peso del día.» (o «Se enviará…» sin conexión). */
+    /** "Self weigh-in saved. The day's weight is not shown." (or "It will be sent…" offline). */
     data class ShowSaved(val outcome: SelfWeighInOutcome) : WeightTrendEvent
 }

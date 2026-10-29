@@ -68,7 +68,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 
-// «Card · seleccionado» de PT10.1: marca ✓ de 22 dp. «Estado vacío · No lo encontramos»: círculo de 64 dp, lupa de 28.
+// Selected card: 22 dp ✓ mark. "Not found" empty state: 64 dp circle, 28 dp magnifier.
 private val SelectedMarkSize = 22.dp
 private val SelectedMarkIcon = 14.dp
 private val NotFoundCircle = 64.dp
@@ -88,7 +88,7 @@ data class ManualMealActions(
     val onRetry: () -> Unit = {},
 )
 
-/** PT9 / PT9.K / PT10 / PT10.1 / PT10.3 · Registrar a mano (o elegir un alimento para PT8). */
+/** Log by hand (or pick a food for the photo confirmation). */
 @Composable
 fun ManualMealScreen(
     onBack: () -> Unit,
@@ -128,7 +128,7 @@ fun ManualMealContent(state: ManualMealUiState, actions: ManualMealActions, modi
     val dimens = HealthifyTheme.dimens
     SystemBarsAppearance(darkBackground = false)
     if (state.saveFailed) {
-        // PT10.3 · pantalla de error sin barra superior (como el frame).
+        // Error screen without a top bar (as in the design).
         Box(
             modifier = modifier
                 .fillMaxSize()
@@ -239,7 +239,7 @@ private fun Results(state: ManualMealUiState, onSelect: (ReferenceFood) -> Unit)
     }
 }
 
-/** «Card · Arroz blanco cocido» (y «Card · seleccionado» en verde con ✓). */
+/** A food card (and the selected card in green with ✓). */
 @Composable
 private fun FoodResultCard(food: ReferenceFood, selected: Boolean, onClick: () -> Unit) {
     val dimens = HealthifyTheme.dimens
@@ -285,7 +285,7 @@ private fun FoodResultCard(food: ReferenceFood, selected: Boolean, onClick: () -
     }
 }
 
-/** PT10 · «No lo encontramos»: limitación del catálogo, nunca un error del paciente. */
+/** "We could not find it": a catalog limitation, never the patient's mistake. */
 @Composable
 private fun NotFound(localOnly: Boolean, onSearchAgain: () -> Unit) {
     val dimens = HealthifyTheme.dimens
@@ -336,7 +336,7 @@ private fun NotFound(localOnly: Boolean, onSearchAgain: () -> Unit) {
     }
 }
 
-/** «Porción (g)», «¿Cuándo comiste?», «¿Estaba en tu plan?» (con un alimento elegido) y «Registrar». */
+/** "Portion (g)", "When did you eat?", "Was it in your plan?" (with a picked food) and "Log". */
 @Composable
 private fun MealFields(state: ManualMealUiState, actions: ManualMealActions) {
     val dimens = HealthifyTheme.dimens
@@ -392,13 +392,13 @@ private val PreviewFoods = listOf(
     ReferenceFood(ReferenceFoodId(3), "Quinua con leche", 95.0, 3.0, 16.0, 2.0),
 )
 
-@Preview(name = "PT9 · Buscar alimento", widthDp = 360, heightDp = 800)
+@Preview(name = "Search food", widthDp = 360, heightDp = 800)
 @Composable
 private fun ManualMealPreview() {
     HealthifyTheme { ManualMealContent(ManualMealUiState(today = PreviewToday, form = PreviewForm), ManualMealActions()) }
 }
 
-@Preview(name = "PT10.1 · Alimento encontrado", widthDp = 360, heightDp = 800)
+@Preview(name = "Food found", widthDp = 360, heightDp = 800)
 @Composable
 private fun ManualMealFoundPreview() {
     HealthifyTheme {
@@ -416,7 +416,7 @@ private fun ManualMealFoundPreview() {
     }
 }
 
-@Preview(name = "PT10 · No encontrado (sin conexión)", widthDp = 360, heightDp = 800)
+@Preview(name = "Not found (offline)", widthDp = 360, heightDp = 800)
 @Composable
 private fun ManualMealNotFoundPreview() {
     HealthifyTheme {
@@ -427,7 +427,7 @@ private fun ManualMealNotFoundPreview() {
     }
 }
 
-@Preview(name = "PT9 · buscando", widthDp = 360, heightDp = 800)
+@Preview(name = "Searching", widthDp = 360, heightDp = 800)
 @Composable
 private fun ManualMealSearchingPreview() {
     HealthifyTheme {
@@ -435,7 +435,7 @@ private fun ManualMealSearchingPreview() {
     }
 }
 
-@Preview(name = "PT10.3 · No se pudo registrar", widthDp = 360, heightDp = 800)
+@Preview(name = "Could not log", widthDp = 360, heightDp = 800)
 @Composable
 private fun ManualMealFailedPreview() {
     HealthifyTheme { ManualMealContent(ManualMealUiState(today = PreviewToday, form = PreviewForm, saveFailed = true), ManualMealActions()) }

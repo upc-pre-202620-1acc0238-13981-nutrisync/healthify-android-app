@@ -74,25 +74,25 @@ import pe.edu.upc.healthify.features.intake.presentation.viewmodel.DiaryViewMode
 import java.time.Instant
 import java.time.LocalDate
 
-/** Navegación que sale del diario (las pantallas se abren sobre el shell, en el grafo raíz). */
+/** Navigation out of the diary (the screens open over the shell, in the root graph). */
 data class DiaryCallbacks(
-    /** «Registrar comida» → PT5 (o PT9 si la foto con IA no está disponible). */
+    /** "Log meal" → the camera (or manual logging if AI photo is not available). */
     val onRegisterMeal: () -> Unit,
-    /** «Confirmar porción» → PT8 de esa entrada. */
+    /** "Confirm portion" → confirmation of that entry. */
     val onConfirmPortion: (DiaryEntry) -> Unit,
-    /** «Ver ideas» → PT14.4. */
+    /** "See ideas" → ideas for today. */
     val onOpenIdeas: () -> Unit,
-    /** «Ver pendientes» → PT19. */
+    /** "See pending" → pending to sync. */
     val onOpenPendingSync: () -> Unit,
-    /** «Analizar ahora» de una foto tomada sin conexión → PT6.1. */
+    /** "Analyze now" on a photo taken offline → photo analysis. */
     val onAnalyzePendingPhoto: (photoId: String) -> Unit,
-    /** «Registrar a mano» → PT9. */
+    /** "Log by hand" → food search. */
     val onRegisterManually: () -> Unit,
-    /** ☰ · menú principal del shell. */
+    /** ☰ · the shell's main menu. */
     val onOpenMenu: () -> Unit,
 )
 
-/** Acciones de la pantalla (stateless). */
+/** Screen actions (stateless). */
 data class DiaryActions(
     val onOpenMenu: () -> Unit = {},
     val onPreviousDay: () -> Unit = {},
@@ -106,7 +106,7 @@ data class DiaryActions(
     val onRegisterPendingPhotoManually: (PendingMealPhoto) -> Unit = {},
 )
 
-/** PT14 · Diario (+ PT14.1 Snackbar, PT14.V, PT14.O, PT14.L). Vive en la pestaña «Diario» del shell. */
+/** Diary (with its Snackbar, empty, offline and loading states). Lives in the shell's "Diary" tab. */
 @Composable
 fun DiaryScreen(
     callbacks: DiaryCallbacks,
@@ -151,7 +151,7 @@ fun DiaryScreen(
     )
 }
 
-/** «Comida registrada: Lomo saltado · 320 g» o «Guardado. Se enviará cuando tengas conexión.». */
+/** "Meal logged: Lomo saltado · 320 g" or "Saved. It will be sent when you are online.". */
 private fun LoggedMealNotice.message(): UiText = when (outcome) {
     MealLogOutcome.QUEUED -> UiText.of(R.string.diary_snackbar_queued)
     MealLogOutcome.LOGGED -> {
@@ -256,7 +256,7 @@ fun DiaryContent(
                     .padding(horizontal = dimens.space16, vertical = dimens.space8),
             )
         }
-        // «Acciones»: botón fijo sobre la barra de navegación.
+        // "Actions": button pinned above the navigation bar.
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -279,7 +279,7 @@ private fun DiaryItemCard(item: DiaryItem, isOffline: Boolean, actions: DiaryAct
             val entry = item.entry
             PendingConfirmationCard(
                 entry = entry,
-                // Sin plato propuesto no hay qué confirmar (entrada vieja): solo se muestra.
+                // With no proposed dish there is nothing to confirm (old entry): it is only shown.
                 onConfirmPortion = if (entry.proposedFoodId != null && entry.foodName != null) {
                     { actions.onConfirmPortion(entry) }
                 } else {
@@ -300,7 +300,7 @@ private fun DiaryItemCard(item: DiaryItem, isOffline: Boolean, actions: DiaryAct
     }
 }
 
-/** «‹ Hoy, 9 de septiembre ›»: no se avanza más allá de hoy ni se retrocede antes de que existiera la cuenta. */
+/** "‹ Today, September 9 ›": it does not go past today nor back before the account existed. */
 @Composable
 private fun DateSelector(state: DiaryUiState, onPrevious: () -> Unit, onNext: () -> Unit) {
     Row(
@@ -330,7 +330,7 @@ private fun DateSelector(state: DiaryUiState, onPrevious: () -> Unit, onNext: ()
     }
 }
 
-/** PT14.O · banner «Sin conexión…» y, si el día viene del teléfono, desde cuándo. */
+/** "Offline…" banner and, if the day comes from the phone, since when. */
 @Composable
 private fun OfflineNotice(cachedAt: Instant?, isOffline: Boolean) {
     Column(verticalArrangement = Arrangement.spacedBy(HealthifyTheme.dimens.space4)) {
@@ -350,7 +350,7 @@ private fun OfflineNotice(cachedAt: Instant?, isOffline: Boolean) {
     }
 }
 
-/** «Card · Ideas para hoy (IA)»: contorno `tertiary`, insignia y «Ver ideas ›». */
+/** The AI "Ideas for today" card: `tertiary` outline, badge and "See ideas ›". */
 @Composable
 private fun MealIdeasCard(onClick: () -> Unit, modifier: Modifier = Modifier) {
     val dimens = HealthifyTheme.dimens
@@ -394,7 +394,7 @@ private fun previewItems() = listOf(
     DiaryItem.Entry(previewEntry(4, "Pizza", "20:40", EntryProvenance.MANUAL, 300.0, adherence = PlanAdherence.OFF_PLAN)),
 )
 
-@Preview(name = "PT14 · Diario", widthDp = 360, heightDp = 800)
+@Preview(name = "Diary", widthDp = 360, heightDp = 800)
 @Composable
 private fun DiaryPreview() {
     HealthifyTheme {
@@ -405,7 +405,7 @@ private fun DiaryPreview() {
     }
 }
 
-@Preview(name = "PT14.V · sin registros hoy", widthDp = 360, heightDp = 800)
+@Preview(name = "Diary - no logs today", widthDp = 360, heightDp = 800)
 @Composable
 private fun DiaryEmptyPreview() {
     HealthifyTheme {
@@ -413,7 +413,7 @@ private fun DiaryEmptyPreview() {
     }
 }
 
-@Preview(name = "PT14.O · sin conexión, pendientes de enviar", widthDp = 360, heightDp = 800)
+@Preview(name = "Diary - offline, pending to send", widthDp = 360, heightDp = 800)
 @Composable
 private fun DiaryOfflinePreview() {
     HealthifyTheme {
@@ -432,13 +432,13 @@ private fun DiaryOfflinePreview() {
     }
 }
 
-@Preview(name = "PT14.L · cargando", widthDp = 360, heightDp = 800)
+@Preview(name = "Diary - loading", widthDp = 360, heightDp = 800)
 @Composable
 private fun DiaryLoadingPreview() {
     HealthifyTheme { DiaryContent(state = DiaryUiState(today = PreviewToday), actions = DiaryActions()) }
 }
 
-@Preview(name = "PT14 · error", widthDp = 360, heightDp = 800)
+@Preview(name = "Diary - error", widthDp = 360, heightDp = 800)
 @Composable
 private fun DiaryErrorPreview() {
     HealthifyTheme {

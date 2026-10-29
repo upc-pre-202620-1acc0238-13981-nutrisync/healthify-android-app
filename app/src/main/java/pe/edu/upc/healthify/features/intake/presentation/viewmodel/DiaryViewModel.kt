@@ -39,9 +39,9 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 /**
- * PT14 · Diario. Compone Intake (día, cola, fotos por analizar), CareRelationship (si la card de ideas va) e Iam (el
- * primer día del diario es el de creación de la cuenta).
- * No ofrece borrar nada (*Diary Entry Never Deleted*).
+ * Diary. Composes Intake (day, queue, photos to analyze), CareRelationship (whether the ideas card shows) and Iam
+ * (the diary's first day is the day the account was created).
+ * It offers no way to delete anything (*Diary Entry Never Deleted*).
  */
 @HiltViewModel
 class DiaryViewModel @Inject constructor(
@@ -83,7 +83,7 @@ class DiaryViewModel @Inject constructor(
                 observeLoggedMealNotice().filterNotNull().collect { notice ->
                     consumeLoggedMealNotice()
                     _events.send(DiaryEvent.ShowLoggedMeal(notice))
-                    // Al volver de registrar, el diario muestra el día de hoy con la comida nueva.
+                    // When returning from a log, the diary shows today with the new meal.
                     selectDate(LocalDate.now(clock))
                 }
             }
@@ -98,8 +98,8 @@ class DiaryViewModel @Inject constructor(
                     }
                 }
             }
-            // Al volver la conexión la lectura del día suele llegar antes que el envío de la cola: sin esto, la comida
-            // sale de la cola y no aparece en el día hasta la próxima carga.
+            // When the connection returns, the day read usually lands before the queue is sent: without this, the meal
+            // leaves the queue and does not show in the day until the next load.
             launch { observeSyncedEntries().collect { load() } }
             refreshAiPreferences()
             load()
@@ -108,8 +108,8 @@ class DiaryViewModel @Inject constructor(
     }
 
     /**
-     * El diario empieza el día en que se creó la cuenta. Sin esa fecha (sin conexión y nunca leída) no hay límite y se
-     * vuelve a pedir al recuperar la conexión.
+     * The diary starts on the day the account was created. Without that date (offline and never read) there is no
+     * limit and it is requested again when the connection returns.
      */
     private suspend fun loadEarliestDate(userId: UserId) {
         val createdOn = getAccountCreatedOn(userId).getOrNull() ?: return
@@ -128,14 +128,14 @@ class DiaryViewModel @Inject constructor(
 
     fun onRetry() = load()
 
-    /** «Registrar a mano» de una foto por analizar: ya no se analizará, así que se borra del teléfono. */
+    /** "Log by hand" on a photo to analyze: it will no longer be analyzed, so it is deleted from the phone. */
     fun onRegisterPendingPhotoManually(photo: PendingMealPhoto) {
         viewModelScope.launch { discardMealPhoto(photo.filePath) }
     }
 
-    /** Al volver a la pestaña: «hoy» puede haber cambiado y lo registrado desde otra pantalla debe verse. */
+    /** On returning to the tab: "today" may have changed and what was logged from another screen must show. */
     fun onResume() {
-        // La primera vez ya cargó `init`.
+        // The first time, `init` already loaded it.
         if (!resumedOnce) {
             resumedOnce = true
             return
@@ -204,8 +204,8 @@ class DiaryViewModel @Inject constructor(
     }
 
     /**
-     * Orden del día: fotos por analizar y «Por confirmar» (piden una acción), lo que espera en la cola y el resto de
-     * la más reciente a la más antigua. Las entradas de una misma idea van juntas en una card.
+     * Day order: photos to analyze and "To confirm" (they ask for an action), what waits in the queue and the rest
+     * from newest to oldest. Entries from the same idea go together in one card.
      */
     private fun buildItems(
         day: DiaryDay?,

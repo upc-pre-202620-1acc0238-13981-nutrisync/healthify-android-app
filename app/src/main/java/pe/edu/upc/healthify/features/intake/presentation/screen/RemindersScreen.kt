@@ -57,13 +57,13 @@ import java.time.format.FormatStyle
 
 data class RemindersActions(
     val onBack: () -> Unit,
-    /** Encender pide antes el permiso (la pantalla); apagar no pide nada. */
+    /** Turning on asks for the permission first (the screen does); turning off asks for nothing. */
     val onToggle: (ReminderKind, Boolean) -> Unit = { _, _ -> },
     val onOpenNotificationSettings: () -> Unit = {},
     val onDismissPermissionDialog: () -> Unit = {},
 )
 
-/** PT22 · Recordatorios (+ PT22.M). Se llega desde PT21 «Recordatorios». */
+/** Reminders (and the permission dialog). Opened from the "Reminders" menu entry. */
 @Composable
 fun RemindersScreen(
     onBack: () -> Unit,
@@ -101,7 +101,7 @@ fun RemindersScreen(
                         pendingKind = kind
                         permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                     }
-                    // Antes de Android 13 (o con el permiso dado) los avisos están apagados en los ajustes del sistema.
+                    // Before Android 13 (or with the permission granted) notifications are off in the system settings.
                     else -> viewModel.onPermissionDenied()
                 }
             },
@@ -150,7 +150,7 @@ fun RemindersContent(
                 ) {
                     ReminderKind.entries.forEachIndexed { index, kind ->
                         if (index > 0) CardDivider()
-                        // La hora va dentro de la fila, bajo el título y alineada con él.
+                        // The time goes inside the row, under the title and aligned with it.
                         HealthifySwitchRow(
                             label = stringResource(kind.labelRes),
                             supportingText = kind.timesText(),
@@ -196,7 +196,7 @@ private val ReminderKind.labelRes: Int
         ReminderKind.MEALS -> R.string.reminders_meals
     }
 
-/** «7:30 a. m.» · «1:00 p. m. y 8:00 p. m.» en el formato de hora del idioma. */
+/** "7:30 a.m." · "1:00 p.m. and 8:00 p.m." in the language's time format. */
 @Composable
 private fun ReminderKind.timesText(): String {
     val formatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(currentLocale())
@@ -214,7 +214,7 @@ private fun Context.hasNotificationPermission(): Boolean =
 private fun Context.notificationsAllowed(): Boolean =
     hasNotificationPermission() && NotificationManagerCompat.from(this).areNotificationsEnabled()
 
-/** PT22.M «Abrir ajustes»: los ajustes de notificaciones de la app (o los de la app en versiones viejas). */
+/** "Open settings": the app's notification settings (or the app's settings on older versions). */
 private fun Context.openNotificationSettings() {
     val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
@@ -228,7 +228,7 @@ private fun Context.openNotificationSettings() {
     }
 }
 
-@Preview(name = "PT22 · Recordatorios", widthDp = 360, heightDp = 800)
+@Preview(name = "Reminders", widthDp = 360, heightDp = 800)
 @Composable
 private fun RemindersPreview() {
     HealthifyTheme {
@@ -240,7 +240,7 @@ private fun RemindersPreview() {
     }
 }
 
-@Preview(name = "PT22.M · Permiso de notificaciones", widthDp = 360, heightDp = 800)
+@Preview(name = "Reminders - notification permission", widthDp = 360, heightDp = 800)
 @Composable
 private fun RemindersPermissionPreview() {
     HealthifyTheme {
@@ -252,7 +252,7 @@ private fun RemindersPermissionPreview() {
     }
 }
 
-@Preview(name = "PT22 · Avisos apagados en el teléfono", widthDp = 360, heightDp = 800)
+@Preview(name = "Reminders - notifications off on the phone", widthDp = 360, heightDp = 800)
 @Composable
 private fun RemindersBlockedPreview() {
     HealthifyTheme {
@@ -264,7 +264,7 @@ private fun RemindersBlockedPreview() {
     }
 }
 
-@Preview(name = "PT22 · Cargando", widthDp = 360, heightDp = 800)
+@Preview(name = "Reminders - loading", widthDp = 360, heightDp = 800)
 @Composable
 private fun RemindersLoadingPreview() {
     HealthifyTheme { RemindersContent(state = RemindersUiState(), notificationsAllowed = true, actions = RemindersActions(onBack = {})) }

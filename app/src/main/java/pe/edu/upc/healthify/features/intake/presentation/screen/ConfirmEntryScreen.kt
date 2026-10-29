@@ -49,7 +49,7 @@ data class ConfirmEntryActions(
     val onAlreadyConfirmedAcknowledged: () -> Unit = {},
 )
 
-/** PT8 · Confirmar o ajustar una entrada «Por confirmar» del diario. */
+/** Confirm or adjust a diary entry left "To confirm". */
 @Composable
 fun ConfirmEntryScreen(
     onBack: () -> Unit,
@@ -138,7 +138,7 @@ fun ConfirmEntryContent(state: ConfirmEntryUiState, actions: ConfirmEntryActions
     }
 }
 
-@Preview(name = "PT8 · Confirmar porción (entrada del diario)", widthDp = 360, heightDp = 800)
+@Preview(name = "Confirm portion (diary entry)", widthDp = 360, heightDp = 800)
 @Composable
 private fun ConfirmEntryPreview() {
     val food = MealFood(12, "Ceviche")
@@ -157,7 +157,7 @@ private fun ConfirmEntryPreview() {
     }
 }
 
-@Preview(name = "PT8 · cargando", widthDp = 360, heightDp = 800)
+@Preview(name = "Confirm portion - loading", widthDp = 360, heightDp = 800)
 @Composable
 private fun ConfirmEntryLoadingPreview() {
     HealthifyTheme {

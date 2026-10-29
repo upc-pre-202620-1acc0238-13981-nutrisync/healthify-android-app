@@ -12,19 +12,19 @@ import pe.edu.upc.healthify.features.intake.presentation.screen.SelfWeighInScree
 
 data class IntakeNavigationCallbacks(
     val onBack: () -> Unit,
-    /** Comida registrada o encolada: vuelve al shell en la pestaña Diario (el diario muestra el Snackbar). */
+    /** Meal logged or queued: back to the shell on the Diary tab (the diary shows the Snackbar). */
     val onMealLogged: () -> Unit,
-    /** Del flujo por foto a registrar a mano (PT9 reemplaza a PT5 en el back stack). */
+    /** From the photo flow to logging by hand (the manual screen replaces the camera in the back stack). */
     val onOpenManualInsteadOfPhoto: () -> Unit,
-    /** PT8 «¿No es este plato?» → PT9 en modo elegir. */
+    /** "Not this dish?" → the food search in pick mode. */
     val onPickFood: () -> Unit,
-    /** Alimento elegido: se entrega a la pantalla anterior ([PickedFoodResult]) y se cierra PT9. */
+    /** Food picked: handed to the previous screen ([PickedFoodResult]) and the food search closes. */
     val onFoodPicked: (referenceFoodId: Long, name: String) -> Unit,
-    /** Autopesaje guardado o encolado: vuelve al shell en la pestaña Progreso (PT13 muestra el Snackbar). */
+    /** Self weigh-in saved or queued: back to the shell on the Progress tab (the trend screen shows the Snackbar). */
     val onSelfWeighInSaved: () -> Unit,
 )
 
-/** Destinos de Intake del paciente en el grafo raíz (pantallas completas sobre el shell). */
+/** The patient's Intake destinations in the root graph (full screens over the shell). */
 fun NavGraphBuilder.intakeDestinations(callbacks: IntakeNavigationCallbacks) {
     composable<MealPhotoRoute> {
         MealPhotoScreen(

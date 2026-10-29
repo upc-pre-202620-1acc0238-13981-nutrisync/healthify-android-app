@@ -5,54 +5,54 @@ import pe.edu.upc.healthify.features.intake.domain.entity.MealPhotoAnalysis
 import pe.edu.upc.healthify.features.intake.domain.valueobject.MealFood
 import java.time.LocalDate
 
-/** En qué frame del flujo por foto está el paciente. */
+/** Which step of the photo flow the patient is on. */
 enum class MealPhotoStep {
-    /** Revisando si la foto con IA está disponible (consentimiento + preferencia). */
+    /** Checking whether AI photo is available (consent + preference). */
     RESOLVING,
 
-    /** PT5 Cámara (+ PT5.M si el permiso está denegado). */
+    /** Camera (and the permission dialog if the permission is denied). */
     CAMERA,
 
-    /** PT6 Previsualización. */
+    /** Photo preview. */
     PREVIEW,
 
-    /** PT6.1 «Viendo tu foto…». */
+    /** "Looking at your photo…". */
     ANALYZING,
 
-    /** Sin conexión: la foto quedó guardada para analizarla después. */
+    /** Offline: the photo was saved to be analyzed later. */
     SAVED_OFFLINE,
 
-    /** PT7 Estimación propuesta. */
+    /** Proposed estimate. */
     PROPOSAL,
 
-    /** PT8 Confirmar o ajustar. */
+    /** Confirm or adjust. */
     ADJUST,
 
-    /** PT7.2 No se pudo registrar. */
+    /** Could not log. */
     SAVE_FAILED,
 
-    /** PT7.3 No pudimos estimar. */
+    /** We could not estimate. */
     NOT_RECOGNIZED,
 
-    /** La IA no pudo ver la foto ahora (cuota, foto inválida, servidor). */
+    /** The AI could not look at the photo right now (quota, invalid photo, server). */
     ANALYSIS_FAILED,
 }
 
 enum class CameraPermissionStatus { UNKNOWN, GRANTED, DENIED }
 
-/** Por qué no hubo estimación (texto de la pantalla de error). */
+/** Why there was no estimate (text for the error screen). */
 enum class AnalysisFailure { GENERIC, RATE_LIMITED, UNUSABLE_PHOTO, EXPIRED }
 
 /**
- * PT5 → PT8 (IN-7). La propuesta de la IA nunca se guarda como ingesta hasta que el paciente confirma.
+ * Photo logging, from camera to adjustment. The AI proposal is never stored as intake until the patient confirms.
  *
- * @param selectedAlternative índice en `analysis.selectableAlternatives` si eligió otro plato en PT7.
- * @param adjustFood el plato de PT8 (el propuesto, una alternativa o uno elegido del catálogo).
- * @param foodNotResolved el backend no resolvió el plato elegido (`422 ReferenceFoodNotResolved`).
+ * @param selectedAlternative index in `analysis.selectableAlternatives` if another dish was picked on the estimate.
+ * @param adjustFood the dish being adjusted (the proposed one, an alternative or one picked from the catalog).
+ * @param foodNotResolved the backend did not resolve the picked dish (`422 ReferenceFoodNotResolved`).
  */
 data class MealPhotoUiState(
     val today: LocalDate,
-    /** Día en que se creó la cuenta: el selector del día no ofrece días anteriores. */
+    /** The day the account was created: the day picker does not offer earlier days. */
     val earliestDay: LocalDate? = null,
     val form: MealFormState,
     val step: MealPhotoStep = MealPhotoStep.RESOLVING,
@@ -68,7 +68,7 @@ data class MealPhotoUiState(
     val captureFailed: Boolean = false,
     val isOffline: Boolean = false,
 ) {
-    /** El plato que se registraría con «Sí, es correcto» (la alternativa elegida o el propuesto). */
+    /** The dish that "Yes, that's right" would log (the picked alternative or the proposed one). */
     val chosenFood: MealFood?
         get() = selectedAlternative?.let { analysis?.selectableAlternatives?.getOrNull(it)?.food } ?: analysis?.food
 
@@ -77,15 +77,15 @@ data class MealPhotoUiState(
 }
 
 sealed interface MealPhotoEvent {
-    /** «Registrar a mano» (o la foto con IA no está disponible): PT9 en lugar de este flujo. */
+    /** "Log by hand" (or AI photo is not available): manual logging instead of this flow. */
     data object OpenManual : MealPhotoEvent
 
-    /** PT8 «¿No es este plato? Toca para cambiarlo.» → PT9 en modo elegir. */
+    /** "Not this dish? Tap to change it." → food search in pick mode. */
     data object PickFood : MealPhotoEvent
 
-    /** Comida registrada o encolada → Diario con Snackbar (PT14.1). */
+    /** Meal logged or queued → Diary with Snackbar. */
     data class Logged(val outcome: MealLogOutcome) : MealPhotoEvent
 
-    /** Salir del flujo (la foto ya se borró o quedó pendiente). */
+    /** Leave the flow (the photo was already deleted or stayed pending). */
     data object Exit : MealPhotoEvent
 }

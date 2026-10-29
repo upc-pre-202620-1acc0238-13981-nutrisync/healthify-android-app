@@ -39,8 +39,8 @@ import java.time.LocalDateTime
 import javax.inject.Inject
 
 /**
- * PT9 → PT10 / PT10.1 → PT10.3. Compone FoodCatalog (búsqueda local-first y copia offline del catálogo) e Intake
- * (registro). Sin conexión la comida queda encolada con su `clientEntryId` y su hora local.
+ * Manual logging, from search to result. Composes FoodCatalog (local-first search and offline catalog copy) and
+ * Intake (logging). Offline the meal is queued with its `clientEntryId` and its local time.
  */
 @HiltViewModel
 class ManualMealViewModel @Inject constructor(
@@ -67,7 +67,7 @@ class ManualMealViewModel @Inject constructor(
     private val _events = Channel<ManualMealEvent>(Channel.BUFFERED)
     val events: Flow<ManualMealEvent> = _events.receiveAsFlow()
 
-    /** Uno por registro: los reintentos (PT10.3) reenvían el mismo y el backend no duplica la comida. */
+    /** One per log: retries resend the same one and the backend does not duplicate the meal. */
     private val clientEntryId = ClientEntryId.random()
     private var searchJob: Job? = null
     private var patientId: Long? = null
@@ -80,7 +80,7 @@ class ManualMealViewModel @Inject constructor(
             val user = observeCurrentUser().first() ?: return@launch
             patientId = user.id.value
             getAccountCreatedOn(user.id).getOrNull()?.let { day -> _state.update { it.copy(earliestDay = day) } }
-            // La copia del catálogo para buscar sin conexión (≤ 500); sin red se queda la que hay.
+            // The catalog copy for offline search (≤ 500); without network the existing one stays.
             refreshLocalFoodCatalog(user.id.value)
         }
     }
@@ -109,7 +109,7 @@ class ManualMealViewModel @Inject constructor(
         }
     }
 
-    /** PT10 «Buscar de nuevo». */
+    /** "Search again". */
     fun onSearchAgain() = onQueryChange("")
 
     fun onFoodSelected(food: ReferenceFood) {
@@ -126,7 +126,7 @@ class ManualMealViewModel @Inject constructor(
         _state.update { it.copy(form = it.form.answerPlan(inPlan)) }
     }
 
-    /** IN-8 · la sugerencia de «¿Estaba en tu plan?» sigue al alimento, la porción y el día elegidos. */
+    /** The "Was it in your plan?" suggestion follows the picked food, portion and day. */
     private fun requestPlanFit() {
         val current = _state.value
         val pid = patientId ?: return
@@ -156,7 +156,7 @@ class ManualMealViewModel @Inject constructor(
         requestPlanFit()
     }
 
-    /** «Registrar» (o «Elegir este alimento» en el modo de PT8). */
+    /** "Log" (or "Pick this food" in pick mode). */
     fun onSubmit() {
         val current = _state.value
         if (current.isSaving) return
@@ -184,7 +184,7 @@ class ManualMealViewModel @Inject constructor(
         save(meal)
     }
 
-    /** PT10.3 «Volver a intentarlo»: vuelve al formulario con todo lo elegido. */
+    /** "Try again": back to the form with everything picked. */
     fun onRetry() {
         _state.update { it.copy(saveFailed = false) }
         onSubmit()

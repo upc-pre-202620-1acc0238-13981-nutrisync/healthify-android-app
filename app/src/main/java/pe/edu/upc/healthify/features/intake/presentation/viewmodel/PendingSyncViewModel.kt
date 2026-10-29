@@ -18,9 +18,9 @@ import pe.edu.upc.healthify.features.intake.presentation.state.PendingSyncUiStat
 import javax.inject.Inject
 
 /**
- * PT19 · Pendientes por sincronizar: la cola offline del teléfono. Se envía sola con red (WorkManager); abrir la
- * pantalla solo adelanta el envío. Lo enviado sale de la lista; lo rechazado queda con su motivo y la hora tal como
- * se guardó (*Local Timestamp Never Rewritten*).
+ * Pending to sync: the phone's offline queue. It sends itself when online (WorkManager); opening the
+ * screen only brings the sending forward. What was sent leaves the list; what was rejected stays with its reason and
+ * the time as it was saved (*Local Timestamp Never Rewritten*).
  */
 @HiltViewModel
 class PendingSyncViewModel @Inject constructor(
@@ -44,7 +44,7 @@ class PendingSyncViewModel @Inject constructor(
         }
         viewModelScope.launch {
             val user = observeCurrentUser().first() ?: return@launch
-            // Una sola cola en el teléfono: el mismo envío lleva comidas y autopesajes.
+            // A single queue on the phone: the same send carries meals and self weigh-ins.
             requestDiarySync()
             launch {
                 observePendingSelfWeighIns(user.id.value).collect { weighIns ->
