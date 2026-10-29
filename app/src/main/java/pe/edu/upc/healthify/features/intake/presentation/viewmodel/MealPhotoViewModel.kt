@@ -73,6 +73,7 @@ class MealPhotoViewModel @Inject constructor(
     private val discardMealPhoto: DiscardMealPhotoUseCase,
     private val logPhotoMeal: LogPhotoMealUseCase,
     private val keepPhotoMealUnconfirmed: KeepPhotoMealUnconfirmedUseCase,
+    private val planFitSuggester: PlanFitSuggester,
     connectivityObserver: ConnectivityObserver,
     private val clock: Clock,
 ) : ViewModel() {
@@ -180,7 +181,7 @@ class MealPhotoViewModel @Inject constructor(
         val pid = patientId ?: return
         val path = _state.value.photoPath ?: return
         _state.update { it.copy(step = MealPhotoStep.ANALYZING, failure = null) }
-        val result = analyzeMealPhoto(pid, path)
+        val result = analyzeMealPhoto(pid, path, _state.value.form.mealTime.toLocalDate())
         val analysis = result.getOrNull()
         if (analysis != null) {
             _state.update {
@@ -189,7 +190,9 @@ class MealPhotoViewModel @Inject constructor(
                     analysis = analysis,
                     selectedAlternative = null,
                     adjustFood = analysis.food,
-                    form = it.form.copy(portionText = gramsInput(analysis.estimatedGrams)),
+                    // IN-8: un plato nuevo trae su sugerencia preseleccionada; la respuesta de otra foto no se arrastra.
+                    form = it.form.copy(portionText = gramsInput(analysis.estimatedGrams), planAnsweredByPatient = false)
+                        .withPlanSuggestion(analysis.planFit),
                 )
             }
             return
@@ -234,17 +237,19 @@ class MealPhotoViewModel @Inject constructor(
     fun onAlternativeSelected(index: Int?) {
         val analysis = _state.value.analysis ?: return
         val alternative = index?.let { analysis.selectableAlternatives.getOrNull(it) }
+        planFitSuggester.cancel()
         _state.update {
             it.copy(
                 selectedAlternative = alternative?.let { index },
                 adjustFood = alternative?.food ?: analysis.food,
-                form = it.form.copy(portionText = gramsInput(alternative?.grams ?: analysis.estimatedGrams)),
+                form = it.form.copy(portionText = gramsInput(alternative?.grams ?: analysis.estimatedGrams))
+                    .withPlanSuggestion(if (alternative != null) alternative.planFit else analysis.planFit),
             )
         }
     }
 
     fun onPlanAnswer(inPlan: Boolean) {
-        _state.update { it.copy(form = it.form.copy(inPlan = inPlan, showPlanError = false)) }
+        _state.update { it.copy(form = it.form.answerPlan(inPlan)) }
     }
 
     /** PT7 «Sí, es correcto»: la propuesta (o la alternativa elegida) tal cual. */
@@ -273,6 +278,7 @@ class MealPhotoViewModel @Inject constructor(
 
     fun onPortionChange(text: String) {
         _state.update { it.copy(form = it.form.copy(portionText = text, showPortionError = false)) }
+        requestPlanFit()
     }
 
     fun onMealTimeClick() = _state.update { it.copy(form = it.form.copy(showTimePicker = true)) }
@@ -291,6 +297,7 @@ class MealPhotoViewModel @Inject constructor(
                 ),
             )
         }
+        requestPlanFit()
     }
 
     /** PT8 «¿No es este plato? Toca para cambiarlo.». */
@@ -300,6 +307,16 @@ class MealPhotoViewModel @Inject constructor(
 
     fun onFoodPicked(food: MealFood) {
         _state.update { it.copy(adjustFood = food, foodNotResolved = false) }
+        requestPlanFit()
+    }
+
+    /** IN-8 · en PT8 la sugerencia sigue al plato, la porción y el día que el paciente va eligiendo. */
+    private fun requestPlanFit() {
+        val pid = patientId ?: return
+        val current = _state.value
+        planFitSuggester.request(viewModelScope, pid, current.adjustFood ?: current.analysis?.food, current.form) { fit ->
+            _state.update { it.copy(form = it.form.withPlanSuggestion(fit)) }
+        }
     }
 
     /** PT8 «Confirmar». */

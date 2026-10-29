@@ -51,6 +51,8 @@ import pe.edu.upc.healthify.core.designsystem.component.YesNoSelector
 import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 import pe.edu.upc.healthify.core.designsystem.theme.elevation
+import pe.edu.upc.healthify.features.intake.domain.entity.PlanFit
+import pe.edu.upc.healthify.features.intake.domain.entity.PlanFitReason
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -59,7 +61,11 @@ import java.time.OffsetDateTime
 // Ancho máximo del Dialog del Figma (312 dp).
 private val DialogMaxWidth = 312.dp
 
-/** Card «¿Estaba en tu plan?» de PT7, PT8 y PT10.1 (IN-1): SelectorSiNo sin valor por defecto + aclaración. */
+/**
+ * Card «¿Estaba en tu plan?» de PT7, PT8 y PT10.1 (IN-1): SelectorSiNo + aclaración. Sin [suggestion] no tiene valor
+ * por defecto; con ella (IN-8) llega preseleccionada, dice por qué y avisa si el plato parece romper una restricción
+ * del plan. El paciente siempre puede cambiarla.
+ */
 @Composable
 fun PlanAdherenceCard(
     answer: Boolean?,
@@ -67,10 +73,13 @@ fun PlanAdherenceCard(
     modifier: Modifier = Modifier,
     showError: Boolean = false,
     enabled: Boolean = true,
+    suggestion: PlanFit? = null,
 ) {
     val dimens = HealthifyTheme.dimens
+    val scheme = MaterialTheme.colorScheme
     HealthifyCard(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(dimens.space16), verticalArrangement = Arrangement.spacedBy(dimens.space8)) {
+            if (suggestion != null) AiBadge(label = stringResource(R.string.plan_suggestion_badge))
             YesNoSelector(
                 question = stringResource(R.string.plan_adherence_question),
                 answer = answer,
@@ -78,12 +87,67 @@ fun PlanAdherenceCard(
                 isError = showError,
                 enabled = enabled,
             )
+            if (suggestion != null) {
+                Text(
+                    text = planSuggestionText(suggestion),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = scheme.onSurface,
+                )
+                if (suggestion.breaksRestrictions) RestrictionWarning(suggestion)
+                if (answer != null && answer != suggestion.suggestsInPlan) {
+                    Text(
+                        text = stringResource(R.string.plan_suggestion_changed),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = scheme.onSurfaceVariant,
+                    )
+                }
+            }
             Text(
                 text = stringResource(R.string.plan_adherence_explanation),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = scheme.onSurfaceVariant,
             )
         }
+    }
+}
+
+/** «Sugerimos «Sí»: parece encajar en tu plan.» y sus variantes. */
+@Composable
+private fun planSuggestionText(suggestion: PlanFit): String {
+    val remaining = suggestion.remainingKcal
+    return when (suggestion.reason) {
+        PlanFitReason.FITS -> stringResource(R.string.plan_suggestion_fits)
+        PlanFitReason.BREAKS_RESTRICTION -> stringResource(R.string.plan_suggestion_breaks_restriction)
+        PlanFitReason.EXCEEDS_REMAINING -> if (remaining != null) {
+            stringResource(R.string.plan_suggestion_exceeds, numberText(suggestion.energyKcal), numberText(remaining))
+        } else {
+            stringResource(R.string.plan_suggestion_exceeds_no_day)
+        }
+    }
+}
+
+/** Aviso de restricción (IN-8): invita a revisar, nunca acusa. */
+@Composable
+private fun RestrictionWarning(suggestion: PlanFit) {
+    val dimens = HealthifyTheme.dimens
+    val scheme = MaterialTheme.colorScheme
+    val names = suggestion.violatedRestrictions.map { restrictionName(it) }.joinToString()
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(dimens.radiusMd))
+            .background(scheme.errorContainer)
+            .padding(dimens.space12)
+            .semantics(mergeDescendants = true) {},
+        horizontalArrangement = Arrangement.spacedBy(dimens.space8),
+        verticalAlignment = Alignment.Top,
+    ) {
+        Icon(HealthifyIcons.Warning, contentDescription = null, tint = scheme.onErrorContainer)
+        Text(
+            text = stringResource(R.string.plan_restriction_warning, names),
+            style = MaterialTheme.typography.bodyMedium,
+            color = scheme.onErrorContainer,
+        )
     }
 }
 

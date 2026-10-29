@@ -12,6 +12,7 @@ data class MealPhotoAnalysisDto(
     val confidence: Double,
     val alternatives: List<MealPhotoAlternativeDto> = emptyList(),
     val expiresAt: String,
+    val planFit: PlanFitDto? = null,
 )
 
 /** `MealPhotoAlternativeResource` (`referenceFoodId` solo si el catálogo local la resolvió). */
@@ -20,6 +21,17 @@ data class MealPhotoAlternativeDto(
     val name: String,
     val grams: Double,
     val referenceFoodId: Long? = null,
+    val planFit: PlanFitDto? = null,
+)
+
+/** `PlanFitResource` (IN-8): `InPlan`/`OffPlan` y por qué. */
+@Serializable
+data class PlanFitDto(
+    val suggestedAdherence: String,
+    val violatedRestrictions: List<String> = emptyList(),
+    val reason: String = "",
+    val energyKcal: Double = 0.0,
+    val remainingKcal: Double? = null,
 )
 
 /** `GenerateMealIdeasResource`. */

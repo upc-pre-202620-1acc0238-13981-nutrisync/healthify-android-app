@@ -11,6 +11,7 @@ import java.time.Instant
  *
  * @param confidence siempre presente, entre 0 y 1 (*Confidence Always Attached*).
  * @param expiresAt el análisis vence a las 24 h (`422 MealPhotoAnalysisExpired`).
+ * @param planFit la sugerencia de «¿Estaba en tu plan?» para el plato (IN-8); `null` si no hay (sin plan publicado).
  */
 data class MealPhotoAnalysis(
     val id: MealPhotoAnalysisId,
@@ -19,6 +20,7 @@ data class MealPhotoAnalysis(
     val confidence: Double,
     val alternatives: List<MealPhotoAlternative>,
     val expiresAt: Instant,
+    val planFit: PlanFit? = null,
 ) {
     init {
         require(estimatedGrams > 0) { "An estimate needs grams" }
@@ -34,8 +36,16 @@ data class MealPhotoAnalysis(
     }
 }
 
-/** Otro plato posible. [food] es `null` si no está en el catálogo local (se muestra, pero no se puede elegir). */
-data class MealPhotoAlternative(val name: String, val grams: Double, val food: MealFood?) {
+/**
+ * Otro plato posible. [food] es `null` si no está en el catálogo local (se muestra, pero no se puede elegir).
+ * [planFit] es su propia sugerencia de plan (IN-8), `null` si no hay.
+ */
+data class MealPhotoAlternative(
+    val name: String,
+    val grams: Double,
+    val food: MealFood?,
+    val planFit: PlanFit? = null,
+) {
     init {
         require(name.isNotBlank()) { "An alternative needs a name" }
         require(grams > 0) { "An alternative needs grams" }

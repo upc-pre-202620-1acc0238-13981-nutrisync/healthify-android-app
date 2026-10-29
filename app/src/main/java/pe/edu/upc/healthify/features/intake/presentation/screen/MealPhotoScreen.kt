@@ -542,7 +542,12 @@ private fun ProposalBody(state: MealPhotoUiState, analysis: MealPhotoAnalysis, a
     if (analysis.alternatives.isNotEmpty()) {
         AlternativesCard(analysis = analysis, selected = state.selectedAlternative, onSelect = actions.onAlternativeSelected)
     }
-    PlanAdherenceCard(answer = state.form.inPlan, onAnswer = actions.onPlanAnswer, showError = state.form.showPlanError)
+    PlanAdherenceCard(
+        answer = state.form.inPlan,
+        onAnswer = actions.onPlanAnswer,
+        showError = state.form.showPlanError,
+        suggestion = state.form.planSuggestion,
+    )
     Column(verticalArrangement = Arrangement.spacedBy(dimens.space12)) {
         HealthifyButton(
             text = stringResource(

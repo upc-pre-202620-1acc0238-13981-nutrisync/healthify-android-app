@@ -50,6 +50,7 @@ class ManualMealViewModel @Inject constructor(
     private val searchFoods: SearchFoodsUseCase,
     private val refreshLocalFoodCatalog: RefreshLocalFoodCatalogUseCase,
     private val logManualMeal: LogManualMealUseCase,
+    private val planFitSuggester: PlanFitSuggester,
     connectivityObserver: ConnectivityObserver,
     private val clock: Clock,
 ) : ViewModel() {
@@ -69,6 +70,7 @@ class ManualMealViewModel @Inject constructor(
     /** Uno por registro: los reintentos (PT10.3) reenvían el mismo y el backend no duplica la comida. */
     private val clientEntryId = ClientEntryId.random()
     private var searchJob: Job? = null
+    private var patientId: Long? = null
 
     init {
         viewModelScope.launch {
@@ -76,6 +78,7 @@ class ManualMealViewModel @Inject constructor(
         }
         viewModelScope.launch {
             val user = observeCurrentUser().first() ?: return@launch
+            patientId = user.id.value
             getAccountCreatedOn(user.id).getOrNull()?.let { day -> _state.update { it.copy(earliestDay = day) } }
             // La copia del catálogo para buscar sin conexión (≤ 500); sin red se queda la que hay.
             refreshLocalFoodCatalog(user.id.value)
@@ -111,14 +114,27 @@ class ManualMealViewModel @Inject constructor(
 
     fun onFoodSelected(food: ReferenceFood) {
         _state.update { it.copy(selectedFood = food, foodError = null) }
+        requestPlanFit()
     }
 
     fun onPortionChange(text: String) {
         _state.update { it.copy(form = it.form.copy(portionText = text, showPortionError = false)) }
+        requestPlanFit()
     }
 
     fun onPlanAnswer(inPlan: Boolean) {
-        _state.update { it.copy(form = it.form.copy(inPlan = inPlan, showPlanError = false)) }
+        _state.update { it.copy(form = it.form.answerPlan(inPlan)) }
+    }
+
+    /** IN-8 · la sugerencia de «¿Estaba en tu plan?» sigue al alimento, la porción y el día elegidos. */
+    private fun requestPlanFit() {
+        val current = _state.value
+        val pid = patientId ?: return
+        if (current.pickFoodOnly) return
+        val food = current.selectedFood?.let { MealFood(it.id.value, it.name) }
+        planFitSuggester.request(viewModelScope, pid, food, current.form) { fit ->
+            _state.update { it.copy(form = it.form.withPlanSuggestion(fit)) }
+        }
     }
 
     fun onMealTimeClick() = _state.update { it.copy(form = it.form.copy(showTimePicker = true)) }
@@ -137,6 +153,7 @@ class ManualMealViewModel @Inject constructor(
                 ),
             )
         }
+        requestPlanFit()
     }
 
     /** «Registrar» (o «Elegir este alimento» en el modo de PT8). */

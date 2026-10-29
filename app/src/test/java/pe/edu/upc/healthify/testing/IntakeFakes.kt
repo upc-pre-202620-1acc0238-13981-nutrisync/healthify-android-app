@@ -3,6 +3,7 @@ package pe.edu.upc.healthify.testing
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import pe.edu.upc.healthify.core.common.error.DomainError
 import pe.edu.upc.healthify.features.carerelationship.domain.entity.AiPreferences
 import pe.edu.upc.healthify.features.carerelationship.domain.repository.AiPreferencesRepository
 import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.PatientId as CarePatientId
@@ -22,10 +23,14 @@ import pe.edu.upc.healthify.features.intake.domain.entity.NewMealGroup
 import pe.edu.upc.healthify.features.intake.domain.entity.NewPhotoMeal
 import pe.edu.upc.healthify.features.intake.domain.entity.PendingDiaryEntry
 import pe.edu.upc.healthify.features.intake.domain.entity.PendingMealPhoto
+import pe.edu.upc.healthify.features.intake.domain.entity.PlanFit
+import pe.edu.upc.healthify.features.intake.domain.entity.PlanFitReason
 import pe.edu.upc.healthify.features.intake.domain.repository.DiaryRepository
 import pe.edu.upc.healthify.features.intake.domain.repository.MealIdeasRepository
 import pe.edu.upc.healthify.features.intake.domain.repository.MealPhotoRepository
+import pe.edu.upc.healthify.features.intake.domain.repository.PlanFitRepository
 import pe.edu.upc.healthify.features.intake.domain.valueobject.ClientEntryId
+import pe.edu.upc.healthify.features.intake.domain.valueobject.DietaryRestriction
 import pe.edu.upc.healthify.features.intake.domain.valueobject.DiaryEntryId
 import pe.edu.upc.healthify.features.intake.domain.valueobject.LocalTimestamp
 import pe.edu.upc.healthify.features.intake.domain.valueobject.MealFood
@@ -66,6 +71,7 @@ fun mealPhotoAnalysis(
         MealPhotoAlternative("Tallarín saltado", 300.0, MealFood(31, "Tallarín saltado")),
         MealPhotoAlternative("Pollo saltado", 280.0, null),
     ),
+    planFit: PlanFit? = null,
 ) = MealPhotoAnalysis(
     id = MealPhotoAnalysisId("8f14e45f-ceea-467a-9a3b-2c0b1e5f9d10"),
     food = MealFood(12, "Lomo saltado"),
@@ -73,18 +79,44 @@ fun mealPhotoAnalysis(
     confidence = confidence,
     alternatives = alternatives,
     expiresAt = Instant.parse("2026-10-08T13:00:00Z"),
+    planFit = planFit,
 )
+
+fun planFit(
+    inPlan: Boolean = true,
+    restrictions: List<DietaryRestriction> = emptyList(),
+    reason: PlanFitReason = if (restrictions.isNotEmpty()) PlanFitReason.BREAKS_RESTRICTION else if (inPlan) PlanFitReason.FITS else PlanFitReason.EXCEEDS_REMAINING,
+) = PlanFit(
+    suggested = PlanAdherence.fromAnswer(inPlan),
+    violatedRestrictions = restrictions,
+    reason = reason,
+    energyKcal = 576.0,
+    remainingKcal = 590.0,
+)
+
+/** Sugerencias de plan programables (IN-8); por defecto no hay plan publicado (sin sugerencia). */
+class FakePlanFitRepository : PlanFitRepository {
+    var result: Result<PlanFit> = failureOf(DomainError.NotFound("ActiveTargetsCacheNotFound"))
+    val requests = mutableListOf<Triple<Long, Double, LocalDate?>>()
+
+    override suspend fun check(patientId: PatientId, food: MealFood, portion: PortionGrams, localDate: LocalDate?): Result<PlanFit> {
+        requests += Triple(food.referenceFoodId, portion.value, localDate)
+        return result
+    }
+}
 
 /** Respuestas programables de la foto; registra qué se analizó, guardó y borró. */
 class FakeMealPhotoRepository : MealPhotoRepository {
     var analyzeResults: List<Result<MealPhotoAnalysis>> = listOf(Result.success(mealPhotoAnalysis()))
     val analyzed = mutableListOf<String>()
+    val analyzedDates = mutableListOf<LocalDate?>()
     val discarded = mutableListOf<String>()
     val pending = MutableStateFlow<List<PendingMealPhoto>>(emptyList())
 
-    override suspend fun analyze(patientId: PatientId, photoPath: String): Result<MealPhotoAnalysis> {
+    override suspend fun analyze(patientId: PatientId, photoPath: String, localDate: LocalDate?): Result<MealPhotoAnalysis> {
         val result = analyzeResults[minOf(analyzed.size, analyzeResults.lastIndex)]
         analyzed += photoPath
+        analyzedDates += localDate
         return result
     }
 

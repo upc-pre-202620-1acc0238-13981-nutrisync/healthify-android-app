@@ -87,7 +87,12 @@ fun AdjustPortionForm(
                 )
             }
         }
-        PlanAdherenceCard(answer = form.inPlan, onAnswer = onPlanAnswer, showError = form.showPlanError)
+        PlanAdherenceCard(
+            answer = form.inPlan,
+            onAnswer = onPlanAnswer,
+            showError = form.showPlanError,
+            suggestion = form.planSuggestion,
+        )
         HealthifyButton(
             text = stringResource(R.string.adjust_confirm),
             onClick = onConfirm,
