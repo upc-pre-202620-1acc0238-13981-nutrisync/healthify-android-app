@@ -504,8 +504,15 @@ private fun GaugeArc(
                         drawArc(progress, HALF_START_ANGLE, sweep, useCenter = false, topLeft = Offset(inset, inset), size = arcSize, style = style)
                     }
                 }
-                // El texto central se apoya sobre la línea de los extremos, no sobre el borde inferior del trazo.
-                Box(modifier = Modifier.padding(bottom = GaugeThickness / 2)) { center() }
+                // El texto central se apoya sobre la línea de los extremos, no sobre el borde inferior del trazo, y no pasa
+                // del hueco del arco: con el arco chico (p. ej. un aviso desplegado) parte en dos líneas en vez de pisarlo.
+                Box(
+                    modifier = Modifier.padding(
+                        start = GaugeThickness + GaugeCenterGap,
+                        end = GaugeThickness + GaugeCenterGap,
+                        bottom = GaugeThickness / 2,
+                    ),
+                ) { center() }
             }
             scale?.invoke()
         }
@@ -513,6 +520,7 @@ private fun GaugeArc(
 }
 
 private val GaugeThickness = 24.dp
+private val GaugeCenterGap = 8.dp
 private val GaugeMaxDiameter = 340.dp
 private val GaugeScaleHeight = 24.dp
 private val GaugeFixedHeight = GaugeMaxDiameter / 2 + GaugeThickness / 2 + GaugeScaleHeight
