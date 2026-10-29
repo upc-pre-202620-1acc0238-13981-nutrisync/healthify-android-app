@@ -34,8 +34,8 @@ import java.time.Instant
 import java.time.ZoneId
 
 /**
- * PT21 / PT21.I · cambio de idioma: se aplica en el teléfono al instante y se guarda en la cuenta (IAM-3).
- * PT21 · copia de los datos: se elige dónde guardarla, se descarga y se informa el resultado.
+ * Language change: applied on the phone right away and saved to the account.
+ * Data export: the user picks where to save it, it downloads and the result is reported.
  */
 class PatientSettingsViewModelTest {
 
@@ -113,7 +113,7 @@ class PatientSettingsViewModelTest {
         viewModel.onLanguageSelected(PreferredLanguage.SPANISH)
 
         assertTrue(appLanguage.applied.isEmpty())
-        // La cuenta ya está en español (usuario de la sesión): no se llama al backend.
+        // The account is already in Spanish (session user): the backend is not called.
         assertTrue(users.changes.isEmpty())
     }
 
@@ -121,7 +121,7 @@ class PatientSettingsViewModelTest {
     fun `offline the app still changes language and the account is updated when the connection returns`() = runTest {
         connectivity.online.value = false
         users.results = mutableListOf(failureOf(DomainError.Network))
-        viewModel.state.value // crea el ViewModel sin conexión
+        viewModel.state.value // creates the ViewModel offline
 
         viewModel.onLanguageSelected(PreferredLanguage.ENGLISH)
         assertEquals(listOf(PreferredLanguage.ENGLISH), appLanguage.applied)

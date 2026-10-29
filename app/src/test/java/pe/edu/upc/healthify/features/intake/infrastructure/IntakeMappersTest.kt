@@ -91,7 +91,7 @@ class IntakeMappersTest {
         assertThrows(IllegalArgumentException::class.java) {
             MealPhotoAnalysisDto("8f14e45f-ceea-467a-9a3b-2c0b1e5f9d10", 12, "Lomo", 320.0, 1.4, emptyList(), "2026-10-08T13:00:00Z").toDomain()
         }
-        // Un backend sin IN-8 no manda sugerencia: el paciente responde como siempre.
+        // A backend without plan suggestions sends none: the patient answers as before.
         assertNull(analysis.planFit)
     }
 

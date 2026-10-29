@@ -157,7 +157,7 @@ class PatientTabsViewModelTest {
         assertEquals("Ana Flores", viewModel.state.value.summary?.fullName)
     }
 
-    // ----- PAC-4 · Plan -----
+    // ----- Plan -----
 
     private val careLinks = FakeCareLinkRepository()
     private val plans = FakeNutritionPlanRepository()
@@ -213,7 +213,7 @@ class PatientTabsViewModelTest {
         }
     }
 
-    // ----- PAC-3 · Expediente -----
+    // ----- Record -----
 
     @Test
     fun `PAC-3 failure without a previous read shows the error`() {
@@ -246,7 +246,7 @@ class PatientTabsViewModelTest {
         assertEquals(EvaluationSheetState.Failed, viewModel.state.value.evaluationSheet)
     }
 
-    // ----- EV-1 · Datos base -----
+    // ----- Baseline data -----
 
     private fun baselineViewModel(editing: Boolean = false) = BaselineViewModel(
         savedStateHandle = patientArgs(editing = editing),

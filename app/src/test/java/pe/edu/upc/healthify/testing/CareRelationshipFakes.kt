@@ -9,7 +9,7 @@ import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.Invitat
 import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.PatientId
 import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.PatientLinkStatus
 
-/** Token con la forma de una invitación real (base64 url-safe de 32 bytes = 43 caracteres). */
+/** Token shaped like a real invitation (32 bytes of url-safe base64 = 43 characters). */
 const val VALID_TOKEN = "q3Zl0_8xYb-Tn4Wc2Vd9Rk7Hs1Jm6Pa5Ue0Fi3Gt4Lo"
 
 fun careLink(
@@ -27,13 +27,13 @@ fun careLink(
     isDischarged = false,
 )
 
-/** Respuestas programables del vínculo; registra cada llamada. */
+/** Programmable link responses; records every call. */
 class FakeCareLinkRepository : CareLinkRepository {
 
     data class Redemption(val token: InvitationToken, val replaceActiveLink: Boolean)
     data class Grant(val careLinkId: CareLinkId, val scope: ConsentScope, val aiProcessingGranted: Boolean)
 
-    /** Una respuesta por llamada a `getPatientLinkStatus`; la última se repite. */
+    /** One response per call to `getPatientLinkStatus`; the last one repeats. */
     var statusResults: List<Result<PatientLinkStatus>> = listOf(Result.success(PatientLinkStatus.NO_LINK))
     var redeemResult: Result<CareLink> = Result.success(careLink())
     var grantResult: Result<CareLink>? = null
@@ -105,7 +105,7 @@ class FakeCareLinkRepository : CareLinkRepository {
     }
 }
 
-/** `targets-read-status` con [pendingVersion] esperando el acuse (o nada pendiente si es `null`). */
+/** `targets-read-status` with [pendingVersion] awaiting acknowledgement (nothing pending when `null`). */
 fun readStatus(pendingVersion: Int?, careLinkId: Long = 8) = TargetsReadStatus(
     careLinkId = CareLinkId(careLinkId),
     pendingVersion = pendingVersion,

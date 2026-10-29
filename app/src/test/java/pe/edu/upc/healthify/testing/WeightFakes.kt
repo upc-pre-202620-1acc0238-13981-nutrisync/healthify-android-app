@@ -18,7 +18,7 @@ import java.time.Instant
 import java.time.LocalDate
 import pe.edu.upc.healthify.features.monitoring.domain.valueobject.PatientId as MonitoringPatientId
 
-/** Tendencia de [days] puntos, uno cada 2 días hasta [TODAY], dentro de un rango de 4 semanas. */
+/** Trend of [days] points, one every 2 days up to [TODAY], within a 4-week range. */
 fun weightTrend(
     days: Int = 6,
     excluded: Int = 0,
@@ -56,7 +56,7 @@ class FakeSelfWeighInRepository : SelfWeighInRepository {
 
     override fun observePending(patientId: PatientId): Flow<List<PendingSelfWeighIn>> = pending
 
-    /** `tryEmit(Unit)` simula que el backend aceptó autopesajes de la cola. */
+    /** `tryEmit(Unit)` simulates the backend accepting queued self weigh-ins. */
     val synced = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     override val syncedWeighIns: Flow<Unit> = synced
 

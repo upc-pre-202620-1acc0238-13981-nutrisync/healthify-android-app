@@ -54,7 +54,7 @@ class AccountRepositoryImplTest {
     private val service = FakeSessionService()
     private val local = SessionLocalDataSource(FakeSessionTokenStore(), dao) {}
 
-    // Lima (UTC−5): la cuenta creada el 8 a las 02:30 UTC es del 7 en el teléfono.
+    // Lima (UTC−5): an account created on the 8th at 02:30 UTC belongs to the 7th on the phone.
     private val clock = Clock.fixed(Instant.parse("2026-10-08T15:00:00Z"), ZoneId.of("America/Lima"))
     private val repository = AccountRepositoryImpl(service, local, clock)
 

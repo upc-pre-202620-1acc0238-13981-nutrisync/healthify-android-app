@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.map
 import pe.edu.upc.healthify.core.database.pending.PendingOperationDao
 import pe.edu.upc.healthify.core.database.pending.PendingOperationEntity
 
-/** [PendingOperationDao] en memoria con la misma semántica que las queries de Room. */
+/** In-memory [PendingOperationDao] with the same semantics as the Room queries. */
 class FakePendingOperationDao : PendingOperationDao {
 
     val rows = MutableStateFlow<List<PendingOperationEntity>>(emptyList())

@@ -25,7 +25,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.time.LocalDate
 
-/** PT21 · copia de los datos: el ZIP se pide al backend y se escribe tal cual en el documento elegido. */
+/** Data export: the ZIP is requested from the backend and written as is to the chosen document. */
 class DataExportRepositoryImplTest {
 
     private val server = MockWebServer()

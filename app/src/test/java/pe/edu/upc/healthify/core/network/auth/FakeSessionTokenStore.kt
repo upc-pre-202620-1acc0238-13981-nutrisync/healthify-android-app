@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 
-/** [SessionTokenStore] en memoria y seguro entre hilos (los usan los hilos de OkHttp en los tests). */
+/** Thread-safe in-memory [SessionTokenStore] (OkHttp threads use it in the tests). */
 class FakeSessionTokenStore(
     accessToken: String? = null,
     refreshToken: String? = null,

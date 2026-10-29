@@ -33,7 +33,7 @@ import java.io.IOException
 import java.time.LocalDate
 import java.util.Locale
 
-/** IA-2 · resumen semanal (PT13 card «Tu semana», PT13.2 y PT13.2.V). */
+/** Weekly summary: the "Your week" home card and the summary screens. */
 class WeeklySummaryTest {
 
     @get:Rule

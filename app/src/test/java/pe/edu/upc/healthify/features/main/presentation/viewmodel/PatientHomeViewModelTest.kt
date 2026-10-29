@@ -136,7 +136,7 @@ class PatientHomeViewModelTest {
         assertNull(state.consumedKcal)
         assertFalse(state.howAmIDoingVisible)
         assertFalse(state.nextFollowUpVisible)
-        // PT16: sin conexión la tarjeta «Algo no cuadra» simplemente no aparece (y no se acusa).
+        // Offline, the "something doesn't add up" card just does not show (and is not acknowledged).
         assertFalse(state.consistencyCardVisible)
     }
 
@@ -209,8 +209,8 @@ class PatientHomeViewModelTest {
         assertTrue(viewModel.state.value.targetsChangedSheetVisible)
 
         viewModel.onTargetsChangedDismissed()
-        viewModel.onScreenResumed() // primera reanudación: ya cargó init
-        viewModel.onScreenResumed() // vuelve a Inicio: refresca, pero «Más tarde» ya descartó la v4
+        viewModel.onScreenResumed() // first resume: init already loaded
+        viewModel.onScreenResumed() // back to Home: it refreshes, but "Later" already dismissed v4
 
         assertNull(viewModel.state.value.targetsChangedVersion)
     }
@@ -256,7 +256,7 @@ class PatientHomeViewModelTest {
         assertFalse(viewModel.state.value.isOffline)
     }
 
-    // ----- PT3 · Medidor del día y Tu semana -----
+    // ----- Daily gauge and weekly summary -----
 
     @Test
     fun `PT3 gauge shows what is left of each macro from the day's intake`() {
