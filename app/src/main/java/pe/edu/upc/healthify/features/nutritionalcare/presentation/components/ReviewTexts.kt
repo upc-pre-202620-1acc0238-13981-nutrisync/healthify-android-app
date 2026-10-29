@@ -11,14 +11,14 @@ import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.SignalTy
 import kotlin.math.roundToInt
 
 /*
- * Evidencia de un ítem de la bandeja (X-2): se arma desde `evidenceData` con plantillas es/en de strings.xml, nunca
- * desde la frase en inglés del backend (`evidence`), que solo se muestra tal cual si no hay datos estructurados.
+ * Evidence of an inbox item: built from `evidenceData` with es/en templates from strings.xml, never
+ * from the backend's English sentence (`evidence`), which is shown as is only when there is no structured data.
  */
 
-/** La evidencia en el idioma del lector; sin `evidenceData` usable, la frase legada tal cual. */
+/** The evidence in the reader's language; without usable `evidenceData`, the legacy sentence as is. */
 fun ReviewItem.evidenceText(): UiText = evidence?.toUiText(patientFullName) ?: UiText.Raw(legacyEvidence)
 
-/** Los días sin registro nunca cuentan: se aclara bajo la evidencia que los usa como denominador. */
+/** Days without logs never count: a note under the evidence says so when it uses them as the denominator. */
 val ReviewItem.mentionsLoggedDays: Boolean
     get() = when (val data = evidence) {
         is ReviewEvidence.SustainedDeviation -> true
@@ -86,7 +86,7 @@ private fun ReviewEvidence.ConsistencyEscalation.consistencyText(): UiText {
     )
 }
 
-/** «Desviación sostenida» (chip de PR14) o, con [inline], «desviación sostenida» (fila de PR13). */
+/** "Sustained deviation" (review item chip) or, with [inline], "sustained deviation" (inbox row). */
 fun SignalType.labelText(inline: Boolean = false): UiText = when (this) {
     SignalType.SustainedDeviation ->
         UiText.of(if (inline) R.string.signal_sustained_deviation_inline else R.string.signal_sustained_deviation)

@@ -43,7 +43,7 @@ class ReviewInboxRepositoryImpl @Inject constructor(
                 response.body() to 0
             }
         }
-        // 404 PlanProposalNotFound = el ítem no tiene propuesta: PR14 sin IA. Otro 404 (el ítem ya no está) es un error.
+        // 404 PlanProposalNotFound = no proposal: the item opens without AI. Another 404 (item gone) is an error.
         val error = result.domainErrorOrNull()
         if (error is DomainError.NotFound && error.code == PLAN_PROPOSAL_NOT_FOUND) {
             return Result.success(PlanProposalLookup.None)

@@ -65,10 +65,10 @@ import java.time.Instant
 import java.time.ZoneId
 
 /**
- * PAC-4 · pestaña Plan: metas vigentes, si el paciente las vio («Ana las vio el mismo día», `lastAcknowledgedAt` de
- * CR-3), indicaciones, restricciones e historial. «Ajustar plan» inicia o reanuda la consulta guiada.
+ * Plan tab: current targets, whether the patient saw them ("Ana saw them the same day", `lastAcknowledgedAt`),
+ * guidelines, restrictions and history. "Adjust plan" starts or resumes the guided consultation.
  *
- * DECISIÓN PAC-4: no hay frame de detalle de una versión; tocar una fila del historial abre [PlanVersionSheet].
+ * There is no frame for a version's detail; tapping a history row opens [PlanVersionSheet].
  */
 @Composable
 fun PatientPlanTab(
@@ -201,8 +201,8 @@ private fun MacroColumn(value: String, label: String, modifier: Modifier) {
 private fun gramsText(grams: Double): String = stringResource(R.string.unit_g_value, compactText(grams, 0))
 
 /**
- * «Publicadas el 4 sept. · Ana las vio el mismo día.» Con la versión vigente acusada se dice cuándo; si aún no la vio,
- * «todavía no las revisa» (tono de invitación). Sin lectura del vínculo solo va la fecha.
+ * "Published on Sep 4 · Ana saw them the same day." With the current version acknowledged it says when; if not
+ * seen yet, "has not reviewed them yet" (an inviting tone). Without the link's read status only the date shows.
  */
 @Composable
 private fun publishedLine(active: NutritionPlanVersion, readStatus: TargetsReadStatus?, patientName: String): String {
@@ -267,7 +267,7 @@ private fun GuidelinesCard(active: NutritionPlanVersion) {
     }
 }
 
-/** «HISTORIAL DEL PLAN»: «Versión 3 · 4 sept. 2026 · 1 796 kcal · Vigente». */
+/** "PLAN HISTORY": "Version 3 · Sep 4, 2026 · 1 796 kcal · Current". */
 @Composable
 private fun HistorySection(versions: List<NutritionPlanVersion>, onSelect: (version: Int) -> Unit) {
     val dimens = HealthifyTheme.dimens
@@ -301,7 +301,7 @@ private fun HistorySection(versions: List<NutritionPlanVersion>, onSelect: (vers
     }
 }
 
-/** El nutricionista no recibe «qué cambió» por versión: el detalle muestra metas, indicaciones y mensaje. */
+/** The nutritionist gets no per-version "what changed": the detail shows targets, guidelines and message. */
 private fun NutritionPlanVersion.toItem() = PlanVersionItem(
     version = version,
     publishedAt = publishedAt,
@@ -335,7 +335,7 @@ private val previewHistory = PlanHistory.of(
     ),
 )
 
-@Preview(name = "PAC-4 · Plan", widthDp = 360, heightDp = 800)
+@Preview(name = "Plan tab", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientPlanPreview() {
     HealthifyTheme {
@@ -358,7 +358,7 @@ private fun PatientPlanPreview() {
     }
 }
 
-@Preview(name = "PAC-4 · Sin plan", widthDp = 360, heightDp = 800)
+@Preview(name = "Plan tab - no plan", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientPlanEmptyPreview() {
     HealthifyTheme {
@@ -371,7 +371,7 @@ private fun PatientPlanEmptyPreview() {
     }
 }
 
-@Preview(name = "PAC-4 · Cargando", widthDp = 360, heightDp = 800)
+@Preview(name = "Plan tab - loading", widthDp = 360, heightDp = 800)
 @Composable
 private fun PatientPlanLoadingPreview() {
     HealthifyTheme {

@@ -5,9 +5,9 @@ import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.GuidelineI
 import pe.edu.upc.healthify.features.intake.infrastructure.remote.dto.PlanChangeDto
 
 /**
- * `PatientPlanVersionResource` (NC-8): lo que PT4.1 lista y el detalle de cada versión. La vigente se lee además de
- * `active-targets` (que queda guardado para verla sin conexión). Las indicaciones y cambios comparten formato con
- * `ActiveTargetsResource`.
+ * `PatientPlanVersionResource`: what the previous versions screen lists and each version's detail. The current one
+ * is also read from `active-targets` (which is cached to view offline). Guidelines and changes share their format
+ * with `ActiveTargetsResource`.
  */
 @Serializable
 data class PlanVersionDto(

@@ -34,12 +34,12 @@ import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.PlanVers
 import java.time.Instant
 
 /**
- * Detalle de una versión publicada del plan, solo de consulta: metas, indicaciones, restricciones, qué cambió y el
- * mensaje. Lo usan el paciente (PT4.1) y el nutricionista (PAC-4 «HISTORIAL DEL PLAN»).
+ * Read-only detail of a published plan version: targets, guidelines, restrictions, what changed and the
+ * message. Used by both the patient and the nutritionist ("PLAN HISTORY").
  *
- * DECISIÓN PT4.1/PAC-4: no hay frame de detalle de una versión; se muestra en el BottomSheet del sistema de diseño.
+ * There is no frame for a version's detail, so it is shown in the design system's BottomSheet.
  *
- * @param messageTitle rótulo del mensaje: «Mensaje de tu nutricionista» (paciente) o «Mensaje al paciente».
+ * @param messageTitle the message label: "Message from your nutritionist" (patient) or "Message to the patient".
  */
 @Composable
 fun PlanVersionSheet(item: PlanVersionItem, messageTitle: String, onDismiss: () -> Unit) {
@@ -147,7 +147,7 @@ private fun Group(title: String, content: @Composable () -> Unit) {
     }
 }
 
-@Preview(name = "PT4.1 · Detalle de una versión", widthDp = 360)
+@Preview(name = "Plan version detail", widthDp = 360)
 @Composable
 private fun PlanVersionSheetPreview() {
     HealthifyTheme {

@@ -29,11 +29,11 @@ import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.SaveFail
 import javax.inject.Inject
 
 /**
- * EV-3 · Paso 2 Diagnóstico (solo para el expediente profesional: el paciente no lo verá). Pide la sugerencia (IA-6, o
- * la regla del IMC si la IA no está) y ofrece la lista cerrada. «Usar sugerencia» guarda la generación de IA; «Elegir
- * otro» o tocar otro diagnóstico es una elección del profesional.
+ * Step 2, diagnosis (only for the professional record: the patient will not see it). Requests the suggestion (AI,
+ * or the BMI rule when AI is unavailable) and offers the closed list. "Use suggestion" stores the AI generation;
+ * "Choose another" or tapping another diagnosis is the practitioner's choice.
  *
- * DECISIÓN EV-3: si la sugerencia no llega (sin red, error) la tarjeta no se muestra y la lista sigue disponible.
+ * If the suggestion does not arrive (no network, error) the card is hidden and the list stays available.
  */
 @HiltViewModel
 class DiagnosisStepViewModel @Inject constructor(
@@ -72,7 +72,7 @@ class DiagnosisStepViewModel @Inject constructor(
         _state.update { it.copy(selected = current.code, usesSuggestion = true, showRequired = false) }
     }
 
-    /** «Elegir otro»: suelta la sugerencia para elegir de la lista. */
+    /** "Choose another": drops the suggestion to pick from the list. */
     fun onChooseOther() = _state.update { it.copy(selected = null, usesSuggestion = false) }
 
     fun onSelect(code: DiagnosisCode) =
@@ -91,8 +91,8 @@ class DiagnosisStepViewModel @Inject constructor(
         val choice = suggestion?.takeIf { state.usesSuggestion && it.code == code }
             ?.let(DiagnosisChoice::accepting)
             ?: DiagnosisChoice.Selected(code)
-        // NC-7: el diagnóstico de esta consulta llega pendiente hasta publicar; ya está guardado. Repetir el paso
-        // descartaría el pendiente y emitiría otro igual.
+        // This consultation's diagnosis stays pending until publishing; it is already saved. Repeating the step
+        // would discard the pending one and issue an identical one.
         val saved = current.diagnosis
         if (saved != null && saved.code == code && saved.source == choice.source) {
             _events.trySend(ConsultationStepEvent.Continue)
@@ -160,7 +160,7 @@ class DiagnosisStepViewModel @Inject constructor(
         val result = suggestDiagnosis(inProgress.id)
         suggestion = result.getOrNull()
         val saved = inProgress.diagnosis
-        // Al volver al paso: la sugerencia aceptada antes se muestra otra vez como usada.
+        // On returning to the step: a previously accepted suggestion shows as used again.
         val acceptedBefore = suggestion?.let(DiagnosisChoice::accepting)
             ?.let { saved != null && saved.code == it.code && saved.source == it.source } == true
         _state.update {

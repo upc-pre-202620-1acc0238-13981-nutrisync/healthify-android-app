@@ -1,11 +1,11 @@
 package pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject
 
 /*
- * Listas cerradas de NutritionalCare (NC-1, NC-3, NC-4, NC-6). Cada valor lleva el código exacto del backend; la app
- * traduce los códigos con strings.xml (X-2) y un código desconocido se descarta o se muestra tal cual, según la pantalla.
+ * NutritionalCare closed lists. Each value carries the backend's exact code; the app
+ * translates codes through strings.xml, and an unknown code is dropped or shown as is, depending on the screen.
  */
 
-/** Sexo biológico de los datos base (NC-1): solo Femenino y Masculino. */
+/** Biological sex in the baseline: only Female and Male. */
 enum class BiologicalSex(val code: String) {
     FEMALE("Female"),
     MALE("Male"),
@@ -16,7 +16,7 @@ enum class BiologicalSex(val code: String) {
     }
 }
 
-/** Antecedentes médicos (NC-1): la lista vacía es válida (no hay «Ninguno»). */
+/** Medical history: an empty list is valid (there is no "None" option). */
 enum class MedicalCondition(val code: String) {
     TYPE_2_DIABETES("Type2Diabetes"),
     HYPERTENSION("Hypertension"),
@@ -31,7 +31,7 @@ enum class MedicalCondition(val code: String) {
     }
 }
 
-/** Actividad física actual (NC-3) con su factor por defecto (`NutritionalCare:ActivityFactors`). */
+/** Current physical activity with its default factor (`NutritionalCare:ActivityFactors`). */
 enum class ActivityLevel(val code: String, val defaultFactor: Double) {
     SEDENTARY("Sedentary", 1.2),
     LIGHT("Light", 1.375),
@@ -44,7 +44,7 @@ enum class ActivityLevel(val code: String, val defaultFactor: Double) {
     }
 }
 
-/** Casillas del protocolo de medición (NC-3): al menos una marcada. */
+/** Measurement protocol checkboxes: at least one checked. */
 enum class ProtocolCheck(val code: String) {
     FASTING("Fasting"),
     NO_SHOES("NoShoes"),
@@ -59,8 +59,8 @@ enum class ProtocolCheck(val code: String) {
 }
 
 /**
- * Diagnóstico nutricional (NC-4), lista cerrada sin «Otro». Comparte los cortes de la OMS con la categoría del IMC:
- * < 18,5 · 18,5–24,9 · 25–29,9 · 30–34,9 · 35–39,9 · ≥ 40.
+ * Nutritional diagnosis, a closed list with no "Other". It shares the WHO cut-offs with the BMI category:
+ * < 18.5 · 18.5–24.9 · 25–29.9 · 30–34.9 · 35–39.9 · ≥ 40.
  */
 enum class DiagnosisCode(val code: String) {
     UNDERWEIGHT("Underweight"),
@@ -74,7 +74,7 @@ enum class DiagnosisCode(val code: String) {
     companion object {
         fun fromCode(code: String?): DiagnosisCode? = entries.firstOrNull { it.code.equals(code, ignoreCase = true) }
 
-        /** `BodyMassIndex.CategoryFor` del backend. */
+        /** The backend's `BodyMassIndex.CategoryFor`. */
         fun forBmi(bmi: Double): DiagnosisCode = when {
             bmi < 18.5 -> UNDERWEIGHT
             bmi < 25.0 -> NORMAL_WEIGHT
@@ -87,8 +87,8 @@ enum class DiagnosisCode(val code: String) {
 }
 
 /**
- * Quién eligió el diagnóstico (NC-4). Aceptar la sugerencia determinista («por regla») cuenta como
- * [PRACTITIONER_SELECTED]: solo una generación real de IA se registra como aceptada.
+ * Who chose the diagnosis. Accepting the deterministic ("rule-based") suggestion counts as
+ * [PRACTITIONER_SELECTED]: only a real AI generation is recorded as accepted.
  */
 enum class DiagnosisSource(val code: String) {
     AI_SUGGESTION_ACCEPTED("AiSuggestionAccepted"),
@@ -100,19 +100,19 @@ enum class DiagnosisSource(val code: String) {
     }
 }
 
-/** De dónde sale una sugerencia de EV-3/EV-5 (IA-6, IA-7): la IA o la regla fija cuando la IA no está disponible. */
+/** Where a diagnosis or guideline suggestion comes from: the AI, or the fixed rule when AI is unavailable. */
 enum class SuggestionSource(val code: String) {
     AI("Ai"),
     RULE("Rule"),
     ;
 
     companion object {
-        /** Cualquier otro valor se lee como regla: nunca se rotula «IA» lo que no lo es. */
+        /** Any other value reads as a rule: nothing that is not AI is ever labeled "AI". */
         fun fromCode(code: String?): SuggestionSource = if (code.equals(AI.code, ignoreCase = true)) AI else RULE
     }
 }
 
-/** Paso de la consulta guiada (NC-2): EV-2 a EV-5. */
+/** Step of the guided consultation. */
 enum class ConsultationStep(val code: String, val number: Int) {
     MEASUREMENT("Measurement", 1),
     DIAGNOSIS("Diagnosis", 2),
@@ -129,7 +129,7 @@ enum class ConsultationStep(val code: String, val number: Int) {
     }
 }
 
-/** Restricciones del plan (NC-6), lista cerrada sin «Otra restricción». */
+/** Plan restrictions, a closed list with no "Other restriction". */
 enum class PlanRestrictionCode(val code: String) {
     LACTOSE_FREE("LactoseFree"),
     GLUTEN_FREE("GlutenFree"),
@@ -147,7 +147,7 @@ enum class PlanRestrictionCode(val code: String) {
     }
 }
 
-/** Indicaciones del catálogo (NC-6). Las que no están aquí van como «Otra indicación» (texto del profesional). */
+/** Catalog guidelines. Anything not listed here goes as "Other guideline" (the practitioner's text). */
 enum class PlanGuidelineCode(val code: String) {
     PRIORITIZE_VEGETABLES("PrioritizeVegetables"),
     DRINK_2L_WATER("Drink2LWater"),
@@ -163,7 +163,7 @@ enum class PlanGuidelineCode(val code: String) {
     }
 }
 
-/** Ecuación del gasto basal (F9). KatchMcArdle necesita la grasa corporal de la medición. */
+/** Basal expenditure equation. KatchMcArdle needs the body fat from the measurement. */
 enum class EnergyEquation(val code: String) {
     MIFFLIN_ST_JEOR("MifflinStJeor"),
     HARRIS_BENEDICT("HarrisBenedict"),
@@ -176,7 +176,7 @@ enum class EnergyEquation(val code: String) {
     }
 }
 
-/** Tipo de déficit (F9): kcal fijas (0–1500) o porcentaje del gasto total (0–40). */
+/** Deficit type: fixed kcal (0–1500) or a percentage of total expenditure (0–40). */
 enum class DeficitKind(val code: String, val maximum: Double) {
     FIXED_KCAL("FixedKcal", 1500.0),
     PERCENT_OF_TDEE("PercentOfTdee", 40.0),

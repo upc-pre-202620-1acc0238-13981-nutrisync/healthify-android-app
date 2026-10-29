@@ -6,14 +6,14 @@ import kotlinx.serialization.Serializable
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.screen.MyPlanScreen
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.screen.PlanVersionsScreen
 
-/** PT4 · Mi plan (pantalla completa sobre el shell del paciente). */
+/** My plan (full screen over the patient shell). */
 @Serializable
 data object MyPlanRoute
 
 /**
- * PT4.1 · Versiones anteriores.
+ * Previous versions.
  *
- * @param version la versión cuyo detalle se abre al llegar (desde una consulta anterior de PT25); `null` muestra la lista.
+ * @param version the version whose detail opens on arrival (from a past consultation); `null` shows the list.
  */
 @Serializable
 data class PlanVersionsRoute(val version: Int? = null) {
@@ -24,11 +24,11 @@ data class PlanVersionsRoute(val version: Int? = null) {
 
 data class NutritionalCareNavigationCallbacks(
     val onBack: () -> Unit,
-    /** PT4 → PT4.1 (se apila). */
+    /** My plan → previous versions (pushed). */
     val onOpenPlanVersions: () -> Unit,
 )
 
-/** Destinos del paciente de NutritionalCare en el grafo raíz. */
+/** NutritionalCare patient destinations in the root graph. */
 fun NavGraphBuilder.nutritionalCareDestinations(callbacks: NutritionalCareNavigationCallbacks) {
     composable<MyPlanRoute> {
         MyPlanScreen(onBack = callbacks.onBack, onOpenVersions = callbacks.onOpenPlanVersions)

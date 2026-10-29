@@ -30,8 +30,8 @@ import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.Practiti
 import javax.inject.Inject
 
 /**
- * PAC-3 · Expediente (RM-4 con el token del profesional). Se relee al volver a la pestaña y al volver la conexión. Tocar
- * una evaluación pide su detalle (`GET /nutritional-assessments/{id}`) y lo muestra en una hoja.
+ * Record (with the practitioner's token). Reread on returning to the tab and when the connection returns. Tapping
+ * an assessment requests its detail (`GET /nutritional-assessments/{id}`) and shows it in a sheet.
  */
 @HiltViewModel
 class PractitionerRecordViewModel @Inject constructor(
@@ -111,9 +111,9 @@ class PractitionerRecordViewModel @Inject constructor(
 }
 
 /**
- * PAC-4 · Plan: el historial de versiones publicadas y si el paciente vio las vigentes (`targets-read-status`,
- * CR-3, en paralelo). «Ajustar plan» abre la consulta guiada (DECISIÓN PAC-4: PR11 «Ajustar» se reemplazó por EV-4, así
- * que se inicia o se reanuda la consulta).
+ * Plan: the history of published versions and whether the patient saw the current ones (`targets-read-status`,
+ * in parallel). "Adjust plan" opens the guided consultation (the old adjust screen was replaced by the targets step,
+ * so it starts or resumes the consultation).
  */
 @HiltViewModel
 class PatientPlanViewModel @Inject constructor(

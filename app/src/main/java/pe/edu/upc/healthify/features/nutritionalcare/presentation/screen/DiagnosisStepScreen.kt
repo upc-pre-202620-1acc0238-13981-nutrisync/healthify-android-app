@@ -38,8 +38,8 @@ import pe.edu.upc.healthify.features.nutritionalcare.presentation.viewmodel.Cons
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.viewmodel.DiagnosisStepViewModel
 
 /**
- * EV-3 · Paso 2 Diagnóstico: «Solo para tu expediente profesional. El paciente no lo verá.» Sugerencia de IA (o por
- * regla) con su fundamento, «Usar sugerencia» / «Elegir otro» y la lista cerrada de diagnósticos (sin «Otro»).
+ * Step 2, diagnosis: "Only for your professional record. The patient will not see it." AI (or rule-based)
+ * suggestion with its rationale, "Use suggestion" / "Choose another" and the closed list of diagnoses (no "Other").
  */
 @Composable
 fun DiagnosisStepScreen(
@@ -134,8 +134,8 @@ fun DiagnosisStepContent(
 }
 
 /**
- * «Sugerencia de IA · Sobrepeso grado I · Fundamento clínico…» (borde `tertiary`). La de regla (sin IA) dice «Sugerencia
- * según el IMC»: nunca se rotula IA lo que no lo es.
+ * "AI suggestion · Overweight class I · Clinical rationale…" (`tertiary` border). The rule-based one (no AI) says
+ * "Suggestion based on BMI": nothing that is not AI is ever labeled AI.
  */
 @Composable
 private fun SuggestionCard(
@@ -163,7 +163,7 @@ private fun SuggestionCard(
                 style = MaterialTheme.typography.titleSmall,
                 color = scheme.onSurface,
             )
-            // El fundamento de la IA ya llega en el idioma del lector; no se traduce.
+            // The AI rationale already arrives in the reader's language; it is not translated.
             Text(text = suggestion.rationale, style = MaterialTheme.typography.bodyMedium, color = scheme.onSurface)
         }
         Text(
@@ -193,7 +193,7 @@ private val previewSuggestion = DiagnosisSuggestionUi(
     disclaimer = "Se basa en la medición y la historia de esta evaluación. Revísala antes de usarla.",
 )
 
-@Preview(name = "EV-3 · Diagnóstico", widthDp = 360, heightDp = 800)
+@Preview(name = "Diagnosis", widthDp = 360, heightDp = 800)
 @Composable
 private fun DiagnosisStepPreview() {
     HealthifyTheme {
@@ -214,7 +214,7 @@ private fun DiagnosisStepPreview() {
     }
 }
 
-@Preview(name = "EV-3 · Sugerencia por regla, sin elegir", widthDp = 360, heightDp = 800)
+@Preview(name = "Diagnosis - rule suggestion, nothing chosen", widthDp = 360, heightDp = 800)
 @Composable
 private fun DiagnosisStepRulePreview() {
     HealthifyTheme {

@@ -18,17 +18,17 @@ import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.PlanGuid
 import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.PlanRestrictionCode
 import java.time.LocalDate
 
-/** Lo común de los pasos de la consulta: la carga de la consulta en curso (re-hidratar) y sus fallos. */
+/** What the consultation steps share: loading the in-progress consultation (rehydrate) and its failures. */
 data class StepLoadState(
     val isLoading: Boolean = true,
     val loadFailed: Boolean = false,
     val isOffline: Boolean = false,
 )
 
-/** Un guardado que falló por algo que no es un dato del formulario (red, 5xx…): aviso con «Reintentar». */
+/** A save that failed for a reason other than form data (network, 5xx…): notice with "Retry". */
 data class SaveFailure(val isNetwork: Boolean)
 
-/** EV-1 · Datos base (solo la primera vez; luego se editan). */
+/** Baseline (only the first time; edited afterwards). */
 data class BaselineUiState(
     val editing: Boolean = false,
     val isLoading: Boolean = false,
@@ -37,7 +37,7 @@ data class BaselineUiState(
     val sex: BiologicalSex? = null,
     val heightText: String = "",
     val conditions: Set<MedicalCondition> = emptySet(),
-    /** Edad calculada en vivo («Edad: 31 años (se actualiza sola)»), o `null` sin una fecha válida. */
+    /** Age calculated live ("Age: 31 years (updates itself)"), or `null` without a valid date. */
     val ageYears: Int? = null,
     val problems: Set<BaselineProblem> = emptySet(),
     val isSaving: Boolean = false,
@@ -46,20 +46,20 @@ data class BaselineUiState(
 )
 
 sealed interface BaselineEvent {
-    /** «Guardar y salir» (o editar): vuelve a donde se abrió. */
+    /** "Save and exit" (or edit): back to where it was opened. */
     data object Saved : BaselineEvent
 
-    /** «Guardar e iniciar consulta»: directo al paso en que quedó la consulta. */
+    /** "Save and start consultation": straight to the step the consultation is on. */
     data class ConsultationStarted(val step: ConsultationStep) : BaselineEvent
 }
 
-/** EV-2 · Paso 1 Medición de hoy. */
+/** Step 1, today's measurement. */
 data class MeasurementUiState(
     val load: StepLoadState = StepLoadState(),
     val baseline: BaselineSummary? = null,
     val checkIn: PatientCheckIn? = null,
     val form: MeasurementForm = MeasurementForm(),
-    /** IMC en vivo con el peso escrito y la talla de los datos base. */
+    /** Live BMI from the typed weight and the baseline height. */
     val bmi: Double? = null,
     val habitsExpanded: Boolean = false,
     val biochemistryExpanded: Boolean = false,
@@ -67,19 +67,19 @@ data class MeasurementUiState(
     val isSaving: Boolean = false,
     val saveFailure: SaveFailure? = null,
     val showExitDialog: Boolean = false,
-    /** «Borrar consulta» (tacho): diálogo de confirmación, borrado en curso y fallo con «Reintentar». */
+    /** "Delete consultation" (trash can): confirmation dialog, deletion in progress and failure with "Retry". */
     val showDiscardDialog: Boolean = false,
     val isDiscarding: Boolean = false,
     val discardFailure: SaveFailure? = null,
 )
 
-/** EV-3 · Paso 2 Diagnóstico. */
+/** Step 2, diagnosis. */
 data class DiagnosisUiState(
     val load: StepLoadState = StepLoadState(),
     val isSuggesting: Boolean = false,
     val suggestion: DiagnosisSuggestionUi? = null,
     val selected: DiagnosisCode? = null,
-    /** `true` si lo elegido es la sugerencia («Usar sugerencia»); «Elegir otro» o tocar un chip lo apaga. */
+    /** `true` if the choice is the suggestion ("Use suggestion"); "Choose another" or tapping a chip turns it off. */
     val usesSuggestion: Boolean = false,
     val showRequired: Boolean = false,
     val isSaving: Boolean = false,
@@ -93,7 +93,7 @@ data class DiagnosisSuggestionUi(
     val disclaimer: String,
 )
 
-/** EV-4 · Paso 3 Metas calculadas. */
+/** Step 3, calculated targets. */
 data class TargetsUiState(
     val load: StepLoadState = StepLoadState(),
     val isCalculating: Boolean = false,
@@ -109,7 +109,7 @@ data class TargetsUiState(
     val saveFailure: SaveFailure? = null,
 )
 
-/** «Cambiar parámetros». */
+/** "Change parameters". */
 data class ParametersForm(
     val equation: EnergyEquation = EnergyEquation.MIFFLIN_ST_JEOR,
     val deficitKind: DeficitKind = DeficitKind.FIXED_KCAL,
@@ -118,7 +118,7 @@ data class ParametersForm(
     val fatPercent: String = "",
 )
 
-/** «Escribir mis propios valores» con la razón obligatoria (`OverrideReasonRequired`). */
+/** "Enter my own values" with the required reason (`OverrideReasonRequired`). */
 data class OverrideForm(
     val energy: String = "",
     val protein: String = "",
@@ -127,7 +127,7 @@ data class OverrideForm(
     val reason: String = "",
 )
 
-/** EV-5 · Paso 4 Indicaciones y publicación (+ EV-5.E). */
+/** Step 4, guidelines and publication (including the publish error). */
 data class PublicationUiState(
     val load: StepLoadState = StepLoadState(),
     val restrictions: Set<PlanRestrictionCode> = emptySet(),
@@ -141,7 +141,7 @@ data class PublicationUiState(
     val patientMessage: String = "",
     val messageTooLong: Boolean = false,
     val isPublishing: Boolean = false,
-    /** EV-5.E · «No pudimos publicar el plan. Lo que escribiste no se perdió». */
+    /** "We could not publish the plan. What you wrote was not lost". */
     val publishFailed: Boolean = false,
     val isOffline: Boolean = false,
 )

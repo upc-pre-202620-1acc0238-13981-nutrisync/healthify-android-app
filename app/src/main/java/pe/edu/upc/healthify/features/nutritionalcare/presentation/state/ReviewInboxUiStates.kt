@@ -10,7 +10,7 @@ import pe.edu.upc.healthify.features.nutritionalcare.presentation.components.lab
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.components.mentionsLoggedDays
 import java.time.Instant
 
-/** Una fila de PR13: «Ana Flores · desviación sostenida» y «Recibido el 8 sept. 2026». */
+/** An inbox row: "Ana Flores · sustained deviation" and "Received on Sep 8, 2026". */
 data class InboxRow(
     val id: Long,
     val patientName: String?,
@@ -28,8 +28,8 @@ data class InboxRow(
 }
 
 /**
- * PR13 · Bandeja de revisión (+ PR13.V al día y PR13.1 con el Snackbar, que muestra el shell). `items = null` =
- * todavía no se leyó. La bandeja no se guarda en el teléfono: sin conexión y sin lectura previa → estado offline.
+ * Review inbox (plus the all-caught-up state and the "Signal resolved" snackbar, shown by the shell). `items = null`
+ * = not read yet. The inbox is not stored on the phone: offline with no previous read → offline state.
  */
 data class ReviewInboxUiState(
     val isLoading: Boolean = true,
@@ -41,7 +41,7 @@ data class ReviewInboxUiState(
     val needsConnection: Boolean get() = items == null && loadFailed && isOffline
 }
 
-/** Encabezado de PR14: chip «Desviación sostenida · recibido el 8 sept.» y la evidencia armada en la app. */
+/** Review item header: "Sustained deviation · received Sep 8" chip and the evidence built in the app. */
 data class ReviewItemHeader(
     val patientName: String?,
     val signal: UiText,
@@ -60,42 +60,42 @@ data class ReviewItemHeader(
     }
 }
 
-/** La propuesta de IA de PR14.IA. */
+/** The AI proposal of a review item. */
 sealed interface ProposalSection {
-    /** El ítem no ofrece propuesta (otra señal, o `404`): PR14 normal. */
+    /** The item offers no proposal (another signal, or `404`): the plain review item. */
     data object NotOffered : ProposalSection
 
-    /** `202`: la IA la está preparando (se reintenta solo). */
+    /** `202`: the AI is preparing it (retried automatically). */
     data object Generating : ProposalSection
 
     data class Ready(val proposal: PlanAdjustmentProposal) : ProposalSection
 }
 
-/** Por qué no se pudo abrir el ítem. */
+/** Why the item could not be opened. */
 enum class ReviewLoadError { NOT_AVAILABLE, OFFLINE, GENERIC }
 
-/** Avisos de PR14 / PR14.IA / PR14.IA-A (textos de las Notas). */
+/** Notices of the review item, AI proposal and adjust screens (copy from the design notes). */
 enum class ReviewDialog {
-    /** `404 ReviewItemNotFound`: «Este ítem ya no está disponible.» */
+    /** `404 ReviewItemNotFound`: "This item is no longer available." */
     NOT_AVAILABLE,
 
-    /** `409 PlanProposalAlreadyDecided`: «Este ítem ya fue resuelto.» */
+    /** `409 PlanProposalAlreadyDecided`: "This item was already resolved." */
     ALREADY_RESOLVED,
 
-    /** `403 ActiveCareLinkRequired` o sin vínculo en la cartera. */
+    /** `403 ActiveCareLinkRequired` or no link in the caseload. */
     NO_ACTIVE_LINK,
 
-    /** `409 PlanVersionAlreadySuperseded`: el plan vigente cambió mientras se revisaba. */
+    /** `409 PlanVersionAlreadySuperseded`: the current plan changed during the review. */
     PLAN_CHANGED,
 
-    /** Sin conexión, 5xx o respuesta inesperada: «Reintentar». */
+    /** Offline, 5xx or unexpected response: "Retry". */
     SERVER_ERROR,
 }
 
 /**
- * PR14 · Resolver ítem (+ PR14.1 «Responde Sí o No») y PR14.IA · plan propuesto por IA. «Resolver» de PR14 envía la
- * resolución; «Resolver» de PR14.IA asigna el plan tal cual. «Resolver sin asignar este plan» muestra el formulario de
- * PR14 (la propuesta queda descartada y el plan no cambia).
+ * Resolve item (plus "Answer Yes or No") and the AI-proposed plan. "Resolve" without a proposal sends the
+ * resolution; "Resolve" with a proposal assigns the plan as is. "Resolve without assigning this plan" shows the
+ * plain resolution form (the proposal is discarded and the plan does not change).
  */
 data class ReviewItemUiState(
     val isLoading: Boolean = true,
@@ -112,14 +112,14 @@ data class ReviewItemUiState(
     val isOffline: Boolean = false,
     val dialog: ReviewDialog? = null,
 ) {
-    /** El formulario Sí/No + nota de PR14 (sin propuesta, o al elegir resolver sin asignarla). */
+    /** The Yes/No + note form (no proposal, or when choosing to resolve without assigning it). */
     val showsResolutionForm: Boolean
         get() = header != null && (proposal == ProposalSection.NotOffered || showManualResolution)
 
     val isBusy: Boolean get() = isResolving || isAccepting || isOpeningPatient
 }
 
-/** PR14.IA-A · Ajustar el plan propuesto: todo viene prellenado con la propuesta. */
+/** Adjust the proposed plan: everything comes prefilled from the proposal. */
 data class AdjustProposalUiState(
     val isLoading: Boolean = true,
     val loadError: ReviewLoadError? = null,
@@ -132,7 +132,7 @@ data class AdjustProposalUiState(
     val guidelines: Set<PlanGuidelineCode> = emptySet(),
     val message: String = "",
     val invalidFields: Set<ProposalEditField> = emptySet(),
-    /** `422 PlanProposalOutOfSafetyBounds`: la energía queda bajo el piso calórico del paciente. */
+    /** `422 PlanProposalOutOfSafetyBounds`: the energy falls below the patient's calorie floor. */
     val belowSafetyFloor: Boolean = false,
     val isAssigning: Boolean = false,
     val isOffline: Boolean = false,

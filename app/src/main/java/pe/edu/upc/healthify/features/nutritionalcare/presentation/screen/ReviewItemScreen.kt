@@ -79,7 +79,7 @@ data class ReviewItemActions(
     val onDialogDismissed: () -> Unit = {},
 )
 
-/** PR14 · Resolver ítem (+ PR14.1) y PR14.IA · Revisar señal con plan propuesto por IA. */
+/** Resolve item (plus the Yes/No prompt) and review a signal with an AI-proposed plan. */
 @Composable
 fun ReviewItemScreen(
     onBack: () -> Unit,
@@ -225,7 +225,7 @@ private fun ResolutionForm(state: ReviewItemUiState, actions: ReviewItemActions)
     )
 }
 
-/** PR14.IA · card «Plan propuesto por IA» (contorno `tertiary`). Leerla nunca cambia el plan. */
+/** "AI-proposed plan" card (`tertiary` outline). Reading it never changes the plan. */
 @Composable
 private fun ProposalCard(proposal: PlanAdjustmentProposal, patientName: String?) {
     val dimens = HealthifyTheme.dimens
@@ -257,7 +257,7 @@ private fun ProposalCard(proposal: PlanAdjustmentProposal, patientName: String?)
                 icon = HealthifyIcons.Info,
                 title = firstName?.let { stringResource(R.string.proposal_message_for, it) }
                     ?: stringResource(R.string.proposal_message_for_patient),
-                // Texto de la IA en el idioma del paciente: se muestra tal cual.
+                // AI text in the patient's language: shown as is.
                 supportingText = stringResource(R.string.proposal_quoted, proposal.patientMessage),
             )
         }
@@ -282,7 +282,7 @@ private fun ProposalCard(proposal: PlanAdjustmentProposal, patientName: String?)
     }
 }
 
-/** `202`: la IA está preparando la propuesta; se puede resolver sin esperarla. */
+/** `202`: the AI is preparing the proposal; the item can be resolved without waiting. */
 @Composable
 private fun GeneratingCard(showResolveNow: Boolean, onResolveNow: () -> Unit) {
     val dimens = HealthifyTheme.dimens
@@ -312,7 +312,7 @@ private fun BottomActions(state: ReviewItemUiState, actions: ReviewItemActions) 
     val dimens = HealthifyTheme.dimens
     val proposalReady = state.proposal is ProposalSection.Ready
     if (proposalReady && !state.showManualResolution) {
-        // PR14.IA: «Ajustar» (Outlined) y «Resolver» (asigna tal cual) lado a lado.
+        // "Adjust" (Outlined) and "Resolve" (assigns as is) side by side.
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -382,13 +382,13 @@ private val previewProposal = PlanAdjustmentProposal(
     status = PlanProposalStatus.PROPOSED,
 )
 
-@Preview(name = "PR14 · Resolver ítem", widthDp = 360, heightDp = 800)
+@Preview(name = "Review item - resolve", widthDp = 360, heightDp = 800)
 @Composable
 private fun ReviewItemPreview() {
     HealthifyTheme { ReviewItemContent(state = ReviewItemUiState(isLoading = false, header = previewHeader), actions = ReviewItemActions()) }
 }
 
-@Preview(name = "PR14.1 · Responde Sí o No", widthDp = 360, heightDp = 800)
+@Preview(name = "Review item - answer Yes or No", widthDp = 360, heightDp = 800)
 @Composable
 private fun ReviewItemOutcomeErrorPreview() {
     HealthifyTheme {
@@ -399,7 +399,7 @@ private fun ReviewItemOutcomeErrorPreview() {
     }
 }
 
-@Preview(name = "PR14.IA · Plan propuesto por IA", widthDp = 360, heightDp = 1000)
+@Preview(name = "Review item - AI-proposed plan", widthDp = 360, heightDp = 1000)
 @Composable
 private fun ReviewItemProposalPreview() {
     HealthifyTheme {
@@ -410,7 +410,7 @@ private fun ReviewItemProposalPreview() {
     }
 }
 
-@Preview(name = "PR14.IA · Generándose", widthDp = 360, heightDp = 800)
+@Preview(name = "Review item - AI proposal generating", widthDp = 360, heightDp = 800)
 @Composable
 private fun ReviewItemGeneratingPreview() {
     HealthifyTheme {
@@ -421,13 +421,13 @@ private fun ReviewItemGeneratingPreview() {
     }
 }
 
-@Preview(name = "PR14 · Cargando", widthDp = 360, heightDp = 800)
+@Preview(name = "Review item - loading", widthDp = 360, heightDp = 800)
 @Composable
 private fun ReviewItemLoadingPreview() {
     HealthifyTheme { ReviewItemContent(state = ReviewItemUiState(), actions = ReviewItemActions()) }
 }
 
-@Preview(name = "PR14 · Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Review item - offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun ReviewItemOfflinePreview() {
     HealthifyTheme {

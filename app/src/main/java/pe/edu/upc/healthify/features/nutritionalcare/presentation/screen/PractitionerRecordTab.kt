@@ -63,12 +63,12 @@ import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 
 /**
- * PAC-3 · pestaña Expediente: peso clínico, IMC, metas vigentes, cumplimiento, **diagnóstico activo** (solo del
- * profesional), derivaciones y evaluaciones.
+ * Record tab: clinical weight, BMI, current targets, adherence, **active diagnosis** (practitioner
+ * only), referrals and assessments.
  *
- * DECISIÓN PAC-3: el frame dibuja chevrons en diagnóstico, derivación y evaluaciones, pero no hay pantallas de
- * detalle. Derivaciones y evaluaciones abren su detalle en un BottomSheet ([ReferralSheet], [EvaluationSheet]); el
- * diagnóstico activo ya muestra todo lo que hay y sigue sin chevron. Cerrar una derivación queda para PR16.
+ * The frame draws chevrons on diagnosis, referral and assessments, but there are no detail screens.
+ * Referrals and assessments open their detail in a BottomSheet ([ReferralSheet], [EvaluationSheet]); the
+ * active diagnosis already shows everything there is and has no chevron. Closing a referral comes later.
  */
 @Composable
 fun PractitionerRecordTab(
@@ -151,7 +151,7 @@ private fun IndicatorRow(content: @Composable androidx.compose.foundation.layout
     )
 }
 
-/** «74.2 kg · −1.8 kg desde marzo». */
+/** "74.2 kg · −1.8 kg since March". */
 @Composable
 private fun ClinicalWeightCard(weight: ClinicalWeightSummary?, modifier: Modifier) {
     MetricCard(
@@ -205,7 +205,7 @@ private fun ComplianceCard(compliance: RecordComplianceWindow?, modifier: Modifi
     )
 }
 
-/** «Diagnóstico activo · Sobrepeso grado I · 3 mar. 2026 · solo profesional». El paciente nunca lo ve. */
+/** "Active diagnosis · Overweight class I · Mar 3, 2026 · practitioner only". The patient never sees it. */
 @Composable
 private fun DiagnosisCard(diagnosis: RecordDiagnosis?) {
     SectionCard {
@@ -220,7 +220,7 @@ private fun DiagnosisCard(diagnosis: RecordDiagnosis?) {
     }
 }
 
-/** «Derivación a Endocrinología · 8 sept. 2026 · en curso». La especialidad es texto del profesional. */
+/** "Referral to Endocrinology · Sep 8, 2026 · in progress". The specialty is the practitioner's text. */
 @Composable
 private fun ReferralCard(referral: ReferralSummary, onClick: () -> Unit) {
     SectionCard(onClick = onClick) {
@@ -237,7 +237,7 @@ private fun ReferralCard(referral: ReferralSummary, onClick: () -> Unit) {
     }
 }
 
-/** «EVALUACIONES»: «74.2 kg · IMC 26.3 · cintura 88 cm» / «… · primera evaluación». */
+/** "ASSESSMENTS": "74.2 kg · BMI 26.3 · waist 88 cm" / "… · first assessment". */
 @Composable
 private fun EvaluationsSection(evaluations: List<RecordEvaluation>, onSelect: (assessmentId: Long) -> Unit) {
     val dimens = HealthifyTheme.dimens
@@ -278,7 +278,7 @@ private fun Chevron() {
 
 private fun Instant.localDate(): LocalDate = atZone(ZoneId.systemDefault()).toLocalDate()
 
-/** «marzo» (el mes de la primera medición). */
+/** "March" (the month of the first measurement). */
 @Composable
 private fun monthText(at: Instant): String =
     DateTimeFormatter.ofPattern(stringResource(R.string.pattern_month), pe.edu.upc.healthify.core.designsystem.component.currentLocale())
@@ -302,7 +302,7 @@ private val previewRecord = PractitionerPatientRecord(
     ),
 )
 
-@Preview(name = "PAC-3 · Expediente", widthDp = 360, heightDp = 800)
+@Preview(name = "Record tab", widthDp = 360, heightDp = 800)
 @Composable
 private fun PractitionerRecordPreview() {
     HealthifyTheme {
@@ -310,13 +310,13 @@ private fun PractitionerRecordPreview() {
     }
 }
 
-@Preview(name = "PAC-3 · Cargando", widthDp = 360, heightDp = 800)
+@Preview(name = "Record tab - loading", widthDp = 360, heightDp = 800)
 @Composable
 private fun PractitionerRecordLoadingPreview() {
     HealthifyTheme { PractitionerRecordContent(state = PractitionerRecordUiState(), onRetry = {}) }
 }
 
-@Preview(name = "PAC-3 · Sin conexión", widthDp = 360, heightDp = 800)
+@Preview(name = "Record tab - offline", widthDp = 360, heightDp = 800)
 @Composable
 private fun PractitionerRecordOfflinePreview() {
     HealthifyTheme {

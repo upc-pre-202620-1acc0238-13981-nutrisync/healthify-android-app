@@ -25,18 +25,18 @@ import java.text.NumberFormat
 import java.util.Locale
 
 /*
- * Códigos clínicos del lado del nutricionista → textos de strings.xml (X-2). Los textos escritos por una persona
- * (indicación propia, restricción legada, mensaje, preguntas del paciente) se muestran tal cual.
+ * Practitioner-side clinical codes → strings.xml texts. Texts written by a person
+ * (custom guideline, legacy restriction, message, patient questions) are shown as is.
  */
 
-/** «Femenino» / «Masculino» del selector de EV-1. */
+/** "Female" / "Male" in the baseline selector. */
 @StringRes
 fun BiologicalSex.optionRes(): Int = when (this) {
     BiologicalSex.FEMALE -> R.string.sex_female
     BiologicalSex.MALE -> R.string.sex_male
 }
 
-/** «Mujer» / «Hombre» de los resúmenes («Mujer · 31 años · 168 cm»). */
+/** "Woman" / "Man" in summaries ("Woman · 31 years · 168 cm"). */
 @StringRes
 fun BiologicalSex.summaryRes(): Int = when (this) {
     BiologicalSex.FEMALE -> R.string.sex_summary_female
@@ -61,7 +61,7 @@ fun ActivityLevel.labelRes(): Int = when (this) {
     ActivityLevel.INTENSE -> R.string.activity_intense
 }
 
-/** «actividad moderada» dentro de una frase. */
+/** "moderate activity" inside a sentence. */
 @StringRes
 fun ActivityLevel.inlineRes(): Int = when (this) {
     ActivityLevel.SEDENTARY -> R.string.activity_inline_sedentary
@@ -89,7 +89,7 @@ fun DiagnosisCode.labelRes(): Int = when (this) {
     DiagnosisCode.OBESITY_GRADE_III -> R.string.diagnosis_obesity_grade_iii
 }
 
-/** «Medición de hoy», «Diagnóstico», «Metas», «Indicaciones y publicación». */
+/** "Today's measurement", "Diagnosis", "Targets", "Guidelines and publication". */
 @StringRes
 fun ConsultationStep.titleRes(): Int = when (this) {
     ConsultationStep.MEASUREMENT -> R.string.consultation_step_measurement
@@ -141,7 +141,7 @@ fun PlanRestrictionItem.text(): String = when (this) {
     is PlanRestrictionItem.Legacy -> text
 }
 
-/** Como [text], para armar un [UiText] fuera de la composición (detalle de una versión del plan). */
+/** Like [text], to build a [UiText] outside composition (plan version detail). */
 fun PlanGuidelineItem.toUiText(): UiText = when (this) {
     is PlanGuidelineItem.Catalog -> UiText.of(code.labelRes())
     is PlanGuidelineItem.Custom -> UiText.Raw(text)
@@ -152,14 +152,14 @@ fun PlanRestrictionItem.toUiText(): UiText = when (this) {
     is PlanRestrictionItem.Legacy -> UiText.Raw(text)
 }
 
-/** Un número con [decimals] decimales en el idioma de la app («74,2» en español). */
+/** A number with [decimals] decimals in the app language ("74,2" in Spanish). */
 fun formatDecimal(value: Double, decimals: Int, locale: Locale): String =
     NumberFormat.getNumberInstance(locale).apply {
         minimumFractionDigits = decimals
         maximumFractionDigits = decimals
     }.format(value)
 
-/** Igual que [formatDecimal], sin decimales de más («168» y no «168,0»; «74,25» se queda). */
+/** Same as [formatDecimal], without extra decimals ("168", not "168,0"; "74,25" stays). */
 fun formatCompact(value: Double, maxDecimals: Int, locale: Locale): String =
     NumberFormat.getNumberInstance(locale).apply {
         minimumFractionDigits = 0
@@ -172,7 +172,7 @@ fun decimalText(value: Double, decimals: Int = 1): String = formatDecimal(value,
 @Composable
 fun compactText(value: Double, maxDecimals: Int = 1): String = formatCompact(value, maxDecimals, currentLocale())
 
-/** «Mujer · 31 años · 168 cm». */
+/** "Woman · 31 years · 168 cm". */
 @Composable
 fun BaselineSummary.headline(): String {
     val sexText = sex?.let { stringResource(it.summaryRes()) }
@@ -181,7 +181,7 @@ fun BaselineSummary.headline(): String {
     return listOfNotNull(sexText, age, height).joinToString(stringResource(R.string.text_separator))
 }
 
-/** «hipotiroidismo, gota» (en minúscula, dentro de una frase) o `null` sin antecedentes. */
+/** "hypothyroidism, gout" (lowercase, inside a sentence) or `null` without medical history. */
 @Composable
 fun BaselineSummary.conditionsInline(): String? {
     if (conditions.isEmpty()) return null
@@ -191,7 +191,7 @@ fun BaselineSummary.conditionsInline(): String? {
         .joinToString(stringResource(R.string.list_separator))
 }
 
-/** Déficit «de 500 kcal» o «del 20 %». */
+/** Deficit "of 500 kcal" or "of 20 %". */
 @Composable
 fun deficitText(kind: DeficitKind?, value: Double): String = when (kind) {
     DeficitKind.PERCENT_OF_TDEE -> stringResource(R.string.targets_deficit_percent, compactText(value))
@@ -199,8 +199,8 @@ fun deficitText(kind: DeficitKind?, value: Double): String = when (kind) {
 }
 
 /**
- * Las viñetas de «Antes de la consulta, Ana contó» (MA-4): el sentir, lo que le costó y sus preguntas (texto del
- * paciente, tal cual). Un código desconocido se omite.
+ * The bullets of "Before the consultation, Ana shared": how they feel, what was hard and their questions (the
+ * patient's text, as is). An unknown code is left out.
  */
 @Composable
 fun checkInLines(checkIn: PatientCheckIn): List<String> {

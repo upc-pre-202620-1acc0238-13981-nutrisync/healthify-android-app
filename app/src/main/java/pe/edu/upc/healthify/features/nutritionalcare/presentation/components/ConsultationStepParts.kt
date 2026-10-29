@@ -38,13 +38,13 @@ import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.ConsultationStep
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.StepLoadState
 
-// Indicador lineal del Figma: 4 tramos de 4 dp.
+// Figma linear indicator: 4 segments of 4 dp.
 private val ProgressHeight = 4.dp
 
 /**
- * Estructura de EV-2 a EV-5: TopAppBar «CONSULTA DE HOY» con ‹, «PASO n DE 4 · …» con su indicador lineal, el
- * contenido con scroll y las acciones fijas abajo. Mientras se lee la consulta en curso muestra el esqueleto; si falla,
- * el error (o «Necesitas conexión»).
+ * Layout of the consultation steps: TopAppBar "TODAY'S CONSULTATION" with ‹, "STEP n OF 4 · …" with its linear
+ * indicator, scrolling content and the actions pinned at the bottom. While the in-progress consultation loads it
+ * shows the skeleton; if that fails, the error (or "You need a connection").
  */
 @Composable
 fun ConsultationStepScaffold(
@@ -115,7 +115,7 @@ fun ConsultationStepScaffold(
     }
 }
 
-/** «PASO 2 DE 4 · DIAGNÓSTICO» + indicador lineal (tramos hechos en `primary`). */
+/** "STEP 2 OF 4 · DIAGNOSIS" + linear indicator (finished segments in `primary`). */
 @Composable
 fun StepProgress(step: ConsultationStep, subtitle: String?, modifier: Modifier = Modifier) {
     val dimens = HealthifyTheme.dimens
