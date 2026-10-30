@@ -102,6 +102,9 @@
     <string name="sign_up_error_email_taken">Ya existe una cuenta con este correo. ¿Iniciar sesión?</string>
     <string name="sign_up_error_password">Necesita mayúscula, minúscula, número y símbolo, y al menos 8 caracteres</string>
     <string name="sign_up_error_role">Elige si eres paciente o nutricionista</string>
+    <string name="sign_up_terms_accept">Acepto los %1$s</string>
+    <string name="sign_up_terms_link">términos y condiciones</string>
+    <string name="sign_up_error_terms">Acepta los términos y condiciones para crear tu cuenta</string>
 
     <!-- Single sign-in -->
     <string name="sign_in_title">INICIAR SESIÓN</string>
