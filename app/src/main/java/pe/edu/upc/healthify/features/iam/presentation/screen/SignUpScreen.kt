@@ -358,6 +358,17 @@ private fun SignUpErrorsPreview() {
     }
 }
 
+@Preview(name = "Sign up - terms not accepted", widthDp = 360, heightDp = 800)
+@Composable
+private fun SignUpTermsErrorPreview() {
+    HealthifyTheme {
+        SignUpContent(
+            state = SignUpUiState(role = UserRole.PRACTITIONER, errors = SignUpFieldErrors(termsNotAccepted = true)),
+            actions = SignUpActions(),
+        )
+    }
+}
+
 @Preview(name = "Sign up - unexpected error", widthDp = 360, heightDp = 800)
 @Composable
 private fun SignUpServerErrorPreview() {
