@@ -64,6 +64,9 @@ class SignUpViewModel @Inject constructor(
     fun onRoleSelect(role: UserRole) =
         _state.update { it.copy(role = role, errors = it.errors.copy(roleMissing = false)) }
 
+    fun onTermsAcceptedChange(accepted: Boolean) =
+        _state.update { it.copy(acceptedTerms = accepted, errors = it.errors.copy(termsNotAccepted = false)) }
+
     fun onSignInClick() {
         viewModelScope.launch { _events.send(SignUpEvent.NavigateToSignIn) }
     }
@@ -85,9 +88,15 @@ class SignUpViewModel @Inject constructor(
             password = current.password,
             role = current.role,
         )
-        when (validation) {
-            is SignUpValidation.Invalid -> _state.update { it.copy(errors = validation.problems.toFieldErrors()) }
-            is SignUpValidation.Valid -> {
+        // The terms are a client-side requirement (the backend does not receive them): checked together with the
+        // fields so every error shows at once.
+        val termsNotAccepted = !current.acceptedTerms
+        when {
+            validation is SignUpValidation.Invalid -> _state.update {
+                it.copy(errors = validation.problems.toFieldErrors().copy(termsNotAccepted = termsNotAccepted))
+            }
+            termsNotAccepted -> _state.update { it.copy(errors = SignUpFieldErrors(termsNotAccepted = true)) }
+            validation is SignUpValidation.Valid -> {
                 _state.update { it.copy(isSubmitting = true, errors = SignUpFieldErrors()) }
                 viewModelScope.launch {
                     val result = register(validation.account)
