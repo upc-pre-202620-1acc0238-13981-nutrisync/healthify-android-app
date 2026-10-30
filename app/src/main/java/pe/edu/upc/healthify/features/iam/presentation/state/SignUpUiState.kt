@@ -13,6 +13,7 @@ data class SignUpFieldErrors(
     val email: SignUpEmailError? = null,
     val weakPassword: Boolean = false,
     val roleMissing: Boolean = false,
+    val termsNotAccepted: Boolean = false,
 )
 
 /**
@@ -21,6 +22,7 @@ data class SignUpFieldErrors(
  * @param isOffline offline: the "You need a connection to continue" banner and the text under the button
  *   (offline frame). Creating the account is not attempted offline.
  * @param showErrorDialog unexpected server error ("Retry" / "Close").
+ * @param acceptedTerms the terms and conditions box; the account is not created until it is checked.
  */
 data class SignUpUiState(
     val givenNames: String = "",
@@ -28,6 +30,7 @@ data class SignUpUiState(
     val email: String = "",
     val password: String = "",
     val role: UserRole? = null,
+    val acceptedTerms: Boolean = false,
     val errors: SignUpFieldErrors = SignUpFieldErrors(),
     val isSubmitting: Boolean = false,
     val isOffline: Boolean = false,
