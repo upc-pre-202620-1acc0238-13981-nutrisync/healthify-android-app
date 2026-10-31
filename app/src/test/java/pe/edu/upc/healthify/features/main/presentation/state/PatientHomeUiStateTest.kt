@@ -18,10 +18,37 @@ class PatientHomeUiStateTest {
     }
 
     @Test
-    fun `consumed energy above the target shows the card even before the outcome says so`() {
+    fun `above the target but within the tolerance the day is met, with no card`() {
         val state = base.copy(consumedKcal = 1900.0, todayOutcome = ComplianceOutcome.MET)
 
-        assertTrue(state.energyExceededCardVisible)
+        assertFalse(state.energyExceededCardVisible)
+        assertTrue(state.energyTargetReached)
+    }
+
+    @Test
+    fun `an EXCEEDED day is not shown as target met`() {
+        val state = base.copy(consumedKcal = 2100.0, todayOutcome = ComplianceOutcome.EXCEEDED)
+
+        assertFalse(state.energyTargetReached)
+    }
+
+    @Test
+    fun `before the outcome arrives the tolerance band decides`() {
+        val withinBand = base.copy(consumedKcal = 1900.0)
+        val aboveBand = base.copy(consumedKcal = 2100.0)
+
+        assertTrue(withinBand.energyTargetReached)
+        assertFalse(withinBand.energyExceededCardVisible)
+        assertFalse(aboveBand.energyTargetReached)
+        assertTrue(aboveBand.energyExceededCardVisible)
+    }
+
+    @Test
+    fun `below the target the gauge keeps counting down`() {
+        val state = base.copy(consumedKcal = 1700.0, todayOutcome = ComplianceOutcome.MET)
+
+        assertFalse(state.energyTargetReached)
+        assertFalse(state.energyExceededCardVisible)
     }
 
     @Test
