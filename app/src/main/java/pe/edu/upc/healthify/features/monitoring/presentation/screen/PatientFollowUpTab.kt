@@ -318,6 +318,14 @@ private fun DiaryCard(entries: List<PanelDiaryEntry>) {
                 color = scheme.onSurfaceVariant,
             )
         }
+        // "Pending confirmation" alone did not say whether to count the meal (validation interviews).
+        if (entries.any { it.isAwaitingConfirmation }) {
+            Text(
+                text = stringResource(R.string.follow_up_pending_confirmation_hint),
+                style = MaterialTheme.typography.bodySmall,
+                color = scheme.onSurfaceVariant,
+            )
+        }
         entries.forEachIndexed { index, entry ->
             if (index > 0) CardDivider()
             Row(horizontalArrangement = Arrangement.spacedBy(dimens.space8), verticalAlignment = Alignment.CenterVertically) {

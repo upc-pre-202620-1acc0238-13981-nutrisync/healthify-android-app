@@ -883,6 +883,7 @@
     <string name="follow_up_ai_review">Review it before using it in the consultation.</string>
     <string name="follow_up_diary_today">Today\'s diary</string>
     <string name="follow_up_diary_empty">No meals logged today yet.</string>
+    <string name="follow_up_pending_confirmation_hint">\"Pending confirmation\": the patient has not confirmed the portion yet. It does not count toward their adherence until they confirm it.</string>
     <string name="follow_up_food_unnamed">Meal</string>
     <string name="follow_up_food_portion">%1$s · %2$s g</string>
     <string name="follow_up_entry_meta">%1$s · %2$s</string>

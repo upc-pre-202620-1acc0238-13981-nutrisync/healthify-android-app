@@ -914,6 +914,7 @@
     <string name="follow_up_ai_review">Revísalo antes de usarlo en consulta.</string>
     <string name="follow_up_diary_today">Diario de hoy</string>
     <string name="follow_up_diary_empty">Todavía no hay comidas registradas hoy.</string>
+    <string name="follow_up_pending_confirmation_hint">«Por confirmar»: el paciente aún no confirmó la porción. No suma a su cumplimiento hasta que la confirme.</string>
     <string name="follow_up_food_unnamed">Comida</string>
     <string name="follow_up_food_portion">%1$s · %2$s g</string>
     <string name="follow_up_entry_meta">%1$s · %2$s</string>
