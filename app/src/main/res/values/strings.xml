@@ -650,9 +650,9 @@
         <item quantity="other">%1$d de %2$d días</item>
     </plurals>
     <plurals name="record_numbers_compliance_caption">
-        <item quantity="one">Último día</item>
-        <item quantity="many">Últimos %1$d días</item>
-        <item quantity="other">Últimos %1$d días</item>
+        <item quantity="one">Hoy</item>
+        <item quantity="many">Últimos %1$d días, incluido hoy</item>
+        <item quantity="other">Últimos %1$d días, incluido hoy</item>
     </plurals>
     <string name="record_numbers_clinical_weight">Peso clínico</string>
     <string name="record_numbers_kg_value">%1$s kg</string>

@@ -628,8 +628,8 @@
         <item quantity="other">%1$d of %2$d days</item>
     </plurals>
     <plurals name="record_numbers_compliance_caption">
-        <item quantity="one">Last day</item>
-        <item quantity="other">Last %1$d days</item>
+        <item quantity="one">Today</item>
+        <item quantity="other">Last %1$d days, including today</item>
     </plurals>
     <string name="record_numbers_clinical_weight">Clinical weight</string>
     <string name="record_numbers_kg_value">%1$s kg</string>
