@@ -38,7 +38,7 @@
     <!-- Navigation bar -->
     <string name="nav_home">Inicio</string>
     <string name="nav_diary">Diario</string>
-    <string name="nav_progress">Progreso</string>
+    <string name="nav_progress">Peso</string>
     <string name="nav_register_meal">Registrar</string>
     <string name="nav_record">Expediente</string>
     <!-- Patient main menu -->
@@ -579,22 +579,22 @@
         <item quantity="other">Promedio móvil de %1$d autopesajes que siguieron el protocolo.</item>
     </plurals>
     <plurals name="weight_trend_summary_up">
-        <item quantity="one">Resumen: subió %2$s kg en %1$d semana.</item>
-        <item quantity="many">Resumen: subió %2$s kg en %1$d semanas.</item>
-        <item quantity="other">Resumen: subió %2$s kg en %1$d semanas.</item>
+        <item quantity="one">En la última semana, tu promedio subió %2$s kg.</item>
+        <item quantity="many">En las últimas %1$d semanas, tu promedio subió %2$s kg.</item>
+        <item quantity="other">En las últimas %1$d semanas, tu promedio subió %2$s kg.</item>
     </plurals>
     <plurals name="weight_trend_summary_down">
-        <item quantity="one">Resumen: bajó %2$s kg en %1$d semana.</item>
-        <item quantity="many">Resumen: bajó %2$s kg en %1$d semanas.</item>
-        <item quantity="other">Resumen: bajó %2$s kg en %1$d semanas.</item>
+        <item quantity="one">En la última semana, tu promedio bajó %2$s kg.</item>
+        <item quantity="many">En las últimas %1$d semanas, tu promedio bajó %2$s kg.</item>
+        <item quantity="other">En las últimas %1$d semanas, tu promedio bajó %2$s kg.</item>
     </plurals>
     <plurals name="weight_trend_summary_stable">
-        <item quantity="one">Resumen: se mantuvo estable en %1$d semana.</item>
-        <item quantity="many">Resumen: se mantuvo estable en %1$d semanas.</item>
-        <item quantity="other">Resumen: se mantuvo estable en %1$d semanas.</item>
+        <item quantity="one">En la última semana, tu promedio se mantuvo estable.</item>
+        <item quantity="many">En las últimas %1$d semanas, tu promedio se mantuvo estable.</item>
+        <item quantity="other">En las últimas %1$d semanas, tu promedio se mantuvo estable.</item>
     </plurals>
     <string name="weight_trend_excluded">Algunos registros no siguieron el protocolo y no están en esta línea, pero sí quedaron guardados</string>
-    <string name="weight_trend_register">Registrar autopesaje</string>
+    <string name="weight_trend_register">Registrar mi peso</string>
     <string name="weight_trend_empty_title">Aún sin tendencia</string>
     <string name="weight_trend_empty_body">Necesitamos al menos 2 autopesajes con protocolo para dibujar tu tendencia. Nunca mostramos el peso de un solo día.</string>
     <string name="weight_trend_offline_title">Sin conexión</string>

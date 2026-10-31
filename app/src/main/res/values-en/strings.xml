@@ -34,7 +34,7 @@
     <!-- Navigation bar -->
     <string name="nav_home">Home</string>
     <string name="nav_diary">Diary</string>
-    <string name="nav_progress">Progress</string>
+    <string name="nav_progress">Weight</string>
     <string name="nav_register_meal">Log</string>
     <string name="nav_record">Record</string>
     <!-- Patient main menu -->
@@ -561,19 +561,19 @@
         <item quantity="other">Moving average of %1$d weigh-ins that followed the protocol.</item>
     </plurals>
     <plurals name="weight_trend_summary_up">
-        <item quantity="one">Summary: up %2$s kg in %1$d week.</item>
-        <item quantity="other">Summary: up %2$s kg in %1$d weeks.</item>
+        <item quantity="one">In the last week, your average went up %2$s kg.</item>
+        <item quantity="other">In the last %1$d weeks, your average went up %2$s kg.</item>
     </plurals>
     <plurals name="weight_trend_summary_down">
-        <item quantity="one">Summary: down %2$s kg in %1$d week.</item>
-        <item quantity="other">Summary: down %2$s kg in %1$d weeks.</item>
+        <item quantity="one">In the last week, your average went down %2$s kg.</item>
+        <item quantity="other">In the last %1$d weeks, your average went down %2$s kg.</item>
     </plurals>
     <plurals name="weight_trend_summary_stable">
-        <item quantity="one">Summary: stable over %1$d week.</item>
-        <item quantity="other">Summary: stable over %1$d weeks.</item>
+        <item quantity="one">In the last week, your average stayed stable.</item>
+        <item quantity="other">In the last %1$d weeks, your average stayed stable.</item>
     </plurals>
     <string name="weight_trend_excluded">Some readings didn\'t follow the protocol and aren\'t in this line, but they were saved</string>
-    <string name="weight_trend_register">Log a weigh-in</string>
+    <string name="weight_trend_register">Log my weight</string>
     <string name="weight_trend_empty_title">No trend yet</string>
     <string name="weight_trend_empty_body">We need at least 2 weigh-ins that follow the protocol to draw your trend. We never show the weight of a single day.</string>
     <string name="weight_trend_offline_title">No connection</string>
