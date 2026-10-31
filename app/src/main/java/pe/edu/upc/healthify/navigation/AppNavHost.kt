@@ -1,6 +1,8 @@
 package pe.edu.upc.healthify.navigation
 
 import androidx.activity.compose.LocalActivity
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -133,6 +135,9 @@ fun AppNavHost(
         navController = navController,
         startDestination = AuthNavGraphRoute,
         modifier = modifier,
+        // No transition between screens: "back" (button or gesture) returns at once, without the predictive animation.
+        enterTransition = { EnterTransition.None },
+        exitTransition = { ExitTransition.None },
     ) {
         navigation<AuthNavGraphRoute>(startDestination = SplashRoute) {
             onboardingDestinations(
