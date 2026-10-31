@@ -40,6 +40,7 @@ import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 import pe.edu.upc.healthify.features.iam.domain.valueobject.PersonName
 import pe.edu.upc.healthify.features.iam.domain.valueobject.UserRole
 import pe.edu.upc.healthify.features.iam.presentation.components.AuthCardLayout
+import pe.edu.upc.healthify.features.iam.presentation.components.TermsAcceptance
 import pe.edu.upc.healthify.core.designsystem.component.ServerErrorDialog
 import pe.edu.upc.healthify.features.iam.presentation.state.SignUpEmailError
 import pe.edu.upc.healthify.features.iam.presentation.state.SignUpEvent
@@ -58,6 +59,7 @@ data class SignUpActions(
     val onEmailChange: (String) -> Unit = {},
     val onPasswordChange: (String) -> Unit = {},
     val onRoleSelect: (UserRole) -> Unit = {},
+    val onTermsAcceptedChange: (Boolean) -> Unit = {},
     val onSubmit: () -> Unit = {},
     val onSignIn: () -> Unit = {},
     val onErrorDialogRetry: () -> Unit = {},
@@ -87,6 +89,7 @@ fun SignUpScreen(
             onEmailChange = viewModel::onEmailChange,
             onPasswordChange = viewModel::onPasswordChange,
             onRoleSelect = viewModel::onRoleSelect,
+            onTermsAcceptedChange = viewModel::onTermsAcceptedChange,
             onSubmit = viewModel::onSubmit,
             onSignIn = viewModel::onSignInClick,
             onErrorDialogRetry = viewModel::onErrorDialogRetry,
@@ -177,6 +180,12 @@ fun SignUpContent(
             )
         }
         RoleSelector(state = state, onRoleSelect = actions.onRoleSelect)
+        TermsAcceptance(
+            accepted = state.acceptedTerms,
+            onAcceptedChange = actions.onTermsAcceptedChange,
+            isError = state.errors.termsNotAccepted,
+            enabled = !state.isSubmitting,
+        )
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(dimens.space12),
@@ -344,6 +353,17 @@ private fun SignUpErrorsPreview() {
                 password = "maria123",
                 errors = SignUpFieldErrors(email = SignUpEmailError.Invalid, weakPassword = true),
             ),
+            actions = SignUpActions(),
+        )
+    }
+}
+
+@Preview(name = "Sign up - terms not accepted", widthDp = 360, heightDp = 800)
+@Composable
+private fun SignUpTermsErrorPreview() {
+    HealthifyTheme {
+        SignUpContent(
+            state = SignUpUiState(role = UserRole.PRACTITIONER, errors = SignUpFieldErrors(termsNotAccepted = true)),
             actions = SignUpActions(),
         )
     }

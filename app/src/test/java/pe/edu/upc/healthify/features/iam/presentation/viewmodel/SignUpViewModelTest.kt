@@ -28,12 +28,13 @@ class SignUpViewModelTest {
     private val connectivity = FakeConnectivityObserver()
     private val viewModel by lazy { SignUpViewModel(RegisterUseCase(auth), connectivity) }
 
-    private fun fillValidForm(role: UserRole? = UserRole.PATIENT) {
+    private fun fillValidForm(role: UserRole? = UserRole.PATIENT, acceptTerms: Boolean = true) {
         viewModel.onGivenNamesChange("María")
         viewModel.onFamilyNamesChange("Flores")
         viewModel.onEmailChange("maria@correo.com")
         viewModel.onPasswordChange("Maria123!")
         role?.let(viewModel::onRoleSelect)
+        if (acceptTerms) viewModel.onTermsAcceptedChange(true)
     }
 
     @Test
@@ -58,6 +59,7 @@ class SignUpViewModelTest {
                 email = SignUpEmailError.Invalid,
                 weakPassword = true,
                 roleMissing = true,
+                termsNotAccepted = true,
             ),
             viewModel.state.value.errors,
         )
@@ -75,6 +77,36 @@ class SignUpViewModelTest {
         assertEquals(null, errors.email)
         assertFalse(errors.roleMissing)
         assertTrue(errors.weakPassword)
+    }
+
+    @Test
+    fun `valid form without accepting the terms shows the terms error and does not call the backend`() {
+        fillValidForm(acceptTerms = false)
+
+        viewModel.onSubmit()
+
+        assertEquals(SignUpFieldErrors(termsNotAccepted = true), viewModel.state.value.errors)
+        assertTrue(auth.signUps.isEmpty())
+    }
+
+    @Test
+    fun `checking the terms clears their error and lets the account be created`() = runTest {
+        fillValidForm(acceptTerms = false)
+        viewModel.onSubmit()
+
+        viewModel.onTermsAcceptedChange(true)
+        assertFalse(viewModel.state.value.errors.termsNotAccepted)
+
+        viewModel.events.test {
+            viewModel.onSubmit()
+            assertEquals(SignUpEvent.NavigateToShellLoading, awaitItem())
+        }
+        assertEquals(1, auth.signUps.size)
+    }
+
+    @Test
+    fun `starts with the terms unchecked`() {
+        assertFalse(viewModel.state.value.acceptedTerms)
     }
 
     @Test

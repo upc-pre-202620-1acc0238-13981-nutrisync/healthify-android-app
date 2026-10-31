@@ -98,6 +98,9 @@
     <string name="sign_up_error_email_taken">There\'s already an account with this email. Sign in?</string>
     <string name="sign_up_error_password">It needs an uppercase letter, a lowercase letter, a number and a symbol, and at least 8 characters</string>
     <string name="sign_up_error_role">Choose whether you\'re a patient or a dietitian</string>
+    <string name="sign_up_terms_accept">I accept the %1$s</string>
+    <string name="sign_up_terms_link">terms and conditions</string>
+    <string name="sign_up_error_terms">Accept the terms and conditions to create your account</string>
 
     <!-- Single sign-in -->
     <string name="sign_in_title">SIGN IN</string>
