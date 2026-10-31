@@ -50,6 +50,7 @@ import pe.edu.upc.healthify.core.designsystem.component.weekdayDayMonthText
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 import pe.edu.upc.healthify.features.monitoring.presentation.screen.PatientFollowUpTab
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.screen.PatientPlanTab
+import pe.edu.upc.healthify.features.nutritionalcare.presentation.screen.ConsultationActionBar
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.screen.PatientSummaryTab
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.screen.PractitionerRecordTab
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.screen.SummaryManagementActions
@@ -151,7 +152,9 @@ fun PractitionerPatientScreen(
                 management = management,
             )
             PatientDetailTab.FollowUp -> PatientFollowUpTab()
-            PatientDetailTab.Record -> PractitionerRecordTab()
+            PatientDetailTab.Record -> PractitionerRecordTab(
+                bottomBar = { ConsultationActionBar(patientId = patientId, patientName = patientName, onNavigate = onNavigate) },
+            )
             PatientDetailTab.Plan -> PatientPlanTab(patientId = patientId, patientName = patientName, onNavigate = onNavigate)
         }
     }
