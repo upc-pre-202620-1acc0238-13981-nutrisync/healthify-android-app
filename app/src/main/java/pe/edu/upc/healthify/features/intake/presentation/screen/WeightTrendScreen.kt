@@ -284,21 +284,26 @@ private fun TrendSection(trend: WeightTrend, weeks: Int, showExcluded: Boolean) 
                 modifier = Modifier.padding(dimens.space16),
                 verticalArrangement = Arrangement.spacedBy(dimens.space16),
             ) {
+                // The summary goes first and on its own line: it is what the line says, read before the chart.
+                trendSummary(trend, weeks)?.let {
+                    Text(text = it, style = MaterialTheme.typography.bodyLarge, color = scheme.onSurface)
+                }
                 WeightTrendChart(
                     points = points,
                     from = trend.rangeFrom ?: points.first().date,
                     to = trend.rangeTo ?: points.last().date,
                 )
+                // bodyMedium, not bodySmall: the small print under the chart was hard to read (validation interviews).
                 Column(verticalArrangement = Arrangement.spacedBy(dimens.space4)) {
                     Text(
-                        text = trendExplanation(trend, weeks),
-                        style = MaterialTheme.typography.bodySmall,
+                        text = pluralStringResource(R.plurals.weight_trend_window, trend.windowSize, trend.windowSize),
+                        style = MaterialTheme.typography.bodyMedium,
                         color = scheme.onSurfaceVariant,
                     )
                     if (showExcluded) {
                         Text(
                             text = stringResource(R.string.weight_trend_excluded),
-                            style = MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = scheme.onSurfaceVariant,
                         )
                     }
@@ -309,21 +314,18 @@ private fun TrendSection(trend: WeightTrend, weeks: Int, showExcluded: Boolean) 
 }
 
 /**
- * "7-reading moving average of self weigh-ins that followed the protocol. Summary: up 0.6 kg in 4 weeks."
- *
- * The design says "7-day moving average", but the backend's `windowSize` counts self weigh-ins, not
- * days; the text says what the number is. The summary comes from `changeKgOverRange` (over the smoothed series).
+ * "In the last 4 weeks your average went up 0.6 kg." It comes from `changeKgOverRange` (over the smoothed series,
+ * the same line the chart draws); `null` without a change. The window text below the chart says what the average is:
+ * the design says "7-day moving average", but the backend's `windowSize` counts self weigh-ins, not days.
  */
 @Composable
-private fun trendExplanation(trend: WeightTrend, weeks: Int): String {
-    val window = pluralStringResource(R.plurals.weight_trend_window, trend.windowSize, trend.windowSize)
-    val change = trend.changeKgOverRange ?: return window
-    val summary = when (trend.direction) {
+private fun trendSummary(trend: WeightTrend, weeks: Int): String? {
+    val change = trend.changeKgOverRange ?: return null
+    return when (trend.direction) {
         WeightTrend.Direction.UP -> pluralStringResource(R.plurals.weight_trend_summary_up, weeks, weeks, numberText(abs(change)))
         WeightTrend.Direction.DOWN -> pluralStringResource(R.plurals.weight_trend_summary_down, weeks, weeks, numberText(abs(change)))
         WeightTrend.Direction.STABLE, null -> pluralStringResource(R.plurals.weight_trend_summary_stable, weeks, weeks)
     }
-    return "$window $summary"
 }
 
 /** Loading: skeleton over the chart and two lines. */

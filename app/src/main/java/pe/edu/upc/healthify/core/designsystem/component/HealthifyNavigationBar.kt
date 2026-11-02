@@ -31,6 +31,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -180,18 +181,43 @@ fun PatientNavigationBar(
     )
 }
 
-/** Center "Log meal" button: no label, centered in its slot, with the whole cell as touch target. */
+/**
+ * Center "Log meal" button, with the whole cell as touch target. It carries a short visible label, aligned with the
+ * tab labels, so it reads as the place to log a meal from any tab (validation interviews).
+ */
 @Composable
 private fun RegisterMealNavButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    val dimens = HealthifyTheme.dimens
     val scheme = MaterialTheme.colorScheme
     val label = stringResource(R.string.home_register_meal)
-    Box(
+    Column(
         modifier = modifier
             .heightIn(min = NavigationBarHeight)
             .clickable(role = Role.Button, onClickLabel = label, onClick = onClick)
-            .semantics { contentDescription = label },
-        contentAlignment = Alignment.Center,
+            .semantics { contentDescription = label }
+            // The camera is 4 dp taller than the tab indicator: 4 dp less on top keeps the labels on one line.
+            .padding(top = dimens.space8, bottom = dimens.space16),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(dimens.space4),
     ) {
+        CameraGraphic()
+        Text(
+            text = stringResource(R.string.nav_register_meal),
+            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+            color = scheme.onSurface,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            // The button already announces "Log meal".
+            modifier = Modifier.clearAndSetSemantics {},
+        )
+    }
+}
+
+/** An amber rectangle with two green rectangles peeking out behind it. */
+@Composable
+private fun CameraGraphic() {
+    val scheme = MaterialTheme.colorScheme
+    Box(contentAlignment = Alignment.Center) {
         Box(
             modifier = Modifier
                 .offset(x = -CameraBackOffset)

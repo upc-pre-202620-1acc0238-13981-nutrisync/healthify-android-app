@@ -42,16 +42,12 @@ data class PatientHomeUiState(
     val loggingGapCardVisible: Boolean get() = showLoggingGapCard && targets != null
 
     /**
-     * "Tomorrow is another day" notice: the day already came out EXCEEDED or the logged energy exceeds the target.
-     * Offline or without targets it does not show (the day's progress is only read online, from Monitoring).
+     * "Tomorrow is another day" notice: the day came out EXCEEDED (above the tolerance band, the same rule that
+     * leaves the day out of "My adherence" in the record). Offline or without targets it does not show (the day's
+     * progress is only read online, from Monitoring).
      */
     val energyExceededCardVisible: Boolean
-        get() {
-            val target = targets?.energyKcal ?: return false
-            if (isOffline) return false
-            val consumed = consumedKcal
-            return todayOutcome == ComplianceOutcome.EXCEEDED || (consumed != null && consumed > target)
-        }
+        get() = !isOffline && targets != null && energyOutcome == ComplianceOutcome.EXCEEDED
 
     /** Offline, "How I'm doing today" and "Next appointment" are not shown (they live in Monitoring). */
     val howAmIDoingVisible: Boolean get() = !isOffline && todayOutcome != null
@@ -85,11 +81,22 @@ data class PatientHomeUiState(
             return consumedKcal?.let { (target - it).coerceAtLeast(0.0) }
         }
 
-    /** Target met: the logged energy already reached the energy target (full arc, no red, no reproach). */
+    /**
+     * Target met: the logged energy reached the target and the day is MET, so it also counts in "My adherence" of the
+     * record (full arc, no red, no reproach). Above the tolerance band the day is EXCEEDED and it is not "met".
+     */
     val energyTargetReached: Boolean
         get() {
             val target = targets?.energyKcal ?: return false
-            return consumedKcal?.let { it >= target } == true
+            return consumedKcal?.let { it >= target } == true && energyOutcome == ComplianceOutcome.MET
+        }
+
+    /** Today's outcome from Monitoring; until it answers, the same rule computed from the logged energy. */
+    private val energyOutcome: ComplianceOutcome?
+        get() {
+            todayOutcome?.takeIf { it != ComplianceOutcome.UNLOGGED }?.let { return it }
+            val target = targets?.energyKcal ?: return null
+            return consumedKcal?.takeIf { it > 0 }?.let { ComplianceOutcome.forEnergy(it, target) }
         }
 }
 
