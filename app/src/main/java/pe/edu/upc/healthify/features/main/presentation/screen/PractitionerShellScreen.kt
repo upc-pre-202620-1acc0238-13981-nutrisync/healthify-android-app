@@ -1,5 +1,7 @@
 package pe.edu.upc.healthify.features.main.presentation.screen
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -171,7 +173,13 @@ fun PractitionerShellScreen(
         snackbarHostState = snackbarHostState,
         modifier = modifier,
     ) {
-        NavHost(navController = navController, startDestination = PractitionerPatientsRoute) {
+        NavHost(
+            navController = navController,
+            startDestination = PractitionerPatientsRoute,
+            // Tabs switch instantly: no fade, and the back gesture does not animate the previous tab.
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None },
+        ) {
             composable<PractitionerPatientsRoute> {
                 PatientRosterScreen(
                     onInvitePatient = callbacks.onInvitePatient,

@@ -73,6 +73,7 @@ import kotlin.math.abs
 @Composable
 fun PractitionerRecordTab(
     modifier: Modifier = Modifier,
+    bottomBar: (@Composable () -> Unit)? = null,
     viewModel: PractitionerRecordViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -87,6 +88,7 @@ fun PractitionerRecordTab(
         onSelectReferral = { selectedReferralId = it },
         onSelectEvaluation = viewModel::onEvaluationSelected,
         modifier = modifier,
+        bottomBar = bottomBar,
     )
     state.record?.referrals?.firstOrNull { it.id == selectedReferralId }?.let { referral ->
         ReferralSheet(referrals = listOf(referral.toDetailItem()), onDismiss = { selectedReferralId = null })
@@ -103,8 +105,9 @@ fun PractitionerRecordContent(
     modifier: Modifier = Modifier,
     onSelectReferral: (referralId: Long) -> Unit = {},
     onSelectEvaluation: (assessmentId: Long) -> Unit = {},
+    bottomBar: (@Composable () -> Unit)? = null,
 ) {
-    PatientTabLayout(modifier = modifier) {
+    PatientTabLayout(modifier = modifier, bottomBar = bottomBar) {
         if (state.isOffline) OfflineBanner(type = OfflineBannerType.RequiresNetwork)
         val record = state.record
         when {

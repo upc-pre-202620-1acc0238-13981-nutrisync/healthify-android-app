@@ -132,23 +132,7 @@ fun PatientSummaryContent(
     val summary = state.summary
     PatientTabLayout(
         modifier = modifier,
-        bottomBar = summary?.let {
-            {
-                HealthifyButton(
-                    text = stringResource(
-                        when {
-                            !it.hasBaseline -> R.string.summary_register_baseline
-                            it.consultationInProgress != null -> R.string.summary_continue_consultation
-                            else -> R.string.summary_start_consultation
-                        },
-                    ),
-                    onClick = onPrimaryAction,
-                    loading = state.isStartingConsultation,
-                    enabled = !state.isOffline,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-        },
+        bottomBar = summary?.let { { ConsultationPrimaryButton(state, onPrimaryAction) } },
     ) {
         if (state.isOffline) OfflineBanner(type = OfflineBannerType.RequiresNetwork)
         when {
@@ -158,6 +142,47 @@ fun PatientSummaryContent(
             state.loadFailed -> ErrorState(onRetry = onRetry, modifier = Modifier.fillMaxWidth())
         }
         Box(modifier = Modifier.height(dimens.space8))
+    }
+}
+
+/**
+ * "Register baseline" / "Start consultation" / "Continue consultation", the profile's primary action. Shown pinned in
+ * the Summary and Record tabs: in the validation interviews the practitioner looked for it in the Record first.
+ */
+@Composable
+fun ConsultationPrimaryButton(state: PatientSummaryUiState, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    val summary = state.summary ?: return
+    HealthifyButton(
+        text = stringResource(
+            when {
+                !summary.hasBaseline -> R.string.summary_register_baseline
+                summary.consultationInProgress != null -> R.string.summary_continue_consultation
+                else -> R.string.summary_start_consultation
+            },
+        ),
+        onClick = onClick,
+        loading = state.isStartingConsultation,
+        enabled = !state.isOffline,
+        modifier = modifier.fillMaxWidth(),
+    )
+}
+
+/**
+ * The profile's primary action outside the Summary tab. It shares the Summary's [PatientSummaryViewModel] (same back
+ * stack entry), so both tabs show the same state and open the same baseline or consultation step.
+ */
+@Composable
+fun ConsultationActionBar(
+    patientId: Long,
+    patientName: String,
+    onNavigate: (route: Any) -> Unit,
+    viewModel: PatientSummaryViewModel = hiltViewModel(),
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    ObserveEvents(viewModel.events) { event -> onNavigate(event.toRoute(patientId, patientName)) }
+    ConsultationPrimaryButton(state = state, onClick = viewModel::onPrimaryAction)
+    if (state.showStartError) {
+        ServerErrorDialog(onRetry = viewModel::onRetryStart, onDismiss = viewModel::onStartErrorDismissed)
     }
 }
 

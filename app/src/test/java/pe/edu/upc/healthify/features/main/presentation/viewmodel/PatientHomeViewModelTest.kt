@@ -280,12 +280,23 @@ class PatientHomeViewModelTest {
 
     @Test
     fun `PT3 once the energy goal is reached nothing is left and the goal reads as met`() {
-        monitoring.progressResult = Result.success(DailyProgress(TODAY, ComplianceOutcome.EXCEEDED, observedEnergyKcal = 2100.0))
+        monitoring.progressResult = Result.success(DailyProgress(TODAY, ComplianceOutcome.MET, observedEnergyKcal = 1900.0))
 
         val state = viewModel.state.value
 
         assertEquals(0.0, state.energyLeftKcal ?: -1.0, 0.0)
         assertTrue(state.energyTargetReached)
+    }
+
+    @Test
+    fun `PT3 an exceeded day is not read as met, like in the record's adherence`() {
+        monitoring.progressResult = Result.success(DailyProgress(TODAY, ComplianceOutcome.EXCEEDED, observedEnergyKcal = 2100.0))
+
+        val state = viewModel.state.value
+
+        assertEquals(0.0, state.energyLeftKcal ?: -1.0, 0.0)
+        assertFalse(state.energyTargetReached)
+        assertTrue(state.energyExceededCardVisible)
     }
 
     @Test
