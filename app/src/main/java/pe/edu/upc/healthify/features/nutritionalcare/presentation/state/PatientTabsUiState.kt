@@ -1,5 +1,6 @@
 package pe.edu.upc.healthify.features.nutritionalcare.presentation.state
 
+import pe.edu.upc.healthify.core.common.error.DomainError
 import pe.edu.upc.healthify.features.carerelationship.domain.entity.TargetsReadStatus
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.PatientSummary
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.PlanHistory
@@ -36,7 +37,16 @@ data class PractitionerRecordUiState(
     val record: PractitionerPatientRecord? = null,
     /** The assessment open in its detail sheet; `null` with no sheet. */
     val evaluationSheet: EvaluationSheetState? = null,
+    /** The referral awaiting confirmation to close; `null` with no dialog. */
+    val referralToClose: Long? = null,
+    val isClosingReferral: Boolean = false,
 )
+
+/** One-off outcomes of the Record tab. */
+sealed interface PractitionerRecordEvent {
+    /** The referral could not be closed: the tab shows it in a snackbar. */
+    data class ReferralCloseFailed(val error: DomainError) : PractitionerRecordEvent
+}
 
 /**
  * Plan tab. [readStatus] tells whether the patient saw the published targets ("Ana saw them the same day"); if it

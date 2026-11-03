@@ -153,6 +153,7 @@ fun PractitionerPatientScreen(
             )
             PatientDetailTab.FollowUp -> PatientFollowUpTab()
             PatientDetailTab.Record -> PractitionerRecordTab(
+                snackbarHostState = snackbarHostState,
                 bottomBar = { ConsultationActionBar(patientId = patientId, patientName = patientName, onNavigate = onNavigate) },
             )
             PatientDetailTab.Plan -> PatientPlanTab(patientId = patientId, patientName = patientName, onNavigate = onNavigate)

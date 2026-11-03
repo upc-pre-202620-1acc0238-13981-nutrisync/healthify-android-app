@@ -1,5 +1,6 @@
 package pe.edu.upc.healthify.features.nutritionalcare.presentation.screen
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,28 +12,38 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.launch
 import pe.edu.upc.healthify.R
+import pe.edu.upc.healthify.core.common.error.DomainError
 import pe.edu.upc.healthify.core.designsystem.component.CardDivider
 import pe.edu.upc.healthify.core.designsystem.component.ErrorState
+import pe.edu.upc.healthify.core.designsystem.component.HealthifyButton
+import pe.edu.upc.healthify.core.designsystem.component.HealthifyButtonStyle
+import pe.edu.upc.healthify.core.designsystem.component.HealthifyDialog
 import pe.edu.upc.healthify.core.designsystem.component.IconInfoRow
 import pe.edu.upc.healthify.core.designsystem.component.MetricCard
+import pe.edu.upc.healthify.core.designsystem.component.ObserveEvents
 import pe.edu.upc.healthify.core.designsystem.component.OfflineBanner
 import pe.edu.upc.healthify.core.designsystem.component.OfflineBannerType
 import pe.edu.upc.healthify.core.designsystem.component.SectionCard
 import pe.edu.upc.healthify.core.designsystem.component.SectionOverline
 import pe.edu.upc.healthify.core.designsystem.component.SkeletonListItem
+import pe.edu.upc.healthify.core.designsystem.component.genericMessageRes
 import pe.edu.upc.healthify.core.designsystem.component.mediumDateText
 import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
@@ -53,6 +64,7 @@ import pe.edu.upc.healthify.features.nutritionalcare.presentation.components.com
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.components.decimalText
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.components.labelRes
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.components.shortDateText
+import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.PractitionerRecordEvent
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.PractitionerRecordUiState
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.toDetailItem
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.viewmodel.PractitionerRecordViewModel
@@ -68,10 +80,14 @@ import kotlin.math.abs
  *
  * The frame draws chevrons on diagnosis, referral and assessments, but there are no detail screens.
  * Referrals and assessments open their detail in a BottomSheet ([ReferralSheet], [EvaluationSheet]); the
- * active diagnosis already shows everything there is and has no chevron. Closing a referral comes later.
+ * active diagnosis already shows everything there is and has no chevron. Open referrals can be closed from their
+ * card, after confirming.
+ *
+ * @param snackbarHostState the patient record's host, where a failed closure is reported.
  */
 @Composable
 fun PractitionerRecordTab(
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
     bottomBar: (@Composable () -> Unit)? = null,
     viewModel: PractitionerRecordViewModel = hiltViewModel(),
@@ -81,11 +97,21 @@ fun PractitionerRecordTab(
         viewModel.onResume()
         onPauseOrDispose {}
     }
+    val resources = LocalResources.current
+    val scope = rememberCoroutineScope()
+    ObserveEvents(viewModel.events) { event ->
+        when (event) {
+            is PractitionerRecordEvent.ReferralCloseFailed -> scope.launch {
+                snackbarHostState.showSnackbar(resources.getString(event.error.referralCloseMessageRes()))
+            }
+        }
+    }
     var selectedReferralId by rememberSaveable { mutableStateOf<Long?>(null) }
     PractitionerRecordContent(
         state = state,
         onRetry = viewModel::onRetry,
         onSelectReferral = { selectedReferralId = it },
+        onCloseReferral = viewModel::onCloseReferralRequested,
         onSelectEvaluation = viewModel::onEvaluationSelected,
         modifier = modifier,
         bottomBar = bottomBar,
@@ -96,6 +122,24 @@ fun PractitionerRecordTab(
     state.evaluationSheet?.let { sheet ->
         EvaluationSheet(state = sheet, onRetry = viewModel::onEvaluationRetry, onDismiss = viewModel::onEvaluationDismissed)
     }
+    state.record?.referrals?.firstOrNull { it.id == state.referralToClose }?.let { referral ->
+        HealthifyDialog(
+            title = stringResource(R.string.referral_close_dialog_title),
+            text = stringResource(R.string.referral_close_dialog_body, referral.specialty),
+            confirmLabel = stringResource(R.string.referral_close_confirm),
+            onConfirm = viewModel::onCloseReferralConfirmed,
+            onDismiss = viewModel::onCloseReferralDismissed,
+            destructive = true,
+            confirmLoading = state.isClosingReferral,
+        )
+    }
+}
+
+/** Text for the snackbar of a failed closure; a `409` never gets here (it counts as closed). */
+@StringRes
+internal fun DomainError.referralCloseMessageRes(): Int = when (this) {
+    is DomainError.NotFound -> R.string.referral_close_not_found
+    else -> genericMessageRes()
 }
 
 @Composable
@@ -104,6 +148,7 @@ fun PractitionerRecordContent(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     onSelectReferral: (referralId: Long) -> Unit = {},
+    onCloseReferral: (referralId: Long) -> Unit = {},
     onSelectEvaluation: (assessmentId: Long) -> Unit = {},
     bottomBar: (@Composable () -> Unit)? = null,
 ) {
@@ -111,7 +156,7 @@ fun PractitionerRecordContent(
         if (state.isOffline) OfflineBanner(type = OfflineBannerType.RequiresNetwork)
         val record = state.record
         when {
-            record != null -> RecordBody(record, onSelectReferral, onSelectEvaluation)
+            record != null -> RecordBody(record, onSelectReferral, onCloseReferral, onSelectEvaluation)
             state.isLoading -> repeat(SKELETON_ROWS) { SkeletonListItem(modifier = Modifier.fillMaxWidth()) }
             state.loadFailed && state.isOffline -> NeedsConnection(onRetry)
             state.loadFailed -> ErrorState(onRetry = onRetry, modifier = Modifier.fillMaxWidth())
@@ -125,6 +170,7 @@ private const val SKELETON_ROWS = 4
 private fun ColumnScope.RecordBody(
     record: PractitionerPatientRecord,
     onSelectReferral: (referralId: Long) -> Unit,
+    onCloseReferral: (referralId: Long) -> Unit,
     onSelectEvaluation: (assessmentId: Long) -> Unit,
 ) {
     val dimens = HealthifyTheme.dimens
@@ -138,7 +184,9 @@ private fun ColumnScope.RecordBody(
             ComplianceCard(record.compliance, Modifier.weight(1f).fillMaxHeight())
         }
         DiagnosisCard(record.activeDiagnosis)
-        record.referrals.forEach { ReferralCard(it, onClick = { onSelectReferral(it.id) }) }
+        record.referrals.forEach {
+            ReferralCard(it, onClick = { onSelectReferral(it.id) }, onClose = { onCloseReferral(it.id) })
+        }
     }
     EvaluationsSection(record.evaluations, onSelectEvaluation)
 }
@@ -223,9 +271,13 @@ private fun DiagnosisCard(diagnosis: RecordDiagnosis?) {
     }
 }
 
-/** "Referral to Endocrinology · Sep 8, 2026 · in progress". The specialty is the practitioner's text. */
+/**
+ * "Referral to Endocrinology · Sep 8, 2026 · in progress", or "… · closed on Oct 2, 2026". The specialty is the
+ * practitioner's text. Only an open referral offers "Close referral".
+ */
 @Composable
-private fun ReferralCard(referral: ReferralSummary, onClick: () -> Unit) {
+private fun ReferralCard(referral: ReferralSummary, onClick: () -> Unit, onClose: () -> Unit) {
+    val closedAt = referral.closedAt
     SectionCard(onClick = onClick) {
         IconInfoRow(
             icon = HealthifyIcons.Forward,
@@ -233,10 +285,21 @@ private fun ReferralCard(referral: ReferralSummary, onClick: () -> Unit) {
             supportingText = stringResource(
                 R.string.record_pr_referral_line,
                 referral.issuedAt.mediumDateText(),
-                stringResource(if (referral.isOpen) R.string.record_pr_referral_open else R.string.record_pr_referral_closed),
+                when {
+                    referral.isOpen -> stringResource(R.string.record_pr_referral_open)
+                    closedAt != null -> stringResource(R.string.referral_detail_closed_on, closedAt.mediumDateText())
+                    else -> stringResource(R.string.record_pr_referral_closed)
+                },
             ),
             trailing = { Chevron() },
         )
+        if (referral.isOpen) {
+            HealthifyButton(
+                text = stringResource(R.string.referral_close),
+                onClick = onClose,
+                style = HealthifyButtonStyle.Text,
+            )
+        }
     }
 }
 
