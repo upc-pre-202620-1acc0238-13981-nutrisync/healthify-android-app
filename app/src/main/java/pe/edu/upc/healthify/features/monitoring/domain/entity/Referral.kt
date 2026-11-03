@@ -28,7 +28,7 @@ value class ReferralReason(val text: String) {
     }
 }
 
-/** A new referral (`RecordReferralResource`). Records that something was decided on a date; it has no workflow. */
+/** A new referral (`RecordReferralResource`). Records that something was decided on a date; it stays open until closed. */
 data class NewReferral(val patientId: PatientId, val specialty: ReferralSpecialty, val reason: ReferralReason)
 
 /** Missing field of the referral form. */

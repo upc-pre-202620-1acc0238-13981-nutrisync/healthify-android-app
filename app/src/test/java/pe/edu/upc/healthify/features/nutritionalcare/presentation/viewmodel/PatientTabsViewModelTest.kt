@@ -8,8 +8,10 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
+import pe.edu.upc.healthify.R
 import pe.edu.upc.healthify.core.common.error.DomainError
 import pe.edu.upc.healthify.features.carerelationship.application.usecase.GetLinkTargetsReadStatusUseCase
+import pe.edu.upc.healthify.features.monitoring.application.usecase.CloseReferralUseCase
 import pe.edu.upc.healthify.features.nutritionalcare.application.usecase.GetEvaluationDetailUseCase
 import pe.edu.upc.healthify.features.nutritionalcare.application.usecase.GetPatientBaselineUseCase
 import pe.edu.upc.healthify.features.nutritionalcare.application.usecase.GetPatientSummaryUseCase
@@ -21,6 +23,8 @@ import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.BaselineProbl
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.ConsultationInProgress
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.NutritionPlanVersion
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.PlanHistory
+import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.PractitionerPatientRecord
+import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.ReferralSummary
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.SummaryFollowUp
 import pe.edu.upc.healthify.features.nutritionalcare.domain.entity.Targets
 import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.BiologicalSex
@@ -30,6 +34,8 @@ import pe.edu.upc.healthify.features.nutritionalcare.domain.valueobject.MedicalC
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.BaselineEvent
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.EvaluationSheetState
 import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.PatientTabEvent
+import pe.edu.upc.healthify.features.nutritionalcare.presentation.state.PractitionerRecordEvent
+import pe.edu.upc.healthify.features.nutritionalcare.presentation.screen.referralCloseMessageRes
 import pe.edu.upc.healthify.testing.CONSULTATIONS_NOW
 import pe.edu.upc.healthify.testing.FakeCareLinkRepository
 import pe.edu.upc.healthify.testing.FakeConnectivityObserver
@@ -37,6 +43,7 @@ import pe.edu.upc.healthify.testing.FakeConsultationRepository
 import pe.edu.upc.healthify.testing.FakeNutritionPlanRepository
 import pe.edu.upc.healthify.testing.FakePatientBaselineRepository
 import pe.edu.upc.healthify.testing.FakePatientSummaryRepository
+import pe.edu.upc.healthify.testing.FakePractitionerAgendaRepository
 import pe.edu.upc.healthify.testing.FakePractitionerRecordRepository
 import pe.edu.upc.healthify.testing.MainDispatcherRule
 import pe.edu.upc.healthify.testing.consultation
@@ -215,10 +222,97 @@ class PatientTabsViewModelTest {
 
     // ----- Record -----
 
+    private val agenda = FakePractitionerAgendaRepository()
+
+    private fun recordViewModel(records: FakePractitionerRecordRepository) = PractitionerRecordViewModel(
+        savedStateHandle = patientArgs(),
+        getPractitionerRecord = GetPractitionerRecordUseCase(records),
+        getEvaluationDetail = GetEvaluationDetailUseCase(records),
+        closeReferral = CloseReferralUseCase(agenda),
+        connectivityObserver = connectivity,
+    )
+
+    private fun recordWith(referral: ReferralSummary) =
+        Result.success(PractitionerPatientRecord(null, null, null, null, null, listOf(referral), emptyList()))
+
+    private val openReferral = ReferralSummary(12, "Endocrinología", Instant.parse("2026-09-08T15:00:00Z"), isOpen = true)
+    private val closedReferral = openReferral.copy(isOpen = false, closedAt = Instant.parse("2026-10-02T15:00:00Z"))
+
+    @Test
+    fun `US19 closing asks first and the reread brings the closing date`() {
+        val records = FakePractitionerRecordRepository().apply { result = recordWith(openReferral) }
+        val viewModel = recordViewModel(records)
+
+        viewModel.onCloseReferralRequested(12)
+        assertEquals(12L, viewModel.state.value.referralToClose)
+        assertTrue(agenda.closedReferrals.isEmpty())
+
+        records.result = recordWith(closedReferral)
+        viewModel.onCloseReferralConfirmed()
+
+        assertEquals(listOf(12L), agenda.closedReferrals)
+        assertNull(viewModel.state.value.referralToClose)
+        assertFalse(viewModel.state.value.isClosingReferral)
+        assertEquals(closedReferral, viewModel.state.value.record!!.referrals.single())
+    }
+
+    @Test
+    fun `US19 dismissing the confirmation closes nothing`() {
+        val viewModel = recordViewModel(FakePractitionerRecordRepository().apply { result = recordWith(openReferral) })
+
+        viewModel.onCloseReferralRequested(12)
+        viewModel.onCloseReferralDismissed()
+        viewModel.onCloseReferralConfirmed()
+
+        assertNull(viewModel.state.value.referralToClose)
+        assertTrue(agenda.closedReferrals.isEmpty())
+    }
+
+    @Test
+    fun `US19 a referral already closed rereads the record without any message`() = runTest {
+        agenda.closeReferralResult = failureOf(DomainError.Conflict("ReferralAlreadyClosed"))
+        val records = FakePractitionerRecordRepository().apply { result = recordWith(openReferral) }
+        val viewModel = recordViewModel(records)
+
+        viewModel.events.test {
+            viewModel.onCloseReferralRequested(12)
+            records.result = recordWith(closedReferral)
+            viewModel.onCloseReferralConfirmed()
+            expectNoEvents()
+        }
+        assertEquals(closedReferral, viewModel.state.value.record!!.referrals.single())
+    }
+
+    @Test
+    fun `US19 a missing referral or a network error are reported and keep the record`() = runTest {
+        val viewModel = recordViewModel(FakePractitionerRecordRepository().apply { result = recordWith(openReferral) })
+
+        viewModel.events.test {
+            agenda.closeReferralResult = failureOf(DomainError.NotFound())
+            viewModel.onCloseReferralRequested(12)
+            viewModel.onCloseReferralConfirmed()
+            assertEquals(PractitionerRecordEvent.ReferralCloseFailed(DomainError.NotFound()), awaitItem())
+
+            agenda.closeReferralResult = failureOf(DomainError.Network)
+            viewModel.onCloseReferralRequested(12)
+            viewModel.onCloseReferralConfirmed()
+            assertEquals(PractitionerRecordEvent.ReferralCloseFailed(DomainError.Network), awaitItem())
+        }
+        assertNull(viewModel.state.value.referralToClose)
+        assertEquals(openReferral, viewModel.state.value.record!!.referrals.single())
+    }
+
+    @Test
+    fun `US19 each closure failure has its snackbar text`() {
+        assertEquals(R.string.referral_close_not_found, DomainError.NotFound().referralCloseMessageRes())
+        assertEquals(R.string.error_network, DomainError.Network.referralCloseMessageRes())
+        assertEquals(R.string.error_unexpected, DomainError.Unexpected().referralCloseMessageRes())
+    }
+
     @Test
     fun `PAC-3 failure without a previous read shows the error`() {
         val records = FakePractitionerRecordRepository().apply { result = failureOf(DomainError.Forbidden("AccessNotAllowed")) }
-        val viewModel = PractitionerRecordViewModel(patientArgs(), GetPractitionerRecordUseCase(records), GetEvaluationDetailUseCase(records), connectivity)
+        val viewModel = recordViewModel(records)
 
         assertTrue(viewModel.state.value.loadFailed)
         assertFalse(viewModel.state.value.isOffline)
@@ -227,7 +321,7 @@ class PatientTabsViewModelTest {
     @Test
     fun `PAC-3 tapping an evaluation opens its detail and dismissing closes it`() {
         val records = FakePractitionerRecordRepository()
-        val viewModel = PractitionerRecordViewModel(patientArgs(), GetPractitionerRecordUseCase(records), GetEvaluationDetailUseCase(records), connectivity)
+        val viewModel = recordViewModel(records)
 
         viewModel.onEvaluationSelected(1)
         assertTrue(viewModel.state.value.evaluationSheet is EvaluationSheetState.Loaded)
@@ -239,7 +333,7 @@ class PatientTabsViewModelTest {
     @Test
     fun `PAC-3 an evaluation that cannot be read shows the error in its sheet`() {
         val records = FakePractitionerRecordRepository().apply { evaluationResult = failureOf(DomainError.Network) }
-        val viewModel = PractitionerRecordViewModel(patientArgs(), GetPractitionerRecordUseCase(records), GetEvaluationDetailUseCase(records), connectivity)
+        val viewModel = recordViewModel(records)
 
         viewModel.onEvaluationSelected(1)
 

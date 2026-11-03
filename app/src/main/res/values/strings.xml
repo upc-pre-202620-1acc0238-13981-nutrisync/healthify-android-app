@@ -1308,6 +1308,11 @@
     <string name="referral_submit">Registrar</string>
     <string name="referral_failed_title">HUBO UN ERROR</string>
     <string name="referral_failed_body">No pudimos registrar la derivación. Lo que escribiste no se perdió.</string>
+    <string name="referral_close">Cerrar derivación</string>
+    <string name="referral_close_dialog_title">¿CERRAR ESTA DERIVACIÓN?</string>
+    <string name="referral_close_dialog_body">La derivación a %1$s quedará cerrada y tu paciente lo verá en su expediente.</string>
+    <string name="referral_close_confirm">Sí, cerrar</string>
+    <string name="referral_close_not_found">No encontramos esta derivación o la registró otro nutricionista.</string>
 
     <string name="discharge_title">DAR DE ALTA</string>
     <string name="discharge_body">Esto cierra el tratamiento con este paciente. Un vínculo dado de alta no se puede reactivar.</string>
