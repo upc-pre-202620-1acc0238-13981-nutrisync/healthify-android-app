@@ -39,4 +39,8 @@ interface PractitionerAgendaService {
     /** `201` with the `ReferralResource` (unused: the patient profile is re-read on return). */
     @POST("referrals")
     suspend fun recordReferral(@Body body: RecordReferralRequestDto): ResponseBody
+
+    /** `200` with the closed `ReferralResource` (unused: the record is re-read afterwards). */
+    @POST("referrals/{referralId}/closure")
+    suspend fun closeReferral(@Path("referralId") referralId: Long): ResponseBody
 }

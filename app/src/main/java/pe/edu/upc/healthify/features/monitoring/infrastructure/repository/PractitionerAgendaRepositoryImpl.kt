@@ -51,6 +51,10 @@ class PractitionerAgendaRepositoryImpl @Inject constructor(
         service.recordReferral(referral.toDto()).close()
     }
 
+    override suspend fun closeReferral(referralId: Long): Result<Unit> = apiCall {
+        service.closeReferral(referralId).close()
+    }
+
     private fun <T> Result<T>.refreshingReminders(): Result<T> = onSuccess { reminderScheduler.requestRefresh() }
 
     private fun Result<ScheduledFollowUpDto>.toVisit(): Result<AgendaVisit> = fold(

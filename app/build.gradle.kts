@@ -32,7 +32,7 @@ android {
         targetSdk = 37
         // CI passes -PversionCode with the run number: each distributed build needs a higher one.
         versionCode = providers.gradleProperty("versionCode").orNull?.toInt() ?: 1
-        versionName = "2.0.0"
+        versionName = "2.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

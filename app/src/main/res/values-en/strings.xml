@@ -1272,6 +1272,11 @@
     <string name="referral_submit">Record</string>
     <string name="referral_failed_title">SOMETHING WENT WRONG</string>
     <string name="referral_failed_body">We couldn\'t record the referral. What you wrote wasn\'t lost.</string>
+    <string name="referral_close">Close referral</string>
+    <string name="referral_close_dialog_title">CLOSE THIS REFERRAL?</string>
+    <string name="referral_close_dialog_body">The referral to %1$s will be closed and your patient will see that in their record.</string>
+    <string name="referral_close_confirm">Yes, close</string>
+    <string name="referral_close_not_found">We couldn\'t find this referral, or another nutritionist recorded it.</string>
 
     <string name="discharge_title">DISCHARGE</string>
     <string name="discharge_body">This ends the treatment with this patient. A discharged link can\'t be reactivated.</string>
