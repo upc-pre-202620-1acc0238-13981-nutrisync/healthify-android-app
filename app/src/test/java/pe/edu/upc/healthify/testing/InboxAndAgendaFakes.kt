@@ -119,7 +119,9 @@ class FakePractitionerAgendaRepository : PractitionerAgendaRepository {
     var rescheduleResult: Result<AgendaVisit>? = null
     var cancelResult: Result<Unit> = Result.success(Unit)
     var referralResult: Result<Unit> = Result.success(Unit)
+    var closeReferralResult: Result<Unit> = Result.success(Unit)
 
+    val closedReferrals = mutableListOf<Long>()
     val scheduled = mutableListOf<NewFollowUp>()
     val rescheduled = mutableListOf<Triple<Long, Instant, FollowUpPreparation>>()
     val cancelled = mutableListOf<Long>()
@@ -149,5 +151,10 @@ class FakePractitionerAgendaRepository : PractitionerAgendaRepository {
     override suspend fun recordReferral(referral: NewReferral): Result<Unit> {
         referrals += referral
         return referralResult
+    }
+
+    override suspend fun closeReferral(referralId: Long): Result<Unit> {
+        closedReferrals += referralId
+        return closeReferralResult
     }
 }
