@@ -1,6 +1,7 @@
 package pe.edu.upc.healthify.features.monitoring.application.usecase
 
 import pe.edu.upc.healthify.core.common.error.DomainError
+import pe.edu.upc.healthify.core.common.error.domainErrorOrNull
 import pe.edu.upc.healthify.core.common.error.domainFailure
 import pe.edu.upc.healthify.features.monitoring.domain.entity.AgendaVisit
 import pe.edu.upc.healthify.features.monitoring.domain.entity.CancellationReason
@@ -65,6 +66,16 @@ class RecordReferralUseCase @Inject constructor(
     private val repository: PractitionerAgendaRepository,
 ) {
     suspend operator fun invoke(referral: NewReferral): Result<Unit> = repository.recordReferral(referral)
+}
+
+/** "Close referral". A `409` means it was already closed, which is the outcome asked for, so it counts as done. */
+class CloseReferralUseCase @Inject constructor(
+    private val repository: PractitionerAgendaRepository,
+) {
+    suspend operator fun invoke(referralId: Long): Result<Unit> {
+        val result = repository.closeReferral(referralId)
+        return if (result.domainErrorOrNull() is DomainError.Conflict) Result.success(Unit) else result
+    }
 }
 
 /** Backend code for a moment that is not in the future. */

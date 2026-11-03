@@ -30,4 +30,10 @@ interface PractitionerAgendaRepository {
 
     /** `POST /referrals` (`201`). `400 SpecialtyAndReasonRequired`, `403 ActiveCareLinkRequired`. */
     suspend fun recordReferral(referral: NewReferral): Result<Unit>
+
+    /**
+     * `POST /referrals/{id}/closure` (`200`). `404` if it does not exist or another practitioner recorded it,
+     * `409` if it was already closed.
+     */
+    suspend fun closeReferral(referralId: Long): Result<Unit>
 }
