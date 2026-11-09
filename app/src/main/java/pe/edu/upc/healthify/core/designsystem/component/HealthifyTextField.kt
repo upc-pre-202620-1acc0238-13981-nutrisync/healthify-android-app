@@ -44,9 +44,10 @@ import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 
 /**
- * Field data type: picks the keyboard (and for [Password], the masking with a show button).
+ * Field data type: picks the keyboard (and for [Password], the masking with a show button). [Code] is a
+ * case-sensitive code typed by hand (no capitalization or autocorrect).
  */
-enum class HealthifyTextFieldType { Text, Name, Email, Password, Number, Decimal, Phone }
+enum class HealthifyTextFieldType { Text, Name, Email, Password, Number, Decimal, Phone, Code }
 
 // Height of the Figma "Lines=Multi" field.
 private val MultiLineFieldMinHeight = 112.dp
@@ -305,6 +306,13 @@ private fun keyboardOptionsFor(type: HealthifyTextFieldType, singleLine: Boolean
         HealthifyTextFieldType.Number -> KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = imeAction)
         HealthifyTextFieldType.Decimal -> KeyboardOptions(keyboardType = KeyboardType.Decimal, imeAction = imeAction)
         HealthifyTextFieldType.Phone -> KeyboardOptions(keyboardType = KeyboardType.Phone, imeAction = imeAction)
+        // A case-sensitive code: no capitalization, no autocorrect, no suggestions.
+        HealthifyTextFieldType.Code -> KeyboardOptions(
+            capitalization = KeyboardCapitalization.None,
+            autoCorrectEnabled = false,
+            keyboardType = KeyboardType.Ascii,
+            imeAction = imeAction,
+        )
     }
 }
 
