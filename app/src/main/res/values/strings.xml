@@ -171,7 +171,14 @@
     <string name="scan_invitation_prompt">Pídele el código QR a tu nutricionista</string>
     <string name="scan_invitation_hint">Solo puedes entrar si tu nutricionista te invita</string>
     <string name="scan_invitation_searching">Buscando el código…</string>
-    <string name="scan_invitation_no_camera">No tengo cámara disponible</string>
+    <string name="scan_invitation_enter_manually">Escribir el código a mano</string>
+    <string name="scan_invitation_manual_title">ESCRIBE TU CÓDIGO</string>
+    <string name="scan_invitation_manual_label">Código de invitación</string>
+    <string name="scan_invitation_manual_helper">22 a 64 caracteres. Distingue mayúsculas y minúsculas.</string>
+    <string name="scan_invitation_manual_helper_short" tools:ignore="PluralsCandidate">%1$d de %2$d caracteres mínimo</string>
+    <string name="scan_invitation_manual_error_characters">Usa solo letras, números, «-» y «_». Los espacios no importan.</string>
+    <string name="scan_invitation_manual_error_too_long" tools:ignore="PluralsCandidate">El código tiene como máximo %1$d caracteres.</string>
+    <string name="scan_invitation_manual_submit">Vincular</string>
     <string name="scan_invitation_cd_viewfinder">Visor de la cámara. Apunta al código QR de tu nutricionista.</string>
     <string name="scan_invitation_error_invalid">Este código no es válido. Pídele a tu nutricionista que te muestre su código otra vez.</string>
     <string name="scan_invitation_error_not_found">No encontramos esta invitación. Pídele a tu nutricionista un código nuevo.</string>
@@ -184,8 +191,6 @@
     <string name="camera_permission_body">Para leer el código QR de tu nutricionista. Puedes activarla en los ajustes del teléfono.</string>
     <string name="camera_permission_open_settings">Abrir ajustes</string>
     <string name="camera_permission_exit">Salir</string>
-    <string name="no_camera_dialog_title">SIN CÁMARA</string>
-    <string name="no_camera_dialog_body">Para vincularte hay que leer con la cámara el código QR que te muestra tu nutricionista. Si este teléfono no tiene cámara, entra con tu cuenta desde otro teléfono para escanearlo.</string>
 
     <!-- Consent and scope -->
     <string name="consent_title">ANTES DE EMPEZAR</string>

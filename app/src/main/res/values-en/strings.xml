@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="error_network">You\'re offline. Check your connection and try again.</string>
     <string name="error_unauthorized">Your session ended. Please sign in again.</string>
     <string name="error_forbidden">You don\'t have access to this information.</string>
@@ -167,7 +167,14 @@
     <string name="scan_invitation_prompt">Ask your nutritionist for the QR code</string>
     <string name="scan_invitation_hint">You can only get in if your nutritionist invites you</string>
     <string name="scan_invitation_searching">Looking up the code…</string>
-    <string name="scan_invitation_no_camera">I don\'t have a camera available</string>
+    <string name="scan_invitation_enter_manually">Type the code by hand</string>
+    <string name="scan_invitation_manual_title">TYPE YOUR CODE</string>
+    <string name="scan_invitation_manual_label">Invitation code</string>
+    <string name="scan_invitation_manual_helper">22 to 64 characters. Upper and lower case matter.</string>
+    <string name="scan_invitation_manual_helper_short" tools:ignore="PluralsCandidate">%1$d of %2$d characters minimum</string>
+    <string name="scan_invitation_manual_error_characters">Use only letters, numbers, \'-\' and \'_\'. Spaces don\'t matter.</string>
+    <string name="scan_invitation_manual_error_too_long" tools:ignore="PluralsCandidate">The code has at most %1$d characters.</string>
+    <string name="scan_invitation_manual_submit">Link up</string>
     <string name="scan_invitation_cd_viewfinder">Camera viewfinder. Point it at your nutritionist\'s QR code.</string>
     <string name="scan_invitation_error_invalid">This code isn\'t valid. Ask your nutritionist to show you their code again.</string>
     <string name="scan_invitation_error_not_found">We couldn\'t find this invitation. Ask your nutritionist for a new code.</string>
@@ -180,8 +187,6 @@
     <string name="camera_permission_body">To read your nutritionist\'s QR code. You can turn it on in your phone settings.</string>
     <string name="camera_permission_open_settings">Open settings</string>
     <string name="camera_permission_exit">Exit</string>
-    <string name="no_camera_dialog_title">NO CAMERA</string>
-    <string name="no_camera_dialog_body">To link up, the camera needs to read the QR code your nutritionist shows you. If this phone has no camera, sign in to your account on another phone to scan it.</string>
 
     <!-- Consent and scope -->
     <string name="consent_title">BEFORE YOU START</string>
