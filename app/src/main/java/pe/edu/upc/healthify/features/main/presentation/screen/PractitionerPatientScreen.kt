@@ -209,7 +209,11 @@ fun PractitionerPatientContent(
     }
 }
 
-/** "Patient tabs": four of equal width, Label/Large, `primary` indicator under the selected one. */
+/**
+ * "Patient tabs": Label/Large, `primary` indicator under the selected one. Each tab is as wide as its text (plus 8 dp
+ * a side) and the free space is shared equally between them, so a short label like «Plan» is not left far from the
+ * rest the way it was with four equal cells.
+ */
 @Composable
 private fun PatientTabRow(selected: PatientDetailTab, onSelect: (PatientDetailTab) -> Unit) {
     val scheme = MaterialTheme.colorScheme
@@ -218,6 +222,7 @@ private fun PatientTabRow(selected: PatientDetailTab, onSelect: (PatientDetailTa
             modifier = Modifier
                 .fillMaxWidth()
                 .selectableGroup(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
             PatientDetailTab.entries.forEach { tab ->
                 val isSelected = tab == selected
@@ -225,9 +230,9 @@ private fun PatientTabRow(selected: PatientDetailTab, onSelect: (PatientDetailTa
                 val density = LocalDensity.current
                 Column(
                     modifier = Modifier
-                        .weight(1f)
                         .heightIn(min = TabHeight)
-                        .selectable(selected = isSelected, role = Role.Tab, onClick = { onSelect(tab) }),
+                        .selectable(selected = isSelected, role = Role.Tab, onClick = { onSelect(tab) })
+                        .padding(horizontal = HealthifyTheme.dimens.space8),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Bottom,
                 ) {
