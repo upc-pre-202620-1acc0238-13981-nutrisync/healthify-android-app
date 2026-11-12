@@ -823,7 +823,13 @@
 
     <!-- Generate invitation -->
     <string name="invite_title">INVITE PATIENT</string>
-    <string name="invite_instructions">Show this code to your patient so they can scan it with their phone, here in the consultation.</string>
+    <string name="invite_instructions">Show this code to your patient so they can scan it with their phone, here in the consultation. If they can\'t scan it, share it so they can type it.</string>
+    <string name="invite_code_label">Code to type by hand</string>
+    <string name="invite_code_copy">Copy</string>
+    <string name="invite_code_share">Share</string>
+    <string name="invite_code_copied">Code copied</string>
+    <string name="invite_code_share_message">Your Healthify invitation code: %1$s</string>
+    <string name="invite_code_share_chooser">Share code</string>
     <string name="invite_expires_in_label">Expires in</string>
     <string name="invite_validity_one_hour">1 hour</string>
     <string name="invite_validity_one_day">24 hours</string>
