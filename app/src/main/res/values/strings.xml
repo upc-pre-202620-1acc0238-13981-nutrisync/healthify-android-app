@@ -922,6 +922,15 @@
     <string name="follow_up_provenance_manual">a mano</string>
     <string name="follow_up_provenance_off_plan">fuera del plan</string>
     <string name="follow_up_entry_confirmed">Confirmada</string>
+    <string name="follow_up_kpi_weight">Peso</string>
+    <string name="follow_up_kpi_weight_caption">kg/sem · %1$d sem</string>
+    <string name="follow_up_kpi_ratio">%1$d de %2$d</string>
+    <string name="follow_up_kpi_days">días</string>
+    <string name="follow_up_kpi_measurement">Medición</string>
+    <string name="follow_up_kpi_measurement_caption">kg · %1$s</string>
+    <string name="follow_up_kpi_measurement_protocol">Medición clínica: %1$s</string>
+    <string name="follow_up_expand">Mostrar</string>
+    <string name="follow_up_collapse">Ocultar</string>
     <string name="follow_up_last_measurement">Última medición clínica</string>
     <string name="follow_up_read_only">Solo lectura: no puedes escribir ni corregir entradas del diario.</string>
 
@@ -1156,6 +1165,11 @@
         <item quantity="one">Tendencia · %1$d semana</item>
         <item quantity="many">Tendencia · %1$d semanas</item>
         <item quantity="other">Tendencia · %1$d semanas</item>
+    </plurals>
+    <plurals name="follow_up_pending_count">
+        <item quantity="one">%1$d por confirmar</item>
+        <item quantity="many">%1$d por confirmar</item>
+        <item quantity="other">%1$d por confirmar</item>
     </plurals>
     <plurals name="follow_up_weight_trend_caption">
         <item quantity="one">Autopesaje · %1$d semana</item>
