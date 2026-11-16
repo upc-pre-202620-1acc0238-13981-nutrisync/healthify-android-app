@@ -902,6 +902,15 @@
     <string name="follow_up_provenance_manual">manual</string>
     <string name="follow_up_provenance_off_plan">off plan</string>
     <string name="follow_up_entry_confirmed">Confirmed</string>
+    <string name="follow_up_kpi_weight">Weight</string>
+    <string name="follow_up_kpi_weight_caption">kg/wk · %1$d wk</string>
+    <string name="follow_up_kpi_ratio">%1$d of %2$d</string>
+    <string name="follow_up_kpi_days">days</string>
+    <string name="follow_up_kpi_measurement">Measure</string>
+    <string name="follow_up_kpi_measurement_caption">kg · %1$s</string>
+    <string name="follow_up_kpi_measurement_protocol">Clinical measurement: %1$s</string>
+    <string name="follow_up_expand">Show</string>
+    <string name="follow_up_collapse">Hide</string>
     <string name="follow_up_last_measurement">Last clinical measurement</string>
     <string name="follow_up_read_only">Read only: you can\'t write or correct diary entries.</string>
 
@@ -1133,6 +1142,10 @@
     <plurals name="summary_weight_caption">
         <item quantity="one">Trend · %1$d week</item>
         <item quantity="other">Trend · %1$d weeks</item>
+    </plurals>
+    <plurals name="follow_up_pending_count">
+        <item quantity="one">%1$d to confirm</item>
+        <item quantity="other">%1$d to confirm</item>
     </plurals>
     <plurals name="follow_up_weight_trend_caption">
         <item quantity="one">Self-weigh-in · %1$d week</item>
