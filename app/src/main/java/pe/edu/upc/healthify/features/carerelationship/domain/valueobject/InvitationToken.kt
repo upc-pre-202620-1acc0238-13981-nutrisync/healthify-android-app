@@ -16,9 +16,16 @@ value class InvitationToken(val value: String) {
 
     override fun toString(): String = "InvitationToken(***)"
 
+    /**
+     * The token in blocks of four («kP3x 9Qm2 …»), for the nutritionist to read out or type. A display form of the
+     * same secret: show it only where the QR is shown, never log it.
+     */
+    fun grouped(): String = value.chunked(GROUP_SIZE).joinToString(" ")
+
     companion object {
         const val MIN_LENGTH = 22
         const val MAX_LENGTH = 64
+        private const val GROUP_SIZE = 4
 
         /** The token read from the QR code, or `null` if the content does not look like an invitation. */
         fun parse(raw: String): InvitationToken? {

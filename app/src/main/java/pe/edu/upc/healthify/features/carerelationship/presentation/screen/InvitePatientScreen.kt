@@ -1,5 +1,13 @@
 package pe.edu.upc.healthify.features.carerelationship.presentation.screen
 
+import android.content.ClipData
+import android.content.ClipDescription
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
+import android.os.Build
+import android.os.PersistableBundle
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -29,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.liveRegion
@@ -160,6 +169,7 @@ private fun InvitationBody(
                     contentDescription = stringResource(R.string.invite_qr_cd),
                 )
             }
+            InvitationCodeText(token = token, enabled = !state.isExpired)
             // The design's "Valid 24h · single use" becomes the validity countdown.
             Text(
                 text = if (state.isExpired) {
@@ -194,6 +204,68 @@ private fun InvitationBody(
             )
         }
     }
+}
+
+/**
+ * The same token the QR holds, as text in blocks of four, with Copy and Share: how the patient gets it when they cannot
+ * scan. It is a secret (single use, expires): it is shown only here, copied flagged as sensitive, and never logged.
+ */
+@Composable
+private fun InvitationCodeText(token: InvitationToken, enabled: Boolean) {
+    val dimens = HealthifyTheme.dimens
+    val scheme = MaterialTheme.colorScheme
+    val context = LocalContext.current
+    val copiedText = stringResource(R.string.invite_code_copied)
+    val shareMessage = stringResource(R.string.invite_code_share_message, token.value)
+    val chooserTitle = stringResource(R.string.invite_code_share_chooser)
+    Column(verticalArrangement = Arrangement.spacedBy(dimens.space8)) {
+        Text(
+            text = stringResource(R.string.invite_code_label),
+            style = MaterialTheme.typography.labelMedium,
+            color = scheme.onSurfaceVariant,
+        )
+        Text(
+            text = token.grouped(),
+            style = MaterialTheme.typography.titleMedium,
+            color = scheme.onSurface,
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(dimens.space8)) {
+            HealthifyButton(
+                text = stringResource(R.string.invite_code_copy),
+                onClick = { context.copySensitive(token.value, copiedText) },
+                style = HealthifyButtonStyle.Tonal,
+                enabled = enabled,
+                modifier = Modifier.weight(1f),
+            )
+            HealthifyButton(
+                text = stringResource(R.string.invite_code_share),
+                onClick = { context.shareText(shareMessage, chooserTitle) },
+                style = HealthifyButtonStyle.Outlined,
+                enabled = enabled,
+                modifier = Modifier.weight(1f),
+            )
+        }
+    }
+}
+
+/** Copies [text] flagged as sensitive (Android 13+ hides it from the clipboard preview). Older versions show a toast. */
+private fun Context.copySensitive(text: String, confirmation: String) {
+    val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    val clip = ClipData.newPlainText("", text)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        clip.description.extras = PersistableBundle().apply { putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true) }
+    } else {
+        Toast.makeText(this, confirmation, Toast.LENGTH_SHORT).show()
+    }
+    clipboard.setPrimaryClip(clip)
+}
+
+private fun Context.shareText(message: String, chooserTitle: String) {
+    val send = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_TEXT, message)
+    }
+    startActivity(Intent.createChooser(send, chooserTitle).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
 }
 
 /** "Expires in" field (52 dp in the design) that opens the available durations. */

@@ -2,6 +2,7 @@ package pe.edu.upc.healthify.features.carerelationship.presentation.state
 
 import androidx.annotation.StringRes
 import pe.edu.upc.healthify.R
+import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.InvitationCodeInput
 
 /** Scan screen validations (design "Notes" frame), by the redeem `extensions.code`. No message blames the patient. */
 enum class ScanInvitationError(@param:StringRes val messageRes: Int) {
@@ -41,8 +42,10 @@ enum class CameraPermissionState { Unknown, Granted, Denied }
  *
  * @param isRedeeming "Looking for the code…": the QR code is being redeemed and scanning is paused.
  * @param error message of the last rejected scan; cleared when a different code is read.
- * @param showNoCameraDialog "I have no camera available" has no design or alternative path (the invite screen only
- *   shows the QR code); it opens an informational notice.
+ * @param showManualSheet the sheet to type the code by hand ("Type the code by hand", under the viewfinder). The camera
+ *   pauses while it is open.
+ * @param manualCode what was typed in the sheet. A secret: it is never logged and cleared when the sheet closes.
+ * @param manualError message of the last rejected typed code; cleared as soon as the code is edited.
  * @param showSignOutDialog when this is the first screen (entry routing, after withdrawal), "back" offers to sign out
  *   with the sign-out modal; otherwise someone without an invitation could not leave their account.
  */
@@ -52,13 +55,28 @@ data class ScanInvitationUiState(
     val isRedeeming: Boolean = false,
     val error: ScanInvitationError? = null,
     val isOffline: Boolean = false,
-    val showNoCameraDialog: Boolean = false,
+    val showManualSheet: Boolean = false,
+    val manualCode: ManualCode = ManualCode(),
+    val manualError: ScanInvitationError? = null,
     val showSignOutDialog: Boolean = false,
     val isSigningOut: Boolean = false,
 ) {
-    /** The camera analyzes only with permission, a connection and no redeem in progress. */
+    /** The camera analyzes only with permission, a connection, no redeem in progress and the typing sheet closed. */
     val isScanning: Boolean
-        get() = cameraPermission == CameraPermissionState.Granted && !isRedeeming && !isOffline
+        get() = cameraPermission == CameraPermissionState.Granted && !isRedeeming && !isOffline && !showManualSheet
+
+    /** The typed code judged as it is typed: drives the helper text and whether "Link up" is enabled. */
+    val manualInput: InvitationCodeInput
+        get() = InvitationCodeInput.evaluate(manualCode.text)
+
+    /** "Link up" works with a valid code, a connection and nothing already in flight. */
+    val canSubmitManual: Boolean
+        get() = manualInput is InvitationCodeInput.Valid && !isRedeeming && !isOffline
+}
+
+/** The text typed in the sheet. A secret like the token: [toString] hides it so a log of the state never leaks it. */
+data class ManualCode(val text: String = "") {
+    override fun toString(): String = "ManualCode(***)"
 }
 
 sealed interface ScanInvitationEvent {
