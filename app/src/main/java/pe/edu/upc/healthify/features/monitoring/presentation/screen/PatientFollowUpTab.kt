@@ -2,6 +2,7 @@ package pe.edu.upc.healthify.features.monitoring.presentation.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,25 +11,33 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -43,7 +52,7 @@ import pe.edu.upc.healthify.core.designsystem.component.AiBadge
 import pe.edu.upc.healthify.core.designsystem.component.CardDivider
 import pe.edu.upc.healthify.core.designsystem.component.EmptyState
 import pe.edu.upc.healthify.core.designsystem.component.ErrorState
-import pe.edu.upc.healthify.core.designsystem.component.MetricCard
+import pe.edu.upc.healthify.core.designsystem.component.HealthifyCard
 import pe.edu.upc.healthify.core.designsystem.component.OfflineBanner
 import pe.edu.upc.healthify.core.designsystem.component.OfflineBannerType
 import pe.edu.upc.healthify.core.designsystem.component.SectionCard
@@ -52,6 +61,7 @@ import pe.edu.upc.healthify.core.designsystem.component.StatusChip
 import pe.edu.upc.healthify.core.designsystem.component.StatusChipType
 import pe.edu.upc.healthify.core.designsystem.component.currentLocale
 import pe.edu.upc.healthify.core.designsystem.component.shortTimeText
+import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 import pe.edu.upc.healthify.features.monitoring.domain.entity.DaysRatio
 import pe.edu.upc.healthify.features.monitoring.domain.entity.PanelClinicalMeasurement
@@ -73,20 +83,24 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import kotlin.math.abs
 
-// Figma "This week" chart: bars with 4 dp radius; height by the day's outcome (not a quantity).
-private val BarMaxHeight = 72.dp
-private val BarMetHeight = 64.dp
-private val BarShortHeight = 40.dp
+// "This week" chart (compact dashboard): bars with 4 dp radius; height by the day's outcome (not a quantity).
+private val BarMaxHeight = 52.dp
+private val BarMetHeight = 42.dp
+private val BarShortHeight = 24.dp
 private val BarUnloggedHeight = 8.dp
 private val LegendDotSize = 8.dp
+private const val CHEVRON_DOWN = 90f
+private const val CHEVRON_UP = 270f
 
 /**
- * Follow-up tab: Mon–Sun week, self-weighing trend, days with logs, AI-generated summary ("Review it before using it
- * in a visit"), today's **read-only** diary and the last clinical measurement (a series separate from self-weighing).
+ * Follow-up tab (compact dashboard, so a small phone needs little scrolling): the Mon–Sun week with its full legend, three
+ * indicators in one row (self-weighing trend, days with logs, last clinical measurement), and two accordions for the
+ * AI-generated summary ("Review it before using it in a visit") and today's **read-only** diary. Both accordions start
+ * open; nothing is hidden, only collapsible.
  *
- * The frame only draws "Within goals" and "Below". "Above" uses `tertiary` and "No log" is a low outlined mark with no
- * fill: a day without logs is not non-compliance and is never drawn as "Below" or in red. The legend shows only the
- * week's outcomes.
+ * "Above" uses `tertiary` and "No log" is a low outlined mark with no fill: a day without logs is not non-compliance and
+ * is never drawn as "Below" or in red. The legend always lists the four outcomes, even those the week does not have, so
+ * the colors can be read without remembering them.
  */
 @Composable
 fun PatientFollowUpTab(
@@ -108,8 +122,8 @@ fun PatientFollowUpContent(state: PatientFollowUpUiState, onRetry: () -> Unit, m
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(start = dimens.space16, top = dimens.space24, end = dimens.space16, bottom = dimens.space40),
-        verticalArrangement = Arrangement.spacedBy(dimens.space24),
+            .padding(start = dimens.space16, top = dimens.space16, end = dimens.space16, bottom = dimens.space40),
+        verticalArrangement = Arrangement.spacedBy(dimens.space12),
     ) {
         if (state.isOffline) OfflineBanner(type = OfflineBannerType.RequiresNetwork)
         val panel = state.panel
@@ -132,20 +146,10 @@ private const val SKELETON_ROWS = 4
 
 @Composable
 private fun ColumnScope.FollowUpBody(panel: PatientMonitoringPanel, aiSummary: String?) {
-    val dimens = HealthifyTheme.dimens
     panel.week?.let { WeekCard(it) }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(IntrinsicSize.Min),
-        horizontalArrangement = Arrangement.spacedBy(dimens.space8),
-    ) {
-        TrendCard(panel.weightTrend, Modifier.weight(1f).fillMaxHeight())
-        LoggedDaysCard(panel.loggedDays, Modifier.weight(1f).fillMaxHeight())
-    }
-    if (!aiSummary.isNullOrBlank()) AiSummaryCard(aiSummary)
-    DiaryCard(panel.diary)
-    panel.lastClinicalMeasurement?.let { ClinicalMeasurementCard(it) }
+    IndicatorsRow(panel)
+    if (!aiSummary.isNullOrBlank()) AiSummaryAccordion(aiSummary)
+    DiaryAccordion(panel.diary)
     Text(
         text = stringResource(R.string.follow_up_read_only),
         style = MaterialTheme.typography.bodySmall,
@@ -158,7 +162,7 @@ private fun ColumnScope.FollowUpBody(panel: PatientMonitoringPanel, aiSummary: S
 private fun WeekCard(week: PanelWeek) {
     val dimens = HealthifyTheme.dimens
     val scheme = MaterialTheme.colorScheme
-    SectionCard {
+    SectionCard(verticalSpacing = dimens.space8) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = stringResource(R.string.follow_up_this_week),
@@ -181,11 +185,9 @@ private fun WeekCard(week: PanelWeek) {
         }
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(dimens.space16),
-            verticalArrangement = Arrangement.spacedBy(dimens.space8),
+            verticalArrangement = Arrangement.spacedBy(dimens.space4),
         ) {
-            ComplianceOutcome.entries.filter { outcome -> week.days.any { it.outcome == outcome } }.forEach { outcome ->
-                LegendItem(outcome)
-            }
+            ComplianceOutcome.entries.forEach { outcome -> LegendItem(outcome) }
         }
     }
 }
@@ -265,36 +267,148 @@ private fun ComplianceOutcome.legendRes(): Int = when (this) {
     ComplianceOutcome.UNLOGGED -> R.string.follow_up_legend_unlogged
 }
 
-/** "Weight trend · −0.3 kg/wk · Self-weighing · 4 weeks". */
+/**
+ * Three compact indicators in one row: self-weighing trend, days with logs and the last clinical measurement (a series
+ * separate from self-weighing). The measurement's protocol («fasting, no shoes») goes on a caption under the row so it is
+ * not lost.
+ */
 @Composable
-private fun TrendCard(trend: PanelWeightTrend?, modifier: Modifier) {
-    val slope = trend?.slopeKgPerWeek
-    MetricCard(
-        label = stringResource(R.string.follow_up_weight_trend),
-        value = slope?.let { signedOneDecimal(it) }?.let { stringResource(R.string.unit_kg_per_week, it) }
-            ?: stringResource(R.string.value_missing),
-        caption = pluralStringResource(R.plurals.follow_up_weight_trend_caption, trend?.weeks ?: 0, trend?.weeks ?: 0),
-        modifier = modifier,
-    )
+private fun IndicatorsRow(panel: PatientMonitoringPanel) {
+    val dimens = HealthifyTheme.dimens
+    val scheme = MaterialTheme.colorScheme
+    val locale = currentLocale()
+    val missing = stringResource(R.string.value_missing)
+    val trend = panel.weightTrend
+    val ratio = panel.loggedDays
+    val measurement = panel.lastClinicalMeasurement
+    val measurementDate = measurement?.let {
+        DateTimeFormatter.ofPattern(stringResource(R.string.pattern_day_month), locale)
+            .format(it.takenAt.atZone(ZoneId.systemDefault()).toLocalDate())
+    }
+    val protocol = measurement?.protocolChecks.orEmpty().map { stringResource(it.labelRes()).lowercase(locale) }
+        .joinToString(stringResource(R.string.list_separator))
+    Column(verticalArrangement = Arrangement.spacedBy(dimens.space8)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min),
+            horizontalArrangement = Arrangement.spacedBy(dimens.space8),
+        ) {
+            IndicatorTile(
+                label = stringResource(R.string.follow_up_kpi_weight),
+                description = trend?.let {
+                    "${stringResource(R.string.follow_up_weight_trend)}. " +
+                        pluralStringResource(R.plurals.follow_up_weight_trend_caption, it.weeks, it.weeks)
+                } ?: stringResource(R.string.follow_up_weight_trend),
+                value = trend?.slopeKgPerWeek?.let { signedOneDecimal(it) } ?: missing,
+                caption = trend?.slopeKgPerWeek?.let {
+                    stringResource(R.string.follow_up_kpi_weight_caption, trend.weeks)
+                }.orEmpty(),
+                modifier = Modifier.weight(1f).fillMaxHeight(),
+            )
+            IndicatorTile(
+                label = stringResource(R.string.follow_up_logging),
+                description = "${stringResource(R.string.follow_up_logging)} · ${stringResource(R.string.follow_up_logging_caption)}",
+                value = ratio?.let { stringResource(R.string.follow_up_kpi_ratio, it.count, it.total) } ?: missing,
+                caption = ratio?.let { stringResource(R.string.follow_up_kpi_days) }.orEmpty(),
+                modifier = Modifier.weight(1f).fillMaxHeight(),
+            )
+            IndicatorTile(
+                label = stringResource(R.string.follow_up_kpi_measurement),
+                description = stringResource(R.string.follow_up_last_measurement),
+                value = measurement?.let { oneDecimal(it.weightKg) } ?: missing,
+                caption = measurementDate?.let { stringResource(R.string.follow_up_kpi_measurement_caption, it) }.orEmpty(),
+                modifier = Modifier.weight(1f).fillMaxHeight(),
+            )
+        }
+        if (protocol.isNotBlank()) {
+            Text(
+                text = stringResource(R.string.follow_up_kpi_measurement_protocol, protocol),
+                style = MaterialTheme.typography.bodySmall,
+                color = scheme.onSurfaceVariant,
+            )
+        }
+    }
 }
 
-/** "Logging · 6 of 7 days · Meals logged". */
+/** A small card: label, value in the metric style and a short caption. Reads as one phrase to a screen reader. */
 @Composable
-private fun LoggedDaysCard(ratio: DaysRatio?, modifier: Modifier) {
-    MetricCard(
-        label = stringResource(R.string.follow_up_logging),
-        value = ratio?.let { pluralStringResource(R.plurals.days_of_total, it.total, it.count, it.total) } ?: stringResource(R.string.value_missing),
-        caption = stringResource(R.string.follow_up_logging_caption),
-        modifier = modifier,
-    )
+private fun IndicatorTile(
+    label: String,
+    description: String,
+    value: String,
+    caption: String,
+    modifier: Modifier = Modifier,
+) {
+    val dimens = HealthifyTheme.dimens
+    val scheme = MaterialTheme.colorScheme
+    val spoken = listOf(description, value, caption).filter { it.isNotBlank() }.joinToString(". ")
+    HealthifyCard(modifier = modifier.semantics(mergeDescendants = true) { contentDescription = spoken }, shape = MaterialTheme.shapes.extraLarge) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimens.space12),
+            verticalArrangement = Arrangement.spacedBy(dimens.space4),
+        ) {
+            Text(text = label, style = MaterialTheme.typography.labelMedium, color = scheme.onSurfaceVariant)
+            Text(text = value, style = HealthifyTheme.extendedTypography.metricMedium, color = scheme.onSurface)
+            if (caption.isNotBlank()) {
+                Text(text = caption, style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant)
+            }
+        }
+    }
+}
+
+/**
+ * A card whose header toggles its content. [header] sits left of the chevron; the whole header row is the 48 dp touch
+ * target and announces «Show» or «Hide». The state survives rotation.
+ */
+@Composable
+private fun Accordion(
+    expanded: Boolean,
+    onToggle: () -> Unit,
+    modifier: Modifier = Modifier,
+    borderColor: Color? = null,
+    header: @Composable RowScope.() -> Unit,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    val dimens = HealthifyTheme.dimens
+    val clickLabel = stringResource(if (expanded) R.string.follow_up_collapse else R.string.follow_up_expand)
+    SectionCard(modifier = modifier, borderColor = borderColor, verticalSpacing = dimens.space8) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = dimens.touchMin)
+                .clickable(onClickLabel = clickLabel, role = Role.Button, onClick = onToggle),
+            horizontalArrangement = Arrangement.spacedBy(dimens.space8),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            header()
+            Icon(
+                imageVector = HealthifyIcons.ChevronRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.rotate(if (expanded) CHEVRON_UP else CHEVRON_DOWN),
+            )
+        }
+        if (expanded) content()
+    }
 }
 
 /** AI summary · `tertiary` border; the AI text already arrives in the reader's language. */
 @Composable
-private fun AiSummaryCard(text: String) {
+private fun AiSummaryAccordion(text: String) {
     val scheme = MaterialTheme.colorScheme
-    SectionCard(borderColor = scheme.tertiary) {
-        AiBadge(label = stringResource(R.string.follow_up_ai_badge))
+    var expanded by rememberSaveable { mutableStateOf(true) }
+    Accordion(
+        expanded = expanded,
+        onToggle = { expanded = !expanded },
+        borderColor = scheme.tertiary,
+        header = {
+            AiBadge(label = stringResource(R.string.follow_up_ai_badge))
+            Box(modifier = Modifier.weight(1f))
+        },
+    ) {
         Text(text = text, style = MaterialTheme.typography.bodyMedium, color = scheme.onSurface)
         Text(
             text = stringResource(R.string.follow_up_ai_review),
@@ -306,11 +420,30 @@ private fun AiSummaryCard(text: String) {
 
 /** "Today's diary" (read-only: the practitioner never writes or corrects entries). */
 @Composable
-private fun DiaryCard(entries: List<PanelDiaryEntry>) {
+private fun DiaryAccordion(entries: List<PanelDiaryEntry>) {
     val dimens = HealthifyTheme.dimens
     val scheme = MaterialTheme.colorScheme
-    SectionCard {
-        Text(text = stringResource(R.string.follow_up_diary_today), style = MaterialTheme.typography.titleMedium, color = scheme.onSurface)
+    var expanded by rememberSaveable { mutableStateOf(true) }
+    val pending = entries.count { it.isAwaitingConfirmation }
+    Accordion(
+        expanded = expanded,
+        onToggle = { expanded = !expanded },
+        header = {
+            Text(
+                text = stringResource(R.string.follow_up_diary_today),
+                style = MaterialTheme.typography.titleMedium,
+                color = scheme.onSurface,
+                modifier = Modifier.weight(1f),
+            )
+            // Even collapsed, the header says there is something to review.
+            if (pending > 0) {
+                StatusChip(
+                    type = StatusChipType.PendingConfirmation,
+                    label = pluralStringResource(R.plurals.follow_up_pending_count, pending, pending),
+                )
+            }
+        },
+    ) {
         if (entries.isEmpty()) {
             Text(
                 text = stringResource(R.string.follow_up_diary_empty),
@@ -319,7 +452,7 @@ private fun DiaryCard(entries: List<PanelDiaryEntry>) {
             )
         }
         // "Pending confirmation" alone did not say whether to count the meal (validation interviews).
-        if (entries.any { it.isAwaitingConfirmation }) {
+        if (pending > 0) {
             Text(
                 text = stringResource(R.string.follow_up_pending_confirmation_hint),
                 style = MaterialTheme.typography.bodySmall,
@@ -360,39 +493,6 @@ private fun PanelEntryProvenance.labelRes(): Int = when (this) {
     PanelEntryProvenance.PHOTO -> R.string.follow_up_provenance_photo
     PanelEntryProvenance.MANUAL -> R.string.follow_up_provenance_manual
     PanelEntryProvenance.OFF_PLAN -> R.string.follow_up_provenance_off_plan
-}
-
-/** "Last clinical measurement · Sep 3 · fasting, no shoes · 74.2 kg". */
-@Composable
-private fun ClinicalMeasurementCard(measurement: PanelClinicalMeasurement) {
-    val dimens = HealthifyTheme.dimens
-    val scheme = MaterialTheme.colorScheme
-    val locale = currentLocale()
-    val date = DateTimeFormatter.ofPattern(stringResource(R.string.pattern_day_month), locale)
-        .format(measurement.takenAt.atZone(ZoneId.systemDefault()).toLocalDate())
-    val protocol = measurement.protocolChecks.map { stringResource(it.labelRes()).lowercase(locale) }
-        .joinToString(stringResource(R.string.list_separator))
-    SectionCard {
-        Row(horizontalArrangement = Arrangement.spacedBy(dimens.space8), verticalAlignment = Alignment.CenterVertically) {
-            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(dimens.space4)) {
-                Text(
-                    text = stringResource(R.string.follow_up_last_measurement),
-                    style = MaterialTheme.typography.titleSmall,
-                    color = scheme.onSurface,
-                )
-                Text(
-                    text = listOf(date, protocol).filter { it.isNotBlank() }.joinToString(stringResource(R.string.text_separator)),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = scheme.onSurfaceVariant,
-                )
-            }
-            Text(
-                text = stringResource(R.string.unit_kg_value, oneDecimal(measurement.weightKg)),
-                style = MaterialTheme.typography.labelLarge,
-                color = scheme.onSurface,
-            )
-        }
-    }
 }
 
 private fun PanelProtocolCheck.labelRes(): Int = when (this) {

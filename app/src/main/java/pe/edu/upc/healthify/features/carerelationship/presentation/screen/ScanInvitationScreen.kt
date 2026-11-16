@@ -18,10 +18,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -39,8 +41,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,8 +54,11 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import pe.edu.upc.healthify.R
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyButton
+import pe.edu.upc.healthify.core.designsystem.component.HealthifyBottomSheet
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyButtonStyle
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyDialog
+import pe.edu.upc.healthify.core.designsystem.component.HealthifyTextField
+import pe.edu.upc.healthify.core.designsystem.component.HealthifyTextFieldType
 import pe.edu.upc.healthify.core.designsystem.component.HealthifyTopAppBar
 import pe.edu.upc.healthify.core.designsystem.component.ObserveEvents
 import pe.edu.upc.healthify.core.designsystem.component.OfflineBanner
@@ -61,7 +68,10 @@ import pe.edu.upc.healthify.core.designsystem.icon.HealthifyIcons
 import pe.edu.upc.healthify.core.designsystem.theme.HealthifyTheme
 import pe.edu.upc.healthify.features.carerelationship.presentation.components.QrCodeScanner
 import pe.edu.upc.healthify.core.designsystem.component.ViewfinderCorners
+import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.InvitationCodeInput
+import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.InvitationToken
 import pe.edu.upc.healthify.features.carerelationship.presentation.state.CameraPermissionState
+import pe.edu.upc.healthify.features.carerelationship.presentation.state.ManualCode
 import pe.edu.upc.healthify.features.carerelationship.presentation.state.ScanInvitationError
 import pe.edu.upc.healthify.features.carerelationship.presentation.state.ScanInvitationEvent
 import pe.edu.upc.healthify.features.carerelationship.presentation.state.ScanInvitationUiState
@@ -76,8 +86,10 @@ private val ProgressStroke = 2.dp
 /** Scan screen actions that the stateful screen wires to the ViewModel and the system. */
 data class ScanInvitationActions(
     val onBack: () -> Unit = {},
-    val onNoCamera: () -> Unit = {},
-    val onNoCameraDismiss: () -> Unit = {},
+    val onManualEntry: () -> Unit = {},
+    val onManualDismiss: () -> Unit = {},
+    val onManualCodeChange: (String) -> Unit = {},
+    val onManualSubmit: () -> Unit = {},
     val onOpenSettings: () -> Unit = {},
     val onExit: () -> Unit = {},
     val onSignOutConfirm: () -> Unit = {},
@@ -130,8 +142,10 @@ fun ScanInvitationScreen(
         state = state,
         actions = ScanInvitationActions(
             onBack = back,
-            onNoCamera = viewModel::onNoCameraClick,
-            onNoCameraDismiss = viewModel::onNoCameraDismiss,
+            onManualEntry = viewModel::onManualEntryClick,
+            onManualDismiss = viewModel::onManualDismiss,
+            onManualCodeChange = viewModel::onManualCodeChange,
+            onManualSubmit = viewModel::onManualSubmit,
             onOpenSettings = { context.openAppSettings() },
             onExit = onBack ?: onExitApp,
             onSignOutConfirm = viewModel::onSignOutConfirm,
@@ -140,7 +154,7 @@ fun ScanInvitationScreen(
         modifier = modifier,
         cameraPreview = {
             QrCodeScanner(
-                enabled = state.isScanning && !state.showNoCameraDialog && !state.showSignOutDialog,
+                enabled = state.isScanning && !state.showSignOutDialog,
                 onQrCode = viewModel::onQrScanned,
                 modifier = Modifier.fillMaxSize(),
             )
@@ -195,8 +209,8 @@ fun ScanInvitationContent(
             ScanStatus(state)
         }
         HealthifyButton(
-            text = stringResource(R.string.scan_invitation_no_camera),
-            onClick = actions.onNoCamera,
+            text = stringResource(R.string.scan_invitation_enter_manually),
+            onClick = actions.onManualEntry,
             style = HealthifyButtonStyle.Text,
             // Design note: offline, banner plus inactive button.
             enabled = !state.isOffline && !state.isRedeeming,
@@ -208,6 +222,7 @@ fun ScanInvitationContent(
     }
 
     ScanInvitationDialogs(state, actions)
+    if (state.showManualSheet) ManualCodeSheet(state, actions)
 }
 
 @Composable
@@ -295,14 +310,6 @@ private fun ScanInvitationDialogs(state: ScanInvitationUiState, actions: ScanInv
             onDismiss = actions.onExit,
             dismissLabel = stringResource(R.string.camera_permission_exit),
         )
-        state.showNoCameraDialog -> HealthifyDialog(
-            title = stringResource(R.string.no_camera_dialog_title),
-            text = stringResource(R.string.no_camera_dialog_body),
-            confirmLabel = stringResource(R.string.common_understood),
-            onConfirm = actions.onNoCameraDismiss,
-            onDismiss = actions.onNoCameraDismiss,
-            dismissLabel = null,
-        )
         state.showSignOutDialog -> HealthifyDialog(
             title = stringResource(R.string.sign_out_dialog_title),
             text = stringResource(R.string.sign_out_dialog_body),
@@ -311,6 +318,72 @@ private fun ScanInvitationDialogs(state: ScanInvitationUiState, actions: ScanInv
             onDismiss = actions.onSignOutDismiss,
             confirmLoading = state.isSigningOut,
         )
+    }
+}
+
+/**
+ * Type the code by hand: a bottom sheet over the camera. The same endpoint, messages and consent step as the QR. The
+ * field judges the code as it is typed (characters, length) so a code that cannot be a token never leaves the phone;
+ * only the server knows whether it is used, expired or from another nutritionist.
+ */
+@Composable
+private fun ManualCodeSheet(state: ScanInvitationUiState, actions: ScanInvitationActions) {
+    val dimens = HealthifyTheme.dimens
+    val scheme = MaterialTheme.colorScheme
+    val input = state.manualInput
+    val errorText = state.manualError?.let { stringResource(it.messageRes) } ?: when (input) {
+        InvitationCodeInput.InvalidCharacters -> stringResource(R.string.scan_invitation_manual_error_characters)
+        InvitationCodeInput.TooLong ->
+            stringResource(R.string.scan_invitation_manual_error_too_long, InvitationToken.MAX_LENGTH)
+        else -> null
+    }
+    val helper = when {
+        state.isOffline -> stringResource(R.string.error_network)
+        input is InvitationCodeInput.TooShort ->
+            stringResource(R.string.scan_invitation_manual_helper_short, input.length, InvitationToken.MIN_LENGTH)
+        input == InvitationCodeInput.Empty ->
+            stringResource(R.string.scan_invitation_manual_helper_short, 0, InvitationToken.MIN_LENGTH)
+        else -> stringResource(R.string.scan_invitation_manual_helper)
+    }
+    HealthifyBottomSheet(onDismissRequest = actions.onManualDismiss) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding()
+                .imePadding()
+                .padding(start = dimens.space24, end = dimens.space24, top = dimens.space16, bottom = dimens.space24),
+            verticalArrangement = Arrangement.spacedBy(dimens.space16),
+        ) {
+            Text(
+                text = stringResource(R.string.scan_invitation_manual_title),
+                style = MaterialTheme.typography.headlineSmall,
+                color = scheme.onSurface,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .semantics { heading() },
+            )
+            HealthifyTextField(
+                value = state.manualCode.text,
+                onValueChange = actions.onManualCodeChange,
+                label = stringResource(R.string.scan_invitation_manual_label),
+                supportingText = helper,
+                errorText = errorText,
+                enabled = !state.isRedeeming,
+                type = HealthifyTextFieldType.Code,
+                imeAction = ImeAction.Done,
+                keyboardActions = KeyboardActions(onDone = { if (state.canSubmitManual) actions.onManualSubmit() }),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .semantics { liveRegion = LiveRegionMode.Polite },
+            )
+            HealthifyButton(
+                text = stringResource(R.string.scan_invitation_manual_submit),
+                onClick = actions.onManualSubmit,
+                enabled = state.canSubmitManual || state.isRedeeming,
+                loading = state.isRedeeming,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
     }
 }
 
@@ -377,6 +450,64 @@ private fun ScanInvitationOfflinePreview() {
     HealthifyTheme {
         ScanInvitationContent(
             state = ScanInvitationUiState(cameraPermission = CameraPermissionState.Granted, isOffline = true),
+            actions = ScanInvitationActions(),
+        )
+    }
+}
+
+@Preview(name = "Scan invitation - type the code (empty)", widthDp = 360, heightDp = 800)
+@Composable
+private fun ScanInvitationManualEmptyPreview() {
+    HealthifyTheme {
+        ScanInvitationContent(
+            state = ScanInvitationUiState(cameraPermission = CameraPermissionState.Granted, showManualSheet = true),
+            actions = ScanInvitationActions(),
+        )
+    }
+}
+
+@Preview(name = "Scan invitation - type the code (valid)", widthDp = 360, heightDp = 800)
+@Composable
+private fun ScanInvitationManualValidPreview() {
+    HealthifyTheme {
+        ScanInvitationContent(
+            state = ScanInvitationUiState(
+                cameraPermission = CameraPermissionState.Granted,
+                showManualSheet = true,
+                manualCode = ManualCode("kP3x 9Qm2 LrT7 vB8n Zc4W dA"),
+            ),
+            actions = ScanInvitationActions(),
+        )
+    }
+}
+
+@Preview(name = "Scan invitation - type the code (already used)", widthDp = 360, heightDp = 800)
+@Composable
+private fun ScanInvitationManualErrorPreview() {
+    HealthifyTheme {
+        ScanInvitationContent(
+            state = ScanInvitationUiState(
+                cameraPermission = CameraPermissionState.Granted,
+                showManualSheet = true,
+                manualCode = ManualCode("kP3x9Qm2LrT7vB8nZc4WdA"),
+                manualError = ScanInvitationError.AlreadyUsed,
+            ),
+            actions = ScanInvitationActions(),
+        )
+    }
+}
+
+@Preview(name = "Scan invitation - type the code (linking up)", widthDp = 360, heightDp = 800)
+@Composable
+private fun ScanInvitationManualLoadingPreview() {
+    HealthifyTheme {
+        ScanInvitationContent(
+            state = ScanInvitationUiState(
+                cameraPermission = CameraPermissionState.Granted,
+                showManualSheet = true,
+                manualCode = ManualCode("kP3x9Qm2LrT7vB8nZc4WdA"),
+                isRedeeming = true,
+            ),
             actions = ScanInvitationActions(),
         )
     }

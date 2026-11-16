@@ -17,8 +17,10 @@ import pe.edu.upc.healthify.core.common.connectivity.ConnectivityObserver
 import pe.edu.upc.healthify.core.common.error.DomainError
 import pe.edu.upc.healthify.core.common.error.domainErrorOrNull
 import pe.edu.upc.healthify.features.carerelationship.application.usecase.RedeemInvitationUseCase
+import pe.edu.upc.healthify.features.carerelationship.domain.valueobject.InvitationCodeInput
 import pe.edu.upc.healthify.features.carerelationship.presentation.navigation.ScanInvitationRoute
 import pe.edu.upc.healthify.features.carerelationship.presentation.state.CameraPermissionState
+import pe.edu.upc.healthify.features.carerelationship.presentation.state.ManualCode
 import pe.edu.upc.healthify.features.carerelationship.presentation.state.ScanInvitationError
 import pe.edu.upc.healthify.features.carerelationship.presentation.state.ScanInvitationEvent
 import pe.edu.upc.healthify.features.carerelationship.presentation.state.ScanInvitationUiState
@@ -90,9 +92,48 @@ class ScanInvitationViewModel @Inject constructor(
         }
     }
 
-    fun onNoCameraClick() = _state.update { it.copy(showNoCameraDialog = true) }
+    /** "Type the code by hand": opens the sheet. The camera pauses while it is open. */
+    fun onManualEntryClick() = _state.update { it.copy(showManualSheet = true, manualError = null, error = null) }
 
-    fun onNoCameraDismiss() = _state.update { it.copy(showNoCameraDialog = false) }
+    /** Every edit clears the previous rejection; whitespace is kept as typed and ignored when judging and sending. */
+    fun onManualCodeChange(text: String) = _state.update {
+        if (it.isRedeeming) it else it.copy(manualCode = ManualCode(text.take(MAX_TYPED_LENGTH)), manualError = null)
+    }
+
+    /** Closes the sheet and forgets what was typed. Not while the code is being redeemed. */
+    fun onManualDismiss() = _state.update {
+        if (it.isRedeeming) it else it.copy(showManualSheet = false, manualCode = ManualCode(), manualError = null)
+    }
+
+    /**
+     * Redeems the typed code through the same use case, endpoint and error mapping as the QR. A code that does not
+     * look like a token never leaves the phone.
+     */
+    fun onManualSubmit() {
+        val current = _state.value
+        if (current.isRedeeming || current.isOffline) return
+        val input = current.manualInput as? InvitationCodeInput.Valid ?: return
+        _state.update { it.copy(isRedeeming = true, manualError = null) }
+        viewModelScope.launch {
+            val user = observeCurrentUser().first()
+            if (user == null) {
+                // The session ended while typing: the root graph already routes to session expired or welcome.
+                _state.update { it.copy(isRedeeming = false) }
+                return@launch
+            }
+            val result = redeemInvitation(user.id.value, input.token.value, current.replaceActiveLink)
+            val link = result.getOrNull()
+            if (link != null) {
+                _state.update {
+                    it.copy(isRedeeming = false, showManualSheet = false, manualCode = ManualCode(), manualError = null)
+                }
+                _events.send(ScanInvitationEvent.NavigateToConsent(link.id.value))
+            } else {
+                val error = result.domainErrorOrNull().toScanInvitationError()
+                _state.update { it.copy(isRedeeming = false, manualError = error) }
+            }
+        }
+    }
 
     /** "Back" when this is the first screen: the "Sign out?" dialog. */
     fun onBackAtRoot() = _state.update { it.copy(showSignOutDialog = true) }
@@ -130,6 +171,8 @@ internal fun DomainError?.toScanInvitationError(): ScanInvitationError = when (t
     is DomainError.Unauthorized, is DomainError.Unexpected, null -> ScanInvitationError.Unexpected
 }
 
+/** Generous cap for what the field accepts (a token is 64 at most); the rest is only whitespace that was pasted. */
+private const val MAX_TYPED_LENGTH = 128
 private const val CODE_INVITATION_EXPIRED = "InvitationExpired"
 private const val CODE_ALREADY_REDEEMED = "InvitationAlreadyRedeemed"
 private const val CODE_ALREADY_HAS_ACTIVE_LINK = "PatientAlreadyHasActiveLink"
